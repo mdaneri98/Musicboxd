@@ -6,11 +6,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -46,6 +44,44 @@ public class UserJdbcDao implements UserDao {
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
         ).stream().findFirst();
+    }
+
+    @Override
+    public List<User> findAll() {
+        return jdbcTemplate.query("SELECT * FROM users", ROW_MAPPER);
+    }
+
+    @Override
+    public int save(User user) {
+        return jdbcTemplate.update(
+                "INSERT INTO users (username, email, password, name, bio, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getName(),
+                user.getBio(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
+    }
+
+    @Override
+    public int update(User user) {
+        return jdbcTemplate.update(
+                "UPDATE users SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ? WHERE id = ?",
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getName(),
+                user.getBio(),
+                user.getUpdatedAt(),
+                user.getId()
+        );
+    }
+
+    @Override
+    public int deleteById(long id) {
+        return jdbcTemplate.update("DELETE FROM users WHERE id = ?", id);
     }
 
 }
