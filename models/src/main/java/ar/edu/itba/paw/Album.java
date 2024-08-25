@@ -6,12 +6,21 @@ import java.time.LocalDateTime;
 public class Album {
     private Long id;
     private String title;
-    private LocalDate releaseDate;
-    private String coverImage;
     private String genre;
     private Long artistId;
+    private LocalDate releaseAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public Album(Long id, String title, String genre, Long artistId, LocalDate releaseDate, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.genre = genre;
+        this.artistId = artistId;
+        this.releaseAt = releaseDate;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     // Getters y setters
     public Long getId() {
@@ -30,20 +39,12 @@ public class Album {
         this.title = title;
     }
 
-    public LocalDate getReleaseDate() {
-        return releaseDate;
+    public LocalDate getReleaseAt() {
+        return releaseAt;
     }
 
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public String getCoverImage() {
-        return coverImage;
-    }
-
-    public void setCoverImage(String coverImage) {
-        this.coverImage = coverImage;
+    public void setReleaseDate(LocalDate releaseAt) {
+        this.releaseAt = releaseAt;
     }
 
     public String getGenre() {

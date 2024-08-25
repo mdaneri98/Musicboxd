@@ -21,8 +21,7 @@ CREATE TABLE IF NOT EXISTS artists (
 CREATE TABLE IF NOT EXISTS albums (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    release_date DATE,
-    cover_image TEXT,
+    release_at DATE,
     genre VARCHAR(50),
     artist_id SERIAL NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
