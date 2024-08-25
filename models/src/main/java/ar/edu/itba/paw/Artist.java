@@ -11,6 +11,15 @@ public class Artist {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public Artist(Long id, String name, String genre, String bio, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.genre = genre;
+        this.bio = bio;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     // Getters y setters
     public Long getId() {
         return id;

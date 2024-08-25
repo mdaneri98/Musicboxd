@@ -13,6 +13,17 @@ public class Song {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public Song(Long id, String title, Duration duration, Integer trackNumber, Long albumId, Long artistId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.duration = duration;
+        this.trackNumber = trackNumber;
+        this.albumId = albumId;
+        this.artistId = artistId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     // Getters y setters
     public Long getId() {
         return id;

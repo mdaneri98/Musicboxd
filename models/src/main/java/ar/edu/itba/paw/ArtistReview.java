@@ -11,6 +11,16 @@ public class ArtistReview {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public ArtistReview(Long id, Long userId, Long artistId, String content, Integer rating, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.userId = userId;
+        this.artistId = artistId;
+        this.content = content;
+        this.rating = rating;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     // Getters y setters
     public Long getId() {
         return id;
