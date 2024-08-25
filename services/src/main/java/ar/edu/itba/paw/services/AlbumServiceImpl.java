@@ -2,10 +2,12 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.Album;
 import ar.edu.itba.paw.persistence.AlbumDao;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class AlbumServiceImpl implements AlbumService {
     /*
         FIXME: Add required `business logic`
