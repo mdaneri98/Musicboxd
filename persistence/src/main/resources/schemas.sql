@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE artists (
+CREATE TABLE IF NOT EXISTS artists (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     genre VARCHAR(50),
@@ -18,7 +18,7 @@ CREATE TABLE artists (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE albums (
+CREATE TABLE IF NOT EXISTS albums (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     release_date DATE,
@@ -30,7 +30,7 @@ CREATE TABLE albums (
     FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
 );
 
-CREATE TABLE songs (
+CREATE TABLE IF NOT EXISTS songs (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     duration INTERVAL,
@@ -43,7 +43,7 @@ CREATE TABLE songs (
     FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE SET NULL
 );
 
-CREATE TABLE song_reviews (
+CREATE TABLE IF NOT EXISTS song_reviews (
     id SERIAL PRIMARY KEY,
     user_id SERIAL NOT NULL,
     song_id SERIAL NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE song_reviews (
     FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
 );
 
-CREATE TABLE album_reviews (
+CREATE TABLE IF NOT EXISTS album_reviews (
     id SERIAL PRIMARY KEY,
     user_id SERIAL NOT NULL,
     song_id SERIAL NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE album_reviews (
     FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
 );
 
-CREATE TABLE artist_reviews (
+CREATE TABLE IF NOT EXISTS artist_reviews (
     id SERIAL PRIMARY KEY,
     user_id SERIAL NOT NULL,
     song_id SERIAL NOT NULL,

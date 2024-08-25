@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -21,7 +22,16 @@ public class UserJdbcDao implements UserDao {
     * Se puede hacer ya que es STATELESS, sin problemas de concurrencia.
     * Todas las queries van a mappear cada row exactamente igual.
     * */
-    private static final RowMapper<User> ROW_MAPPER = (rs, rowNum) -> new User(rs.getLong("userId"), rs.getString("username"));
+    private static final RowMapper<User> ROW_MAPPER = (rs, rowNum) -> new User(
+            rs.getLong("id"),
+            rs.getString("username"),
+            rs.getString("email"),
+            rs.getString("password"),
+            rs.getString("name"),
+            rs.getString("bio"),
+            rs.getObject("created_at", LocalDateTime.class),
+            rs.getObject("updated_at", LocalDateTime.class)
+    );
 
     public UserJdbcDao(final DataSource ds) {
         //El JdbcTemplate le quita complejidad al DataSource hecho por Java.
@@ -31,7 +41,7 @@ public class UserJdbcDao implements UserDao {
     @Override
     public Optional<User> findById(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
-        return jdbcTemplate.query("SELECT * FROM users WHERE userId = ?",
+        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
