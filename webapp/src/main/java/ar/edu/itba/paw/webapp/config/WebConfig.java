@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.config;
 
-import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,7 +31,7 @@ import javax.sql.DataSource;
 @Configuration
 public class WebConfig {
 
-    @Value("classpath:schema.sql")
+    @Value("classpath:schemas.sql")
     private Resource schemaSql;
 
     @Bean
