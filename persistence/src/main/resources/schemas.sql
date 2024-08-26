@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS cuser (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -9,71 +9,47 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS artists (
+CREATE TABLE IF NOT EXISTS artist (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    genre VARCHAR(50),
     bio TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP DEFAULT NOW(),
+    img_src VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS albums (
+CREATE TABLE IF NOT EXISTS album (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    release_at DATE,
     genre VARCHAR(50),
-    artist_id SERIAL NOT NULL,
+    release_date DATE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
+    img_src VARCHAR(100),
+    artist_id SERIAL NOT NULL,
+
+    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS songs (
+CREATE TABLE IF NOT EXISTS song (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     duration INTERVAL,
     track_number INT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     album_id SERIAL,
     artist_id SERIAL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE SET NULL,
-    FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE SET NULL
+
+    FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE SET NULL,
+    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS song_reviews (
-    id SERIAL PRIMARY KEY,
-    user_id SERIAL NOT NULL,
+CREATE TABLE IF NOT EXISTS song_artist (
     song_id SERIAL NOT NULL,
-    content TEXT NOT NULL,
-    rating INT CHECK (rating BETWEEN 1 AND 5),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
-);
+    artist_id SERIAL NOT NULL,
 
-CREATE TABLE IF NOT EXISTS album_reviews (
-    id SERIAL PRIMARY KEY,
-    user_id SERIAL NOT NULL,
-    song_id SERIAL NOT NULL,
-    content TEXT NOT NULL,
-    rating INT CHECK (rating BETWEEN 1 AND 5),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS artist_reviews (
-    id SERIAL PRIMARY KEY,
-    user_id SERIAL NOT NULL,
-    song_id SERIAL NOT NULL,
-    content TEXT NOT NULL,
-    rating INT CHECK (rating BETWEEN 1 AND 5),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
+    FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE,
+    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
+    PRIMARY KEY (song_id, artist_id)
 );
