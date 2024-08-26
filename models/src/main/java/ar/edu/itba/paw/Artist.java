@@ -1,26 +1,26 @@
 package ar.edu.itba.paw;
 
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Artist {
     private Long id;
     private String name;
-    private String genre;
     private String bio;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
+    private String img_src;
 
-    public Artist(Long id, String name, String genre, String bio, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, String img_src) {
         this.id = id;
         this.name = name;
-        this.genre = genre;
         this.bio = bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.img_src = img_src;
     }
 
-    // Getters y setters
+    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -37,14 +37,6 @@ public class Artist {
         this.name = name;
     }
 
-    public String getGenre() {
-        return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
-
     public String getBio() {
         return bio;
     }
@@ -53,19 +45,27 @@ public class Artist {
         this.bio = bio;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public LocalDate getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(LocalDate updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getImg_src() {
+        return img_src;
+    }
+
+    public void setImg_src(String img_src) {
+        this.img_src = img_src;
     }
 }

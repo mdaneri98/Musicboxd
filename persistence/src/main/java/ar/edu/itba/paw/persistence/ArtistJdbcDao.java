@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +20,10 @@ public class ArtistJdbcDao implements ArtistDao {
     private static final RowMapper<Artist> ROW_MAPPER = (rs, rowNum) -> new Artist(
             rs.getLong("id"),
             rs.getString("name"),
-            rs.getString("genre"),
             rs.getString("bio"),
-            rs.getObject("created_at", LocalDateTime.class),
-            rs.getObject("updated_at", LocalDateTime.class)
+            rs.getObject("created_at", LocalDate.class),
+            rs.getObject("updated_at", LocalDate.class),
+            rs.getString("img_src")
     );
 
     public ArtistJdbcDao(final DataSource ds) {
@@ -46,24 +47,24 @@ public class ArtistJdbcDao implements ArtistDao {
     @Override
     public int save(Artist artist) {
         return jdbcTemplate.update(
-                "INSERT INTO artists (name, genre, bio, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO artists (name, bio, created_at, updated_at, img_src) VALUES (?, ?, ?, ?, ?)",
                 artist.getName(),
-                artist.getGenre(),
                 artist.getBio(),
                 artist.getCreatedAt(),
-                artist.getUpdatedAt()
+                artist.getUpdatedAt(),
+                artist.getImg_src()
         );
     }
 
     @Override
     public int update(Artist artist) {
         return jdbcTemplate.update(
-                "UPDATE artists SET name = ?, genre = ?, bio = ?, created_at = ?, updated_at = ? WHERE id = ?",
+                "UPDATE artists SET name = ?, bio = ?, created_at = ?, updated_at = ?, img_src = ? WHERE id = ?",
                 artist.getName(),
-                artist.getGenre(),
                 artist.getBio(),
                 artist.getCreatedAt(),
                 artist.getUpdatedAt(),
+                artist.getImg_src(),
                 artist.getId()
         );
     }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Types;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +23,9 @@ public class SongJdbcDao implements SongDao {
             rs.getString("title"),
             rs.getObject("duration", Duration.class),
             rs.getInt("track_number"),
-            rs.getLong("album_id"),
-            rs.getLong("artist_id"),
-            rs.getObject("created_at", LocalDateTime.class),
-            rs.getObject("updated_at", LocalDateTime.class)
+            rs.getObject("created_at", LocalDate.class),
+            rs.getObject("updated_at", LocalDate.class),
+            rs.getLong("album_id")
     );
 
     public SongJdbcDao(final DataSource ds) {
@@ -49,28 +49,26 @@ public class SongJdbcDao implements SongDao {
     @Override
     public int save(Song song) {
         return jdbcTemplate.update(
-                "INSERT INTO songs (title, duration, track_number, album_id, artist_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO songs (title, duration, track_number, created_at, updated_at, album_id) VALUES (?, ?, ?, ?, ?, ?)",
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
-                song.getAlbumId(),
-                song.getArtistId(),
                 song.getCreatedAt(),
-                song.getUpdatedAt()
+                song.getUpdatedAt(),
+                song.getAlbumId()
         );
     }
 
     @Override
     public int update(Song song) {
         return jdbcTemplate.update(
-                "UPDATE songs SET title = ?, duration = ?, track_number = ?, album_id = ?, artist_id = ?, created_at = ?, updated_at = ? WHERE id = ?",
+                "UPDATE songs SET title = ?, duration = ?, track_number = ?, created_at = ?, updated_at = ?, album_id = ? WHERE id = ?",
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
-                song.getAlbumId(),
-                song.getArtistId(),
                 song.getCreatedAt(),
                 song.getUpdatedAt(),
+                song.getAlbumId(),
                 song.getId()
         );
     }

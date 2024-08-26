@@ -1,6 +1,7 @@
 package ar.edu.itba.paw;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Song {
@@ -8,20 +9,18 @@ public class Song {
     private String title;
     private Duration duration;
     private Integer trackNumber;
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
     private Long albumId;
-    private Long artistId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    public Song(Long id, String title, Duration duration, Integer trackNumber, Long albumId, Long artistId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Song(Long id, String title, Duration duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Long albumId) {
         this.id = id;
         this.title = title;
         this.duration = duration;
         this.trackNumber = trackNumber;
-        this.albumId = albumId;
-        this.artistId = artistId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.albumId = albumId;
     }
 
     // Getters y setters
@@ -57,35 +56,27 @@ public class Song {
         this.trackNumber = trackNumber;
     }
 
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Long getAlbumId() {
         return albumId;
     }
 
     public void setAlbumId(Long albumId) {
         this.albumId = albumId;
-    }
-
-    public Long getArtistId() {
-        return artistId;
-    }
-
-    public void setArtistId(Long artistId) {
-        this.artistId = artistId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

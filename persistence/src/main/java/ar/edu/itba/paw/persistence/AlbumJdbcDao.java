@@ -23,10 +23,11 @@ public class AlbumJdbcDao implements AlbumDao {
             rs.getLong("id"),
             rs.getString("title"),
             rs.getString("genre"),
-            rs.getLong("artistId"),
-            rs.getObject("release_at", LocalDate.class),
-            rs.getObject("created_at", LocalDateTime.class),
-            rs.getObject("updated_at", LocalDateTime.class)
+            rs.getObject("release_date", LocalDate.class),
+            rs.getObject("created_at", LocalDate.class),
+            rs.getObject("updated_at", LocalDate.class),
+            rs.getString("img_src"),
+            rs.getLong("artist_id")
     );
 
    public AlbumJdbcDao(final DataSource ds) {
@@ -51,25 +52,29 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public int save(Album album) {
         return jdbcTemplate.update(
-                "INSERT INTO album (title, genre, artistId, release_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO album (title, genre, release_date, created_at, updated_at, img_src, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                album.getTitle(),
                 album.getGenre(),
-                album.getArtistId(),
-                album.getReleaseAt(),
+                album.getReleaseDate(),
                 album.getCreatedAt(),
-                album.getUpdatedAt()
+                album.getUpdatedAt(),
+                album.getImgSrc(),
+                album.getArtistId()
         );
     }
 
     @Override
     public int update(Album album) {
         return jdbcTemplate.update(
-                "UPDATE album SET title = ?, genre = ?, artistId = ?, release_at = ?, created_at = ?, updated_at = ? WHERE id = ?",
+                "UPDATE album SET title = ?, genre = ?, release_date = ?, created_at = ?, updated_at = ?, img_src = ?, artist_id = ? WHERE id = ?",
+                album.getTitle(),
                 album.getGenre(),
-                album.getArtistId(),
-                album.getReleaseAt(),
+                album.getReleaseDate(),
                 album.getCreatedAt(),
                 album.getUpdatedAt(),
-                album.getArtistId()
+                album.getImgSrc(),
+                album.getArtistId(),
+                album.getId()
         );
     }
 
