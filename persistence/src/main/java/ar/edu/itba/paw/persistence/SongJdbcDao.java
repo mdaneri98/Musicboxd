@@ -34,7 +34,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public Optional<Song> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM songs WHERE id = ?",
+        return jdbcTemplate.query("SELECT * FROM song WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
@@ -43,13 +43,13 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findAll() {
-        return jdbcTemplate.query("SELECT * FROM songs", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM song", ROW_MAPPER);
     }
 
     @Override
     public int save(Song song) {
         return jdbcTemplate.update(
-                "INSERT INTO songs (title, duration, track_number, created_at, updated_at, album_id) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO song (title, duration, track_number, created_at, updated_at, album_id) VALUES (?, ?, ?, ?, ?, ?)",
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
@@ -62,7 +62,7 @@ public class SongJdbcDao implements SongDao {
     @Override
     public int update(Song song) {
         return jdbcTemplate.update(
-                "UPDATE songs SET title = ?, duration = ?, track_number = ?, created_at = ?, updated_at = ?, album_id = ? WHERE id = ?",
+                "UPDATE song SET title = ?, duration = ?, track_number = ?, created_at = ?, updated_at = ?, album_id = ? WHERE id = ?",
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
@@ -75,6 +75,6 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM songs WHERE id = ?", id);
+        return jdbcTemplate.update("DELETE FROM song WHERE id = ?", id);
     }
 }

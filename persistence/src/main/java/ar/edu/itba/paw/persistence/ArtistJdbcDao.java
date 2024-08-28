@@ -32,7 +32,7 @@ public class ArtistJdbcDao implements ArtistDao {
 
     @Override
     public Optional<Artist> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM artists WHERE id = ?",
+        return jdbcTemplate.query("SELECT * FROM artist WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
@@ -41,13 +41,13 @@ public class ArtistJdbcDao implements ArtistDao {
 
     @Override
     public List<Artist> findAll() {
-        return jdbcTemplate.query("SELECT * FROM artists", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM artist", ROW_MAPPER);
     }
 
     @Override
     public int save(Artist artist) {
         return jdbcTemplate.update(
-                "INSERT INTO artists (name, bio, created_at, updated_at, img_src) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO artist (name, bio, created_at, updated_at, img_src) VALUES (?, ?, ?, ?, ?)",
                 artist.getName(),
                 artist.getBio(),
                 artist.getCreatedAt(),
@@ -59,7 +59,7 @@ public class ArtistJdbcDao implements ArtistDao {
     @Override
     public int update(Artist artist) {
         return jdbcTemplate.update(
-                "UPDATE artists SET name = ?, bio = ?, created_at = ?, updated_at = ?, img_src = ? WHERE id = ?",
+                "UPDATE artist SET name = ?, bio = ?, created_at = ?, updated_at = ?, img_src = ? WHERE id = ?",
                 artist.getName(),
                 artist.getBio(),
                 artist.getCreatedAt(),
@@ -71,7 +71,7 @@ public class ArtistJdbcDao implements ArtistDao {
 
     @Override
     public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM artists WHERE id = ?", id);
+        return jdbcTemplate.update("DELETE FROM artist WHERE id = ?", id);
     }
 }
 

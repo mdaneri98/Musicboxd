@@ -37,7 +37,7 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public Optional<Album> findById(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
-        return jdbcTemplate.query("SELECT * FROM albums WHERE id = ?",
+        return jdbcTemplate.query("SELECT * FROM album WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
@@ -46,7 +46,7 @@ public class AlbumJdbcDao implements AlbumDao {
 
     @Override
     public List<Album> findAll() {
-        return jdbcTemplate.query("SELECT * FROM albums", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM album", ROW_MAPPER);
     }
 
     @Override
