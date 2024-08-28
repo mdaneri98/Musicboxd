@@ -39,7 +39,7 @@ public class UserJdbcDao implements UserDao {
     @Override
     public Optional<User> findById(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
-        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?",
+        return jdbcTemplate.query("SELECT * FROM cuser WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
@@ -48,13 +48,13 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public List<User> findAll() {
-        return jdbcTemplate.query("SELECT * FROM users", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM cuser", ROW_MAPPER);
     }
 
     @Override
     public int save(User user) {
         return jdbcTemplate.update(
-                "INSERT INTO users (username, email, password, name, bio, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO cuser (username, email, password, name, bio, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
@@ -68,7 +68,7 @@ public class UserJdbcDao implements UserDao {
     @Override
     public int update(User user) {
         return jdbcTemplate.update(
-                "UPDATE users SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ? WHERE id = ?",
+                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ? WHERE id = ?",
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
@@ -81,7 +81,7 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM users WHERE id = ?", id);
+        return jdbcTemplate.update("DELETE FROM cuser WHERE id = ?", id);
     }
 
 }

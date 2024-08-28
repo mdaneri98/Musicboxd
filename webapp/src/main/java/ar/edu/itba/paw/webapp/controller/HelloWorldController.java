@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.User;
 import ar.edu.itba.paw.services.ArtistService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ViewResolver;
+
+import java.util.Optional;
 
 /*
     No es un servlet.
@@ -29,8 +32,10 @@ public class HelloWorldController {
     @RequestMapping("/")
     public ModelAndView index(@RequestParam(name = "userId", defaultValue = "1") long userId) {
         final ModelAndView mav = new ModelAndView("index");
-        mav.addObject("userId", userId);
-        mav.addObject("username", userService.findById(userId).get().getUsername());
+        Optional<User> optionalUser = userService.findById(userId);
+        if (optionalUser.isEmpty())
+            return new ModelAndView("user_not_found");
+        mav.addObject("user", optionalUser.get());
         return mav;
     }
 
