@@ -23,7 +23,7 @@ public class ArtistJdbcDao implements ArtistDao {
             rs.getString("bio"),
             rs.getObject("created_at", LocalDate.class),
             rs.getObject("updated_at", LocalDate.class),
-            rs.getString("img_src")
+            rs.getLong("img_id")
     );
 
     public ArtistJdbcDao(final DataSource ds) {
@@ -52,7 +52,7 @@ public class ArtistJdbcDao implements ArtistDao {
                 artist.getBio(),
                 artist.getCreatedAt(),
                 artist.getUpdatedAt(),
-                artist.getImg_src()
+                artist.getImgId()
         );
     }
 
@@ -64,7 +64,7 @@ public class ArtistJdbcDao implements ArtistDao {
                 artist.getBio(),
                 artist.getCreatedAt(),
                 artist.getUpdatedAt(),
-                artist.getImg_src(),
+                artist.getImgId(),
                 artist.getId()
         );
     }

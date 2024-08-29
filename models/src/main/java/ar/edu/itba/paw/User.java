@@ -13,8 +13,9 @@ public class User {
     private String bio;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long imgId;
 
-    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, Long imgId) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -23,7 +24,9 @@ public class User {
         this.bio = bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.imgId = imgId;
     }
+
 
     // Getters y setters
     public Long getId() {
@@ -88,5 +91,13 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Long getImgId() {
+        return imgId;
+    }
+
+    public void setImgId(Long imgId) {
+        this.imgId = imgId;
     }
 }

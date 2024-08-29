@@ -1,32 +1,69 @@
-INSERT INTO cuser (username, email, password, name, bio) VALUES
-                                                             ('rock_fan', 'rockfan@example.com', 'password123', 'John Doe', 'Amante del rock clásico y las bandas legendarias.'),
-                                                             ('queen_lover', 'queenlover@example.com', 'password123', 'Jane Smith', 'Fanática de Queen y Freddie Mercury.'),
-                                                             ('acdc_rocks', 'acdclover@example.com', 'password123', 'Mark Johnson', 'AC/DC es mi banda favorita de todos los tiempos.');
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484452', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484453', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484454', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484455', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484456', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484457', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484458', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484459', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D4948445A', 'hex'));
+INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D4948445B', 'hex'));
 
-INSERT INTO artist (name, bio, img_src) VALUES
-                                            ('The Beatles', 'Legendary rock band from Liverpool.', 'beatles.jpg'),
-                                            ('Led Zeppelin', 'Pioneers of hard rock and heavy metal.', 'led_zeppelin.jpg'),
-                                            ('The Rolling Stones', 'Iconic British rock band with a long history.', 'rolling_stones.jpg'),
-                                            ('Pink Floyd', 'Progressive rock band known for their concept albums.', 'pink_floyd.jpg'),
-                                            ('David Bowie', 'Influential singer, songwriter, and actor.', 'david_bowie.jpg');
 
-INSERT INTO album (title, genre, release_date, img_src, artist_id) VALUES
-                                                                       ('Abbey Road', 'Rock', '1969-09-26', 'abbey_road.jpg', 1),  -- The Beatles
-                                                                       ('Led Zeppelin IV', 'Hard Rock', '1971-11-08', 'led_zeppelin_iv.jpg', 2),  -- Led Zeppelin
-                                                                       ('Sticky Fingers', 'Rock', '1971-04-23', 'sticky_fingers.jpg', 3),  -- The Rolling Stones
-                                                                       ('The Dark Side of the Moon', 'Progressive Rock', '1973-03-01', 'dark_side_of_the_moon.jpg', 4),  -- Pink Floyd
-                                                                       ('The Rise and Fall of Ziggy Stardust', 'Glam Rock', '1972-06-16', 'ziggy_stardust.jpg', 5);  -- David Bowie
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('johndoe', 'johndoe@example.com', 'password123', 'John Doe', 'Music enthusiast', 1);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('janedoe', 'janedoe@example.com', 'password456', 'Jane Doe', 'Loves classic rock', 2);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('freddiem', 'freddiem@example.com', 'queenfan', 'Freddie Mercury', 'Frontman of Queen', 3);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('paulmcc', 'paulmcc@example.com', 'beatlesfan', 'Paul McCartney', 'Member of The Beatles', 4);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('davidb', 'davidb@example.com', 'starman', 'David Bowie', 'The Thin White Duke', 5);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('eltonj', 'eltonj@example.com', 'rocketman', 'Elton John', 'Rocket Man', 6);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('mickj', 'mickj@example.com', 'stonesfan', 'Mick Jagger', 'Lead singer of The Rolling Stones', 7);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('ringostarr', 'ringostarr@example.com', 'beatlesdrums', 'Ringo Starr', 'Drummer of The Beatles', 8);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('brians', 'brians@example.com', 'queenrocks', 'Brian May', 'Guitarist of Queen', 9);
+INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('keithr', 'keithr@example.com', 'rocknroll', 'Keith Richards', 'Guitarist of The Rolling Stones', 10);
 
-INSERT INTO song (title, duration, track_number, album_id, artist_id) VALUES
-                                                                          ('Come Together', '00:04:19', 1, 1, 1),  -- Abbey Road, The Beatles
-                                                                          ('Black Dog', '00:04:55', 1, 2, 2),  -- Led Zeppelin IV, Led Zeppelin
-                                                                          ('Brown Sugar', '00:03:50', 1, 3, 3),  -- Sticky Fingers, The Rolling Stones
-                                                                          ('Money', '00:06:22', 6, 4, 4),  -- The Dark Side of the Moon, Pink Floyd
-                                                                          ('Starman', '00:04:13', 1, 5, 5);  -- Ziggy Stardust, David Bowie
 
-INSERT INTO song_artist (song_id, artist_id) VALUES
-                                                 (1, 1),  -- 'Come Together' by The Beatles
-                                                 (2, 2),  -- 'Black Dog' by Led Zeppelin
-                                                 (3, 3),  -- 'Brown Sugar' by The Rolling Stones
-                                                 (4, 4),  -- 'Money' by Pink Floyd
-                                                 (5, 5);  -- 'Starman' by David Bowie
+INSERT INTO artist (name, bio, img_id) VALUES ('Queen', 'Legendary British rock band', 3);
+INSERT INTO artist (name, bio, img_id) VALUES ('The Beatles', 'Iconic British rock band', 4);
+INSERT INTO artist (name, bio, img_id) VALUES ('David Bowie', 'Innovative British musician', 5);
+INSERT INTO artist (name, bio, img_id) VALUES ('Elton John', 'Renowned British singer and pianist', 6);
+INSERT INTO artist (name, bio, img_id) VALUES ('The Rolling Stones', 'British rock band', 7);
+INSERT INTO artist (name, bio, img_id) VALUES ('Led Zeppelin', 'Pioneers of hard rock and heavy metal', 8);
+INSERT INTO artist (name, bio, img_id) VALUES ('Pink Floyd', 'Progressive rock band', 9);
+INSERT INTO artist (name, bio, img_id) VALUES ('Fleetwood Mac', 'British-American rock band', 10);
+INSERT INTO artist (name, bio, img_id) VALUES ('The Who', 'English rock band', 1);
+INSERT INTO artist (name, bio, img_id) VALUES ('Nirvana', 'American grunge band', 2);
+
+
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('A Night at the Opera', 'Rock', '1975-11-21', 1, 1);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Abbey Road', 'Rock', '1969-09-26', 2, 2);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Rise and Fall of Ziggy Stardust', 'Rock', '1972-06-16', 3, 3);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Goodbye Yellow Brick Road', 'Pop/Rock', '1973-10-05', 4, 4);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Let It Bleed', 'Rock', '1969-12-05', 5, 5);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Led Zeppelin IV', 'Hard Rock', '1971-11-08', 6, 6);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Dark Side of the Moon', 'Progressive Rock', '1973-03-01', 7, 7);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Rumours', 'Rock', '1977-02-04', 8, 8);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Whos Next', 'Rock', '1971-08-14', 9, 9);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Nevermind', 'Grunge', '1991-09-24', 10, 10);
+
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Bohemian Rhapsody', '00:05:55', 11, 1);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Come Together', '00:04:20', 1, 2);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Starman', '00:04:13', 4, 3);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Candle in the Wind', '00:03:50', 1, 4);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Gimme Shelter', '00:04:30', 1, 5);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Stairway to Heaven', '00:08:02', 4, 6);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Money', '00:06:22', 6, 7);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Go Your Own Way', '00:03:38', 7, 8);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Baba ORiley', '00:05:00', 1, 9);
+INSERT INTO song (title, duration, track_number, album_id) VALUES ('Smells Like Teen Spirit', '00:05:01', 1, 10);
+
+
+INSERT INTO song_artist (song_id, artist_id) VALUES (1, 1);
+INSERT INTO song_artist (song_id, artist_id) VALUES (2, 2);
+INSERT INTO song_artist (song_id, artist_id) VALUES (3, 3);
+INSERT INTO song_artist (song_id, artist_id) VALUES (4, 4);
+INSERT INTO song_artist (song_id, artist_id) VALUES (5, 5);
+INSERT INTO song_artist (song_id, artist_id) VALUES (6, 6);
+INSERT INTO song_artist (song_id, artist_id) VALUES (7, 7);
+INSERT INTO song_artist (song_id, artist_id) VALUES (8,8);
+INSERT INTO song_artist (song_id, artist_id) VALUES (9,9);
+INSERT INTO song_artist (song_id, artist_id) VALUES (10,10);

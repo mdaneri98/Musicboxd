@@ -28,7 +28,8 @@ public class UserJdbcDao implements UserDao {
             rs.getString("name"),
             rs.getString("bio"),
             rs.getObject("created_at", LocalDateTime.class),
-            rs.getObject("updated_at", LocalDateTime.class)
+            rs.getObject("updated_at", LocalDateTime.class),
+            rs.getLong("img_id")
     );
 
     public UserJdbcDao(final DataSource ds) {
@@ -54,27 +55,29 @@ public class UserJdbcDao implements UserDao {
     @Override
     public int save(User user) {
         return jdbcTemplate.update(
-                "INSERT INTO cuser (username, email, password, name, bio, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO cuser (username, email, password, name, bio, created_at, updated_at, img_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getName(),
                 user.getBio(),
                 user.getCreatedAt(),
-                user.getUpdatedAt()
+                user.getUpdatedAt(),
+                user.getImgId()
         );
     }
 
     @Override
     public int update(User user) {
         return jdbcTemplate.update(
-                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ? WHERE id = ?",
+                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, img_id = ? WHERE id = ?",
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getName(),
                 user.getBio(),
                 user.getUpdatedAt(),
+                user.getImgId(),
                 user.getId()
         );
     }

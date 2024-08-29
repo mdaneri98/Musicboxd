@@ -26,7 +26,7 @@ public class AlbumJdbcDao implements AlbumDao {
             rs.getObject("release_date", LocalDate.class),
             rs.getObject("created_at", LocalDate.class),
             rs.getObject("updated_at", LocalDate.class),
-            rs.getString("img_src"),
+            rs.getLong("img_id"),
             rs.getLong("artist_id")
     );
 
@@ -52,13 +52,13 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public int save(Album album) {
         return jdbcTemplate.update(
-                "INSERT INTO album (title, genre, release_date, created_at, updated_at, img_src, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO album (title, genre, release_date, created_at, updated_at, img_id, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 album.getTitle(),
                 album.getGenre(),
                 album.getReleaseDate(),
                 album.getCreatedAt(),
                 album.getUpdatedAt(),
-                album.getImgSrc(),
+                album.getImgId(),
                 album.getArtistId()
         );
     }
@@ -72,7 +72,7 @@ public class AlbumJdbcDao implements AlbumDao {
                 album.getReleaseDate(),
                 album.getCreatedAt(),
                 album.getUpdatedAt(),
-                album.getImgSrc(),
+                album.getImgId(),
                 album.getArtistId(),
                 album.getId()
         );

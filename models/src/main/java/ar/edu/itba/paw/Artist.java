@@ -9,15 +9,15 @@ public class Artist {
     private String bio;
     private LocalDate createdAt;
     private LocalDate updatedAt;
-    private String img_src;
+    private Long imgId;
 
-    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, String img_src) {
+    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Long imgId) {
         this.id = id;
         this.name = name;
         this.bio = bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.img_src = img_src;
+        this.imgId = imgId;
     }
 
     // Getters y Setters
@@ -61,11 +61,11 @@ public class Artist {
         this.updatedAt = updatedAt;
     }
 
-    public String getImg_src() {
-        return img_src;
+    public Long getImgId() {
+        return imgId;
     }
 
-    public void setImg_src(String img_src) {
-        this.img_src = img_src;
+    public void setImgId(Long imgId) {
+        this.imgId = imgId;
     }
 }

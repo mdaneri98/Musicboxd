@@ -10,17 +10,17 @@ public class Album {
     private LocalDate releaseDate;
     private LocalDate createdAt;
     private LocalDate updatedAt;
-    private String imgSrc;
+    private Long imgId;
     private Long artistId;
 
-    public Album(Long id, String title, String genre, LocalDate releaseDate, LocalDate createdAt, LocalDate updatedAt, String imgSrc, Long artistId) {
+    public Album(Long id, String title, String genre, LocalDate releaseDate, LocalDate createdAt, LocalDate updatedAt, Long imgId, Long artistId) {
         this.id = id;
         this.title = title;
         this.genre = genre;
         this.releaseDate = releaseDate;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.imgSrc = imgSrc;
+        this.imgId = imgId;
         this.artistId = artistId;
     }
 
@@ -73,12 +73,12 @@ public class Album {
         this.updatedAt = updatedAt;
     }
 
-    public String getImgSrc() {
-        return imgSrc;
+    public Long getImgId() {
+        return imgId;
     }
 
-    public void setImgSrc(String imgSrc) {
-        this.imgSrc = imgSrc;
+    public void setImgId(Long imgId) {
+        this.imgId = imgId;
     }
 
     public Long getArtistId() {

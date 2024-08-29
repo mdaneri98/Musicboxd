@@ -1,3 +1,8 @@
+CREATE TABLE IF NOT EXISTS image (
+    id SERIAL PRIMARY KEY,
+    content BYTEA NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS cuser (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -6,7 +11,10 @@ CREATE TABLE IF NOT EXISTS cuser (
     name VARCHAR(100),
     bio TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP DEFAULT NOW(),
+    img_id SERIAL,
+
+    FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS artist (
@@ -15,7 +23,9 @@ CREATE TABLE IF NOT EXISTS artist (
     bio TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    img_src VARCHAR(100)
+    img_id SERIAL NOT NULL,
+
+    FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS album (
@@ -25,10 +35,11 @@ CREATE TABLE IF NOT EXISTS album (
     release_date DATE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    img_src VARCHAR(100),
+    img_id SERIAL NOT NULL,
     artist_id SERIAL NOT NULL,
 
-    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE
+    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
+    FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS song (
@@ -39,10 +50,8 @@ CREATE TABLE IF NOT EXISTS song (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     album_id SERIAL,
-    artist_id SERIAL,
 
-    FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE SET NULL,
-    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE SET NULL
+    FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS song_artist (
@@ -53,3 +62,7 @@ CREATE TABLE IF NOT EXISTS song_artist (
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
     PRIMARY KEY (song_id, artist_id)
 );
+
+
+
+
