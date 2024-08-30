@@ -7,7 +7,7 @@ webapp/.settings
 .metadata
 .idea
 
-persistence/src/main/resources/queries.sql
+queries.sql
 
 
 ##############################

@@ -99,11 +99,9 @@
 
     <h2>Popular Songs</h2>
     <ul class="song-list">
-        <li>Song 1</li>
-        <li>Song 2</li>
-        <li>Song 3</li>
-        <li>Song 4</li>
-        <li>Song 5</li>
+        <c:forEach var="song" items="${songs}" varStatus="status">
+            <li>${status.index + 1} - <c:out value="${song.title}"/></li>
+        </c:forEach>
     </ul>
 </div>
 </body>

@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS album (
 CREATE TABLE IF NOT EXISTS song (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    duration INTERVAL,
+    duration VARCHAR(10) NOT NULL,
     track_number INT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),

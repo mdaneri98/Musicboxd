@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 public class Song {
     private Long id;
     private String title;
-    private Duration duration;
+    private String duration;
     private Integer trackNumber;
     private LocalDate createdAt;
     private LocalDate updatedAt;
     private Long albumId;
 
-    public Song(Long id, String title, Duration duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Long albumId) {
+    public Song(Long id, String title, String duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Long albumId) {
         this.id = id;
         this.title = title;
         this.duration = duration;
@@ -40,11 +40,11 @@ public class Song {
         this.title = title;
     }
 
-    public Duration getDuration() {
+    public String getDuration() {
         return duration;
     }
 
-    public void setDuration(Duration duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
     }
 

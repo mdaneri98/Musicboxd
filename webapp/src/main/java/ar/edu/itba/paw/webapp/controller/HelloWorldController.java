@@ -52,7 +52,7 @@ public class HelloWorldController {
         Artist artist = artistService.findById(artistId).get();
         mav.addObject("artist", artist);
         mav.addObject("albums", albumService.findByArtistId(artist.getId()));
-//        mav.addObject("songs", songService.findByArtistId(artist.getId()));
+        mav.addObject("songs", songService.findByArtistId(artist.getId()));
         return mav;
     }
 

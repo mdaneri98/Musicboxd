@@ -21,7 +21,7 @@ public class SongJdbcDao implements SongDao {
     private static final RowMapper<Song> ROW_MAPPER = (rs, rowNum) -> new Song(
             rs.getLong("id"),
             rs.getString("title"),
-            rs.getObject("duration", Duration.class),
+            rs.getString("duration"),
             rs.getInt("track_number"),
             rs.getObject("created_at", LocalDate.class),
             rs.getObject("updated_at", LocalDate.class),
@@ -45,7 +45,7 @@ public class SongJdbcDao implements SongDao {
     // (hay que agarrar los ids de las canciones que devuelve la query y pedirlas a la tabla de songs)
     @Override
     public List<Song> findByArtistId(long id) {
-        return jdbcTemplate.query("SELECT * FROM song_artist WHERE artist_id = ?",
+        return jdbcTemplate.query("SELECT DISTINCT s.* FROM song s JOIN song_artist sa ON s.id = sa.song_id WHERE sa.artist_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
