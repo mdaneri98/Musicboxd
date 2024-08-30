@@ -49,6 +49,15 @@ public class AlbumJdbcDao implements AlbumDao {
         return jdbcTemplate.query("SELECT * FROM album", ROW_MAPPER);
     }
 
+
+    @Override
+    public List<Album> findByArtistId(long id) {
+        return jdbcTemplate.query("SELECT * FROM album WHERE artist_id = ?",
+                new Object[]{id},
+                new int[]{Types.BIGINT},
+                ROW_MAPPER);
+    }
+
     @Override
     public int save(Album album) {
         return jdbcTemplate.update(

@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.Artist;
 import ar.edu.itba.paw.User;
+import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ArtistService;
+import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,10 +26,14 @@ public class HelloWorldController {
 
     private final UserService userService;
     private final ArtistService artistService;
+    private final AlbumService albumService;
+    private final SongService songService;
 
-    public HelloWorldController(UserService userService, ArtistService artistService) {
+    public HelloWorldController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService) {
         this.userService = userService;
         this.artistService = artistService;
+        this.albumService = albumService;
+        this.songService = songService;
     }
 
     @RequestMapping("/")
@@ -42,7 +49,10 @@ public class HelloWorldController {
     @RequestMapping("/artist/{artistId:\\d+}")
     public ModelAndView profile(@PathVariable(name = "artistId") long artistId) {
         final ModelAndView mav = new ModelAndView("profile");
-        mav.addObject("artist", artistService.findById(artistId).get());
+        Artist artist = artistService.findById(artistId).get();
+        mav.addObject("artist", artist);
+        mav.addObject("albums", albumService.findByArtistId(artist.getId()));
+//        mav.addObject("songs", songService.findByArtistId(artist.getId()));
         return mav;
     }
 

@@ -89,22 +89,12 @@
 
     <h2>Albums</h2>
     <div class="carousel">
-        <div class="album">
-            <img src="/api/placeholder/200/200" alt="Album 1">
-            <p>Album 1</p>
-        </div>
-        <div class="album">
-            <img src="/api/placeholder/200/200" alt="Album 2">
-            <p>Album 2</p>
-        </div>
-        <div class="album">
-            <img src="/api/placeholder/200/200" alt="Album 3">
-            <p>Album 3</p>
-        </div>
-        <div class="album">
-            <img src="/api/placeholder/200/200" alt="Album 4">
-            <p>Album 4</p>
-        </div>
+        <c:forEach var="album" items="${albums}" varStatus="status">
+            <div class="album">
+                <img src="/api/placeholder/200/200" alt="Album ${status.index + 1}">
+                <p><c:out value="${album.title}"/></p>
+            </div>
+        </c:forEach>
     </div>
 
     <h2>Popular Songs</h2>

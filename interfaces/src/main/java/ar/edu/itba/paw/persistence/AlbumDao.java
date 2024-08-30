@@ -9,6 +9,9 @@ import java.util.Optional;
 public interface AlbumDao {
 
     Optional<Album> findById(long id);
+
+    List<Album> findByArtistId(long id);
+
     List<Album> findAll();
 
     int save(Album album);

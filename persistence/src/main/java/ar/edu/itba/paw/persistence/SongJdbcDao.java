@@ -41,6 +41,17 @@ public class SongJdbcDao implements SongDao {
         ).stream().findFirst();
     }
 
+    // ESTO NO FUNCIONA
+    // (hay que agarrar los ids de las canciones que devuelve la query y pedirlas a la tabla de songs)
+    @Override
+    public List<Song> findByArtistId(long id) {
+        return jdbcTemplate.query("SELECT * FROM song_artist WHERE artist_id = ?",
+                new Object[]{id},
+                new int[]{Types.BIGINT},
+                ROW_MAPPER
+        );
+    }
+
     @Override
     public List<Song> findAll() {
         return jdbcTemplate.query("SELECT * FROM song", ROW_MAPPER);

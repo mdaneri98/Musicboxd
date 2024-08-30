@@ -24,6 +24,9 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
+    public List<Album> findByArtistId(long id) {return albumDao.findByArtistId(id);}
+
+    @Override
     public List<Album> findAll() {
         return albumDao.findAll();
     }

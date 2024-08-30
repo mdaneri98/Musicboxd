@@ -1,69 +1,59 @@
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484452', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484453', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484454', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484455', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484456', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484457', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484458', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D49484459', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D4948445A', 'hex'));
-INSERT INTO image (content) VALUES (decode('89504E470D0A1A0A0000000D4948445B', 'hex'));
+-- Queen
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('News of the World', 'Rock', '1977-10-28', 1, 1);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Sheer Heart Attack', 'Rock', '1974-11-08', 2, 1);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Game', 'Rock', '1980-06-30', 3, 1);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Innuendo', 'Rock', '1991-02-05', 4, 1);
+
+-- David Bowie
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Heroes', 'Rock', '1977-10-14', 5, 3);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Hunky Dory', 'Rock', '1971-12-17', 6, 3);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Aladdin Sane', 'Rock', '1973-04-13', 7, 3);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Low', 'Art Rock', '1977-01-14', 8, 3);
+
+-- Elton John
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Captain Fantastic and the Brown Dirt Cowboy', 'Pop/Rock', '1975-05-19', 9, 4);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Madman Across the Water', 'Pop/Rock', '1971-11-05', 10, 4);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Honky Château', 'Pop/Rock', '1972-05-19', 1, 4);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Dont Shoot Me Im Only the Piano Player', 'Pop/Rock', '1973-01-26', 2, 4);
+
+-- The Rolling Stones
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Exile on Main St.', 'Rock', '1972-05-12', 3, 5);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Sticky Fingers', 'Rock', '1971-04-23', 4, 5);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Beggars Banquet', 'Rock', '1968-12-06', 5, 5);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Some Girls', 'Rock', '1978-06-09', 6, 5);
+
+-- Led Zeppelin
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Physical Graffiti', 'Hard Rock', '1975-02-24', 7, 6);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Houses of the Holy', 'Hard Rock', '1973-03-28', 8, 6);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Led Zeppelin II', 'Hard Rock', '1969-10-22', 9, 6);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Presence', 'Hard Rock', '1976-03-31', 10, 6);
+
+-- Pink Floyd
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Wish You Were Here', 'Progressive Rock', '1975-09-12', 1, 7);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Wall', 'Progressive Rock', '1979-11-30', 2, 7);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Animals', 'Progressive Rock', '1977-01-23', 3, 7);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Meddle', 'Progressive Rock', '1971-10-31', 4, 7);
+
+-- Fleetwood Mac
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Fleetwood Mac', 'Rock', '1975-07-11', 5, 8);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Tusk', 'Rock', '1979-10-12', 6, 8);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Mirage', 'Rock', '1982-06-18', 7, 8);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Tango in the Night', 'Rock', '1987-04-13', 8, 8);
+
+-- The Who
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Tommy', 'Rock', '1969-05-23', 9, 9);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Quadrophenia', 'Rock', '1973-10-26', 10, 9);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Who Sell Out', 'Rock', '1967-12-15', 1, 9);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('A Quick One', 'Rock', '1966-12-09', 2, 9);
+
+-- Nirvana
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('In Utero', 'Grunge', '1993-09-21', 3, 10);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Bleach', 'Grunge', '1989-06-15', 4, 10);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('MTV Unplugged in New York', 'Grunge', '1994-11-01', 5, 10);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Incesticide', 'Grunge', '1992-12-14', 6, 10);
 
 
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('johndoe', 'johndoe@example.com', 'password123', 'John Doe', 'Music enthusiast', 1);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('janedoe', 'janedoe@example.com', 'password456', 'Jane Doe', 'Loves classic rock', 2);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('freddiem', 'freddiem@example.com', 'queenfan', 'Freddie Mercury', 'Frontman of Queen', 3);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('paulmcc', 'paulmcc@example.com', 'beatlesfan', 'Paul McCartney', 'Member of The Beatles', 4);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('davidb', 'davidb@example.com', 'starman', 'David Bowie', 'The Thin White Duke', 5);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('eltonj', 'eltonj@example.com', 'rocketman', 'Elton John', 'Rocket Man', 6);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('mickj', 'mickj@example.com', 'stonesfan', 'Mick Jagger', 'Lead singer of The Rolling Stones', 7);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('ringostarr', 'ringostarr@example.com', 'beatlesdrums', 'Ringo Starr', 'Drummer of The Beatles', 8);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('brians', 'brians@example.com', 'queenrocks', 'Brian May', 'Guitarist of Queen', 9);
-INSERT INTO cuser (username, email, password, name, bio, img_id) VALUES ('keithr', 'keithr@example.com', 'rocknroll', 'Keith Richards', 'Guitarist of The Rolling Stones', 10);
-
-
-INSERT INTO artist (name, bio, img_id) VALUES ('Queen', 'Legendary British rock band', 3);
-INSERT INTO artist (name, bio, img_id) VALUES ('The Beatles', 'Iconic British rock band', 4);
-INSERT INTO artist (name, bio, img_id) VALUES ('David Bowie', 'Innovative British musician', 5);
-INSERT INTO artist (name, bio, img_id) VALUES ('Elton John', 'Renowned British singer and pianist', 6);
-INSERT INTO artist (name, bio, img_id) VALUES ('The Rolling Stones', 'British rock band', 7);
-INSERT INTO artist (name, bio, img_id) VALUES ('Led Zeppelin', 'Pioneers of hard rock and heavy metal', 8);
-INSERT INTO artist (name, bio, img_id) VALUES ('Pink Floyd', 'Progressive rock band', 9);
-INSERT INTO artist (name, bio, img_id) VALUES ('Fleetwood Mac', 'British-American rock band', 10);
-INSERT INTO artist (name, bio, img_id) VALUES ('The Who', 'English rock band', 1);
-INSERT INTO artist (name, bio, img_id) VALUES ('Nirvana', 'American grunge band', 2);
-
-
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('A Night at the Opera', 'Rock', '1975-11-21', 1, 1);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Abbey Road', 'Rock', '1969-09-26', 2, 2);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Rise and Fall of Ziggy Stardust', 'Rock', '1972-06-16', 3, 3);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Goodbye Yellow Brick Road', 'Pop/Rock', '1973-10-05', 4, 4);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Let It Bleed', 'Rock', '1969-12-05', 5, 5);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Led Zeppelin IV', 'Hard Rock', '1971-11-08', 6, 6);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Dark Side of the Moon', 'Progressive Rock', '1973-03-01', 7, 7);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Rumours', 'Rock', '1977-02-04', 8, 8);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Whos Next', 'Rock', '1971-08-14', 9, 9);
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Nevermind', 'Grunge', '1991-09-24', 10, 10);
-
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Bohemian Rhapsody', '00:05:55', 11, 1);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Come Together', '00:04:20', 1, 2);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Starman', '00:04:13', 4, 3);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Candle in the Wind', '00:03:50', 1, 4);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Gimme Shelter', '00:04:30', 1, 5);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Stairway to Heaven', '00:08:02', 4, 6);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Money', '00:06:22', 6, 7);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Go Your Own Way', '00:03:38', 7, 8);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Baba ORiley', '00:05:00', 1, 9);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Smells Like Teen Spirit', '00:05:01', 1, 10);
-
-
-INSERT INTO song_artist (song_id, artist_id) VALUES (1, 1);
-INSERT INTO song_artist (song_id, artist_id) VALUES (2, 2);
-INSERT INTO song_artist (song_id, artist_id) VALUES (3, 3);
-INSERT INTO song_artist (song_id, artist_id) VALUES (4, 4);
-INSERT INTO song_artist (song_id, artist_id) VALUES (5, 5);
-INSERT INTO song_artist (song_id, artist_id) VALUES (6, 6);
-INSERT INTO song_artist (song_id, artist_id) VALUES (7, 7);
-INSERT INTO song_artist (song_id, artist_id) VALUES (8,8);
-INSERT INTO song_artist (song_id, artist_id) VALUES (9,9);
-INSERT INTO song_artist (song_id, artist_id) VALUES (10,10);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Sgt. Peppers Lonely Hearts Club Band', 'Rock', '1967-05-26', 7, 2);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Revolver', 'Rock', '1966-08-05', 8, 2);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Beatles (White Album)', 'Rock', '1968-11-22', 9, 2);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Let It Be', 'Rock', '1970-05-08', 10, 2);
