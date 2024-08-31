@@ -36,15 +36,12 @@ public class HelloWorldController {
     @RequestMapping("/")
     public ModelAndView index(@RequestParam(name = "userId", defaultValue = "1") long userId) {
         final ModelAndView mav = new ModelAndView("index");
-        Optional<User> optionalUser = userService.findById(userId);
-        if (optionalUser.isEmpty())
-            return new ModelAndView("user_not_found");
-        mav.addObject("user", optionalUser.get());
+        mav.addObject("artists", artistService.findAll());
         return mav;
     }
 
     @RequestMapping("/artist/{artistId:\\d+}")
-    public ModelAndView profile(@PathVariable(name = "artistId") long artistId) {
+    public ModelAndView artist(@PathVariable(name = "artistId") long artistId) {
         final ModelAndView mav = new ModelAndView("artist");
         Artist artist = artistService.findById(artistId).get();
         mav.addObject("artist", artist);
@@ -53,4 +50,11 @@ public class HelloWorldController {
         return mav;
     }
 
+    @RequestMapping("/review/{artistId:\\d+}")
+    public ModelAndView review(@PathVariable(name = "artistId") long artistId) {
+        final ModelAndView mav = new ModelAndView("review");
+        Artist artist = artistService.findById(artistId).get();
+        mav.addObject("artist", artist);
+        return mav;
+    }
 }

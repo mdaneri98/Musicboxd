@@ -16,7 +16,7 @@
         :root {
             --background-base: #121212;
             --background-highlight: #1a1a1a;
-            --background-press: #000;
+            --background-press: #2c2c2c;
             --background-elevated-base: #242424;
             --background-elevated-highlight: #2a2a2a;
             --background-tinted-base: hsla(0,0%,100%,.07);
@@ -27,7 +27,7 @@
             --text-bright-accent: #1ed760;
             --essential-base: #fff;
             --essential-subdued: #727272;
-            --essential-bright-accent: #1ed760;
+            --essential-bright-accent: #20a34f;
             --decorative-base: #fff;
             --decorative-subdued: #292929;
         }
@@ -159,6 +159,24 @@
             flex-grow: 1;
             font-size: 16px;
         }
+
+        button {
+            display: inline-block;
+            background-color: var(--essential-bright-accent);
+            color: var(--background-base);
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 500px;
+            margin-top: 24px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1fdf64;
+            transform: scale(1.04);
+        }
     </style>
 </head>
 <body>
@@ -169,6 +187,9 @@
             <p class="artist-type">Artist</p>
             <h1><c:out value="${artist.name}"/></h1>
             <p class="artist-bio"><c:out value="${artist.bio}"/></p>
+            <a href="/webapp_war/review/${artist.id}">
+                <button>Make a review</button>
+            </a>
         </div>
     </header>
 

@@ -63,6 +63,22 @@ CREATE TABLE IF NOT EXISTS song_artist (
     PRIMARY KEY (song_id, artist_id)
 );
 
+CREATE TABLE IF NOT EXISTS artist_review (
+    id SERIAL PRIMARY KEY,
+    user_id SERIAL NOT NULL,
+    artist_id SERIAL NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(300) NOT NULL,
+    score INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    likes INT DEFAULT 0,
+
+    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+);
+
+
+
 
 
 
