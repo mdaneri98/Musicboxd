@@ -10,6 +10,7 @@ public interface ArtistDao {
 
     Optional<Artist> findById(long id);
     List<Artist> findAll();
+    List<Artist> findBySongId(long id);
     int save(Artist artist);
     int update(Artist artist);
     int deleteById(long id);

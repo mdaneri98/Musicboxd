@@ -25,7 +25,8 @@ public class SongJdbcDao implements SongDao {
             rs.getInt("track_number"),
             rs.getObject("created_at", LocalDate.class),
             rs.getObject("updated_at", LocalDate.class),
-            rs.getLong("album_id")
+            rs.getLong("album_id"),
+            rs.getLong("img_id")
     );
 
     public SongJdbcDao(final DataSource ds) {
@@ -41,11 +42,18 @@ public class SongJdbcDao implements SongDao {
         ).stream().findFirst();
     }
 
-    // ESTO NO FUNCIONA
-    // (hay que agarrar los ids de las canciones que devuelve la query y pedirlas a la tabla de songs)
     @Override
     public List<Song> findByArtistId(long id) {
         return jdbcTemplate.query("SELECT DISTINCT s.* FROM song s JOIN song_artist sa ON s.id = sa.song_id WHERE sa.artist_id = ?",
+                new Object[]{id},
+                new int[]{Types.BIGINT},
+                ROW_MAPPER
+        );
+    }
+
+    @Override
+    public List<Song> findByAlbumId(long id) {
+        return jdbcTemplate.query("SELECT * FROM song WHERE album_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER

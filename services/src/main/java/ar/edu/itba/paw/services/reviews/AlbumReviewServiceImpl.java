@@ -1,7 +1,8 @@
-package ar.edu.itba.paw.services;
+package ar.edu.itba.paw.services.reviews;
 
-import ar.edu.itba.paw.AlbumReview;
+import ar.edu.itba.paw.reviews.AlbumReview;
 import ar.edu.itba.paw.persistence.AlbumReviewDao;
+import ar.edu.itba.paw.services.AlbumReviewService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,11 +32,6 @@ public class AlbumReviewServiceImpl implements AlbumReviewService {
     @Override
     public int save(AlbumReview albumReview) {
         return albumReviewDao.save(albumReview);
-    }
-
-    @Override
-    public int update(AlbumReview albumReview) {
-        return albumReviewDao.update(albumReview);
     }
 
     @Override

@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS song (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     album_id SERIAL,
+    img_id SERIAL,
 
     FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE SET NULL
 );
@@ -74,6 +75,34 @@ CREATE TABLE IF NOT EXISTS artist_review (
     likes INT DEFAULT 0,
 
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS album_review (
+     id SERIAL PRIMARY KEY,
+     user_id SERIAL NOT NULL,
+     album_id SERIAL NOT NULL,
+     title VARCHAR(50) NOT NULL,
+     description VARCHAR(300) NOT NULL,
+     score INT NOT NULL,
+     created_at TIMESTAMP DEFAULT NOW(),
+     likes INT DEFAULT 0,
+
+     FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE CASCADE,
+     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS song_review (
+    id SERIAL PRIMARY KEY,
+    user_id SERIAL NOT NULL,
+    song_id SERIAL NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(300) NOT NULL,
+    score INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    likes INT DEFAULT 0,
+
+    FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
 );
 

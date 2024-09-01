@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Review Artist - Spotify-like</title>
+  <title>Review Artist</title>
   <style>
     :root {
       --background-base: #000000;
@@ -172,17 +172,6 @@
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>Review Artist</h1>
-
-  <a href="/webapp_war/artist/${artist.id}" class="artist-box">
-    <img src="${artist.imgId}" alt="${artist.name}" class="artist-image">
-    <div class="artist-info">
-      <h2 class="artist-name">${artist.name}</h2>
-      <p class="artist-bio">${artist.bio}</p>
-    </div>
-  </a>
-
   <form action="/submit-review" method="post">
     <input type="hidden" name="artistId" value="${artist.id}">
 
@@ -208,6 +197,5 @@
 
     <button type="submit">Submit Review</button>
   </form>
-</div>
 </body>
 </html>

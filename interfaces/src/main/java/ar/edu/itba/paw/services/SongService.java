@@ -8,6 +8,7 @@ public interface SongService {
     Optional<Song> findById(long id);
     List<Song> findAll();
     List<Song> findByArtistId(long id);
+    List<Song> findByAlbumId(long id);
     int save(Song song);
     int update(Song song);
     int deleteById(long id);

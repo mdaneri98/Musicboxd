@@ -1,6 +1,7 @@
-package ar.edu.itba.paw.persistence;
+package ar.edu.itba.paw.persistence.reviews;
 
-import ar.edu.itba.paw.AlbumReview;
+import ar.edu.itba.paw.reviews.AlbumReview;
+import ar.edu.itba.paw.persistence.AlbumReviewDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -18,12 +19,13 @@ public class AlbumReviewJdbcDao implements AlbumReviewDao {
 
     private static final RowMapper<AlbumReview> ROW_MAPPER = (rs, rowNum) -> new AlbumReview(
             rs.getLong("id"),
-            rs.getLong("userId"),
-            rs.getLong("albumId"),
-            rs.getString("content"),
+            rs.getLong("user_id"),
+            rs.getLong("album_id"),
+            rs.getString("title"),
+            rs.getString("description"),
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
-            rs.getObject("updated_at", LocalDateTime.class)
+            rs.getInt("likes")
     );
 
     public AlbumReviewJdbcDao(final DataSource ds) {
@@ -47,27 +49,14 @@ public class AlbumReviewJdbcDao implements AlbumReviewDao {
     @Override
     public int save(AlbumReview albumReview) {
         return jdbcTemplate.update(
-                "INSERT INTO album_reviews (userId, albumId, content, rating, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO artist_reviews (user_id, artist_id, title, description, rating, created_at, likes) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 albumReview.getUserId(),
                 albumReview.getAlbumId(),
-                albumReview.getContent(),
+                albumReview.getTitle(),
+                albumReview.getDescription(),
                 albumReview.getRating(),
                 albumReview.getCreatedAt(),
-                albumReview.getUpdatedAt()
-        );
-    }
-
-    @Override
-    public int update(AlbumReview albumReview) {
-        return jdbcTemplate.update(
-                "UPDATE album_reviews SET userId = ?, albumId = ?, content = ?, rating = ?, created_at = ?, updated_at = ? WHERE id = ?",
-                albumReview.getUserId(),
-                albumReview.getAlbumId(),
-                albumReview.getContent(),
-                albumReview.getRating(),
-                albumReview.getCreatedAt(),
-                albumReview.getUpdatedAt(),
-                albumReview.getId()
+                albumReview.getLikes()
         );
     }
 

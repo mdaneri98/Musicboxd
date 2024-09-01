@@ -7,7 +7,10 @@ import java.util.Optional;
 
 public interface ArtistService {
     Optional<Artist> findById(long id);
+
     List<Artist> findAll();
+
+    List<Artist> findBySongId(long id);
 
     int save(Artist artist);
 

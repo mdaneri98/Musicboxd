@@ -43,6 +43,7 @@ INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('News 
 INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Sheer Heart Attack', 'Rock', '1974-11-08', 2, 1);
 INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Game', 'Rock', '1980-06-30', 3, 1);
 INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Innuendo', 'Rock', '1991-02-05', 4, 1);
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('PEDRO (El album)', 'Rock', '1991-02-05', 4, 1);
 
 -- David Bowie
 INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Rise and Fall of Ziggy Stardust', 'Rock', '1972-06-16', 2, 3);
@@ -108,124 +109,124 @@ INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The B
 INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Let It Be', 'Rock', '1970-05-08', 10, 2);
 
 -- Queen
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('We Will Rock You', '00:02:02', 1, 1);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('We Are the Champions', '00:02:59', 2, 1);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Killer Queen', '00:02:57', 1, 2);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Stone Cold Crazy', '00:02:16', 2, 2);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Another One Bites the Dust', '00:03:35', 1, 3);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Crazy Little Thing Called Love', '00:02:44', 2, 3);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Innuendo', '00:06:32', 1, 4);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('The Show Must Go On', '00:04:37', 2, 4);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Bohemian Rhapsody', '00:05:55', 3, 4);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Radio Ga Ga', '00:05:48', 4, 3);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('We Will Rock You', '00:02:02', 1, 1,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('We Are the Champions', '00:02:59', 2, 1,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Killer Queen', '00:02:57', 1, 2,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Stone Cold Crazy', '00:02:16', 2, 2,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Another One Bites the Dust', '00:03:35', 1, 3,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Crazy Little Thing Called Love', '00:02:44', 2, 3,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Innuendo', '00:06:32', 1, 4,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('The Show Must Go On', '00:04:37', 2, 4,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Bohemian Rhapsody', '00:05:55', 3, 4,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Radio Ga Ga', '00:05:48', 4, 3,1);
 
 -- The Beatles
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Come Together', '00:04:20', 1, 11);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Something', '00:03:03', 2, 11);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Here Comes the Sun', '00:03:06', 1, 12);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Let It Be', '00:04:03', 1, 13);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Hey Jude', '00:07:11', 2, 13);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Yesterday', '00:02:05', 1, 14);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Eleanor Rigby', '00:02:08', 2, 14);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('A Hard Day''s Night', '00:02:34', 1, 15);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Can''t Buy Me Love', '00:02:12', 2, 15);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Help!', '00:02:18', 1, 16);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Come Together', '00:04:20', 1, 11,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Something', '00:03:03', 2, 11,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Here Comes the Sun', '00:03:06', 1, 12,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Let It Be', '00:04:03', 1, 13,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Hey Jude', '00:07:11', 2, 13,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Yesterday', '00:02:05', 1, 14,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Eleanor Rigby', '00:02:08', 2, 14,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('A Hard Day''s Night', '00:02:34', 1, 15,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Can''t Buy Me Love', '00:02:12', 2, 15,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Help!', '00:02:18', 1, 16,1);
 
 -- David Bowie
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Heroes', '00:06:11', 1, 5);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Beauty and the Beast', '00:03:32', 2, 5);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Changes', '00:03:33', 1, 6);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Life on Mars?', '00:03:48', 2, 6);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Aladdin Sane', '00:05:06', 1, 7);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('The Jean Genie', '00:04:08', 2, 7);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Sound and Vision', '00:03:03', 1, 8);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Warszawa', '00:06:23', 2, 8);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Ashes to Ashes', '00:04:25', 3, 5);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Space Oddity', '00:05:16', 4, 6);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Heroes', '00:06:11', 1, 5,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Beauty and the Beast', '00:03:32', 2, 5,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Changes', '00:03:33', 1, 6,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Life on Mars?', '00:03:48', 2, 6,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Aladdin Sane', '00:05:06', 1, 7,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('The Jean Genie', '00:04:08', 2, 7,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Sound and Vision', '00:03:03', 1, 8,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Warszawa', '00:06:23', 2, 8,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Ashes to Ashes', '00:04:25', 3, 5,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Space Oddity', '00:05:16', 4, 6,1);
 
 -- Elton John
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Someone Saved My Life Tonight', '00:06:45', 1, 9);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Captain Fantastic and the Brown Dirt Cowboy', '00:05:46', 2, 9);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Tiny Dancer', '00:06:15', 1, 10);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Levon', '00:05:22', 2, 10);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Rocket Man', '00:04:41', 1, 11);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Honky Cat', '00:05:13', 2, 11);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Crocodile Rock', '00:03:56', 1, 12);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Daniel', '00:03:54', 2, 12);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Bennie and the Jets', '00:05:23', 3, 12);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Your Song', '00:04:02', 4, 9);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Someone Saved My Life Tonight', '00:06:45', 1, 9,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Captain Fantastic and the Brown Dirt Cowboy', '00:05:46', 2, 9,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Tiny Dancer', '00:06:15', 1, 10,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Levon', '00:05:22', 2, 10,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Rocket Man', '00:04:41', 1, 11,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Honky Cat', '00:05:13', 2, 11,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Crocodile Rock', '00:03:56', 1, 12,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Daniel', '00:03:54', 2, 12,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Bennie and the Jets', '00:05:23', 3, 12,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Your Song', '00:04:02', 4, 9,1);
 
 --The Rolling Stones
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Tumbling Dice', '00:03:45', 1, 13);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Rocks Off', '00:04:32', 2, 13);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Brown Sugar', '00:03:49', 1, 14);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Wild Horses', '00:05:42', 2, 14);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Sympathy for the Devil', '00:06:18', 1, 15);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Street Fighting Man', '00:03:15', 2, 15);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Miss You', '00:04:48', 1, 16);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Beast of Burden', '00:04:25', 2, 16);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Paint It Black', '00:03:45', 3, 14);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Gimme Shelter', '00:04:30', 4, 13);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Tumbling Dice', '00:03:45', 1, 13,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Rocks Off', '00:04:32', 2, 13,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Brown Sugar', '00:03:49', 1, 14,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Wild Horses', '00:05:42', 2, 14,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Sympathy for the Devil', '00:06:18', 1, 15,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Street Fighting Man', '00:03:15', 2, 15,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Miss You', '00:04:48', 1, 16,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Beast of Burden', '00:04:25', 2, 16,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Paint It Black', '00:03:45', 3, 14,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Gimme Shelter', '00:04:30', 4, 13,1);
 
 -- Led Zeppelin
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Kashmir', '00:08:37', 1, 17);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Trampled Under Foot', '00:05:35', 2, 17);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('The Ocean', '00:04:31', 1, 18);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Over the Hills and Far Away', '00:04:50', 2, 18);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Whole Lotta Love', '00:05:33', 1, 19);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Ramble On', '00:04:23', 2, 19);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Achilles Last Stand', '00:10:25', 1, 20);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Nobody''s Fault but Mine', '00:06:15', 2, 20);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Immigrant Song', '00:02:25', 3, 19);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Stairway to Heaven', '00:08:02', 4, 19);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Kashmir', '00:08:37', 1, 17,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Trampled Under Foot', '00:05:35', 2, 17,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('The Ocean', '00:04:31', 1, 18,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Over the Hills and Far Away', '00:04:50', 2, 18,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Whole Lotta Love', '00:05:33', 1, 19,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Ramble On', '00:04:23', 2, 19,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Achilles Last Stand', '00:10:25', 1, 20,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Nobody''s Fault but Mine', '00:06:15', 2, 20,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Immigrant Song', '00:02:25', 3, 19,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Stairway to Heaven', '00:08:02', 4, 19,1);
 
 -- Pink Floyd
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Shine On You Crazy Diamond', '00:13:32', 1, 21);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Wish You Were Here', '00:05:34', 2, 21);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Comfortably Numb', '00:06:22', 1, 22);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Another Brick in the Wall, Pt. 2', '00:03:59', 2, 22);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Dogs', '00:17:04', 1, 23);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Pigs (Three Different Ones)', '00:11:28', 2, 23);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Echoes', '00:23:31', 1, 24);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('One of These Days', '00:05:57', 2, 24);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Money', '00:06:23', 3, 22);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Time', '00:06:53', 4, 22);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Shine On You Crazy Diamond', '00:13:32', 1, 21,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Wish You Were Here', '00:05:34', 2, 21,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Comfortably Numb', '00:06:22', 1, 22,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Another Brick in the Wall, Pt. 2', '00:03:59', 2, 22,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Dogs', '00:17:04', 1, 23,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Pigs (Three Different Ones)', '00:11:28', 2, 23,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Echoes', '00:23:31', 1, 24,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('One of These Days', '00:05:57', 2, 24,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Money', '00:06:23', 3, 22,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Time', '00:06:53', 4, 22,1);
 
 -- Fleetwood Mac
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Rhiannon', '00:04:11', 1, 25);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Landslide', '00:03:19', 2, 25);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Tusk', '00:03:37', 1, 26);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Sara', '00:06:27', 2, 26);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Gypsy', '00:04:24', 1, 27);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Hold Me', '00:03:45', 2, 27);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Big Love', '00:03:37', 1, 28);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Little Lies', '00:03:38', 2, 28);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Go Your Own Way', '00:03:43', 3, 25);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('The Chain', '00:04:28', 4, 25);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Rhiannon', '00:04:11', 1, 25,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Landslide', '00:03:19', 2, 25,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Tusk', '00:03:37', 1, 26,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Sara', '00:06:27', 2, 26,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Gypsy', '00:04:24', 1, 27,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Hold Me', '00:03:45', 2, 27,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Big Love', '00:03:37', 1, 28,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Little Lies', '00:03:38', 2, 28,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Go Your Own Way', '00:03:43', 3, 25,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('The Chain', '00:04:28', 4, 25,1);
 
 -- The Who
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Pinball Wizard', '00:03:01', 1, 29);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Tommy Can You Hear Me?', '00:01:36', 2, 29);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('The Real Me', '00:03:20', 1, 30);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Love Reign O''er Me', '00:05:49', 2, 30);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('I Can See for Miles', '00:04:07', 1, 31);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Tattoo', '00:02:47', 2, 31);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Boris the Spider', '00:02:28', 1, 32);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('A Quick One, While He''s Away', '00:09:11', 2, 32);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Substitute', '00:03:47', 3, 30);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('My Generation', '00:03:18', 4, 31);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Pinball Wizard', '00:03:01', 1, 29,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Tommy Can You Hear Me?', '00:01:36', 2, 29,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('The Real Me', '00:03:20', 1, 30,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Love Reign O''er Me', '00:05:49', 2, 30,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('I Can See for Miles', '00:04:07', 1, 31,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Tattoo', '00:02:47', 2, 31,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Boris the Spider', '00:02:28', 1, 32,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('A Quick One, While He''s Away', '00:09:11', 2, 32,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Substitute', '00:03:47', 3, 30,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('My Generation', '00:03:18', 4, 31,1);
 
 -- Nirvana
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Smells Like Teen Spirit', '00:05:01', 1, 33);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Come as You Are', '00:03:39', 2, 33);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Heart-Shaped Box', '00:04:39', 1, 34);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Rape Me', '00:02:50', 2, 34);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('About a Girl', '00:02:48', 1, 35);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Love Buzz', '00:03:35', 2, 35);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('All Apologies', '00:04:23', 1, 36);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('The Man Who Sold the World', '00:04:20', 2, 36);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Sliver', '00:02:16', 1, 37);
-INSERT INTO song (title, duration, track_number, album_id) VALUES ('Aneurysm', '00:04:35', 2, 37);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Smells Like Teen Spirit', '00:05:01', 1, 33,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Come as You Are', '00:03:39', 2, 33,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Heart-Shaped Box', '00:04:39', 1, 34,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Rape Me', '00:02:50', 2, 34,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('About a Girl', '00:02:48', 1, 35,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Love Buzz', '00:03:35', 2, 35,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('All Apologies', '00:04:23', 1, 36,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('The Man Who Sold the World', '00:04:20', 2, 36,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Sliver', '00:02:16', 1, 37,1);
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Aneurysm', '00:04:35', 2, 37,1);
 
 -- Queen
 INSERT INTO song_artist (song_id, artist_id) VALUES (1, 1);
@@ -346,6 +347,9 @@ INSERT INTO song_artist (song_id, artist_id) VALUES (97, 10);
 INSERT INTO song_artist (song_id, artist_id) VALUES (98, 10);
 INSERT INTO song_artist (song_id, artist_id) VALUES (99, 10);
 INSERT INTO song_artist (song_id, artist_id) VALUES (100, 10);
+
+INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES ('Mati capo', '00:08:37', 1, 1,1);
+
 
 
 

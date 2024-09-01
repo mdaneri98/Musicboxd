@@ -11,9 +11,6 @@ import java.util.Optional;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
-    /*
-        FIXME: Add required `business logic`
-     */
     private final ArtistDao artistDao;
 
     public ArtistServiceImpl(ArtistDao artistDao) {
@@ -28,6 +25,10 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     public List<Artist> findAll() {
         return artistDao.findAll();
+    }
+
+    public List<Artist> findBySongId(long id) {
+        return artistDao.findBySongId(id);
     }
 
     @Override

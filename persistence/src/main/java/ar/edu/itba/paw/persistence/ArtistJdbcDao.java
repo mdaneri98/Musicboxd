@@ -45,6 +45,14 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
+    public List<Artist> findBySongId(long id) {
+        return jdbcTemplate.query("SELECT DISTINCT a.* FROM artist a JOIN song_artist sa ON a.id = sa.artist_id WHERE sa.song_id = ?",
+                new Object[]{id},
+                new int[]{Types.BIGINT},
+                ROW_MAPPER);
+    }
+
+    @Override
     public int save(Artist artist) {
         return jdbcTemplate.update(
                 "INSERT INTO artist (name, bio, created_at, updated_at, img_src) VALUES (?, ?, ?, ?, ?)",

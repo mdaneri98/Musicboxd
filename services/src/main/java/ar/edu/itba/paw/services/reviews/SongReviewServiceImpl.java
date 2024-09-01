@@ -1,7 +1,8 @@
-package ar.edu.itba.paw.services;
+package ar.edu.itba.paw.services.reviews;
 
-import ar.edu.itba.paw.SongReview;
+import ar.edu.itba.paw.reviews.SongReview;
 import ar.edu.itba.paw.persistence.SongReviewDao;
+import ar.edu.itba.paw.services.SongReviewService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,11 +32,6 @@ public class SongReviewServiceImpl implements SongReviewService {
     @Override
     public int save(SongReview songReview) {
         return songReviewDao.save(songReview);
-    }
-
-    @Override
-    public int update(SongReview songReview) {
-        return songReviewDao.update(songReview);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package ar.edu.itba.paw;
+package ar.edu.itba.paw.reviews;
 
 import java.time.LocalDateTime;
 
@@ -6,22 +6,23 @@ public class AlbumReview {
     private Long id;
     private Long userId;
     private Long albumId;
-    private String content;
+    private String title;
+    private String description;
     private Integer rating;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Integer likes;
 
-    public AlbumReview(Long id, Long userId, Long albumId, String content, Integer rating, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public AlbumReview(Long id, Long userId, Long albumId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
         this.id = id;
         this.userId = userId;
         this.albumId = albumId;
-        this.content = content;
+        this.title = title;
+        this.description = description;
         this.rating = rating;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.likes = likes;
     }
 
-    // Getters y setters
     public Long getId() {
         return id;
     }
@@ -46,12 +47,20 @@ public class AlbumReview {
         this.albumId = albumId;
     }
 
-    public String getContent() {
-        return content;
+    public String getTitle() {
+        return title;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Integer getRating() {
@@ -70,12 +79,12 @@ public class AlbumReview {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public Integer getLikes() {
+        return likes;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setLikes(Integer likes) {
+        this.likes = likes;
     }
 }
 

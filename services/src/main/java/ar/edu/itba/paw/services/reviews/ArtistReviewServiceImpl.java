@@ -1,8 +1,9 @@
-package ar.edu.itba.paw.services;
+package ar.edu.itba.paw.services.reviews;
 
 
-import ar.edu.itba.paw.ArtistReview;
+import ar.edu.itba.paw.reviews.ArtistReview;
 import ar.edu.itba.paw.persistence.ArtistReviewDao;
+import ar.edu.itba.paw.services.ArtistReviewService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +11,6 @@ import java.util.Optional;
 
 @Service
 public class ArtistReviewServiceImpl implements ArtistReviewService {
-    /*
-        FIXME: Add required `business logic`
-     */
     private final ArtistReviewDao artistReviewDao;
 
     public ArtistReviewServiceImpl(ArtistReviewDao artistReviewDao) {
@@ -34,10 +32,6 @@ public class ArtistReviewServiceImpl implements ArtistReviewService {
         return artistReviewDao.save(artistReview);
     }
 
-    @Override
-    public int update(ArtistReview artistReview) {
-        return artistReviewDao.update(artistReview);
-    }
 
     @Override
     public int deleteById(long id) {

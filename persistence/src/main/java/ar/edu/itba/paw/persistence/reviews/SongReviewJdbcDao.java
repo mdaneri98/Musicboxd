@@ -1,6 +1,7 @@
-package ar.edu.itba.paw.persistence;
+package ar.edu.itba.paw.persistence.reviews;
 
-import ar.edu.itba.paw.SongReview;
+import ar.edu.itba.paw.reviews.SongReview;
+import ar.edu.itba.paw.persistence.SongReviewDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -18,12 +19,13 @@ public class SongReviewJdbcDao implements SongReviewDao {
 
     private static final RowMapper<SongReview> ROW_MAPPER = (rs, rowNum) -> new SongReview(
             rs.getLong("id"),
-            rs.getLong("userId"),
-            rs.getLong("songId"),
-            rs.getString("content"),
+            rs.getLong("user_id"),
+            rs.getLong("artist_id"),
+            rs.getString("title"),
+            rs.getString("description"),
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
-            rs.getObject("updated_at", LocalDateTime.class)
+            rs.getInt("likes")
     );
 
     public SongReviewJdbcDao(final DataSource ds) {
@@ -47,27 +49,14 @@ public class SongReviewJdbcDao implements SongReviewDao {
     @Override
     public int save(SongReview songReview) {
         return jdbcTemplate.update(
-                "INSERT INTO song_reviews (userId, songId, content, rating, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO song_reviews (user_id, song_id, title, description, rating, created_at, likes) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 songReview.getUserId(),
                 songReview.getSongId(),
-                songReview.getContent(),
+                songReview.getTitle(),
+                songReview.getDescription(),
                 songReview.getRating(),
                 songReview.getCreatedAt(),
-                songReview.getUpdatedAt()
-        );
-    }
-
-    @Override
-    public int update(SongReview songReview) {
-        return jdbcTemplate.update(
-                "UPDATE song_reviews SET userId = ?, songId = ?, content = ?, rating = ?, created_at = ?, updated_at = ? WHERE id = ?",
-                songReview.getUserId(),
-                songReview.getSongId(),
-                songReview.getContent(),
-                songReview.getRating(),
-                songReview.getCreatedAt(),
-                songReview.getUpdatedAt(),
-                songReview.getId()
+                songReview.getLikes()
         );
     }
 

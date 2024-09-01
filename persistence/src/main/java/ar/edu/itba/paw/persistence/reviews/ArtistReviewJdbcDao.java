@@ -1,6 +1,7 @@
-package ar.edu.itba.paw.persistence;
+package ar.edu.itba.paw.persistence.reviews;
 
-import ar.edu.itba.paw.ArtistReview;
+import ar.edu.itba.paw.reviews.ArtistReview;
+import ar.edu.itba.paw.persistence.ArtistReviewDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -20,10 +21,11 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
             rs.getLong("id"),
             rs.getLong("user_id"),
             rs.getLong("artist_id"),
-            rs.getString("content"),
+            rs.getString("title"),
+            rs.getString("description"),
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
-            rs.getObject("updated_at", LocalDateTime.class)
+            rs.getInt("likes")
     );
 
     public ArtistReviewJdbcDao(final DataSource ds) {
@@ -47,27 +49,14 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
     @Override
     public int save(ArtistReview artistReview) {
         return jdbcTemplate.update(
-                "INSERT INTO artist_reviews (user_id, artist_id, content, rating, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO artist_reviews (user_id, artist_id, title, description, rating, created_at, likes) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 artistReview.getUserId(),
                 artistReview.getArtistId(),
-                artistReview.getContent(),
+                artistReview.getTitle(),
+                artistReview.getDescription(),
                 artistReview.getRating(),
                 artistReview.getCreatedAt(),
-                artistReview.getUpdatedAt()
-        );
-    }
-
-    @Override
-    public int update(ArtistReview artistReview) {
-        return jdbcTemplate.update(
-                "UPDATE artist_reviews SET user_id = ?, artist_id = ?, content = ?, rating = ?, created_at = ?, updated_at = ? WHERE id = ?",
-                artistReview.getUserId(),
-                artistReview.getArtistId(),
-                artistReview.getContent(),
-                artistReview.getRating(),
-                artistReview.getCreatedAt(),
-                artistReview.getUpdatedAt(),
-                artistReview.getId()
+                artistReview.getLikes()
         );
     }
 

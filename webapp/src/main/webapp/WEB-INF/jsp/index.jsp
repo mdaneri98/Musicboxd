@@ -124,7 +124,7 @@
         {
             id: ${artist.id},
             img_id: ${artist.imgId},
-            name: "<c:out value="${artist.name}"/>"
+            name: "<c:out value="${artist.name}"/>",
         }<c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];

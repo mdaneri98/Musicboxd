@@ -100,14 +100,16 @@
         }
 
         .carousel {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            display: flex;
+            overflow-x: auto;
             gap: 24px;
-            margin-bottom: 48px;
+            scroll-behavior: smooth;
         }
 
         .album {
             background-color: var(--background-elevated-base);
+            width: 200px;
+            height: auto;
             border-radius: 8px;
             padding: 16px;
             transition: background-color 0.3s ease;
@@ -122,7 +124,7 @@
             aspect-ratio: 1;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
 
         .album p {
@@ -177,6 +179,12 @@
             background-color: #1fdf64;
             transform: scale(1.04);
         }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            background-color: transparent;
+        }
     </style>
 </head>
 <body>
@@ -187,7 +195,7 @@
             <p class="artist-type">Artist</p>
             <h1><c:out value="${artist.name}"/></h1>
             <p class="artist-bio"><c:out value="${artist.bio}"/></p>
-            <a href="/webapp_war/review/${artist.id}">
+            <a href="/webapp_war/review/artist/${artist.id}">
                 <button>Make a review</button>
             </a>
         </div>
@@ -196,20 +204,24 @@
     <h2>Albums</h2>
     <div class="carousel">
         <c:forEach var="album" items="${albums}" varStatus="status">
-            <div class="album">
-                <img src="/api/placeholder/200/200" alt="Album ${status.index + 1}">
-                <p><c:out value="${album.title}"/></p>
-            </div>
+            <a href="/webapp_war/album/${album.id}">
+                <div class="album">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/42/Beatles_-_Abbey_Road.jpg/220px-Beatles_-_Abbey_Road.jpg" alt="Album ${status.index + 1}">
+                    <p><c:out value="${album.title}"/></p>
+                </div>
+            </a>
         </c:forEach>
     </div>
 
     <h2>Popular Songs</h2>
     <ul class="song-list">
         <c:forEach var="song" items="${songs}" varStatus="status">
-            <li>
-                <span class="song-number">${status.index + 1}</span>
-                <span class="song-title"><c:out value="${song.title}"/></span>
-            </li>
+            <a href="/webapp_war/song/${song.id}">
+                <li>
+                    <span class="song-number">${status.index + 1}</span>
+                    <span class="song-title"><c:out value="${song.title}"/></span>
+                </li>
+            </a>
         </c:forEach>
     </ul>
 </div>

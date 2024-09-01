@@ -33,6 +33,10 @@ public class SongServiceImpl implements SongService {
         return songDao.findByArtistId(id);
     }
 
+    public List<Song> findByAlbumId(long id) {
+        return songDao.findByAlbumId(id);
+    }
+
     @Override
     public int save(Song song) {
         return songDao.save(song);

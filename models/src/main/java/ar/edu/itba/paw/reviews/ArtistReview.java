@@ -1,4 +1,4 @@
-package ar.edu.itba.paw;
+package ar.edu.itba.paw.reviews;
 
 import java.time.LocalDateTime;
 
@@ -6,19 +6,21 @@ public class ArtistReview {
     private Long id;
     private Long userId;
     private Long artistId;
-    private String content;
+    private String title;
+    private String description;
     private Integer rating;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Integer likes;
 
-    public ArtistReview(Long id, Long userId, Long artistId, String content, Integer rating, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ArtistReview(Long id, Long userId, Long artistId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
         this.id = id;
         this.userId = userId;
         this.artistId = artistId;
-        this.content = content;
+        this.title = title;
+        this.description = description;
         this.rating = rating;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.likes = likes;
     }
 
     // Getters y setters
@@ -46,14 +48,6 @@ public class ArtistReview {
         this.artistId = artistId;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public Integer getRating() {
         return rating;
     }
@@ -70,11 +64,27 @@ public class ArtistReview {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public Integer getLikes() {
+        return likes;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setLikes(Integer likes) {
+        this.likes = likes;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
