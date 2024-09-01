@@ -5,6 +5,7 @@ import ar.edu.itba.paw.Artist;
 import ar.edu.itba.paw.reviews.ArtistReview;
 import ar.edu.itba.paw.services.AlbumReviewService;
 import ar.edu.itba.paw.services.ArtistReviewService;
+import ar.edu.itba.paw.services.ArtistService;
 import ar.edu.itba.paw.services.SongReviewService;
 import ar.edu.itba.paw.webapp.form.ArtistReviewForm;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.TimeZone;
 
 
@@ -22,37 +24,41 @@ import java.util.TimeZone;
 public class ArtistReviewController {
 
     private final ArtistReviewService artistReviewService;
-    private final AlbumReviewService albumReviewService;
-    private final SongReviewService songReviewService;
+    private final ArtistService artistService;
 
-    public ArtistReviewController(ArtistReviewService artistReviewService, AlbumReviewService albumReviewService, SongReviewService songReviewService) {
+    public ArtistReviewController(ArtistReviewService artistReviewService, ArtistService artistService) {
         this.artistReviewService = artistReviewService;
-        this.albumReviewService = albumReviewService;
-        this.songReviewService = songReviewService;
+        this.artistService = artistService;
     }
 
-    @RequestMapping(value = "/artist/{entityId}/reviews", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("reviewForm") final ArtistReviewForm reviewForm, @PathVariable String entityType, @PathVariable Long entityId) {
-        String viewName = "reviews/artist_review";
+    @RequestMapping(value = "/artist/{artistId}/reviews", method = RequestMethod.GET)
+    public ModelAndView createForm(@ModelAttribute("artistReviewForm") final ArtistReviewForm artistReviewForm, @PathVariable Long artistId) {
+        Optional<Artist> artistOptional = artistService.findById(artistId);
+        if (artistOptional.isEmpty())
+            return null;
 
+        Artist artist = artistOptional.get();
+
+        String viewName = "reviews/artist_review";
         ModelAndView modelAndView = new ModelAndView(viewName);
-        modelAndView.addObject(entityType + "_id", entityId);
+        artistReviewForm.setArtistId(artist.getId());
+        modelAndView.addObject("artist", artist);
 
         return modelAndView;
     }
 
-    @RequestMapping(value = "/artist/{entityId}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ArtistReviewForm reviewForm, final BindingResult errors, @PathVariable String entityType, @PathVariable Long entityId, @RequestParam(name = "userId") long userId) {
+    @RequestMapping(value = "/artist/{artistId}/reviews", method = RequestMethod.POST)
+    public ModelAndView create(@Valid @ModelAttribute("artistReviewForm") final ArtistReviewForm artistReviewForm, final BindingResult errors, @PathVariable Long artistId) {
         if (errors.hasErrors()) {
-            return createForm(reviewForm, entityType, entityId);
+            return createForm(artistReviewForm, artistId);
         }
 
         ArtistReview artistReview = new ArtistReview(
-                userId,
-                entityId,
-                reviewForm.getTitle(),
-                reviewForm.getDescription(),
-                reviewForm.getRating(),
+                artistReviewForm.getUserId(),
+                artistId,
+                artistReviewForm.getTitle(),
+                artistReviewForm.getDescription(),
+                artistReviewForm.getRating(),
                 LocalDateTime.now(),
                 0
         );

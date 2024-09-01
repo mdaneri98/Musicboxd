@@ -1,4 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%--
   Created by IntelliJ IDEA.
   User: manuader
@@ -103,7 +105,29 @@
             </div>
         </a>
 
-        <c:import url="review.jsp"/>
+        <c:url var="posturl" value="/artist/${artist.id}/reviews" />
+        <form:form modelAttribute="artistReviewForm" action="${posturl}" method="POST">
+            <div>
+                <label>Tu ID: <form:input path="userId" type="text" /></label>
+                <form:errors path="userId" element="p" cssStyle="color:red;"/>
+            </div>
+            <div>
+                <label>Titulo: <form:input path="title" type="text" /></label>
+                <form:errors path="title" element="p" cssStyle="color:red;"/>
+            </div>
+            <div>
+                <label>Descripción <form:input path="description" type="textarea" /></label>
+                <form:errors path="description" element="p" cssStyle="color:red;"/>
+            </div>
+            <div class="star-rating">
+                <label>Rating: <form:input path="rating" type="text" /></label>
+                <form:errors path="rating" element="p" cssStyle="color:red;"/>
+            </div>
+            <div>
+                <button type="submit">Submit Review</button>
+            </div>
+        </form:form>
+
     </div>
 </body>
 </html>
