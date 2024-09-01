@@ -34,7 +34,7 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
 
     @Override
     public Optional<ArtistReview> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM artist_reviews WHERE id = ?",
+        return jdbcTemplate.query("SELECT * FROM artist_review WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
@@ -43,13 +43,13 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
 
     @Override
     public List<ArtistReview> findAll() {
-        return jdbcTemplate.query("SELECT * FROM artist_reviews", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM artist_review", ROW_MAPPER);
     }
 
     @Override
     public int save(ArtistReview artistReview) {
         return jdbcTemplate.update(
-                "INSERT INTO artist_reviews (user_id, artist_id, title, description, rating, created_at, likes) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO artist_review (user_id, artist_id, title, description, rating, created_at, likes) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 artistReview.getUserId(),
                 artistReview.getArtistId(),
                 artistReview.getTitle(),
@@ -62,6 +62,6 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
 
     @Override
     public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM artist_reviews WHERE id = ?", id);
+        return jdbcTemplate.update("DELETE FROM artist_review WHERE id = ?", id);
     }
 }
