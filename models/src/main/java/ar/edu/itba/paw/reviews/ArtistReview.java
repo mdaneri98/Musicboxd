@@ -23,6 +23,16 @@ public class ArtistReview {
         this.likes = likes;
     }
 
+    public ArtistReview(Long userId, Long artistId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+        this.userId = userId;
+        this.artistId = artistId;
+        this.title = title;
+        this.description = description;
+        this.rating = rating;
+        this.createdAt = createdAt;
+        this.likes = likes;
+    }
+
     // Getters y setters
     public Long getId() {
         return id;
