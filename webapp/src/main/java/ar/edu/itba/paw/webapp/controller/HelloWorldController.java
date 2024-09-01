@@ -63,7 +63,6 @@ public class HelloWorldController {
         Album album = albumService.findById(albumId).get();
         Artist artist = artistService.findById(album.getArtistId()).get();
         List<Song> songs = songService.findByAlbumId(albumId);
-        List<AlbumReview> reviews =
 
         mav.addObject("album", album);
         mav.addObject("artist", artist);
