@@ -39,8 +39,7 @@ public class ArtistReviewController {
 
         Artist artist = artistOptional.get();
 
-        String viewName = "reviews/artist_review";
-        ModelAndView modelAndView = new ModelAndView(viewName);
+        ModelAndView modelAndView = new ModelAndView("reviews/artist_review");
         artistReviewForm.setArtistId(artist.getId());
         modelAndView.addObject("artist", artist);
 
