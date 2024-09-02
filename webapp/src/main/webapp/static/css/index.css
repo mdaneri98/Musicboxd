@@ -17,17 +17,20 @@ body {
     font-family: 'Circular Std', Arial, sans-serif;
     background-color: var(--background-base);
     color: var(--text-base);
+    height: 100vh;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    flex-direction: column;
 }
 
 .search-container {
+
     width: 100%;
     max-width: 600px;
-    padding: 20px;
-    margin-bottom: 300px;
+    padding: 20px;margin-bottom:;
+    margin-bottom: 10px;
 }
 
 h1 {
@@ -96,4 +99,12 @@ h1 {
 .autocomplete-active {
     background-color: var(--essential-bright-accent) !important;
     color: var(--background-base);
+}
+
+.cards-container {
+    display: flex;
+    justify-content: space-between; /* Espacio entre las tarjetas */
+    margin-top: 20px; /* Separación con respecto al formulario */
+    padding: 0 10px;
+    gap: 20px; /* Espacio entre las tarjetas */
 }

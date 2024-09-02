@@ -4,10 +4,7 @@ import ar.edu.itba.paw.Album;
 import ar.edu.itba.paw.Artist;
 import ar.edu.itba.paw.Song;
 import ar.edu.itba.paw.reviews.AlbumReview;
-import ar.edu.itba.paw.services.AlbumService;
-import ar.edu.itba.paw.services.ArtistService;
-import ar.edu.itba.paw.services.SongService;
-import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.services.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,25 +17,32 @@ import java.util.List;
  */
 
 @Controller
-public class HelloWorldController {
+public class IndexController {
 
     private final UserService userService;
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final SongService songService;
 
-    public HelloWorldController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService) {
+    private final AlbumReviewService albumReviewService;
+
+    public IndexController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService) {
         this.userService = userService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
+        this.albumReviewService = albumReviewService;
     }
 
     @RequestMapping("/")
     public ModelAndView index() {
         final ModelAndView mav = new ModelAndView("index");
 
+        List<AlbumReview> allReviews = albumReviewService.findAll();
+        List<AlbumReview> albumReviews = allReviews.subList(0, Math.min(5, allReviews.size()));
+
         mav.addObject("artists", artistService.findAll());
+        mav.addObject("reviews", albumReviews);
         return mav;
     }
 
