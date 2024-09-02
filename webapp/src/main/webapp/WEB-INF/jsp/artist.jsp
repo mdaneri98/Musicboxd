@@ -190,12 +190,13 @@
 <body>
 <div class="container">
     <header>
-        <img src="" alt="Artist Name" class="artist-image">
+        <img src="/webapp_war/images/${artist.imgId}" alt="Artist Name" class="artist-image">
         <div class="artist-info">
             <p class="artist-type">Artist</p>
             <h1><c:out value="${artist.name}"/></h1>
             <p class="artist-bio"><c:out value="${artist.bio}"/></p>
-            <a href="/webapp_war/review/artist/${artist.id}">
+            <c:url value="/artist/${artist.id}/reviews" var="new_artist_review_url" />
+            <a href="${new_artist_review_url}">
                 <button>Make a review</button>
             </a>
         </div>
