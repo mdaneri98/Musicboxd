@@ -1,15 +1,16 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page isErrorPage="true" contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Not Found</title>
+    <title>Page Not Found</title>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/404.css">
 </head>
 <body>
-
-    <h1>User Not Found</h1>
-    <p>We're sorry, but the user you are looking for does not exist.</p>
-    <p>Please check the username and try again, or go back to the <a href="home.jsp">home page</a>.</p>
-
+<div class="error-container">
+    <h1>404 - Page Not Found</h1>
+    <p>Sorry, the page you are looking for does not exist.</p>
+    <p>Please check the URL or go back to the <a href="${pageContext.request.contextPath}/">home page</a>.</p>
+</div>
 </body>
 </html>
