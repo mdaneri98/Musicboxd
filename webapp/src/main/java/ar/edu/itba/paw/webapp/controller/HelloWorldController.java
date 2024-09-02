@@ -42,20 +42,6 @@ public class HelloWorldController {
         return mav;
     }
 
-    @RequestMapping("/artist/{artistId:\\d+}")
-    public ModelAndView artist(@PathVariable(name = "artistId") long artistId) {
-        final ModelAndView mav = new ModelAndView("artist");
-
-        Artist artist = artistService.findById(artistId).get();
-        List<Album> albums = albumService.findByArtistId(artistId);
-        List<Song> songs = songService.findByArtistId(artistId);
-
-        mav.addObject("artist", artist);
-        mav.addObject("albums", albums);
-        mav.addObject("songs", songs);
-        return mav;
-    }
-
     @RequestMapping("/album/{albumId:\\d+}")
     public ModelAndView album(@PathVariable(name = "albumId") long albumId) {
         final ModelAndView mav = new ModelAndView("album");
@@ -82,14 +68,6 @@ public class HelloWorldController {
         mav.addObject("album", album);
         mav.addObject("artists", artists);
         mav.addObject("song", song);
-        return mav;
-    }
-
-    @RequestMapping("/review/artist/{artistId:\\d+}")
-    public ModelAndView reviewArtist(@PathVariable(name = "artistId") long artistId) {
-        final ModelAndView mav = new ModelAndView("reviews/artist_review");
-        Artist artist = artistService.findById(artistId).get();
-        mav.addObject("artist", artist);
         return mav;
     }
 

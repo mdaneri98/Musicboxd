@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.Album;
 import ar.edu.itba.paw.Artist;
+import ar.edu.itba.paw.Song;
 import ar.edu.itba.paw.reviews.ArtistReview;
-import ar.edu.itba.paw.services.AlbumReviewService;
-import ar.edu.itba.paw.services.ArtistReviewService;
-import ar.edu.itba.paw.services.ArtistService;
-import ar.edu.itba.paw.services.SongReviewService;
+import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ArtistReviewForm;
-import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -16,22 +14,50 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 
 
+@RequestMapping ("/artist")
 @Controller
-public class ArtistReviewController {
+public class ArtistController {
 
-    private final ArtistReviewService artistReviewService;
+    private final UserService userService;
     private final ArtistService artistService;
+    private final AlbumService albumService;
+    private final SongService songService;
+    private final ArtistReviewService artistReviewService;
 
-    public ArtistReviewController(ArtistReviewService artistReviewService, ArtistService artistService) {
-        this.artistReviewService = artistReviewService;
+    public ArtistController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, ArtistReviewService artistReviewService) {
+        this.userService = userService;
         this.artistService = artistService;
+        this.albumService = albumService;
+        this.songService = songService;
+        this.artistReviewService = artistReviewService;
     }
 
-    @RequestMapping(value = "/artist/{artistId}/reviews", method = RequestMethod.GET)
+
+    @RequestMapping("/")
+    public ModelAndView findAll() {
+        //TODO: Redirigir a algun artista.
+        return new ModelAndView("redirect:/");
+    }
+
+    @RequestMapping("/{artistId:\\d+}")
+    public ModelAndView artist(@PathVariable(name = "artistId") long artistId) {
+        final ModelAndView mav = new ModelAndView("artist");
+
+        Artist artist = artistService.findById(artistId).get();
+        List<Album> albums = albumService.findByArtistId(artistId);
+        List<Song> songs = songService.findByArtistId(artistId);
+
+        mav.addObject("artist", artist);
+        mav.addObject("albums", albums);
+        mav.addObject("songs", songs);
+        return mav;
+    }
+
+    @RequestMapping(value = "/{artistId}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("artistReviewForm") final ArtistReviewForm artistReviewForm, @PathVariable Long artistId) {
         Optional<Artist> artistOptional = artistService.findById(artistId);
         if (artistOptional.isEmpty())
@@ -46,7 +72,7 @@ public class ArtistReviewController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/artist/{artistId}/reviews", method = RequestMethod.POST)
+    @RequestMapping(value = "/{artistId}/reviews", method = RequestMethod.POST)
     public ModelAndView create(@Valid @ModelAttribute("artistReviewForm") final ArtistReviewForm artistReviewForm, final BindingResult errors, @PathVariable Long artistId) {
         if (errors.hasErrors()) {
             return createForm(artistReviewForm, artistId);
