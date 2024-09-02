@@ -12,6 +12,16 @@ public class AlbumReview {
     private LocalDateTime createdAt;
     private Integer likes;
 
+    public AlbumReview(Long userId, Long albumId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+        this.userId = userId;
+        this.albumId = albumId;
+        this.title = title;
+        this.description = description;
+        this.rating = rating;
+        this.createdAt = createdAt;
+        this.likes = likes;
+    }
+
     public AlbumReview(Long id, Long userId, Long albumId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
         this.id = id;
         this.userId = userId;

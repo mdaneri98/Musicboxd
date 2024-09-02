@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Review Artist</h1>
+    <h1><c:out value="${artist.name}"/></h1>
 
     <c:url value="/artist/${artist.id}" var="artistUrl" />
     <a href="${artistUrl}" class="artist-box">

@@ -191,7 +191,7 @@
               <img src="/webapp_war/images/${artist.imgId}" alt="${artist.name}" class="artist-image">
               <span><c:out value="${artist.name}"/></span>
             </a>
-            <c:url var="albumReviewUrl" value="/album/${album.id}/review" />
+            <c:url var="albumReviewUrl" value="/album/${album.id}/reviews" />
             <a href="${albumReviewUrl}" class="button review-button">Make a review</a>
           </div>
         </div>

@@ -3,14 +3,22 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.Album;
 import ar.edu.itba.paw.Artist;
+import ar.edu.itba.paw.reviews.AlbumReview;
+import ar.edu.itba.paw.services.AlbumReviewService;
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ArtistService;
 import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.webapp.form.AlbumReviewForm;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequestMapping("/album")
@@ -21,13 +29,14 @@ public class AlbumController {
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final SongService songService;
-    //private final ArtistReviewService artistReviewService;
+    private final AlbumReviewService albumReviewService;
 
 
-    public AlbumController(ArtistService artistService, AlbumService albumService, SongService songService) {
+    public AlbumController(ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService) {
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
+        this.albumReviewService = albumReviewService;
     }
 
     @RequestMapping("/")
@@ -49,45 +58,35 @@ public class AlbumController {
         return mav;
     }
 
-}
+    @RequestMapping(value = "/{albumId}/reviews", method = RequestMethod.GET)
+    public ModelAndView createForm(@ModelAttribute("albumReviewForm") final AlbumReviewForm albumReviewForm, @PathVariable Long albumId) {
+        Album album = albumService.findById(albumId).orElseThrow();
 
-/*
 
-    @RequestMapping(value = "/{artistId}/reviews", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("artistReviewForm") final ArtistReviewForm artistReviewForm, @PathVariable Long artistId) {
-        Optional<Artist> artistOptional = artistService.findById(artistId);
-        if (artistOptional.isEmpty())
-            return null;
-
-        Artist artist = artistOptional.get();
-
-        ModelAndView modelAndView = new ModelAndView("reviews/artist_review");
-        artistReviewForm.setArtistId(artist.getId());
-        modelAndView.addObject("artist", artist);
+        ModelAndView modelAndView = new ModelAndView("reviews/album_review");
+        albumReviewForm.setAlbumId(album.getId());
+        modelAndView.addObject("album", album);
 
         return modelAndView;
     }
 
-    @RequestMapping(value = "/{artistId}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("artistReviewForm") final ArtistReviewForm artistReviewForm, final BindingResult errors, @PathVariable Long artistId) {
+    @RequestMapping(value = "/{albumId}/reviews", method = RequestMethod.POST)
+    public ModelAndView create(@Valid @ModelAttribute("albumReviewForm") final AlbumReviewForm albumReviewForm, final BindingResult errors, @PathVariable Long albumId) {
         if (errors.hasErrors()) {
-            return createForm(artistReviewForm, artistId);
+            return createForm(albumReviewForm, albumId);
         }
 
-        ArtistReview artistReview = new ArtistReview(
-                artistReviewForm.getUserId(),
-                artistId,
-                artistReviewForm.getTitle(),
-                artistReviewForm.getDescription(),
-                artistReviewForm.getRating(),
+        AlbumReview albumReview = new AlbumReview(
+                albumReviewForm.getUserId(),
+                albumId,
+                albumReviewForm.getTitle(),
+                albumReviewForm.getDescription(),
+                albumReviewForm.getRating(),
                 LocalDateTime.now(),
                 0
         );
-        artistReviewService.save(artistReview);
+        albumReviewService.save(albumReview);
         return new ModelAndView("redirect:/");
     }
 
-    // Métodos adicionales para editar y eliminar reseñas
-    // ...
- */
-
+}

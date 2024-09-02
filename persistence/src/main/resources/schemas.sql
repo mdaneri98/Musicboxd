@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS album_review (
      album_id SERIAL NOT NULL,
      title VARCHAR(50) NOT NULL,
      description VARCHAR(300) NOT NULL,
-     score INT NOT NULL,
+     rating INT NOT NULL,
      created_at TIMESTAMP DEFAULT NOW(),
      likes INT DEFAULT 0,
 
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS song_review (
     song_id SERIAL NOT NULL,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(300) NOT NULL,
-    score INT NOT NULL,
+    rating INT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     likes INT DEFAULT 0,
 
