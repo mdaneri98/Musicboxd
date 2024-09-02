@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS cuser (
     bio TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    img_id SERIAL,
+    img_id INT,
 
     FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE
 );
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS artist (
     bio TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    img_id SERIAL NOT NULL,
+    img_id INT NOT NULL,
 
     FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE
 );
@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS album (
     release_date DATE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    img_id SERIAL NOT NULL,
-    artist_id SERIAL NOT NULL,
+    img_id INT NOT NULL,
+    artist_id INT NOT NULL,
 
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
     FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE
@@ -49,15 +49,15 @@ CREATE TABLE IF NOT EXISTS song (
     track_number INT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    album_id SERIAL,
-    img_id SERIAL,
+    album_id INT,
+    img_id INT,
 
     FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS song_artist (
-    song_id SERIAL NOT NULL,
-    artist_id SERIAL NOT NULL,
+    song_id INT NOT NULL,
+    artist_id INT NOT NULL,
 
     FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE,
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS song_artist (
 
 CREATE TABLE IF NOT EXISTS artist_review (
     id SERIAL PRIMARY KEY,
-    user_id SERIAL NOT NULL,
-    artist_id SERIAL NOT NULL,
+    user_id INT NOT NULL,
+    artist_id INT NOT NULL,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(300) NOT NULL,
     rating INT NOT NULL,
@@ -80,8 +80,8 @@ CREATE TABLE IF NOT EXISTS artist_review (
 
 CREATE TABLE IF NOT EXISTS album_review (
      id SERIAL PRIMARY KEY,
-     user_id SERIAL NOT NULL,
-     album_id SERIAL NOT NULL,
+     user_id INT NOT NULL,
+     album_id INT NOT NULL,
      title VARCHAR(50) NOT NULL,
      description VARCHAR(300) NOT NULL,
      rating INT NOT NULL,
@@ -94,8 +94,8 @@ CREATE TABLE IF NOT EXISTS album_review (
 
 CREATE TABLE IF NOT EXISTS song_review (
     id SERIAL PRIMARY KEY,
-    user_id SERIAL NOT NULL,
-    song_id SERIAL NOT NULL,
+    user_id INT NOT NULL,
+    song_id INT NOT NULL,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(300) NOT NULL,
     rating INT NOT NULL,
