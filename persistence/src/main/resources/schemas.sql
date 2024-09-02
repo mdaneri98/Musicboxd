@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS cuser (
     updated_at TIMESTAMP DEFAULT NOW(),
     img_id SERIAL,
 
+    verified BOOLEAN NOT NULL DEFAULT FALSE,
+
     FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE
 );
 
