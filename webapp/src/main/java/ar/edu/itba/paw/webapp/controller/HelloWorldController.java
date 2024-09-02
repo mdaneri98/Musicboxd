@@ -42,21 +42,6 @@ public class HelloWorldController {
         return mav;
     }
 
-    @RequestMapping("/album/{albumId:\\d+}")
-    public ModelAndView album(@PathVariable(name = "albumId") long albumId) {
-        final ModelAndView mav = new ModelAndView("album");
-
-        Album album = albumService.findById(albumId).get();
-        Artist artist = artistService.findById(album.getArtistId()).get();
-        List<Song> songs = songService.findByAlbumId(albumId);
-
-        mav.addObject("album", album);
-        mav.addObject("artist", artist);
-        mav.addObject("songs", songs);
-        mav.addObject("reviews", songs);
-        return mav;
-    }
-
     @RequestMapping("/song/{songId:\\d+}")
     public ModelAndView song(@PathVariable(name = "songId") long songId) {
         final ModelAndView mav = new ModelAndView("song");

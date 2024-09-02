@@ -17,15 +17,6 @@ public class ArtistJdbcDao implements ArtistDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<Artist> ROW_MAPPER = (rs, rowNum) -> new Artist(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("bio"),
-            rs.getObject("created_at", LocalDate.class),
-            rs.getObject("updated_at", LocalDate.class),
-            rs.getLong("img_id")
-    );
-
     public ArtistJdbcDao(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
     }
@@ -35,13 +26,13 @@ public class ArtistJdbcDao implements ArtistDao {
         return jdbcTemplate.query("SELECT * FROM artist WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
-                ROW_MAPPER
+                SimpleRowMappers.ARTIST_ROW_MAPPER
         ).stream().findFirst();
     }
 
     @Override
     public List<Artist> findAll() {
-        return jdbcTemplate.query("SELECT * FROM artist", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM artist", SimpleRowMappers.ARTIST_ROW_MAPPER);
     }
 
     @Override
@@ -49,7 +40,7 @@ public class ArtistJdbcDao implements ArtistDao {
         return jdbcTemplate.query("SELECT DISTINCT a.* FROM artist a JOIN song_artist sa ON a.id = sa.artist_id WHERE sa.song_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
-                ROW_MAPPER);
+                SimpleRowMappers.ARTIST_ROW_MAPPER);
     }
 
     @Override

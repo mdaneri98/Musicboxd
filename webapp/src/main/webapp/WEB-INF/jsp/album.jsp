@@ -181,16 +181,18 @@
   <body>
     <div class="container">
       <div class="album-header">
-        <img src="/api/placeholder/232/232" alt="${album.title}" class="album-image">
+        <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="album-image">
         <div class="album-info">
           <p class="album-type">Album</p>
           <h1><c:out value="${album.title}"/></h1>
           <div class="button-group">
-            <a href="/webapp_war/artist/${artist.id}" class="button artist-button">
-              <img src="/api/placeholder/28/28" alt="${artist.name}" class="artist-image">
+            <c:url var="artistUrl" value="/artist/${artist.id}" />
+            <a href="${artistUrl}" class="button artist-button">
+              <img src="/webapp_war/images/${artist.imgId}" alt="${artist.name}" class="artist-image">
               <span><c:out value="${artist.name}"/></span>
             </a>
-            <a href="/webapp_war/review/album/${album.id}" class="button review-button">Make a review</a>
+            <c:url var="albumReviewUrl" value="/album/${album.id}/review" />
+            <a href="${albumReviewUrl}" class="button review-button">Make a review</a>
           </div>
         </div>
       </div>
@@ -199,7 +201,8 @@
         <c:forEach var="song" items="${songs}" varStatus="status">
           <li>
             <span class="song-number">${status.index + 1}</span>
-            <a href="/webapp_war/song/${song.id}" class="song-title"><c:out value="${song.title}"/></a>
+            <c:url var="songUrl" value="/song/${song.id}" />
+            <a href="${songUrl}" class="song-title"><c:out value="${song.title}"/></a>
           </li>
         </c:forEach>
       </ul>

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.Album;
+import ar.edu.itba.paw.Artist;
 import ar.edu.itba.paw.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,16 +20,7 @@ public class AlbumJdbcDao implements AlbumDao {
 
    private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<Album> ROW_MAPPER = (rs, rowNum) -> new Album(
-            rs.getLong("id"),
-            rs.getString("title"),
-            rs.getString("genre"),
-            rs.getObject("release_date", LocalDate.class),
-            rs.getObject("created_at", LocalDate.class),
-            rs.getObject("updated_at", LocalDate.class),
-            rs.getLong("img_id"),
-            rs.getLong("artist_id")
-    );
+
 
    public AlbumJdbcDao(final DataSource ds) {
        this.jdbcTemplate = new JdbcTemplate(ds);
@@ -40,13 +32,13 @@ public class AlbumJdbcDao implements AlbumDao {
         return jdbcTemplate.query("SELECT * FROM album WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
-                ROW_MAPPER
+                SimpleRowMappers.ALBUM_ROW_MAPPER
         ).stream().findFirst();
     }
 
     @Override
     public List<Album> findAll() {
-        return jdbcTemplate.query("SELECT * FROM album", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM album", SimpleRowMappers.ALBUM_ROW_MAPPER);
     }
 
 
@@ -55,7 +47,7 @@ public class AlbumJdbcDao implements AlbumDao {
         return jdbcTemplate.query("SELECT * FROM album WHERE artist_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
-                ROW_MAPPER);
+                SimpleRowMappers.ALBUM_ROW_MAPPER);
     }
 
     @Override
@@ -91,7 +83,5 @@ public class AlbumJdbcDao implements AlbumDao {
     public int deleteById(long id) {
         return jdbcTemplate.update("DELETE FROM album WHERE id = ?", id);
     }
-
-
 
 }
