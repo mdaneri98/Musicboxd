@@ -10,7 +10,7 @@ public class AlbumReview extends Review {
         this.albumId = albumId;
     }
 
-    public AlbumReview(Long id, Long albumId, Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+    public AlbumReview(Long id, Long userId, Long albumId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
         super(id, userId, title, description, rating, createdAt, likes);
         this.albumId = albumId;
     }
