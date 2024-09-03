@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
         "ar.edu.itba.paw.persistence"
 })
 @PropertySource("classpath:application.properties")
-@EnableScheduling
+//@EnableScheduling
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

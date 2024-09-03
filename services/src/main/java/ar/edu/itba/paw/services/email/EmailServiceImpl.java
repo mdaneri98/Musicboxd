@@ -47,14 +47,13 @@ public class EmailServiceImpl implements EmailService {
         sendHtmlMessage(to, subject, htmlBody);
     }
 
-    @Async
-    public void sendVerificationForUser(User user) throws MessagingException {
+    //@Async
+    public void sendVerification(String email) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
-        params.put("userId", user.getId());
-        params.put("userEmail", user.getEmail());
+        params.put("userEmail", email);
         this.sendMessageUsingThymeleafTemplate(
                 "user_verification",
-                user.getEmail(),
+                email,
                 "MusicBoxd - Verification",
                 params
         );
