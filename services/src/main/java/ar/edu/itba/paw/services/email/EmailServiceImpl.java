@@ -3,7 +3,15 @@ package ar.edu.itba.paw.services.email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMailMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.Map;
 
 @Service("emailService")
 public class EmailServiceImpl  {
@@ -12,27 +20,29 @@ public class EmailServiceImpl  {
     private JavaMailSender mailSender;
 
     @Autowired
-    private SimpleMailMessage preConfiguredMessage;
+    private TemplateEngine thymeleafTemplateEngine;
+
+    private final String MUSICBOXD_MAIL = "info.musicboxd@gmail.com";
 
     /**
      * This method will send compose and send a new message
      * */
-    public void sendNewMail(String to, String subject, String body)
-    {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
+    public void sendHtmlMessage(String to, String subject, String body) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(body);
         mailSender.send(message);
     }
 
-    /**
-     * This method will send a pre-configured message
-     * */
-    public void sendPreConfiguredMail(String message)
-    {
-        SimpleMailMessage mailMessage = new SimpleMailMessage(preConfiguredMessage);
-        mailMessage.setText(message);
-        mailSender.send(mailMessage);
+    private void sendMessageUsingThymeleafTemplate(String template, String to, String subject, Map<String, Object> params) throws MessagingException {
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(params);
+        String htmlBody = thymeleafTemplateEngine.process(template, thymeleafContext);
+        sendHtmlMessage(to, subject, htmlBody);
     }
+
+
+
 }
