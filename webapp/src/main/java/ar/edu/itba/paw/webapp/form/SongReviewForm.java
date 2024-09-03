@@ -7,8 +7,8 @@ public class SongReviewForm extends ReviewForm {
     @NotNull
     private long songId;
 
-    public SongReviewForm(Long userId, String title, String description, Integer rating, long songId) {
-        super(userId, title, description, rating);
+    public SongReviewForm(String userEmail, String title, String description, Integer rating, long songId) {
+        super(userEmail, title, description, rating);
         this.songId = songId;
     }
 
