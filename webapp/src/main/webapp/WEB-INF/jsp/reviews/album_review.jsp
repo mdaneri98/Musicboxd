@@ -30,9 +30,9 @@
     <c:url var="posturl" value="/album/${album.id}/reviews" />
     <form:form modelAttribute="albumReviewForm" action="${posturl}" method="POST" class="review-form">
         <div class="form-group">
-            <label for="userId">Tu ID:</label>
-            <form:input path="userId" id="userId" type="text" />
-            <form:errors path="userId" cssClass="error" />
+            <label for="userEmail">Tu email:</label>
+            <form:input path="userEmail" id="userEmail" type="text" />
+            <form:errors path="userEmail" cssClass="error" />
         </div>
         <div class="form-group">
             <label for="title">Título:</label>

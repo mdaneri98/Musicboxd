@@ -29,7 +29,6 @@ public class User {
         this.imgId = imgId;
     }
 
-
     // Getters y setters
     public Long getId() {
         return id;

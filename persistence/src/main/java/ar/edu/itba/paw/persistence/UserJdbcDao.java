@@ -71,6 +71,15 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
+    public Optional<User> findByEmail(String email) {
+        return jdbcTemplate.query("SELECT * FROM cuser WHERE email = ?",
+                new Object[]{ email },
+                new int[]{Types.BIGINT},
+                SimpleRowMappers.USER_ROW_MAPPER
+        ).stream().findFirst();
+    }
+
+    @Override
     public int deleteById(long id) {
         return jdbcTemplate.update("DELETE FROM cuser WHERE id = ?", id);
     }
