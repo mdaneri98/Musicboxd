@@ -7,6 +7,8 @@ webapp/.settings
 .metadata
 .idea
 
+
+webapp/src/main/resources/application.properties
 queries.sql
 
 
