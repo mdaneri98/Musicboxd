@@ -29,6 +29,21 @@ public class User {
         this.imgId = imgId;
     }
 
+    public static User unverifiedUser(String email) {
+        return new User(
+            0L,
+                "",
+                email,
+                "",
+                "",
+                "",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                false,
+                1L
+        );
+    }
+
     // Getters y setters
     public Long getId() {
         return id;

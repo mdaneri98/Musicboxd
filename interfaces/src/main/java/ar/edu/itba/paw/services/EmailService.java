@@ -6,6 +6,6 @@ import javax.mail.MessagingException;
 
 public interface EmailService {
 
-    void sendVerificationForUser(User user) throws MessagingException;
+    void sendVerification(String email) throws MessagingException;
 
 }

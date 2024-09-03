@@ -78,15 +78,17 @@ public class AlbumController {
             return createForm(albumReviewForm, albumId);
         }
 
-        //FIXME: Debería ya existir un usuario con ese email, ya que después uso el id del usuario.
-        User user = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
-        /*
-        if (!user.isVerified()) {
-            emailService.sendVerificationForUser(user);
+        Optional<User> optUser = userService.findByEmail(albumReviewForm.getUserEmail());
+        if (optUser.isEmpty()) {
+            User unverifiedUser = User.unverifiedUser(albumReviewForm.getUserEmail());
+            userService.save(unverifiedUser);
+            emailService.sendVerification(unverifiedUser.getEmail());
         }
-*/
+        emailService.sendVerification("mdaneri98@gmail.com");
+
+        User savedUser = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
         AlbumReview albumReview = new AlbumReview(
-                user.getId(),
+                savedUser.getId(),
                 albumId,
                 albumReviewForm.getTitle(),
                 albumReviewForm.getDescription(),
