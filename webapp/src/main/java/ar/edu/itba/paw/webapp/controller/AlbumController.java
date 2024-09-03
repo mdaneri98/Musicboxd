@@ -84,7 +84,6 @@ public class AlbumController {
             userService.save(unverifiedUser);
             emailService.sendVerification(unverifiedUser.getEmail());
         }
-        emailService.sendVerification("mdaneri98@gmail.com");
 
         User savedUser = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
         AlbumReview albumReview = new AlbumReview(

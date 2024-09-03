@@ -33,10 +33,10 @@ public class EmailServiceImpl implements EmailService {
      * */
     public void sendHtmlMessage(String to, String subject, String body) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
         helper.setTo(to);
         helper.setSubject(subject);
-        helper.setText(body);
+        helper.setText(body, true);
         mailSender.send(message);
     }
 
