@@ -207,7 +207,8 @@
         <c:forEach var="album" items="${albums}" varStatus="status">
             <a href="/webapp_war/album/${album.id}">
                 <div class="album">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/42/Beatles_-_Abbey_Road.jpg/220px-Beatles_-_Abbey_Road.jpg" alt="Album ${status.index + 1}">
+                    <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+                    <img src="${albumImgURL}" alt="Album ${status.index + 1}">
                     <p><c:out value="${album.title}"/></p>
                 </div>
             </a>
