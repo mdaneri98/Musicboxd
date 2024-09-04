@@ -83,14 +83,16 @@ public class ArtistController {
             return createForm(artistReviewForm, artistId);
         }
 
-        //FIXME: Debería ya existir un usuario con ese email, ya que después uso el id del usuario.
-        User user = userService.findByEmail(artistReviewForm.getUserEmail()).orElseThrow();
-        /*if (!user.isVerified()) {
-            emailService.sendVerificationForUser(user);
+        Optional<User> optUser = userService.findByEmail(artistReviewForm.getUserEmail());
+        if (optUser.isEmpty()) {
+            User unverifiedUser = User.unverifiedUser(artistReviewForm.getUserEmail());
+            userService.save(unverifiedUser);
+            emailService.sendVerification(unverifiedUser.getEmail());
         }
-*/
+
+        User savedUser = userService.findByEmail(artistReviewForm.getUserEmail()).orElseThrow();
         ArtistReview artistReview = new ArtistReview(
-                user.getId(),
+                savedUser.getId(),
                 artistId,
                 artistReviewForm.getTitle(),
                 artistReviewForm.getDescription(),
