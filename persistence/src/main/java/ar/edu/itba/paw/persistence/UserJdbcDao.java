@@ -16,21 +16,7 @@ public class UserJdbcDao implements UserDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    /*
-    * Se puede hacer ya que es STATELESS, sin problemas de concurrencia.
-    * Todas las queries van a mappear cada row exactamente igual.
-    * */
-    private static final RowMapper<User> ROW_MAPPER = (rs, rowNum) -> new User(
-            rs.getLong("id"),
-            rs.getString("username"),
-            rs.getString("email"),
-            rs.getString("password"),
-            rs.getString("name"),
-            rs.getString("bio"),
-            rs.getObject("created_at", LocalDateTime.class),
-            rs.getObject("updated_at", LocalDateTime.class),
-            rs.getLong("img_id")
-    );
+
 
     public UserJdbcDao(final DataSource ds) {
         //El JdbcTemplate le quita complejidad al DataSource hecho por Java.
@@ -43,19 +29,19 @@ public class UserJdbcDao implements UserDao {
         return jdbcTemplate.query("SELECT * FROM cuser WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
-                ROW_MAPPER
+                SimpleRowMappers.USER_ROW_MAPPER
         ).stream().findFirst();
     }
 
     @Override
     public List<User> findAll() {
-        return jdbcTemplate.query("SELECT * FROM cuser", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM cuser", SimpleRowMappers.USER_ROW_MAPPER);
     }
 
     @Override
     public int save(User user) {
         return jdbcTemplate.update(
-                "INSERT INTO cuser (username, email, password, name, bio, created_at, updated_at, img_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO cuser (username, email, password, name, bio, created_at, updated_at, verified, img_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
@@ -63,6 +49,7 @@ public class UserJdbcDao implements UserDao {
                 user.getBio(),
                 user.getCreatedAt(),
                 user.getUpdatedAt(),
+                user.isVerified(),
                 user.getImgId()
         );
     }
@@ -70,16 +57,26 @@ public class UserJdbcDao implements UserDao {
     @Override
     public int update(User user) {
         return jdbcTemplate.update(
-                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, img_id = ? WHERE id = ?",
+                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, verified = ?, img_id = ? WHERE id = ?",
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getName(),
                 user.getBio(),
                 user.getUpdatedAt(),
+                user.isVerified(),
                 user.getImgId(),
                 user.getId()
         );
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return jdbcTemplate.query("SELECT * FROM cuser WHERE email = ?",
+                new Object[]{ email },
+                new int[]{Types.VARCHAR},
+                SimpleRowMappers.USER_ROW_MAPPER
+        ).stream().findFirst();
     }
 
     @Override
@@ -88,11 +85,3 @@ public class UserJdbcDao implements UserDao {
     }
 
 }
-/*
-new RowMapper<User>() {
-    @Override
-    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return new User(rs.getLong("userId"), rs.getString("username"));
-    }
-}
-*/

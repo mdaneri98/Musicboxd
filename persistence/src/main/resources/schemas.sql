@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS image (
 
 CREATE TABLE IF NOT EXISTS cuser (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(100),
@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS cuser (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     img_id INT,
+
+    verified BOOLEAN NOT NULL DEFAULT FALSE,
 
     FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE
 );
@@ -35,8 +37,8 @@ CREATE TABLE IF NOT EXISTS album (
     release_date DATE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    img_id INT NOT NULL,
-    artist_id INT NOT NULL,
+    img_id INT,
+    artist_id INT,
 
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
     FOREIGN KEY (img_id) REFERENCES image(id) ON DELETE CASCADE

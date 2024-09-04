@@ -1,0 +1,201 @@
+/* Base styles for the web page inspired by Spotify */
+
+/* General Body Styles */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #ffffff;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+/* Links */
+a {
+    color: #1DB954;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Buttons */
+button {
+    background-color: #1DB954;
+    color: #ffffff;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #1ed760;
+}
+
+button:disabled {
+    background-color: #6c6c6c;
+    cursor: not-allowed;
+}
+
+/* Secondary Button */
+button.secondary {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+button.secondary:hover {
+    background-color: #444444;
+}
+
+/* Input Fields */
+input[type="text"], input[type="email"], input[type="password"], textarea {
+    background-color: #333333;
+    color: #ffffff;
+    border: 1px solid #555555;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus {
+    outline: none;
+    border-color: #1DB954;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #000000;
+    padding: 10px 20px;
+    border-bottom: 1px solid #282828;
+}
+
+.navbar a {
+    color: #ffffff;
+    margin-right: 20px;
+    font-size: 1rem;
+}
+
+.navbar a:hover {
+    color: #1DB954;
+}
+
+/* Footer */
+.footer {
+    background-color: #000000;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #282828;
+}
+
+.footer a {
+    color: #1DB954;
+    margin: 0 10px;
+}
+
+.footer a:hover {
+    color: #1ed760;
+}
+
+/* Cards */
+.card {
+    background-color: #181818;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    color: #b3b3b3;
+}
+
+/* Lists */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 10px 0;
+    border-bottom: 1px solid #333333;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+/* Forms */
+form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+label {
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.mt-2 {
+    margin-top: 20px;
+}
+
+.mb-2 {
+    margin-bottom: 20px;
+}
+
+.p-2 {
+    padding: 20px;
+}

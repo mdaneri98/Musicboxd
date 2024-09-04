@@ -4,6 +4,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.Album;
 import ar.edu.itba.paw.Artist;
 import ar.edu.itba.paw.Song;
+import ar.edu.itba.paw.User;
 import ar.edu.itba.paw.reviews.ArtistReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ArtistReviewForm;
@@ -12,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,15 +29,16 @@ public class ArtistController {
     private final AlbumService albumService;
     private final SongService songService;
     private final ArtistReviewService artistReviewService;
+    private final EmailService emailService;
 
-    public ArtistController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, ArtistReviewService artistReviewService) {
+    public ArtistController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, ArtistReviewService artistReviewService, EmailService emailService) {
         this.userService = userService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
         this.artistReviewService = artistReviewService;
+        this.emailService = emailService;
     }
-
 
     @RequestMapping("/")
     public ModelAndView findAll() {
@@ -73,13 +76,19 @@ public class ArtistController {
     }
 
     @RequestMapping(value = "/{artistId}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("artistReviewForm") final ArtistReviewForm artistReviewForm, final BindingResult errors, @PathVariable Long artistId) {
+    public ModelAndView create(@Valid @ModelAttribute("artistReviewForm") final ArtistReviewForm artistReviewForm, final BindingResult errors, @PathVariable Long artistId) throws MessagingException {
         if (errors.hasErrors()) {
             return createForm(artistReviewForm, artistId);
         }
 
+        //FIXME: Debería ya existir un usuario con ese email, ya que después uso el id del usuario.
+        User user = userService.findByEmail(artistReviewForm.getUserEmail()).orElseThrow();
+        /*if (!user.isVerified()) {
+            emailService.sendVerificationForUser(user);
+        }
+*/
         ArtistReview artistReview = new ArtistReview(
-                artistReviewForm.getUserId(),
+                user.getId(),
                 artistId,
                 artistReviewForm.getTitle(),
                 artistReviewForm.getDescription(),

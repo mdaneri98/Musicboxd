@@ -1,111 +1,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
-    <style>
-        :root {
-            --background-base: #121212;
-            --background-highlight: #1a1a1a;
-            --background-press: #2c2c2c;
-            --text-base: #fff;
-            --text-subdued: #a7a7a7;
-            --essential-bright-accent: #16ba53;
-        }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <spring:message var="home" text="Index"/>
+    <jsp:include page="/WEB-INF/jsp/components/head.jsp">
+        <jsp:param name="title" value="${home}"/>
+    </jsp:include>
 
-        body {
-            font-family: 'Circular Std', Arial, sans-serif;
-            background-color: var(--background-base);
-            color: var(--text-base);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    <c:url var="cssIndexUrl" value="/static/css/index.css" />
+    <link rel="stylesheet" href="${cssIndexUrl}">
 
-        .search-container {
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            margin-bottom: 300px;
-        }
-
-        h1 {
-            font-size: 48px;
-            font-weight: 900;
-            text-align: center;
-            margin-bottom: 30px;
-            letter-spacing: -0.04em;
-        }
-
-        .search-form {
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 14px 40px 14px 14px;
-            font-size: 16px;
-            background-color: var(--background-highlight);
-            border: none;
-            border-radius: 4px;
-            color: var(--text-base);
-            transition: box-shadow 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px var(--essential-bright-accent);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-subdued);
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            fill: var(--text-subdued);
-            pointer-events: none;
-        }
-
-        .autocomplete-items {
-            position: absolute;
-            border-top: none;
-            z-index: 99;
-            top: 100%;
-            left: 0;
-            right: 0;
-        }
-
-        .autocomplete-items div {
-            padding: 10px;
-            cursor: pointer;
-            background-color: var(--background-highlight);
-            border-bottom: 1px solid var(--background-press);
-        }
-
-        .autocomplete-items div:hover {
-            background-color: var(--background-press);
-        }
-
-        .autocomplete-active {
-            background-color: var(--essential-bright-accent) !important;
-            color: var(--background-base);
-        }
-    </style>
 </head>
 <body>
 <div class="search-container">
@@ -116,6 +22,18 @@
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
     </form>
+</div>
+
+<!-- Cards Container -->
+<div class="cards-container">
+    <c:forEach var="entry" items="${reviewsWithImg}">
+        <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
+            <jsp:param name="title" value="${entry.key.title}"/>
+            <jsp:param name="description" value="${entry.key.description}"/>
+            <jsp:param name="userId" value="${entry.key.userId}"/>
+            <jsp:param name="imgId" value="${entry.value}"/>
+        </jsp:include>
+    </c:forEach>
 </div>
 
 <script>

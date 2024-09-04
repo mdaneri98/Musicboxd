@@ -1,64 +1,110 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #ffffff;
+:root {
+    --background-base: #121212;
+    --background-highlight: #1a1a1a;
+    --background-press: #2c2c2c;
+    --text-base: #fff;
+    --text-subdued: #a7a7a7;
+    --essential-bright-accent: #16ba53;
+}
+
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-header {
+
+body {
+    font-family: 'Circular Std', Arial, sans-serif;
+    background-color: var(--background-base);
+    color: var(--text-base);
+    height: 100vh;
+
     display: flex;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
+    flex-direction: column;
 }
-.artist-image {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 20px;
+
+.search-container {
+
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;margin-bottom:;
+    margin-bottom: 10px;
 }
+
 h1 {
     font-size: 48px;
-    margin: 0;
-}
-h2 {
-    font-size: 24px;
-    color: #1db954;
-    margin-top: 40px;
-}
-.carousel {
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    padding: 20px 0;
-}
-.album {
-    flex: 0 0 auto;
-    width: 200px;
+    font-weight: 900;
     text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: -0.04em;
 }
-.album img {
+
+.search-form {
+    position: relative;
+}
+
+.search-input {
     width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
+    padding: 14px 40px 14px 14px;
+    font-size: 16px;
+    background-color: var(--background-highlight);
+    border: none;
+    border-radius: 4px;
+    color: var(--text-base);
+    transition: box-shadow 0.3s ease;
 }
-.album p {
-    margin: 10px 0 0;
+
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--essential-bright-accent);
 }
-.song-list {
-    list-style-type: none;
-    padding: 0;
+
+.search-input::placeholder {
+    color: var(--text-subdued);
 }
-.song-list li {
-    padding: 10px 0;
-    border-bottom: 1px solid #282828;
+
+.search-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    fill: var(--text-subdued);
+    pointer-events: none;
 }
-.song-list li:last-child {
-    border-bottom: none;
+
+.autocomplete-items {
+    position: absolute;
+    border-top: none;
+    z-index: 99;
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: var(--background-highlight);
+    border-bottom: 1px solid var(--background-press);
+}
+
+.autocomplete-items div:hover {
+    background-color: var(--background-press);
+}
+
+.autocomplete-active {
+    background-color: var(--essential-bright-accent) !important;
+    color: var(--background-base);
+}
+
+.cards-container {
+    display: flex;
+    justify-content: space-between; /* Espacio entre las tarjetas */
+    margin-top: 20px; /* Separación con respecto al formulario */
+    padding: 0 10px;
+    gap: 20px; /* Espacio entre las tarjetas */
 }
