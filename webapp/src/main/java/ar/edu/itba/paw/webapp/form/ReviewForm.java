@@ -2,12 +2,14 @@ package ar.edu.itba.paw.webapp.form;
 
 import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public abstract class ReviewForm {
 
-    private Long userId;
+    @Email
+    private String userEmail;
     @Size(min = 8, max = 255)
     private String title;
     @Size(max = 255)
@@ -15,19 +17,19 @@ public abstract class ReviewForm {
     @Range(min = 0, max = 5)
     private Integer rating;
 
-    public ReviewForm(Long userId, String title, String description, Integer rating) {
-        this.userId = userId;
+    public ReviewForm(String userEmail, String title, String description, Integer rating) {
+        this.userEmail = userEmail;
         this.title = title;
         this.description = description;
         this.rating = rating;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public String getTitle() {

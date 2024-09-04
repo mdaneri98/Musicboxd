@@ -7,8 +7,8 @@ public class AlbumReviewForm extends ReviewForm {
     @NotNull
     private long albumId;
 
-    public AlbumReviewForm(Long userId, String title, String description, Integer rating, long albumId) {
-        super(userId, title, description, rating);
+    public AlbumReviewForm(String userEmail, String title, String description, Integer rating, long albumId) {
+        super(userEmail, title, description, rating);
         this.albumId = albumId;
     }
 

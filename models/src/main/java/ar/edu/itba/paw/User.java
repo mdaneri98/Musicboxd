@@ -13,9 +13,10 @@ public class User {
     private String bio;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean verified;
     private Long imgId;
 
-    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, Long imgId) {
+    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Long imgId) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -24,9 +25,24 @@ public class User {
         this.bio = bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.verified = verified;
         this.imgId = imgId;
     }
 
+    public static User unverifiedUser(String email) {
+        return new User(
+            0L,
+                "",
+                email,
+                "",
+                "",
+                "",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                false,
+                1L
+        );
+    }
 
     // Getters y setters
     public Long getId() {
@@ -91,6 +107,14 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
     public Long getImgId() {

@@ -3,11 +3,9 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.Album;
 import ar.edu.itba.paw.Artist;
+import ar.edu.itba.paw.User;
 import ar.edu.itba.paw.reviews.AlbumReview;
-import ar.edu.itba.paw.services.AlbumReviewService;
-import ar.edu.itba.paw.services.AlbumService;
-import ar.edu.itba.paw.services.ArtistService;
-import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.AlbumReviewForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -25,18 +24,21 @@ import java.util.Optional;
 @Controller
 public class AlbumController {
 
-    //private final UserService userService;
+    private final UserService userService;
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final SongService songService;
     private final AlbumReviewService albumReviewService;
+    private final EmailService emailService;
 
 
-    public AlbumController(ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService) {
+    public AlbumController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService, EmailService emailService) {
+        this.userService = userService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
         this.albumReviewService = albumReviewService;
+        this.emailService = emailService;
     }
 
     @RequestMapping("/")
@@ -71,13 +73,21 @@ public class AlbumController {
     }
 
     @RequestMapping(value = "/{albumId}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("albumReviewForm") final AlbumReviewForm albumReviewForm, final BindingResult errors, @PathVariable Long albumId) {
+    public ModelAndView create(@Valid @ModelAttribute("albumReviewForm") final AlbumReviewForm albumReviewForm, final BindingResult errors, @PathVariable Long albumId) throws MessagingException {
         if (errors.hasErrors()) {
             return createForm(albumReviewForm, albumId);
         }
 
+        Optional<User> optUser = userService.findByEmail(albumReviewForm.getUserEmail());
+        if (optUser.isEmpty()) {
+            User unverifiedUser = User.unverifiedUser(albumReviewForm.getUserEmail());
+            userService.save(unverifiedUser);
+            emailService.sendVerification(unverifiedUser.getEmail());
+        }
+
+        User savedUser = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
         AlbumReview albumReview = new AlbumReview(
-                albumReviewForm.getUserId(),
+                savedUser.getId(),
                 albumId,
                 albumReviewForm.getTitle(),
                 albumReviewForm.getDescription(),

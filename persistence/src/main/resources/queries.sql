@@ -26,24 +26,24 @@ INSERT INTO cuser (username, email, password, name, bio, img_id)
 VALUES ('keithr', 'keithr@example.com', 'rocknroll', 'Keith Richards', 'Guitarist of The Rolling Stones', 1); -- id = 10
 
 -- Inserción en la tabla 'artist'
-INSERT INTO artist (name, bio, img_id) VALUES ('Queen', 'Legendary British rock band', 1); -- id = 1
-INSERT INTO artist (name, bio, img_id) VALUES ('The Beatles', 'Iconic British rock band', 1); -- id = 2
-INSERT INTO artist (name, bio, img_id) VALUES ('David Bowie', 'Innovative British musician', 1); -- id = 3
-INSERT INTO artist (name, bio, img_id) VALUES ('Elton John', 'Renowned British singer and pianist', 1); -- id = 4
-INSERT INTO artist (name, bio, img_id) VALUES ('The Rolling Stones', 'British rock band', 1); -- id = 5
-INSERT INTO artist (name, bio, img_id) VALUES ('Led Zeppelin', 'Pioneers of hard rock and heavy metal', 1); -- id = 6
-INSERT INTO artist (name, bio, img_id) VALUES ('Pink Floyd', 'Progressive rock band', 1); -- id = 7
-INSERT INTO artist (name, bio, img_id) VALUES ('Fleetwood Mac', 'British-American rock band', 1); -- id = 8
-INSERT INTO artist (name, bio, img_id) VALUES ('The Who', 'English rock band', 1); -- id = 9
-INSERT INTO artist (name, bio, img_id) VALUES ('Nirvana', 'American grunge band', 1); -- id = 10
+INSERT INTO artist (name, bio, img_id) VALUES ('Queen', 'Legendary British rock band', 2); -- id = 1
+INSERT INTO artist (name, bio, img_id) VALUES ('The Beatles', 'Iconic British rock band', 3); -- id = 2
+INSERT INTO artist (name, bio, img_id) VALUES ('David Bowie', 'Innovative British musician', 4); -- id = 3
+INSERT INTO artist (name, bio, img_id) VALUES ('Elton John', 'Renowned British singer and pianist', 5); -- id = 4
+INSERT INTO artist (name, bio, img_id) VALUES ('The Rolling Stones', 'British rock band', 6); -- id = 5
+INSERT INTO artist (name, bio, img_id) VALUES ('Led Zeppelin', 'Pioneers of hard rock and heavy metal', 7); -- id = 6
+INSERT INTO artist (name, bio, img_id) VALUES ('Pink Floyd', 'Progressive rock band', 8); -- id = 7
+INSERT INTO artist (name, bio, img_id) VALUES ('Fleetwood Mac', 'British-American rock band', 9); -- id = 8
+INSERT INTO artist (name, bio, img_id) VALUES ('The Who', 'English rock band', 10); -- id = 9
+INSERT INTO artist (name, bio, img_id) VALUES ('Nirvana', 'American grunge band', 11); -- id = 10
 
 -- Inserción en la tabla 'album'
 -- Queen
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('A Night at the Opera', 'Rock', '1975-11-21', 1, 1); -- id = 1
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('News of the World', 'Rock', '1977-10-28', 1, 1); -- id = 2
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Sheer Heart Attack', 'Rock', '1974-11-08', 1, 1); -- id = 3
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Game', 'Rock', '1980-06-30', 1, 1); -- id = 4
-INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Innuendo', 'Rock', '1991-02-05', 1, 1); -- id = 5
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('A Night at the Opera', 'Rock', '1975-11-21', 12, 1); -- id = 1
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('News of the World', 'Rock', '1977-10-28', 13, 1); -- id = 2
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Sheer Heart Attack', 'Rock', '1974-11-08', 14, 1); -- id = 3
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Game', 'Rock', '1980-06-30', 15, 1); -- id = 4
+INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('Innuendo', 'Rock', '1991-02-05', 16, 1); -- id = 5
 
 -- David Bowie
 INSERT INTO album (title, genre, release_date, img_id, artist_id) VALUES ('The Rise and Fall of Ziggy Stardust', 'Rock', '1972-06-16', 1, 3); -- id = 6
