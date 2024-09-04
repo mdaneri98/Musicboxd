@@ -7,6 +7,6 @@
         <h5 class="card-title"><c:out value="${param.title}"/></h5>
         <p class="card-text"><c:out value="${param.description}"/></p>
         <c:url var="profileURL" value="/profile/${param.userId}"/>
-        <a href="${profileURL}" class="btn btn-primary">Ver usuario</a>
+        <!-- <a href="{profileURL}" class="btn btn-primary">View User</a>     Add $ to {profileURL} when removing comment-->
     </div>
 </div>
