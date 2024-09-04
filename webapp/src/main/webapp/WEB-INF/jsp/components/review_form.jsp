@@ -17,12 +17,12 @@
     <form:textarea path="description" id="description" rows="4" />
     <form:errors path="description" cssClass="error" />
   </div>
-  <div class="form-group star-rating">
+  <div class="form-group">
     <label for="rating">Rating:</label>
     <form:input path="rating" id="rating" type="text" />
     <form:errors path="rating" cssClass="error" />
   </div>
   <div class="form-group">
-    <button type="submit" class="btn btn-submit">Submit Review</button>
+    <button type="submit" >Submit Review</button>
   </div>
 </form:form>

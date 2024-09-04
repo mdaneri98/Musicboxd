@@ -17,14 +17,14 @@
 </head>
 <body>
 <div class="container">
-    <h1><c:out value="${album.title}" /></h1>
+    <h1>Make a review</h1>
 
     <c:url value="/album/${album.id}" var="albumUrl" />
-    <a href="${albumUrl}" class="album-box">
-        <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="album-image">
-        <div class="album-info">
-            <h2 class="album-name">${album.title}</h2>
-            <p class="album-bio">${album.releaseDate}</p>
+    <a href="${albumUrl}" class="artist-box">
+        <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="artist-image">
+        <div class="artist-info">
+            <h2 class="artist-name">${album.title}</h2>
+            <p class="artist-bio">${album.releaseDate}</p>
         </div>
     </a>
 

@@ -1,6 +1,7 @@
 :root {
     --background-base: #121212;
     --background-highlight: #1a1a1a;
+    --background-highlight-pressed: #2b2b2b;
     --background-press: #000;
     --text-base: #fff;
     --text-subdued: #a7a7a7;
@@ -40,6 +41,11 @@ h1 {
     margin-bottom: 24px;
     display: flex;
     align-items: center;
+}
+
+.artist-box:hover {
+    background-color: var(--background-highlight-pressed);
+    scale: 1.02;
 }
 
 .artist-image {
@@ -94,30 +100,6 @@ textarea {
     resize: vertical;
 }
 
-.star-rating {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-    margin-bottom: 16px;
-}
-
-.star-rating input {
-    display: none;
-}
-
-.star-rating label {
-    cursor: pointer;
-    font-size: 30px;
-    color: var(--text-subdued);
-    transition: color 0.2s ease-in-out;
-}
-
-.star-rating label:hover,
-.star-rating label:hover ~ label,
-.star-rating input:checked ~ label {
-    color: var(--essential-bright-accent);
-}
-
 button {
     display: block;
     width: 100%;
@@ -133,5 +115,5 @@ button {
 }
 
 button:hover {
-    background-color: #1fdf64;
+    background-color: #1fea68;
 }

@@ -1,8 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
   <spring:message var="pageTitle" text="Album Page"/>
   <jsp:include page="/WEB-INF/jsp/components/head.jsp">
     <jsp:param name="title" value="${pageTitle}"/>
@@ -10,9 +10,9 @@
 
   <c:url var="css" value="/static/css/album.css" />
   <link rel="stylesheet" href="${css}">
-
 </head>
   <body>
+
     <div class="container">
       <div class="album-header">
         <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="album-image">
