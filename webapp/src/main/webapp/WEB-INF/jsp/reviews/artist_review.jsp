@@ -4,13 +4,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Artist</title>
 
-    <!-- <link rel="stylesheet" href="/css/base.css"> -->
-    <c:url var="artist_review_css" value="/static/css/artist_review.css"/>
-    <link rel="stylesheet" href="${artist_review_css}">
+    <spring:message var="pageTitle" text="Artist Review"/>
+    <jsp:include page="/WEB-INF/jsp/components/head.jsp">
+        <jsp:param name="title" value="${pageTitle}"/>
+    </jsp:include>
+
+    <c:url var="css" value="/static/css/artist_review.css" />
+    <link rel="stylesheet" href="${css}">
 
 </head>
 <body>
@@ -27,31 +28,10 @@
     </a>
 
     <c:url var="posturl" value="/artist/${artist.id}/reviews" />
-    <form:form modelAttribute="artistReviewForm" action="${posturl}" method="POST" class="review-form">
-        <div class="form-group">
-            <label for="userEmail">Tu email:</label>
-            <form:input path="userEmail" id="userEmail" type="text" />
-            <form:errors path="userEmail" cssClass="error" />
-        </div>
-        <div class="form-group">
-            <label for="title">Título:</label>
-            <form:input path="title" id="title" type="text" />
-            <form:errors path="title" cssClass="error" />
-        </div>
-        <div class="form-group">
-            <label for="description">Descripción:</label>
-            <form:textarea path="description" id="description" rows="4" />
-            <form:errors path="description" cssClass="error" />
-        </div>
-        <div class="form-group star-rating">
-            <label for="rating">Rating:</label>
-            <form:input path="rating" id="rating" type="text" />
-            <form:errors path="rating" cssClass="error" />
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-submit">Submit Review</button>
-        </div>
-    </form:form>
+    <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
+        <jsp:param name="modelAttribute" value="artistReviewForm"/>
+        <jsp:param name="posturl" value="${posturl}"/>
+    </jsp:include>
 </div>
 </body>
 </html>

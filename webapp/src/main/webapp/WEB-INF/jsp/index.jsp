@@ -4,13 +4,13 @@
 <html lang="en">
 <head>
 
-    <spring:message var="home" text="Index"/>
+    <spring:message var="pageTitle" text="Index"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
-        <jsp:param name="title" value="${home}"/>
+        <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
 
-    <c:url var="cssIndexUrl" value="/static/css/index.css" />
-    <link rel="stylesheet" href="${cssIndexUrl}">
+    <c:url var="css" value="/static/css/index.css" />
+    <link rel="stylesheet" href="${css}">
 
 </head>
 <body>

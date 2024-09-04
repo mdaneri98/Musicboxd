@@ -46,6 +46,14 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
         return jdbcTemplate.query("SELECT * FROM artist_review", ROW_MAPPER);
     }
 
+    public List<ArtistReview> findByArtistId(long id) {
+        return jdbcTemplate.query("SELECT * FROM artist_review WHERE artist_id = ?",
+                new Object[]{id},
+                new int[]{Types.BIGINT},
+                ROW_MAPPER
+        );
+    }
+
     @Override
     public int save(ArtistReview artistReview) {
         return jdbcTemplate.update(
