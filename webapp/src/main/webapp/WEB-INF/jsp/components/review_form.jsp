@@ -3,17 +3,17 @@
 
 <form:form modelAttribute="${param.modelAttribute}" action="${param.posturl}" method="POST" class="review-form">
   <div class="form-group">
-    <label for="userEmail">Tu email:</label>
+    <label for="userEmail">Your email:</label>
     <form:input path="userEmail" id="userEmail" type="text" />
     <form:errors path="userEmail" cssClass="error" />
   </div>
   <div class="form-group">
-    <label for="title">Título:</label>
+    <label for="title">Title:</label>
     <form:input path="title" id="title" type="text" />
     <form:errors path="title" cssClass="error" />
   </div>
   <div class="form-group">
-    <label for="description">Descripción:</label>
+    <label for="description">Description:</label>
     <form:textarea path="description" id="description" rows="4" />
     <form:errors path="description" cssClass="error" />
   </div>
