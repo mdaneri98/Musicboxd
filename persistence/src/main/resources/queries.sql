@@ -78,3 +78,24 @@ INSERT INTO song (title, duration, track_number, album_id) VALUES ('Rocket Man',
 INSERT INTO song (title, duration, track_number, album_id) VALUES ('Tiny Dancer', '6:17', 1, 13); -- id = 13
 INSERT INTO song (title, duration, track_number, album_id) VALUES ('Daniel', '3:54', 1, 15); -- id = 14
 INSERT INTO song (title, duration, track_number, album_id) VALUES ('Bennie and the Jets', '5:23', 1, 11); -- id = 15
+
+-- Asociando canciones con Queen
+INSERT INTO song_artist (song_id, artist_id) VALUES (1,1);
+INSERT INTO song_artist (song_id, artist_id) VALUES (2,1);
+INSERT INTO song_artist (song_id, artist_id) VALUES (3,1);
+INSERT INTO song_artist (song_id, artist_id) VALUES (4,1);
+INSERT INTO song_artist (song_id, artist_id) VALUES (5,1);
+
+-- Asociando canciones con David Bowie
+INSERT INTO song_artist (song_id, artist_id) VALUES (6,3);
+INSERT INTO song_artist (song_id, artist_id) VALUES (7,3);
+INSERT INTO song_artist (song_id, artist_id) VALUES (8,3);
+INSERT INTO song_artist (song_id, artist_id) VALUES (9,3);
+INSERT INTO song_artist (song_id, artist_id) VALUES (10,3);
+
+-- Asociando canciones con Elton John
+INSERT INTO song_artist (song_id, artist_id) VALUES (11,4);
+INSERT INTO song_artist (song_id, artist_id) VALUES (12,4);
+INSERT INTO song_artist (song_id, artist_id) VALUES (13,4);
+INSERT INTO song_artist (song_id, artist_id) VALUES (14,4);
+INSERT INTO song_artist (song_id, artist_id) VALUES (15,4);

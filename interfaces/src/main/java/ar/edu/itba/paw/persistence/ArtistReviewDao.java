@@ -9,6 +9,7 @@ public interface ArtistReviewDao {
 
     Optional<ArtistReview> findById(long id);
     List<ArtistReview> findAll();
+    List<ArtistReview> findByArtistId(long id);
     int save(ArtistReview artistReview);
     int deleteById(long id);
 }

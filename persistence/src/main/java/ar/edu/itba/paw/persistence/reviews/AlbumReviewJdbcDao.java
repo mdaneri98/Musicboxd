@@ -47,6 +47,15 @@ public class AlbumReviewJdbcDao implements AlbumReviewDao {
     }
 
     @Override
+    public List<AlbumReview> findByAlbumId(long id){
+        return jdbcTemplate.query("SELECT * FROM album_review WHERE album_id = ?",
+                new Object[]{id},
+                new int[]{Types.BIGINT},
+                ROW_MAPPER
+        );
+    }
+
+    @Override
     public int save(AlbumReview albumReview) {
         return jdbcTemplate.update(
                 "INSERT INTO album_review (user_id, album_id, title, description, rating, created_at, likes) VALUES (?, ?, ?, ?, ?, ?, ?)",

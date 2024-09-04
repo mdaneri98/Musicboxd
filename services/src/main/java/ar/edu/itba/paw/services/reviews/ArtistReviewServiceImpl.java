@@ -28,6 +28,11 @@ public class ArtistReviewServiceImpl implements ArtistReviewService {
     }
 
     @Override
+    public List<ArtistReview> findByArtistId(long id) {
+        return artistReviewDao.findByArtistId(id);
+    }
+
+    @Override
     public int save(ArtistReview artistReview) {
         return artistReviewDao.save(artistReview);
     }
