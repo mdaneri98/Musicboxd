@@ -103,7 +103,7 @@
         </div>
     </a>
 
-    <c:import url="review.jsp"/>
+    <c:import url="../components/review_form.jsp"/>
 </div>
 </body>
 </html>
