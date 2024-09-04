@@ -92,7 +92,7 @@ public class UserJdbcDaoTest {
     public void testSave_NonExistingUser() throws SQLException {
         // 1. Pre-condiciones - no existe el user
         User user = new User(null,USERNAME,EMAIL,
-                PASSWORD,null,null,null,null,null);
+                PASSWORD,null,null,null,null,false,null);
 
         // 2. Ejercitar
         int rowsAffected = userDao.save(user);
@@ -106,7 +106,7 @@ public class UserJdbcDaoTest {
     public void testSave_ExistingUser() throws SQLException {
         // 1. Pre-condiciones - no existe el user
         User user = new User(null, PRE_EXISTING_USERNAME, PRE_EXISTING_EMAIL,
-                PASSWORD,null,null,null,null,null);
+                PASSWORD,null,null,null,null,false,null);
 
         // 2. Ejercitar
         int rowsAffected = userDao.save(user);
@@ -119,7 +119,7 @@ public class UserJdbcDaoTest {
     public void testUpdate_ExistingUser() throws SQLException {
         // 1. Pre-condiciones - existe el user
         User user = new User(PRE_EXISTING_USERID, USERNAME, EMAIL,
-                PASSWORD,null,null,null,null,null);
+                PASSWORD,null,null,null,null,false,null);
 
         // 2. Ejercitar
         int rowsAffected = userDao.update(user);
@@ -134,7 +134,7 @@ public class UserJdbcDaoTest {
     public void testUpdate_NonExistingUser() throws SQLException {
         // 1. Pre-condiciones - existe el user
         User user = new User(null, USERNAME, EMAIL,
-                PASSWORD,null,null,null,null,null);
+                PASSWORD,null,null,null,null,false,null);
 
         // 2. Ejercitar
         int rowsAffected = userDao.update(user);
