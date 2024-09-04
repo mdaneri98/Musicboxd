@@ -185,21 +185,21 @@
 <body>
   <div class="container">
     <div class="song-header">
-      <img src="/api/placeholder/232/232" alt="${song.title}" class="song-image">
+      <img src="/webapp_war/images/${song.imgId}" alt="${song.title}" class="song-image">
       <div class="song-info">
         <p class="song-type">Song</p>
         <h1><c:out value="${song.title}"/></h1>
         <div class="buttons-container button-group">
           <c:forEach var="artist" items="${artists}">
             <a href="/webapp_war/artist/${artist.id}" class="button artist-button">
-              <img src="/api/placeholder/28/28" alt="${artist.name}" class="artist-image">
+              <img src="/webapp_war/images/${artist.imgId}" alt="${artist.name}" class="artist-image">
               <span><c:out value="${artist.name}"/></span>
             </a>
           </c:forEach>
         </div>
         <div class="buttons-container">
           <a href="/webapp_war/album/${song.albumId}" class="album-card">
-            <img src="/api/placeholder/48/48" alt="${album.title}" class="album-image">
+            <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="album-image">
             <div class="album-info">
               <span class="album-name"><c:out value="${album.title}"/></span>
               <span class="album-type">Album</span>

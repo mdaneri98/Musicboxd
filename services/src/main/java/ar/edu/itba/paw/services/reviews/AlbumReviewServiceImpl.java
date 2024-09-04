@@ -30,6 +30,12 @@ public class AlbumReviewServiceImpl implements AlbumReviewService {
     }
 
     @Override
+    public List<AlbumReview> findByAlbumId(long id){
+        return albumReviewDao.findByAlbumId(id);
+    }
+
+
+    @Override
     public int save(AlbumReview albumReview) {
         return albumReviewDao.save(albumReview);
     }

@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.Album;
 import ar.edu.itba.paw.Artist;
+import ar.edu.itba.paw.Song;
 import ar.edu.itba.paw.User;
 import ar.edu.itba.paw.reviews.AlbumReview;
 import ar.edu.itba.paw.services.*;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequestMapping("/album")
@@ -48,14 +50,18 @@ public class AlbumController {
     }
 
     @RequestMapping("/{albumId:\\d+}")
-    public ModelAndView artist(@PathVariable(name = "albumId") long albumId) {
+    public ModelAndView album(@PathVariable(name = "albumId") long albumId) {
+        final ModelAndView mav = new ModelAndView("album");
+
         Album album = albumService.findById(albumId).orElseThrow();
         Artist artist = artistService.findById(album.getArtistId()).orElseThrow();
+        List<Song> songs = songService.findByAlbumId(albumId);
+        List<AlbumReview> reviews = albumReviewService.findByAlbumId(albumId);
 
-        final ModelAndView mav = new ModelAndView("album");
         mav.addObject("album", album);
-        mav.addObject("songs", songService.findByAlbumId(album.getId()));
+        mav.addObject("songs", songs);
         mav.addObject("artist", artist);
+        mav.addObject("reviews", reviews);
 
         return mav;
     }

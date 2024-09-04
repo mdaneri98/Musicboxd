@@ -53,10 +53,12 @@ public class ArtistController {
         Artist artist = artistService.findById(artistId).get();
         List<Album> albums = albumService.findByArtistId(artistId);
         List<Song> songs = songService.findByArtistId(artistId);
+        List<ArtistReview> reviews = artistReviewService.findByArtistId(artistId);
 
         mav.addObject("artist", artist);
         mav.addObject("albums", albums);
         mav.addObject("songs", songs);
+        mav.addObject("reviews", reviews);
         return mav;
     }
 
