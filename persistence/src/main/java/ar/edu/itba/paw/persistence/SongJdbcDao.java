@@ -68,13 +68,12 @@ public class SongJdbcDao implements SongDao {
     @Override
     public int save(Song song) {
         return jdbcTemplate.update(
-                "INSERT INTO song (title, duration, track_number, created_at, updated_at, album_id) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO song (title, duration, track_number, album_id, img_id) VALUES (?, ?, ?, ?, ?)",
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
-                song.getCreatedAt(),
-                song.getUpdatedAt(),
-                song.getAlbumId()
+                song.getAlbumId(),
+                song.getImgId()
         );
     }
 

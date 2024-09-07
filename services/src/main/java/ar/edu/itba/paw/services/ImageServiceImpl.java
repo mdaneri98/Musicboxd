@@ -14,8 +14,23 @@ public class ImageServiceImpl implements ImageService {
         this.imageDao = imageDao;
     }
 
-    public Optional<Image> findById(Long id) {
+    public Optional<Image> findById(long id) {
         return imageDao.findById(id);
     }
 
+    public Image save(byte[] bytes) {
+        return imageDao.save(bytes);
+    }
+
+    public boolean update(long imageId, byte[] bytes) {
+        return imageDao.update(imageId, bytes);
+    }
+
+    public boolean delete(long imageId) {
+        return imageDao.delete(imageId);
+    }
+
+    public boolean exists(long imageId) {
+        return imageDao.exists(imageId);
+    }
 }

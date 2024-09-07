@@ -46,11 +46,9 @@ public class ArtistJdbcDao implements ArtistDao {
     @Override
     public int save(Artist artist) {
         return jdbcTemplate.update(
-                "INSERT INTO artist (name, bio, created_at, updated_at, img_src) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO artist (name, bio, img_id) VALUES (?, ?, ?)",
                 artist.getName(),
                 artist.getBio(),
-                artist.getCreatedAt(),
-                artist.getUpdatedAt(),
                 artist.getImgId()
         );
     }

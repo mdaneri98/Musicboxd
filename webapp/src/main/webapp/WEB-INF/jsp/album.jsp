@@ -15,18 +15,23 @@
 
     <div class="container">
       <div class="album-header">
-        <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="album-image">
+        <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
+        <img src="${albumImgUrl}" alt="${album.title}" class="album-image">
         <div class="album-info">
           <p class="album-type">Album</p>
           <h1><c:out value="${album.title}"/></h1>
           <div class="button-group">
             <c:url var="artistUrl" value="/artist/${artist.id}" />
             <a href="${artistUrl}" class="button artist-button">
-              <img src="/webapp_war/images/${artist.imgId}" alt="${artist.name}" class="artist-image">
+              <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
+              <img src="${artistImgUrl}" alt="${artist.name}" class="artist-image">
               <span><c:out value="${artist.name}"/></span>
             </a>
             <c:url var="albumReviewUrl" value="/album/${album.id}/reviews" />
             <a href="${albumReviewUrl}" class="button review-button">Make a review</a>
+            </a>
+            <c:url var="NewAlbumUrl" value="/album/${album.id}/mod/add/song" />
+            <a href="${NewAlbumUrl}" class="button review-button">Add Song</a>
           </div>
         </div>
       </div>
