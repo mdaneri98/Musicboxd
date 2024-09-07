@@ -12,7 +12,7 @@ public interface ArtistService {
 
     List<Artist> findBySongId(long id);
 
-    int save(Artist artist);
+    long save(Artist artist);
 
     int update(Artist artist);
 

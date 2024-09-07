@@ -43,12 +43,11 @@ public class ModeratorController {
         try {
             Image image = imageService.save(file.getBytes());
             artist.setImgId(image.getId());
-            long artistId = artistService.save(artist);
-            artist.setId(artistId);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ModelAndView modelAndView = new ModelAndView("redirect:/artist/{artistId}");
+        long artistId = artistService.save(artist);
+        ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
         modelAndView.addObject("artist", artist);
         return modelAndView;
     }
@@ -69,7 +68,7 @@ public class ModeratorController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ModelAndView modelAndView = new ModelAndView("redirect:/artist/{artistId}");
+        ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
         modelAndView.addObject("artist", artistService.findById(artistId).get());
         return modelAndView;
     }
@@ -90,7 +89,7 @@ public class ModeratorController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ModelAndView modelAndView = new ModelAndView("redirect:/album/{albumId}");
+        ModelAndView modelAndView = new ModelAndView("redirect:/album/" + albumId);
         modelAndView.addObject("album", albumService.findById(albumId).get());
         return modelAndView;
     }
