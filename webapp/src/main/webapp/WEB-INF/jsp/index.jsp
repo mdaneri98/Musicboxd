@@ -24,6 +24,13 @@
     </form>
 </div>
 
+<div>
+    <c:url value="/mod/add/artist" var="new_artist_url" />
+    <a href="${new_artist_url}">
+        <button>Add Artist</button>
+    </a>
+</div>
+
 <!-- Cards Container -->
 <div class="cards-container">
     <c:forEach var="entry" items="${reviewsWithImg}">
