@@ -55,6 +55,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/", false)
                 .and().rememberMe()
                 .rememberMeParameter("remember_me")
+                .key(new String(remembermeKey.getInputStream().readAllBytes()))
+                .userDetailsService(userDetailsService)
                 .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
                 .and().logout()
                 .logoutUrl("/user/logout")
