@@ -83,12 +83,6 @@ public class ArtistController {
             return createForm(artistReviewForm, artistId);
         }
 
-        Optional<User> optUser = userService.findByEmail(artistReviewForm.getUserEmail());
-        if (optUser.isEmpty()) {
-            User unverifiedUser = User.unverifiedUser(artistReviewForm.getUserEmail());
-            userService.create(unverifiedUser);
-            emailService.sendVerification(unverifiedUser.getEmail());
-        }
 
         User savedUser = userService.findByEmail(artistReviewForm.getUserEmail()).orElseThrow();
         ArtistReview artistReview = new ArtistReview(

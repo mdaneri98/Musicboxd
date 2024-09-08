@@ -19,4 +19,8 @@ public interface UserService {
 
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String email);
+
+    void createVerification(User user);
+    boolean verify(String code);
+
 }

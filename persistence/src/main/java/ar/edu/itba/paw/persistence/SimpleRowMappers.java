@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.UserVerification;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.time.LocalDate;
@@ -44,6 +45,13 @@ public class SimpleRowMappers {
             rs.getObject("updated_at", LocalDate.class),
             rs.getLong("img_id"),
             rs.getLong("artist_id")
+    );
+
+    public static final RowMapper<UserVerification> USER_VERIFICATION_ROW_MAPPER = (rs, rowNum) -> new UserVerification(
+            rs.getLong("id"),
+            rs.getLong("user_id"),
+            rs.getString("code"),
+            rs.getTimestamp("expire_date")
     );
 
 }
