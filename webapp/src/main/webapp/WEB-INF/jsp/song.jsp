@@ -185,27 +185,33 @@
 <body>
   <div class="container">
     <div class="song-header">
-      <img src="/webapp_war/images/${song.imgId}" alt="${song.title}" class="song-image">
+      <c:url var="imageSongIDURL" value="/images/${song.imgId}"/>
+      <img src="${imageSongIDURL}" alt="${song.title}" class="song-image">
       <div class="song-info">
         <p class="song-type">Song</p>
         <h1><c:out value="${song.title}"/></h1>
         <div class="buttons-container button-group">
           <c:forEach var="artist" items="${artists}">
-            <a href="/webapp_war/artist/${artist.id}" class="button artist-button">
-              <img src="/webapp_war/images/${artist.imgId}" alt="${artist.name}" class="artist-image">
+            <c:url var="artistIDURL" value="/artist/${artist.id}" />
+            <a href="${artistIDURL}" class="button artist-button">
+              <c:url var="imageArtistURL" value="/image/${artist.imgId}" />
+              <img src="${imageArtistURL}" alt="${artist.name}" class="artist-image">
               <span><c:out value="${artist.name}"/></span>
             </a>
           </c:forEach>
         </div>
         <div class="buttons-container">
-          <a href="/webapp_war/album/${song.albumId}" class="album-card">
-            <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="album-image">
+          <c:url var="albumIdURL" value="/album/${song.albumId}" />
+          <a href="${albumIdURL}" class="album-card">
+            <c:url var="imageAlbumURL" value="/images/${album.imgId}" />
+            <img src="${imageAlbumURL}" alt="${album.title}" class="album-image">
             <div class="album-info">
               <span class="album-name"><c:out value="${album.title}"/></span>
               <span class="album-type">Album</span>
             </div>
           </a>
-          <a href="/webapp_war/review/song/${song.id}" class="button review-button">Make a review</a>
+          <c:url var="reviewsongurl" value="/review/song/${song.id}" />
+          <a href="${reviewsongurl}" class="button review-button">Make a review</a>
         </div>
       </div>
     </div>
