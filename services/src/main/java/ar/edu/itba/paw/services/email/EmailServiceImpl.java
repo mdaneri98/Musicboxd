@@ -48,6 +48,7 @@ public class EmailServiceImpl implements EmailService {
         final Map<String, Object> params = new HashMap<>();
         params.put("userEmail", email);
         params.put("verificationCode", code);
+        params.put("verificationUrl", "www.localhost:8080/users/verification?verificationCode=" + code);
         this.sendMessageUsingThymeleafTemplate(
                 "user_verification",
                 email,
