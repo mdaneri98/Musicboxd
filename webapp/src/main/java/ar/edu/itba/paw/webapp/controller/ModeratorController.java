@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.Album;
-import ar.edu.itba.paw.Artist;
-import ar.edu.itba.paw.Image;
-import ar.edu.itba.paw.Song;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.Song;
 
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ArtistService;

@@ -15,13 +15,8 @@
 
     <div class="container">
       <div class="album-header">
-<<<<<<< HEAD
-        <c:url var="imageAlbumURL" value="/images/${album.imgId}" />
-        <img src="${imageAlbumURL}" alt="${album.title}" class="album-image">
-=======
         <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
         <img src="${albumImgUrl}" alt="${album.title}" class="album-image">
->>>>>>> 2391153b4bbb4b96cc7044af2cc58da3093a69d2
         <div class="album-info">
           <p class="album-type">Album</p>
           <h1><c:out value="${album.title}"/></h1>

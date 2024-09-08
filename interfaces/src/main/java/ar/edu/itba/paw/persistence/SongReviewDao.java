@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.reviews.SongReview;
+import ar.edu.itba.paw.models.reviews.SongReview;
 
 import java.util.List;
 import java.util.Optional;

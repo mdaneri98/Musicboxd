@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.services.reviews;
 
 
-import ar.edu.itba.paw.reviews.ArtistReview;
+import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.persistence.ArtistReviewDao;
 import ar.edu.itba.paw.services.ArtistReviewService;
 import org.springframework.stereotype.Service;

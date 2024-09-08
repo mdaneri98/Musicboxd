@@ -1,11 +1,11 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.Album;
-import ar.edu.itba.paw.Artist;
-import ar.edu.itba.paw.Song;
-import ar.edu.itba.paw.User;
-import ar.edu.itba.paw.reviews.ArtistReview;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ArtistReviewForm;
 import org.springframework.stereotype.Controller;
@@ -86,7 +86,7 @@ public class ArtistController {
         Optional<User> optUser = userService.findByEmail(artistReviewForm.getUserEmail());
         if (optUser.isEmpty()) {
             User unverifiedUser = User.unverifiedUser(artistReviewForm.getUserEmail());
-            userService.save(unverifiedUser);
+            userService.create(unverifiedUser);
             emailService.sendVerification(unverifiedUser.getEmail());
         }
 

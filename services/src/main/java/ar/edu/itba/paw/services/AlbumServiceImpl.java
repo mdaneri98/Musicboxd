@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.Album;
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import org.springframework.stereotype.Service;
 

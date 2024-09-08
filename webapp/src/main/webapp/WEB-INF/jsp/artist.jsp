@@ -22,13 +22,8 @@
 <body>
 <div class="container">
     <header>
-<<<<<<< HEAD
-
-        <img src="/images/${artist.imgId}" alt="Artist Name" class="artist-image">
-=======
         <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
         <img src="${artistImgURL}" alt="Artist Name" class="artist-image">
->>>>>>> 2391153b4bbb4b96cc7044af2cc58da3093a69d2
         <div class="artist-info">
             <p class="artist-type">Artist</p>
             <h1><c:out value="${artist.name}"/></h1>
