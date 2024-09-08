@@ -1,16 +1,12 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.Artist;
-import ar.edu.itba.paw.Image;
+import ar.edu.itba.paw.models.Artist;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

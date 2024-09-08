@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.Image;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.persistence.ImageDao;
 import org.springframework.stereotype.Service;
 

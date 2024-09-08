@@ -1,4 +1,4 @@
-package ar.edu.itba.paw;
+package ar.edu.itba.paw.models;
 
 import java.time.Duration;
 import java.time.LocalDate;

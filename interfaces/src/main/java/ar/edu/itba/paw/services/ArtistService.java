@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.Artist;
+import ar.edu.itba.paw.models.Artist;
 
 import java.util.List;
 import java.util.Optional;

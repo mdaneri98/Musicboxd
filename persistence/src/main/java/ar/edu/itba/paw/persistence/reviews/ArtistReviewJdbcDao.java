@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.persistence.reviews;
 
-import ar.edu.itba.paw.reviews.ArtistReview;
+import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.persistence.ArtistReviewDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

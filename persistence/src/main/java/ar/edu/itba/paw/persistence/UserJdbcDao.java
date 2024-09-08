@@ -1,13 +1,11 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.User;
+import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +37,7 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public int save(User user) {
+    public int create(User user) {
         return jdbcTemplate.update(
                 "INSERT INTO cuser (username, email, password, name, bio, created_at, updated_at, verified, img_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 user.getUsername(),
@@ -74,6 +72,15 @@ public class UserJdbcDao implements UserDao {
     public Optional<User> findByEmail(String email) {
         return jdbcTemplate.query("SELECT * FROM cuser WHERE email = ?",
                 new Object[]{ email },
+                new int[]{Types.VARCHAR},
+                SimpleRowMappers.USER_ROW_MAPPER
+        ).stream().findFirst();
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return jdbcTemplate.query("SELECT * FROM cuser WHERE username = ?",
+                new Object[]{ username },
                 new int[]{Types.VARCHAR},
                 SimpleRowMappers.USER_ROW_MAPPER
         ).stream().findFirst();

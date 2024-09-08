@@ -1,7 +1,6 @@
-package ar.edu.itba.paw;
+package ar.edu.itba.paw.models;
 
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 public class User {
@@ -27,6 +26,16 @@ public class User {
         this.updatedAt = updatedAt;
         this.verified = verified;
         this.imgId = imgId;
+    }
+
+    public User(String username, String password, String email) {
+        this.id = 0L;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.imgId = 1L;
     }
 
     public static User unverifiedUser(String email) {

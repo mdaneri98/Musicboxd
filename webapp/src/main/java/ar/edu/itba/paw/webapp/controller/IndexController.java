@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.Album;
-import ar.edu.itba.paw.Artist;
-import ar.edu.itba.paw.Song;
-import ar.edu.itba.paw.reviews.AlbumReview;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.services.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /*
     No es un servlet.
@@ -21,16 +20,13 @@ import java.util.Optional;
 
 @Controller
 public class IndexController {
-
-    private final UserService userService;
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final SongService songService;
 
     private final AlbumReviewService albumReviewService;
 
-    public IndexController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService) {
-        this.userService = userService;
+    public IndexController(ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService) {
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;

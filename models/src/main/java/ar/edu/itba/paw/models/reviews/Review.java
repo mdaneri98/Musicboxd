@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.reviews;
+package ar.edu.itba.paw.models.reviews;
 
 import java.time.LocalDateTime;
 
