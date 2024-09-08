@@ -185,33 +185,33 @@
 <body>
   <div class="container">
     <div class="song-header">
-      <c:url var="imageSongIDURL" value="/images/${song.imgId}"/>
-      <img src="${imageSongIDURL}" alt="${song.title}" class="song-image">
+      <c:url var="songImgUrl" value="/images/${song.imgId}"/>
+      <img src="${songImgUrl}" alt="${song.title}" class="song-image">
       <div class="song-info">
         <p class="song-type">Song</p>
         <h1><c:out value="${song.title}"/></h1>
         <div class="buttons-container button-group">
           <c:forEach var="artist" items="${artists}">
-            <c:url var="artistIDURL" value="/artist/${artist.id}" />
-            <a href="${artistIDURL}" class="button artist-button">
-              <c:url var="imageArtistURL" value="/image/${artist.imgId}" />
-              <img src="${imageArtistURL}" alt="${artist.name}" class="artist-image">
+            <c:url var="artistUrl" value="/artist/${artist.id}"/>
+            <a href="${artistUrl}" class="button artist-button">
+              <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
+              <img src="${artistImgUrl}" alt="${artist.name}" class="artist-image">
               <span><c:out value="${artist.name}"/></span>
             </a>
           </c:forEach>
         </div>
         <div class="buttons-container">
-          <c:url var="albumIdURL" value="/album/${song.albumId}" />
-          <a href="${albumIdURL}" class="album-card">
-            <c:url var="imageAlbumURL" value="/images/${album.imgId}" />
-            <img src="${imageAlbumURL}" alt="${album.title}" class="album-image">
+          <c:url var="songUrl" value="/album/${song.albumId}"/>
+          <a href="${songUrl}" class="album-card">
+            <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
+            <img src="${albumImgUrl}" alt="${album.title}" class="album-image">
             <div class="album-info">
               <span class="album-name"><c:out value="${album.title}"/></span>
               <span class="album-type">Album</span>
             </div>
           </a>
-          <c:url var="reviewsongurl" value="/review/song/${song.id}" />
-          <a href="${reviewsongurl}" class="button review-button">Make a review</a>
+          <c:url var="songReviewUrl" value="/review/song/${song.id}"/>
+          <a href="${songReviewUrl}" class="button review-button">Make a review</a>
         </div>
       </div>
     </div>

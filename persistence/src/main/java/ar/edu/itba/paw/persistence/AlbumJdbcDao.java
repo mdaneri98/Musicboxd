@@ -53,12 +53,10 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public int save(Album album) {
         return jdbcTemplate.update(
-                "INSERT INTO album (title, genre, release_date, created_at, updated_at, img_id, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO album (title, genre, release_date , img_id, artist_id) VALUES (?, ?, ?, ?, ?)",
                 album.getTitle(),
                 album.getGenre(),
                 album.getReleaseDate(),
-                album.getCreatedAt(),
-                album.getUpdatedAt(),
                 album.getImgId(),
                 album.getArtistId()
         );

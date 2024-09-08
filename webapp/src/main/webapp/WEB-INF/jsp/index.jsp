@@ -24,6 +24,13 @@
     </form>
 </div>
 
+<div>
+    <c:url value="/mod/add/artist" var="new_artist_url" />
+    <a href="${new_artist_url}">
+        <button>Add Artist</button>
+    </a>
+</div>
+
 <!-- Cards Container -->
 <div class="cards-container">
     <c:forEach var="entry" items="${reviewsWithImg}">
@@ -43,7 +50,8 @@
             id: ${artist.id},
             img_id: ${artist.imgId},
             name: "<c:out value="${artist.name}"/>",
-        }<c:if test="${!status.last}">,</c:if>
+            artistURL: "<c:url value='/artist/${artist.id}' />"
+        }<c:if test="${!status.last}">, </c:if>
         </c:forEach>
     ];
 
@@ -67,7 +75,11 @@
                     b.addEventListener("click", function(e) {
                         inp.value = this.getElementsByTagName("input")[0].value;
                         var artistId = this.getElementsByTagName("input")[0].getAttribute("data-id");
-                        window.location.href = "/webapp_war/artist/" + artistId;
+                        // Encuentra el URL correspondiente usando el artistId
+                        var artist = arr.find(a => a.id == artistId);
+                        if (artist) {
+                            window.location.href = artist.artistURL;
+                        }
                         closeAllLists();
                     });
                     a.appendChild(b);
