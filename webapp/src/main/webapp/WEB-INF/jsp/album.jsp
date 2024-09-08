@@ -15,14 +15,15 @@
 
     <div class="container">
       <div class="album-header">
-        <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="album-image">
+        <c:url var="imageAlbumURL" value="/images/${album.imgId}" />
+        <img src="${imageAlbumURL}" alt="${album.title}" class="album-image">
         <div class="album-info">
           <p class="album-type">Album</p>
           <h1><c:out value="${album.title}"/></h1>
           <div class="button-group">
             <c:url var="artistUrl" value="/artist/${artist.id}" />
             <a href="${artistUrl}" class="button artist-button">
-              <img src="/webapp_war/images/${artist.imgId}" alt="${artist.name}" class="artist-image">
+              <img src="/images/${artist.imgId}" alt="${artist.name}" class="artist-image">
               <span><c:out value="${artist.name}"/></span>
             </a>
             <c:url var="albumReviewUrl" value="/album/${album.id}/reviews" />

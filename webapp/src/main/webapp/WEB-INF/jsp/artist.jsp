@@ -22,7 +22,8 @@
 <body>
 <div class="container">
     <header>
-        <img src="/webapp_war/images/${artist.imgId}" alt="Artist Name" class="artist-image">
+
+        <img src="/images/${artist.imgId}" alt="Artist Name" class="artist-image">
         <div class="artist-info">
             <p class="artist-type">Artist</p>
             <h1><c:out value="${artist.name}"/></h1>
@@ -37,7 +38,8 @@
     <h2>Albums</h2>
     <div class="carousel">
         <c:forEach var="album" items="${albums}" varStatus="status">
-            <a href="/webapp_war/album/${album.id}">
+            <c:url var="albumIdURL" value="/album/${album.id}" />
+            <a href="${albumIdURL}">
                 <div class="album">
                     <c:url var="albumImgURL" value="/images/${album.imgId}"/>
                     <img src="${albumImgURL}" alt="Album ${status.index + 1}">
@@ -50,7 +52,9 @@
     <h2>Popular Songs</h2>
     <ul class="song-list">
         <c:forEach var="song" items="${songs}" varStatus="status">
-            <a href="/webapp_war/song/${song.id}">
+
+            <c:url var="songIdURL" value="/song/${song.id}" />
+            <a href="${songIdURL}">
                 <li>
                     <span class="song-number">${status.index + 1}</span>
                     <span class="song-title"><c:out value="${song.title}"/></span>
