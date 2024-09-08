@@ -25,7 +25,7 @@ public class CUserDetailsService implements UserDetailsService {
 
         final Collection<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        authorities.add(new SimpleGrantedAuthority("ROLE_MODERATOR"));  /* Cuidado! */
+        //authorities.add(new SimpleGrantedAuthority("ROLE_MODERATOR"));  /* Cuidado! */
 
         return new AuthCUserDetails(user, authorities);
     }

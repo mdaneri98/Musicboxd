@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -35,6 +36,11 @@ public class UserController {
         return new ModelAndView("users/profile");
     }
 
+    @RequestMapping("/verification")
+    public ModelAndView verify(@RequestParam(name = "verificationCode", defaultValue = "0") String verificationCode ){
+        boolean ok = userService.verify(verificationCode);
+        return new ModelAndView("redirect:/");
+    }
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public ModelAndView login() {

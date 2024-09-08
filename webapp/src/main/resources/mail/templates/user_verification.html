@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,7 +46,8 @@
 <div class="container">
     <h1>Verificación de Usuario</h1>
     <p>Tu cuenta ha sido verificada con éxito. ¡Gracias por unirte!</p>
-    <a href="https://www.google.com">Continuar</a>
+    <c:url var="verificationUrl" value="/users/verification?verificationCode=${verificationCode}" />
+    <a href="${verificationUrl}">Continuar</a>
 </div>
 </body>
 </html>

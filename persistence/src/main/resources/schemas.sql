@@ -107,8 +107,11 @@ CREATE TABLE IF NOT EXISTS song_review (
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS verify_user (
+    id SERIAL PRIMARY KEY,
+    user_id SERIAL NOT NULL,
+    code VARCHAR(255) NOT NULL,
+    expire_date TIMESTAMP NOT NULL,
 
-
-
-
-
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+);

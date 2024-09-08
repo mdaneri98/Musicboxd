@@ -44,9 +44,10 @@ public class EmailServiceImpl implements EmailService {
     }
 
     //@Async
-    public void sendVerification(String email) throws MessagingException {
+    public void sendVerification(String email, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
         params.put("userEmail", email);
+        params.put("verificationCode", code);
         this.sendMessageUsingThymeleafTemplate(
                 "user_verification",
                 email,

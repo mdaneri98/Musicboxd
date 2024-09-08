@@ -84,13 +84,6 @@ public class AlbumController {
             return createForm(albumReviewForm, albumId);
         }
 
-        Optional<User> optUser = userService.findByEmail(albumReviewForm.getUserEmail());
-        if (optUser.isEmpty()) {
-            User unverifiedUser = User.unverifiedUser(albumReviewForm.getUserEmail());
-            userService.create(unverifiedUser);
-            emailService.sendVerification(unverifiedUser.getEmail());
-        }
-
         User savedUser = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
         AlbumReview albumReview = new AlbumReview(
                 savedUser.getId(),

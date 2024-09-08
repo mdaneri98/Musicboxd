@@ -2,9 +2,13 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
@@ -90,5 +94,6 @@ public class UserJdbcDao implements UserDao {
     public int deleteById(long id) {
         return jdbcTemplate.update("DELETE FROM cuser WHERE id = ?", id);
     }
+
 
 }
