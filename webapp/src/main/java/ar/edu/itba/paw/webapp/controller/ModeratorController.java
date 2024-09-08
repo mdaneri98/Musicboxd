@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 
+@RequestMapping("/mod")
 @Controller
 public class ModeratorController {
 
@@ -32,12 +33,12 @@ public class ModeratorController {
         this.songService = songService;
     }
 
-    @RequestMapping(path = "mod/add/artist", method = RequestMethod.GET)
+    @RequestMapping(path = "add/artist", method = RequestMethod.GET)
     public ModelAndView addArtistForm() {
         return new ModelAndView("moderator/add-artist");
     }
 
-    @RequestMapping(path = "mod/add/artist", method = RequestMethod.POST)
+    @RequestMapping(path = "add/artist", method = RequestMethod.POST)
     public ModelAndView submitArtistForm(@ModelAttribute("artist") Artist artist,
                                          @RequestParam("file") MultipartFile file) {
         try {
@@ -52,12 +53,12 @@ public class ModeratorController {
         return modelAndView;
     }
 
-    @RequestMapping(path = "artist/{artistId:\\d+}/mod/add/album", method = RequestMethod.GET)
+    @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.GET)
     public ModelAndView addAlbumForm(@PathVariable(name = "artistId") long artistId) {
         return new ModelAndView("moderator/add-album").addObject(artistId);
     }
 
-    @RequestMapping(path = "artist/{artistId:\\d+}/mod/add/album", method = RequestMethod.POST)
+    @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.POST)
     public ModelAndView submitAlbumForm(@PathVariable(name = "artistId") long artistId,
                                         @ModelAttribute("album") Album album,
                                         @RequestParam("file") MultipartFile file) {
@@ -73,12 +74,12 @@ public class ModeratorController {
         return modelAndView;
     }
 
-    @RequestMapping(path = "album/{albumId:\\d+}/mod/add/song", method = RequestMethod.GET)
+    @RequestMapping(path = "/add/album/{albumId:\\d+}/song", method = RequestMethod.GET)
     public ModelAndView addSongForm(@PathVariable(name = "albumId") long albumId) {
         return new ModelAndView("moderator/add-song").addObject(albumId);
     }
 
-    @RequestMapping(path = "album/{albumId:\\d+}/mod/add/song", method = RequestMethod.POST)
+    @RequestMapping(path = "add/album/{albumId:\\d+}/song", method = RequestMethod.POST)
     public ModelAndView submitSongForm(@PathVariable(name = "albumId") long albumId,
                                        @ModelAttribute("song") Song song,
                                        @RequestParam("file") MultipartFile file) {

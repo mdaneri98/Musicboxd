@@ -32,7 +32,7 @@
             <a href="${new_artist_review_url}">
                 <button>Make a review</button>
             </a>
-            <c:url value="/artist/${artist.id}/mod/add/album" var="new_album_url" />
+            <c:url value="/mod/add/artist/${artist.id}/album" var="new_album_url" />
             <a href="${new_album_url}">
                 <button>Add Album</button>
             </a>

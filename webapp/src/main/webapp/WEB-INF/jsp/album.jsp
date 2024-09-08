@@ -29,7 +29,7 @@
             </a>
             <c:url var="albumReviewUrl" value="/album/${album.id}/reviews" />
             <a href="${albumReviewUrl}" class="button review-button">Make a review</a>
-            <c:url var="NewAlbumUrl" value="/album/${album.id}/mod/add/song" />
+            <c:url var="NewAlbumUrl" value="/mod/add/album/${album.id}/song" />
             <a href="${NewAlbumUrl}" class="button review-button">Add Song</a>
           </div>
         </div>
