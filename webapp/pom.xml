@@ -68,6 +68,12 @@
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
+    <!-- Upload File Dependencies -->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+    </dependency>
+
     
     <dependency>
       <groupId>${parent.groupId}</groupId>

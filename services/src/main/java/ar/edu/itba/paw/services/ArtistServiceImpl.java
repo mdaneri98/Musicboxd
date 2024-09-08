@@ -32,7 +32,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public int save(Artist artist) {
+    public long save(Artist artist) {
         return artistDao.save(artist);
     }
 
