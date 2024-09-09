@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserVerificationJdbcDao implements UserVerificationDao {
@@ -48,13 +49,12 @@ public class UserVerificationJdbcDao implements UserVerificationDao {
                 SimpleRowMappers.USER_VERIFICATION_ROW_MAPPER
                 );
 
-
         UserVerification userVerification = verifications.getFirst();
-        if (verifications.getFirst().getCode().equals(code)) {
-            User user = userDao.findById(userVerification.getId()).orElseThrow();
+
+        User user = userDao.findById(userVerification.getId()).orElseThrow();
+        if (userVerification.getExpireDate().before(Timestamp.valueOf(LocalDateTime.now()))) {
             user.setVerified(true);
-            userDao.update(user);
-            return true;
+            return userDao.update(user) == 1;
         }
         return false;
     }
