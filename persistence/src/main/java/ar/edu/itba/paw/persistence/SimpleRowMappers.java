@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.UserVerification;
+import ar.edu.itba.paw.models.*;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.time.LocalDate;
@@ -52,6 +49,16 @@ public class SimpleRowMappers {
             rs.getLong("user_id"),
             rs.getString("code"),
             rs.getTimestamp("expire_date")
+    );
+
+    public static final RowMapper<Song> SONG_ROW_MAPPER = (rs, rowNum) -> new Song(
+            rs.getLong("id"),
+            rs.getString("title"),
+            rs.getString("duration"),
+            rs.getInt("track_number"),
+            rs.getObject("created_at", LocalDate.class),
+            rs.getObject("updated_at", LocalDate.class),
+            rs.getLong("album_id")
     );
 
 }

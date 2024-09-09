@@ -12,9 +12,8 @@ public class Song {
     private LocalDate createdAt;
     private LocalDate updatedAt;
     private Long albumId;
-    private Long imgId;
 
-    public Song(Long id, String title, String duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Long albumId, Long imgId) {
+    public Song(Long id, String title, String duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Long albumId) {
         this.id = id;
         this.title = title;
         this.duration = duration;
@@ -22,7 +21,6 @@ public class Song {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.albumId = albumId;
-        this.imgId = imgId;
     }
 
     // Getters y setters
@@ -82,11 +80,4 @@ public class Song {
         this.albumId = albumId;
     }
 
-    public Long getImgId() {
-        return imgId;
-    }
-
-    public void setImgId(Long imgId) {
-        this.imgId = imgId;
-    }
 }

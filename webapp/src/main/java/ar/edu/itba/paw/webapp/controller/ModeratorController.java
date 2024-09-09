@@ -83,13 +83,9 @@ public class ModeratorController {
     public ModelAndView submitSongForm(@PathVariable(name = "albumId") long albumId,
                                        @ModelAttribute("song") Song song,
                                        @RequestParam("file") MultipartFile file) {
-        try {
-            Image image = imageService.save(file.getBytes());
-            song.setImgId(image.getId());
-            songService.save(song);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        songService.save(song);
+
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + albumId);
         modelAndView.addObject("album", albumService.findById(albumId).get());
         return modelAndView;

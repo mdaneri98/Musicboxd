@@ -39,11 +39,6 @@
             </label>
         </div>
         <div>
-            <label>Image:
-                <input name="file" type="file" />
-            </label>
-        </div>
-        <div>
             <button type="submit">Submit Song</button>
         </div>
     </form>

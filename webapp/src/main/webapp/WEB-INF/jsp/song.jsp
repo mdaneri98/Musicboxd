@@ -185,7 +185,7 @@
 <body>
   <div class="container">
     <div class="song-header">
-      <c:url var="songImgUrl" value="/images/${song.imgId}"/>
+      <c:url var="songImgUrl" value="/images/${album.imgId}"/>
       <img src="${songImgUrl}" alt="${song.title}" class="song-image">
       <div class="song-info">
         <p class="song-type">Song</p>

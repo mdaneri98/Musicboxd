@@ -96,7 +96,7 @@
     <h1>Review Song</h1>
 
     <a href="/webapp_war/song/${song.id}" class="song-box">
-        <img src="${song.imgId}" alt="${song.title}" class="song-image">
+        <img src="${album.imgId}" alt="${song.title}" class="song-image">
         <div class="song-info">
             <h2 class="song-title">${song.title}</h2>
             <p class="song-duration">${song.duration}</p>

@@ -80,7 +80,9 @@ public class IndexController {
     public ModelAndView reviewSong(@PathVariable(name = "songId") long songId) {
         final ModelAndView mav = new ModelAndView("reviews/song_review");
         Song song = songService.findById(songId).get();
+        Album album = albumService.findById(song.getAlbumId()).get();
         mav.addObject("song", song);
+        mav.addObject("album", album);
         return mav;
     }
 }

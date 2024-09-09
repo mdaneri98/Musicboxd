@@ -55,13 +55,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int create(User user) {
-        if (this.findByEmail(user.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("El correo " + user.getEmail() + " ya está en uso.");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
+        Optional<User> optUser = this.findByEmail(user.getEmail());
+        if (optUser.isPresent()) {
+            if (!optUser.get().getUsername().isEmpty())
+                throw new UserAlreadyExistsException("El correo " + user.getEmail() + " ya está en uso.");
+            user.setId(optUser.get().getId());
+            return this.update(user);
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         int rowsChanged = userDao.create(user);
-
         if (rowsChanged > 0)
             user = userDao.findByEmail(user.getEmail()).orElseThrow();
             this.createVerification(user);
