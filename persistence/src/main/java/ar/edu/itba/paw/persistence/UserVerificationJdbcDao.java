@@ -45,16 +45,17 @@ public class UserVerificationJdbcDao implements UserVerificationDao {
     public boolean verify(String code) {
         List<UserVerification> verifications = jdbcTemplate.query("SELECT * FROM verify_user WHERE code = ?",
                 new Object[]{ code },
-                new int[]{Types.BIGINT},
+                new int[]{Types.VARCHAR},
                 SimpleRowMappers.USER_VERIFICATION_ROW_MAPPER
                 );
+        if (!verifications.isEmpty()) {
+            UserVerification userVerification = verifications.getFirst();
 
-        UserVerification userVerification = verifications.getFirst();
-
-        User user = userDao.findById(userVerification.getId()).orElseThrow();
-        if (userVerification.getExpireDate().before(Timestamp.valueOf(LocalDateTime.now()))) {
-            user.setVerified(true);
-            return userDao.update(user) == 1;
+            User user = userDao.findById(userVerification.getUser_id()).orElseThrow();
+            if (userVerification.getExpireDate().before(Timestamp.valueOf(LocalDateTime.now()))) {
+                user.setVerified(true);
+                return userDao.update(user) == 1;
+            }
         }
         return false;
     }

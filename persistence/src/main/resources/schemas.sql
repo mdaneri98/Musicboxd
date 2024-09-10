@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS album (
     release_date DATE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    img_id INT,
-    artist_id INT,
+    img_id INT NOT NULL,
+    artist_id INT NOT NULL,
 
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE
 );
