@@ -57,9 +57,41 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
+    public int createFollowing(User user, User following) {
+        updateFollowingAmount(user, user.getFollowingAmount() + 1);
+        updateFollowersAmount(following, following.getFollowersAmount() + 1);
+        return jdbcTemplate.update(
+                "INSERT INTO follower (user_id, following) VALUES (?, ?)",
+                user.getId(),
+                following.getId()
+        );
+    }
+
+    @Override
+    public int undoFollowing(User user, User following) {
+        updateFollowingAmount(user, user.getFollowingAmount() - 1);
+        updateFollowersAmount(following, following.getFollowersAmount() - 1);
+        return jdbcTemplate.update(
+                "DELETE FROM follower WHERE user_id = ? AND following = ?",
+                user.getId(),
+                following.getId()
+        );
+    }
+
+    private int updateFollowingAmount(User user, int amount) {
+        user.setFollowingAmount(amount);
+        return jdbcTemplate.update("UPDATE cuser SET following_amount = ?  WHERE id = ?", amount, user.getId());
+    }
+
+    private int updateFollowersAmount(User user, int amount) {
+        user.setFollowersAmount(amount);
+        return jdbcTemplate.update("UPDATE cuser SET followers_amount = ?  WHERE id = ?", amount, user.getId());
+    }
+
+    @Override
     public int update(User user) {
         return jdbcTemplate.update(
-                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, verified = ?, img_id = ? WHERE id = ?",
+                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, verified = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
@@ -68,6 +100,9 @@ public class UserJdbcDao implements UserDao {
                 user.getUpdatedAt(),
                 user.isVerified(),
                 user.getImgId(),
+                user.getFollowersAmount(),
+                user.getFollowingAmount(),
+                user.getReviewAmount(),
                 user.getId()
         );
     }

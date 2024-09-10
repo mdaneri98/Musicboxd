@@ -13,6 +13,9 @@ CREATE TABLE IF NOT EXISTS cuser (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     img_id INT,
+    followers_amount INT DEFAULT 0,
+    following_amount INT DEFAULT 0,
+    review_amount INT DEFAULT 0,
 
     moderator BOOLEAN NOT NULL DEFAULT FALSE,
     verified BOOLEAN NOT NULL DEFAULT FALSE,
@@ -33,16 +36,16 @@ CREATE TABLE IF NOT EXISTS artist (
 );
 
 CREATE TABLE IF NOT EXISTS album (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    genre VARCHAR(50),
-    release_date DATE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    img_id INT,
-    artist_id INT,
+     id SERIAL PRIMARY KEY,
+     title VARCHAR(100) NOT NULL,
+     genre VARCHAR(50),
+     release_date DATE,
+     created_at TIMESTAMP DEFAULT NOW(),
+     updated_at TIMESTAMP DEFAULT NOW(),
+     img_id INT NOT NULL,
+     artist_id INT NOT NULL,
 
-    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE
+     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS song (
@@ -81,17 +84,17 @@ CREATE TABLE IF NOT EXISTS artist_review (
 );
 
 CREATE TABLE IF NOT EXISTS album_review (
-     id SERIAL PRIMARY KEY,
-     user_id SERIAL NOT NULL,
-     album_id SERIAL NOT NULL,
-     title VARCHAR(50) NOT NULL,
-     description VARCHAR(300) NOT NULL,
-     rating INT NOT NULL,
-     created_at TIMESTAMP DEFAULT NOW(),
-     likes INT DEFAULT 0,
+    id SERIAL PRIMARY KEY,
+    user_id SERIAL NOT NULL,
+    album_id SERIAL NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(300) NOT NULL,
+    rating INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    likes INT DEFAULT 0,
 
-     FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE CASCADE,
-     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+    FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS song_review (
@@ -115,4 +118,13 @@ CREATE TABLE IF NOT EXISTS verify_user (
     expire_date TIMESTAMP NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS follower (
+    user_id INT NOT NULL,
+    following INT NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
+    FOREIGN KEY (following) REFERENCES cuser(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, following)
 );

@@ -12,10 +12,14 @@ public class User {
     private String bio;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean verified;
+    private Boolean verified;
+    private Boolean moderator;
+    private Integer followersAmount;
+    private Integer followingAmount;
+    private Integer reviewAmount;
     private Long imgId;
 
-    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Long imgId) {
+    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Long imgId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -26,6 +30,10 @@ public class User {
         this.updatedAt = updatedAt;
         this.verified = verified;
         this.imgId = imgId;
+        this.moderator = moderator;
+        this.followersAmount = followersAmount;
+        this.followingAmount = followingAmount;
+        this.reviewAmount = reviewAmount;
     }
 
     public User(String username, String password, String email) {
@@ -49,11 +57,52 @@ public class User {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 false,
-                1L
+                1L,
+                false,
+                0,
+                0,
+                0
         );
     }
 
     // Getters y setters
+
+    public Integer getReviewAmount() {
+        return reviewAmount;
+    }
+
+    public void setReviewAmount(Integer reviewsAmount) {
+        this.reviewAmount = reviewsAmount;
+    }
+
+    public void incrementReviewAmount() {
+        this.reviewAmount++;
+    }
+
+    public void decrementReviewAmount() {
+        this.reviewAmount--;
+    }
+
+    public Integer getFollowingAmount() {
+        return followingAmount;
+    }
+
+    public void setFollowingAmount(Integer followingAmount) {
+        this.followingAmount = followingAmount;
+    }
+
+    public Integer getFollowersAmount() {
+        return followersAmount;
+    }
+
+    public void setFollowersAmount(Integer followersAmount) {
+        this.followersAmount = followersAmount;
+    }
+
+    public boolean isModerator() {
+        return moderator;
+    }
+
     public Long getId() {
         return id;
     }

@@ -118,6 +118,35 @@ h2 {
     color: var(--text-base);
 }
 
+.artist {
+    background-color: var(--background-elevated-base);
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    padding: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.artist:hover {
+    background-color: var(--background-elevated-highlight);
+}
+
+.artist img {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 24px;
+    box-shadow: 0 4px 60px rgba(0,0,0,.5);
+    margin-bottom: 8px;
+}
+
+.artist p {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-base);
+}
+
 .song-list {
     list-style-type: none;
 }
@@ -169,4 +198,20 @@ a {
     text-decoration: none;
     color: inherit;
     background-color: transparent;
+}
+
+.user-stats {
+    display: flex;
+    margin-bottom: 16px;
+}
+
+.stat-item {
+    margin-right: 20px;
+    font-size: 14px;
+    color: var(--text-subdued);
+}
+
+.stat-item strong {
+    color: var(--text-base);
+    font-weight: bold;
 }
