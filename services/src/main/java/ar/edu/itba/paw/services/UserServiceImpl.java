@@ -8,10 +8,17 @@ import ar.edu.itba.paw.services.exception.UserAlreadyExistsException;
 import ar.edu.itba.paw.services.exception.VerificationEmailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -77,9 +84,12 @@ public class UserServiceImpl implements UserService {
     public void createVerification(User user) {
         try {
             String verificationCode = UUID.randomUUID().toString();
-            userVerificationDao.startVerification(user, verificationCode);
 
-            emailService.sendVerification(user.getEmail(), verificationCode);
+            // Codifica el código de verificación para asegurarte de que sea seguro para la URL
+            String encodedVerificationCode = URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
+
+            userVerificationDao.startVerification(user, encodedVerificationCode);
+            emailService.sendVerification(user.getEmail(), encodedVerificationCode);
         } catch (MessagingException e) {
             logger.error("Error al enviar el correo de verificación al usuario: {}", user.getEmail(), e);
             throw new VerificationEmailException("No se pudo enviar la verificación del email al usuario " + user.getEmail(), e);
