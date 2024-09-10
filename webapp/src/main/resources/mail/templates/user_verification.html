@@ -1,5 +1,5 @@
-<!DOCTYPE>
-<head>
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificación de Usuario</title>
@@ -45,7 +45,7 @@
 <div class="container">
     <h1>Verificación de Usuario</h1>
     <p>Tu cuenta ha sido verificada con éxito. ¡Gracias por unirte!</p>
-    <a href="www.localhost/users/verification?verificationCode=${verificationCode}">Continuar</a>
+    <a th:href="${verificationURL}">Continuar</a>
 </div>
 </body>
 </html>
