@@ -85,6 +85,7 @@ public class AlbumController {
         }
 
         User savedUser = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
+        userService.incrementReviewAmount(savedUser);
         AlbumReview albumReview = new AlbumReview(
                 savedUser.getId(),
                 albumId,

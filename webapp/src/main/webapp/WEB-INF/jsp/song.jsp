@@ -210,7 +210,7 @@
               <span class="album-type">Album</span>
             </div>
           </a>
-          <c:url var="songReviewUrl" value="/review/song/${song.id}"/>
+          <c:url var="songReviewUrl" value="/song/${song.id}/reviews"/>
           <a href="${songReviewUrl}" class="button review-button">Make a review</a>
         </div>
       </div>
