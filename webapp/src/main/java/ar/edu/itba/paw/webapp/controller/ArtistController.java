@@ -85,6 +85,7 @@ public class ArtistController {
 
 
         User savedUser = userService.findByEmail(artistReviewForm.getUserEmail()).orElseThrow();
+        userService.incrementReviewAmount(savedUser);
         ArtistReview artistReview = new ArtistReview(
                 savedUser.getId(),
                 artistId,

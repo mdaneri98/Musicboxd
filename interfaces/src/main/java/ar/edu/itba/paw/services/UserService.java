@@ -13,13 +13,20 @@ public interface UserService {
 
     int create(User user);
 
+    int createFollowing(User loggedUser, long followingUserId);
+
+    int undoFollowing(User loggedUser, long followingUserId);
+
     int update(User user);
 
     int deleteById(long id);
 
     Optional<User> findByEmail(String email);
+
     Optional<User> findByUsername(String email);
 
+    int incrementReviewAmount(User user);
+    int decrementReviewAmount(User user);
     void createVerification(User user);
     boolean verify(String code);
 

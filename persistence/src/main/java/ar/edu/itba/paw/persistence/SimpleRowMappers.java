@@ -22,7 +22,11 @@ public class SimpleRowMappers {
             rs.getObject("created_at", LocalDateTime.class),
             rs.getObject("updated_at", LocalDateTime.class),
             rs.getBoolean("verified"),
-            rs.getLong("img_id")
+            rs.getLong("img_id"),
+            rs.getBoolean("moderator"),
+            rs.getInt("followers_amount"),
+            rs.getInt("following_amount"),
+            rs.getInt("review_amount")
     );
 
     public static final RowMapper<Artist> ARTIST_ROW_MAPPER = (rs, rowNum) -> new Artist(

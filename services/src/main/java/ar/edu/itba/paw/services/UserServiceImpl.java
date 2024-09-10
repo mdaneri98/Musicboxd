@@ -49,6 +49,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public int incrementReviewAmount(User user) {
+        user.incrementReviewAmount();
+        return userDao.update(user);
+    }
+
+    @Override
+    public int decrementReviewAmount(User user) {
+        user.decrementReviewAmount();
+        return userDao.update(user);
+    }
+
+    @Override
     public List<User> findAll() {
         return userDao.findAll();
     }
@@ -71,6 +83,16 @@ public class UserServiceImpl implements UserService {
             user = userDao.findByEmail(user.getEmail()).orElseThrow();
             this.createVerification(user);
         return rowsChanged;
+    }
+
+    @Override
+    public int createFollowing(User userId, long followingId) {
+        return userDao.createFollowing(userId, findById(followingId).get());
+    }
+
+    @Override
+    public int undoFollowing(User userId, long followingId) {
+        return userDao.undoFollowing(userId, findById(followingId).get());
     }
 
     @Override

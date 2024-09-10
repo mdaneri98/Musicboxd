@@ -13,6 +13,10 @@ public interface UserDao {
 
     int create(User user);
 
+    int createFollowing(User loggedUser, User following);
+
+    int undoFollowing(User loggedUser, User following);
+
     int update(User user);
 
     int deleteById(long id);
