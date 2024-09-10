@@ -53,36 +53,4 @@ public class IndexController {
         mav.addObject("reviewsWithImg", reviewsWithImg);
         return mav;
     }
-
-    @RequestMapping("/song/{songId:\\d+}")
-    public ModelAndView song(@PathVariable(name = "songId") long songId) {
-        final ModelAndView mav = new ModelAndView("song");
-
-        Song song = songService.findById(songId).get();
-        List<Artist> artists = artistService.findBySongId(songId);
-        Album album = albumService.findById(song.getAlbumId()).get();
-
-        mav.addObject("album", album);
-        mav.addObject("artists", artists);
-        mav.addObject("song", song);
-        return mav;
-    }
-
-    @RequestMapping("/review/album/{albumId:\\d+}")
-    public ModelAndView reviewAlbum(@PathVariable(name = "albumId") long albumId) {
-        final ModelAndView mav = new ModelAndView("reviews/album_review");
-        Album album = albumService.findById(albumId).get();
-        mav.addObject("album", album);
-        return mav;
-    }
-
-    @RequestMapping("/review/song/{songId:\\d+}")
-    public ModelAndView reviewSong(@PathVariable(name = "songId") long songId) {
-        final ModelAndView mav = new ModelAndView("reviews/song_review");
-        Song song = songService.findById(songId).get();
-        Album album = albumService.findById(song.getAlbumId()).get();
-        mav.addObject("song", song);
-        mav.addObject("album", album);
-        return mav;
-    }
 }
