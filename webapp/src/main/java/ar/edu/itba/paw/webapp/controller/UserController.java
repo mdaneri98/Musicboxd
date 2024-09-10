@@ -8,7 +8,6 @@ import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.auth.AuthCUserDetails;
 import ar.edu.itba.paw.webapp.form.UserForm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,8 +40,11 @@ public class UserController {
     }
 
     @RequestMapping("/verification")
-    public ModelAndView verify(@RequestParam(name = "verificationCode", defaultValue = "0") String verificationCode ){
+    public ModelAndView verify(@RequestParam(name = "code", defaultValue = "0") String verificationCode ){
         boolean ok = userService.verify(verificationCode);
+        if (!ok) {
+            return new ModelAndView("users/verification_expired");
+        }
         return new ModelAndView("redirect:/");
     }
 
