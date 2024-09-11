@@ -24,4 +24,8 @@ public interface UserDao {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String email);
 
+    int startVerification(User user, String code);
+    boolean verify(String code);
+
+
 }
