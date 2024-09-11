@@ -1,15 +1,14 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.UserVerification;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,5 +129,36 @@ public class UserJdbcDao implements UserDao {
         return jdbcTemplate.update("DELETE FROM cuser WHERE id = ?", id);
     }
 
+    @Override
+    public int startVerification(User user, String code) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expireDateTime = now.plusHours(6);
+
+        return jdbcTemplate.update(
+                "INSERT INTO verify_user (user_id, code, expire_date) VALUES (?, ?, ?)",
+                user.getId(),
+                code,
+                expireDateTime
+        );
+    }
+
+    @Override
+    public boolean verify(String code) {
+        List<UserVerification> verifications = jdbcTemplate.query("SELECT * FROM verify_user WHERE code = ?",
+                new Object[]{ code },
+                new int[]{Types.VARCHAR},
+                SimpleRowMappers.USER_VERIFICATION_ROW_MAPPER
+        );
+        if (!verifications.isEmpty()) {
+            UserVerification userVerification = verifications.getFirst();
+
+            User user = this.findById(userVerification.getUser_id()).orElseThrow();
+            if (userVerification.getExpireDate().before(Timestamp.valueOf(LocalDateTime.now()))) {
+                user.setVerified(true);
+                return this.update(user) == 1;
+            }
+        }
+        return false;
+    }
 
 }
