@@ -57,9 +57,8 @@ public class SongController {
 
         Song song = songService.findById(songId).get();
         List<Artist> artists = artistService.findBySongId(songId);
-        Album album = albumService.findById(song.getAlbumId()).get();
 
-        mav.addObject("album", album);
+        mav.addObject("album", song.getAlbum());
         mav.addObject("artists", artists);
         mav.addObject("song", song);
         return mav;
@@ -70,9 +69,8 @@ public class SongController {
         final ModelAndView mav = new ModelAndView("reviews/song_review");
         songReviewForm.setSongId(songId);
         Song song = songService.findById(songId).get();
-        Album album = albumService.findById(song.getAlbumId()).get();
         mav.addObject("song", song);
-        mav.addObject("album", album);
+        mav.addObject("album", song.getAlbum());
         return mav;
     }
 
@@ -86,8 +84,8 @@ public class SongController {
         User savedUser = userService.findByEmail(songReviewForm.getUserEmail()).orElseThrow();
         userService.incrementReviewAmount(savedUser);
         SongReview songReview = new SongReview(
-                savedUser.getId(),
-                songId,
+                savedUser,
+                new Song(songId),
                 songReviewForm.getTitle(),
                 songReviewForm.getDescription(),
                 songReviewForm.getRating(),

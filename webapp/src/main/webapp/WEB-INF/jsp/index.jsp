@@ -33,12 +33,12 @@
 
 <!-- Cards Container -->
 <div class="cards-container">
-    <c:forEach var="entry" items="${reviewsWithImg}">
+    <c:forEach var="review" items="${reviews}">
         <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
-            <jsp:param name="title" value="${entry.key.title}"/>
-            <jsp:param name="description" value="${entry.key.description}"/>
-            <jsp:param name="userId" value="${entry.key.userId}"/>
-            <jsp:param name="imgId" value="${entry.value}"/>
+            <jsp:param name="title" value="${review.title}"/>
+            <jsp:param name="description" value="${review.description}"/>
+            <jsp:param name="userId" value="${review.user.id}"/>
+            <jsp:param name="imgId" value="${review.album.imgId}"/>
         </jsp:include>
     </c:forEach>
 </div>

@@ -23,7 +23,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public Optional<Song> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM song WHERE id = ?",
+        return jdbcTemplate.query("SELECT * FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.SONG_ROW_MAPPER
@@ -32,7 +32,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findByArtistId(long id) {
-        return jdbcTemplate.query("SELECT DISTINCT s.* FROM song s JOIN song_artist sa ON s.id = sa.song_id WHERE sa.artist_id = ?",
+        return jdbcTemplate.query("SELECT DISTINCT * FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id LEFT JOIN song_artist ON song.id = song_artist.song_id WHERE song_artist.artist_id = ? ORDER BY album.release_date DESC, song.track_number ASC;",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.SONG_ROW_MAPPER
@@ -41,7 +41,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findByAlbumId(long id) {
-        return jdbcTemplate.query("SELECT * FROM song WHERE album_id = ?",
+        return jdbcTemplate.query("SELECT * FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id WHERE album_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.SONG_ROW_MAPPER
@@ -50,7 +50,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findAll() {
-        return jdbcTemplate.query("SELECT * FROM song", SimpleRowMappers.SONG_ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id;", SimpleRowMappers.SONG_ROW_MAPPER);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class SongJdbcDao implements SongDao {
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
-                song.getAlbumId()
+                song.getAlbum().getId()
         );
     }
 
@@ -73,7 +73,7 @@ public class SongJdbcDao implements SongDao {
                 song.getTrackNumber(),
                 song.getCreatedAt(),
                 song.getUpdatedAt(),
-                song.getAlbumId(),
+                song.getAlbum().getId(),
                 song.getId()
         );
     }

@@ -1,25 +1,28 @@
 package ar.edu.itba.paw.models.reviews;
 
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.User;
+
 import java.time.LocalDateTime;
 
 public class ArtistReview extends Review {
-    private Long artistId;
+    private Artist artist;
 
-    public ArtistReview(Long userId, Long artistId,String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        super(userId, title, description, rating, createdAt, likes);
-        this.artistId = artistId;
+    public ArtistReview(User user, Artist artist,String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+        super(user, title, description, rating, createdAt, likes);
+        this.artist = artist;
     }
 
-    public ArtistReview(Long id, Long artistId, Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        super(id, userId, title, description, rating, createdAt, likes);
-        this.artistId = artistId;
+    public ArtistReview(Long id, Artist artist, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+        super(id, user, title, description, rating, createdAt, likes);
+        this.artist = artist;
     }
 
-    public Long getArtistId() {
-        return artistId;
+    public Artist getArtist() {
+        return artist;
     }
 
-    public void setArtistId(Long artistId) {
-        this.artistId = artistId;
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
 }
