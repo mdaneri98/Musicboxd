@@ -9,6 +9,7 @@ public interface SongReviewDao {
 
     Optional<SongReview> findById(long id);
     List<SongReview> findAll();
+    List<SongReview> findBySongId(long id);
     int save(SongReview songReview);
     int deleteById(long id);
 }

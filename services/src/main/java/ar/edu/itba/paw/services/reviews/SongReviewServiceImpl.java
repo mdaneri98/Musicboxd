@@ -30,6 +30,11 @@ public class SongReviewServiceImpl implements SongReviewService {
     }
 
     @Override
+    public List<SongReview> findBySongId(long id) {
+        return songReviewDao.findBySongId(id);
+    }
+
+    @Override
     public int save(SongReview songReview) {
         return songReviewDao.save(songReview);
     }
