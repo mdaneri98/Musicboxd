@@ -96,7 +96,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createVerification(User user) {
         try {
-            String verificationCode = UUID.randomUUID().toString();
+            String verificationCode = new java.util.Random().ints(6, 0, 36)
+                    .mapToObj(i -> i < 10 ? String.valueOf(i) : String.valueOf((char) ('A' + i - 10)))
+                    .collect(java.util.stream.Collectors.joining());
 
             // Codifica el código de verificación para asegurarte de que sea seguro para la URL
             String encodedVerificationCode = URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);

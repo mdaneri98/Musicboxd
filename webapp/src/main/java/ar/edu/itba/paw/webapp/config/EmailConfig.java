@@ -21,7 +21,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import java.util.Properties;
 
 @EnableWebMvc
-//@EnableAsync
+@EnableAsync
 @PropertySource("classpath:application.properties")
 @Configuration
 public class EmailConfig {

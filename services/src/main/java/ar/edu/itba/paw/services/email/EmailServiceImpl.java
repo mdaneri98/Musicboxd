@@ -5,13 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,11 +38,15 @@ public class EmailServiceImpl implements EmailService {
      * */
     public void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+
+
         helper.setTo(to);
         helper.setFrom(MUSICBOXD_MAIL);
         helper.setSubject(subject);
         helper.setText(htmlBody, true);
+
+
         mailSender.send(message);
     }
 
@@ -49,14 +57,14 @@ public class EmailServiceImpl implements EmailService {
         sendHtmlMessage(to, subject, htmlBody);
     }
 
-    //@Async
+    @Async
     public void sendVerification(String email, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
-        String url = "www.localhost:8080/webapp_war";
-        url = url + "/user/verification?code=" + code;
 
-        params.put("verificationURL", url);
+//        URLEncoder encoder = URLEncoder.encode("www.localhost:8080/webapp_war/user/verification?code=", );
+
+        //params.put("verificationURL", encoder.);
         this.sendMessageUsingThymeleafTemplate(
                 "user_verification",
                 email,
