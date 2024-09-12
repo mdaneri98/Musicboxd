@@ -70,10 +70,18 @@
     <div class="cards-container">
         <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
+                <jsp:param name="item_img_id" value="${review.artist.imgId}"/>
+                <jsp:param name="item_name" value="${review.artist.name}"/>
+                <jsp:param name="item_url" value="/artist/${review.artist.id}"/>
+                <jsp:param name="artist_url" value="/artist/${review.artist.id}"/>
+                <jsp:param name="item_type" value="Artist"/>
                 <jsp:param name="title" value="${review.title}"/>
-                <jsp:param name="description" value="${review.description}"/>
-                <jsp:param name="userId" value="${review.userId}"/>
-                <jsp:param name="imgId" value="${artist.imgId}"/>
+                <jsp:param name="rating" value="${review.rating}"/>
+                <jsp:param name="review_content" value="${review.description}"/>
+                <jsp:param name="user_name" value="${review.user.name}"/>
+                <jsp:param name="user_img_id" value="${review.user.imgId}"/>
+                <jsp:param name="likes" value="${review.likes}"/>
+                <jsp:param name="user_id" value="${review.user.id}"/>
             </jsp:include>
         </c:forEach>
     </div>

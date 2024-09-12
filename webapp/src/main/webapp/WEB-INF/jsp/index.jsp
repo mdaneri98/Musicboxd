@@ -31,18 +31,6 @@
     </a>
 </div>
 
-<!-- Cards Container -->
-<div class="cards-container">
-    <c:forEach var="review" items="${reviews}">
-        <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
-            <jsp:param name="title" value="${review.title}"/>
-            <jsp:param name="description" value="${review.description}"/>
-            <jsp:param name="userId" value="${review.user.id}"/>
-            <jsp:param name="imgId" value="${review.album.imgId}"/>
-        </jsp:include>
-    </c:forEach>
-</div>
-
 <script>
     var artists = [
         <c:forEach items="${artists}" var="artist" varStatus="status">
