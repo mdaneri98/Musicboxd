@@ -40,17 +40,8 @@ public class IndexController {
         List<AlbumReview> allReviews = albumReviewService.findAll();
         List<AlbumReview> albumReviews = allReviews.subList(0, Math.min(5, allReviews.size()));
 
-        /* A cada Reseña, le agrego la imagen del album */
-        Map<AlbumReview, Long> reviewsWithImg = new HashMap<>();
-        for (AlbumReview review : albumReviews) {
-            Long albumId = review.getAlbumId();
-            Album album = albumService.findById(albumId).orElseThrow();
-            Long imgId = album.getImgId();
-            reviewsWithImg.put(review, imgId);
-        }
-
         mav.addObject("artists", artistService.findAll());
-        mav.addObject("reviewsWithImg", reviewsWithImg);
+        mav.addObject("reviews", albumReviews);
         return mav;
     }
 }

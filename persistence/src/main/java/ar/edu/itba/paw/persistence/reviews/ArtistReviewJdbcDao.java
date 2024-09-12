@@ -1,5 +1,8 @@
 package ar.edu.itba.paw.persistence.reviews;
 
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.persistence.ArtistReviewDao;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,13 +21,22 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
     private final JdbcTemplate jdbcTemplate;
 
     private static final RowMapper<ArtistReview> ROW_MAPPER = (rs, rowNum) -> new ArtistReview(
-            rs.getLong("id"),
-            rs.getLong("user_id"),
-            rs.getLong("artist_id"),
+            rs.getLong("album_review.id"),
+            new Artist(
+                    rs.getLong("artist.id"),
+                    rs.getString("artist.name"),
+                    rs.getLong("album.img_id")
+            ),
+            new User(
+                    rs.getLong("cuser.id"),
+                    rs.getString("username"),
+                    rs.getString("cuser.name"),
+                    rs.getLong("cuser.img_id")
+            ),
             rs.getString("title"),
             rs.getString("description"),
             rs.getInt("rating"),
-            rs.getObject("created_at", LocalDateTime.class),
+            rs.getObject("artist_review.created_at", LocalDateTime.class),
             rs.getInt("likes")
     );
 
@@ -34,7 +46,7 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
 
     @Override
     public Optional<ArtistReview> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM artist_review WHERE id = ?",
+        return jdbcTemplate.query("SELECT * FROM artist_review JOIN cuser ON artist_review.user_id = cuser.id JOIN artist ON artist_review.artist_id = artist.id WHERE artist_review.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
@@ -43,11 +55,11 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
 
     @Override
     public List<ArtistReview> findAll() {
-        return jdbcTemplate.query("SELECT * FROM artist_review", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM artist_review JOIN cuser ON artist_review.user_id = cuser.id JOIN artist ON artist_review.artist_id = artist.id", ROW_MAPPER);
     }
 
     public List<ArtistReview> findByArtistId(long id) {
-        return jdbcTemplate.query("SELECT * FROM artist_review WHERE artist_id = ?",
+        return jdbcTemplate.query("SELECT * FROM artist_review JOIN cuser ON artist_review.user_id = cuser.id JOIN artist ON artist_review.artist_id = artist.id WHERE artist_review.artist_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 ROW_MAPPER
@@ -58,8 +70,8 @@ public class ArtistReviewJdbcDao implements ArtistReviewDao {
     public int save(ArtistReview artistReview) {
         return jdbcTemplate.update(
                 "INSERT INTO artist_review (user_id, artist_id, title, description, rating, created_at, likes) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                artistReview.getUserId(),
-                artistReview.getArtistId(),
+                artistReview.getUser().getId(),
+                artistReview.getArtist().getId(),
                 artistReview.getTitle(),
                 artistReview.getDescription(),
                 artistReview.getRating(),

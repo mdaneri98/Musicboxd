@@ -1,19 +1,21 @@
 package ar.edu.itba.paw.models.reviews;
 
+import ar.edu.itba.paw.models.User;
+
 import java.time.LocalDateTime;
 
 public class Review {
 
     private Long id;
-    private Long userId;
+    private User user;
     private String title;
     private String description;
     private Integer rating;
     private LocalDateTime createdAt;
     private Integer likes;
 
-    public Review(Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        this.userId = userId;
+    public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+        this.user = user;
         this.title = title;
         this.description = description;
         this.rating = rating;
@@ -21,9 +23,9 @@ public class Review {
         this.likes = likes;
     }
 
-    public Review(Long id, Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+    public Review(Long id, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.title = title;
         this.description = description;
         this.rating = rating;
@@ -39,12 +41,12 @@ public class Review {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getTitle() {

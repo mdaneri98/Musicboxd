@@ -54,13 +54,12 @@ public class AlbumController {
         final ModelAndView mav = new ModelAndView("album");
 
         Album album = albumService.findById(albumId).orElseThrow();
-        Artist artist = artistService.findById(album.getArtistId()).orElseThrow();
         List<Song> songs = songService.findByAlbumId(albumId);
         List<AlbumReview> reviews = albumReviewService.findByAlbumId(albumId);
 
         mav.addObject("album", album);
         mav.addObject("songs", songs);
-        mav.addObject("artist", artist);
+        mav.addObject("artist", album.getArtist());
         mav.addObject("reviews", reviews);
 
         return mav;
@@ -87,8 +86,8 @@ public class AlbumController {
         User savedUser = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
         userService.incrementReviewAmount(savedUser);
         AlbumReview albumReview = new AlbumReview(
-                savedUser.getId(),
-                albumId,
+                savedUser,
+                new Album(albumId),
                 albumReviewForm.getTitle(),
                 albumReviewForm.getDescription(),
                 albumReviewForm.getRating(),

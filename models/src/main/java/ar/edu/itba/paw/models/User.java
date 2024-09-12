@@ -46,6 +46,13 @@ public class User {
         this.imgId = 1L;
     }
 
+    public User(Long id, String username, String name, Long imgId) {
+        this.id = id;
+        this.username = username;
+        this.name = name;
+        this.imgId = imgId;
+    }
+
     public static User unverifiedUser(String email) {
         return new User(
             0L,
