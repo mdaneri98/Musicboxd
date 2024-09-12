@@ -19,7 +19,7 @@ public class User {
     private Integer reviewAmount;
     private Long imgId;
 
-    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Long imgId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
+    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean verified, Long imgId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -44,7 +44,15 @@ public class User {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.imgId = 1L;
+        this.verified = false;
+        this.moderator = false;
+        this.followersAmount = 0;
+        this.followingAmount = 0;
+        this.reviewAmount = 0;
     }
+
+
+
 
     public static User unverifiedUser(String email) {
         return new User(
@@ -99,7 +107,7 @@ public class User {
         this.followersAmount = followersAmount;
     }
 
-    public boolean isModerator() {
+    public Boolean isModerator() {
         return moderator;
     }
 
@@ -167,11 +175,11 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public boolean isVerified() {
+    public Boolean isVerified() {
         return verified;
     }
 
-    public void setVerified(boolean verified) {
+    public void setVerified(Boolean verified) {
         this.verified = verified;
     }
 
