@@ -33,9 +33,9 @@ public class UserController {
     }
 
     @RequestMapping("/")
-    public ModelAndView profile() {
+    public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("users/profile");
-        mav.addObject("user", getLoggedUser());
+        mav.addObject("user", loggedUser);
         return mav;
     }
 
@@ -96,24 +96,17 @@ public class UserController {
     }
 
     @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)
-    public ModelAndView follow(@PathVariable(name = "userId") long userId) {
-        final int done = userService.createFollowing(getLoggedUser(), userId);
+    public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
+        final int done = userService.createFollowing(loggedUser, userId);
         return new ModelAndView("redirect:/");
     }
 
     @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.POST)
-    public ModelAndView unfollow(@PathVariable(name = "userId") long userId) {
-        final int done = userService.undoFollowing(getLoggedUser(), userId);
+    public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
+        final int done = userService.undoFollowing(loggedUser, userId);
         return new ModelAndView("redirect:/");
     }
 
-    @ModelAttribute(value = "loggedUser", binding = false)
-    public User getLoggedUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth.getPrincipal() instanceof AuthCUserDetails pud) {
-            return pud.getUser();
-        }
-        return null;
-    }
+
 
 }

@@ -175,7 +175,7 @@ public class User {
     }
 
     public boolean isVerified() {
-        return verified;
+        return verified == null ? false : verified;
     }
 
     public void setVerified(boolean verified) {
