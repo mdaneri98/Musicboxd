@@ -69,46 +69,43 @@ CREATE TABLE IF NOT EXISTS song_artist (
     PRIMARY KEY (song_id, artist_id)
 );
 
+CREATE TABLE IF NOT EXISTS review (
+     id SERIAL PRIMARY KEY,
+     user_id INT NOT NULL,
+     title VARCHAR(50) NOT NULL,
+     description VARCHAR(300) NOT NULL,
+     rating INT NOT NULL,
+     created_at TIMESTAMP DEFAULT NOW(),
+     likes INT DEFAULT 0,
+
+     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS artist_review (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
+    review_id INT NOT NULL,
     artist_id INT NOT NULL,
-    title VARCHAR(50) NOT NULL,
-    description VARCHAR(300) NOT NULL,
-    rating INT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    likes INT DEFAULT 0,
 
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE,
+    PRIMARY KEY (review_id, artist_id)
 );
 
 CREATE TABLE IF NOT EXISTS album_review (
-    id SERIAL PRIMARY KEY,
-    user_id SERIAL NOT NULL,
-    album_id SERIAL NOT NULL,
-    title VARCHAR(50) NOT NULL,
-    description VARCHAR(300) NOT NULL,
-    rating INT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    likes INT DEFAULT 0,
+    review_id INT NOT NULL,
+    album_id INT NOT NULL,
 
     FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE,
+    PRIMARY KEY (review_id, album_id)
 );
 
 CREATE TABLE IF NOT EXISTS song_review (
-    id SERIAL PRIMARY KEY,
-    user_id SERIAL NOT NULL,
-    song_id SERIAL NOT NULL,
-    title VARCHAR(50) NOT NULL,
-    description VARCHAR(300) NOT NULL,
-    rating INT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    likes INT DEFAULT 0,
+   review_id INT NOT NULL,
+   song_id INT NOT NULL,
 
-    FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+   FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE,
+   FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE,
+   PRIMARY KEY (review_id, song_id)
 );
 
 CREATE TABLE IF NOT EXISTS verify_user (
