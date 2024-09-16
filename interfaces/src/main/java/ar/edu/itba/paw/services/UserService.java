@@ -1,5 +1,8 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 
 import java.util.List;
@@ -29,5 +32,23 @@ public interface UserService {
     int decrementReviewAmount(User user);
     void createVerification(User user);
     boolean verify(String code);
+
+    // Artistas favoritos
+    List<Artist> getFavoriteArtists(long userId);
+    boolean addFavoriteArtist(long userId, long artistId);
+    boolean removeFavoriteArtist(long userId, long artistId);
+    int getFavoriteArtistsCount(long userId);
+
+    // Álbumes favoritos
+    List<Album> getFavoriteAlbums(long userId);
+    boolean addFavoriteAlbum(long userId, long albumId);
+    boolean removeFavoriteAlbum(long userId, long albumId);
+    int getFavoriteAlbumsCount(long userId);
+
+    // Canciones favoritas
+    List<Song> getFavoriteSongs(long userId);
+    boolean addFavoriteSong(long userId, long songId);
+    boolean removeFavoriteSong(long userId, long songId);
+    int getFavoriteSongsCount(long userId);
 
 }

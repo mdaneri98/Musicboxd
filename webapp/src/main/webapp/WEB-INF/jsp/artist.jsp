@@ -32,9 +32,9 @@
             <a href="${new_artist_review_url}">
                 <button>Make a review</button>
             </a>
-            <c:url value="/mod/add/artist/${artist.id}/album" var="new_album_url" />
-            <a href="${new_album_url}">
-                <button>Add Album</button>
+            <c:url value="/artist/${artist.id}/add-favorite" var="favorite_url" />
+            <a href="${favorite_url}">
+                <button>Add to favorites</button>
             </a>
         </div>
     </header>

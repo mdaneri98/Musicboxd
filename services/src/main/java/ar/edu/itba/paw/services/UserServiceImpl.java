@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.UserVerification;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.persistence.UserVerificationDao;
 import ar.edu.itba.paw.services.exception.UserAlreadyExistsException;
@@ -131,5 +130,74 @@ public class UserServiceImpl implements UserService {
     @Override
     public int deleteById(long id) {
         return userDao.deleteById(id);
+    }
+
+    @Override
+    public List<Artist> getFavoriteArtists(long userId) {
+        return userDao.getFavoriteArtists(userId);
+    }
+
+    @Override
+    public boolean addFavoriteArtist(long userId, long artistId) {
+        if (getFavoriteArtistsCount(userId) >= 5) {
+            return false;
+        }
+        return userDao.addFavoriteArtist(userId, artistId);
+    }
+
+    @Override
+    public boolean removeFavoriteArtist(long userId, long artistId) {
+        return userDao.removeFavoriteArtist(userId, artistId);
+    }
+
+    @Override
+    public int getFavoriteArtistsCount(long userId) {
+        return userDao.getFavoriteArtistsCount(userId);
+    }
+
+    @Override
+    public List<Album> getFavoriteAlbums(long userId) {
+        return userDao.getFavoriteAlbums(userId);
+    }
+
+    @Override
+    public boolean addFavoriteAlbum(long userId, long albumId) {
+        if (getFavoriteAlbumsCount(userId) >= 5) {
+            return false;
+        }
+        return userDao.addFavoriteAlbum(userId, albumId);
+    }
+
+    @Override
+    public boolean removeFavoriteAlbum(long userId, long albumId) {
+        return userDao.removeFavoriteAlbum(userId, albumId);
+    }
+
+    @Override
+    public int getFavoriteAlbumsCount(long userId) {
+        return userDao.getFavoriteAlbumsCount(userId);
+    }
+
+    @Override
+    public List<Song> getFavoriteSongs(long userId) {
+        return userDao.getFavoriteSongs(userId);
+    }
+
+    @Override
+    public boolean addFavoriteSong(long userId, long songId) {
+        if (getFavoriteSongsCount(userId) >= 5) {
+            return false;
+        }
+        return userDao.addFavoriteSong(userId, songId);
+    }
+
+    @Override
+    public boolean removeFavoriteSong(long userId, long songId) {
+        return userDao.removeFavoriteSong(userId, songId);
+    }
+
+    @Override
+    public int getFavoriteSongsCount(long userId) {
+        return userDao.getFavoriteSongsCount(userId);
     }
 }
