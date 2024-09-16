@@ -21,6 +21,8 @@ public interface UserService {
 
     int undoFollowing(User loggedUser, long followingUserId);
 
+    boolean isFollowing(Long userId, Long otherId);
+
     int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
 
     int deleteById(long id);
