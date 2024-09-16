@@ -6,8 +6,11 @@ import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.webapp.advice.UserControllerAdvice;
 import ar.edu.itba.paw.webapp.auth.AuthCUserDetails;
 import ar.edu.itba.paw.webapp.form.UserForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +27,8 @@ import java.util.List;
 @Controller
 public class UserController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
@@ -35,6 +40,7 @@ public class UserController {
     @RequestMapping("/")
     public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("users/profile");
+        LOGGER.info("Logged username: {}", loggedUser.getUsername());
         mav.addObject("user", loggedUser);
         return mav;
     }
