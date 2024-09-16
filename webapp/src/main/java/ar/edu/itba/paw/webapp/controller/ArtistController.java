@@ -45,7 +45,7 @@ public class ArtistController {
     }
 
     @RequestMapping("/{artistId:\\d+}")
-    public ModelAndView artist(@PathVariable(name = "artistId") long artistId) {
+    public ModelAndView artist(@PathVariable(name = "artistId") long artistId, @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("artist");
 
         Artist artist = artistService.findById(artistId).get();
@@ -57,6 +57,7 @@ public class ArtistController {
         mav.addObject("albums", albums);
         mav.addObject("songs", songs);
         mav.addObject("reviews", reviews);
+        mav.addObject("isFavorite", userService.isArtistFavorite(loggedUser.getId(), artistId));
         return mav;
     }
 

@@ -212,10 +212,20 @@
           </a>
           <c:url var="songReviewUrl" value="/song/${song.id}/reviews"/>
           <a href="${songReviewUrl}" class="button review-button">Make a review</a>
-          <c:url value="/song/${song.id}/add-favorite" var="favorite_url" />
-          <a href="${favorite_url}">
-            <button>Add to favorites</button>
-          </a>
+          <c:url value="/song/${song.id}/add-favorite" var="add_favorite_url" />
+          <c:url value="/song/${song.id}/remove-favorite" var="remove_favorite_url" />
+          <c:choose>
+            <c:when test="${!isFavorite}">
+              <a href="${add_favorite_url}">
+                <button type="submit">Add to favorites</button>
+              </a>
+            </c:when>
+            <c:otherwise>
+              <a href="${remove_favorite_url}">
+                <button type="submit">Remove from favorites</button>
+              </a>
+            </c:otherwise>
+          </c:choose>
         </div>
       </div>
     </div>

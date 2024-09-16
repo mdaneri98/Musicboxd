@@ -43,7 +43,7 @@ public class AlbumController {
     }
 
     @RequestMapping("/{albumId:\\d+}")
-    public ModelAndView album(@PathVariable(name = "albumId") long albumId) {
+    public ModelAndView album(@PathVariable(name = "albumId") long albumId, @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("album");
 
         Album album = albumService.findById(albumId).orElseThrow();
@@ -54,6 +54,7 @@ public class AlbumController {
         mav.addObject("songs", songs);
         mav.addObject("artist", album.getArtist());
         mav.addObject("reviews", reviews);
+        mav.addObject("isFavorite", userService.isAlbumFavorite(loggedUser.getId(), albumId));
 
         return mav;
     }

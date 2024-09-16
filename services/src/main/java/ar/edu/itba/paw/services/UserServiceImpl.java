@@ -100,6 +100,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isAlbumFavorite(Long userId, Long albumId) {
+        return userDao.isAlbumFavorite(userId, albumId);
+    }
+
+    @Override
+    public boolean isArtistFavorite(Long userId, Long artistId) {
+        return userDao.isArtistFavorite(userId, artistId);
+    }
+
+    @Override
+    public boolean isSongFavorite(Long userId, Long songId) {
+        return userDao.isSongFavorite(userId, songId);
+    }
+
+    @Override
     public int createFollowing(User userId, long followingId) {
         //FIXME: Corregir que sea tipo 'Long userId'
         if (this.isFollowing(userId.getId(), followingId)) {

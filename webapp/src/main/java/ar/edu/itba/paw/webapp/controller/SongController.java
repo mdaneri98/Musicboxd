@@ -45,7 +45,7 @@ public class SongController {
     }
 
     @RequestMapping("/{songId:\\d+}")
-    public ModelAndView song(@PathVariable(name = "songId") long songId) {
+    public ModelAndView song(@PathVariable(name = "songId") long songId, @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("song");
 
         Song song = songService.findById(songId).get();
@@ -56,6 +56,7 @@ public class SongController {
         mav.addObject("artists", artists);
         mav.addObject("song", song);
         mav.addObject("reviews", reviews);
+        mav.addObject("isFavorite", userService.isSongFavorite(loggedUser.getId(), songId));
         return mav;
     }
 
