@@ -19,28 +19,29 @@
     <h1>Submit an Artist</h1>
 
     <c:url var="postUrl" value="/mod/add/artist" />
-    <form action="${postUrl}" method="post" enctype="multipart/form-data">
+    <form:form modelAttribute="modArtistForm" action="${postUrl}" method="post" enctype="multipart/form-data">
         <div>
             <label>Name:
-                <input name="name" type="text" />
-                <form:errors path="name" cssClass="error" />
+                <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
+                <form:input path="name" type="text" />
             </label>
         </div>
         <div>
             <label>Bio:
-            <input name="bio" type="text" />
-            <form:errors path="bio" cssClass="error" />
+                <form:errors path="bio" cssClass="error" element="p" cssStyle="color:red;"/>
+                <form:input path="bio" type="text" />
             </label>
         </div>
         <div>
             <label>Image:
-                <input name="file" type="file" />
+                <form:errors path="file" cssClass="error" element="p" cssStyle="color:red;"/>
+                <form:input path="file" type="file" accept=".jpg,.jpeg,.png" />
             </label>
         </div>
         <div>
             <button type="submit">Submit Artist</button>
         </div>
-    </form>
+    </form:form>
 </div>
 </body>
 </html>

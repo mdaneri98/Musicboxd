@@ -37,6 +37,13 @@ public class Album {
         this.imgId = imgId;
     }
 
+    public Album(String title, String genre, Long imgId, Artist artist) {
+        this.title = title;
+        this.genre = genre;
+        this.imgId = imgId;
+        this.artist = artist;
+    }
+
     public Album(Long id) {
         this.id = id;
     }
