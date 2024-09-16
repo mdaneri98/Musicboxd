@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS image (
 
 CREATE TABLE IF NOT EXISTS cuser (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(100),
@@ -124,4 +124,31 @@ CREATE TABLE IF NOT EXISTS follower (
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
     FOREIGN KEY (following) REFERENCES cuser(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, following)
+);
+
+CREATE TABLE IF NOT EXISTS favorite_artist (
+     user_id INT NOT NULL,
+     artist_id INT NOT NULL,
+
+     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
+     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
+     PRIMARY KEY (user_id, artist_id)
+);
+
+CREATE TABLE IF NOT EXISTS favorite_album (
+    user_id INT NOT NULL,
+    album_id INT NOT NULL,
+
+    FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, album_id)
+);
+
+CREATE TABLE IF NOT EXISTS favorite_song (
+    user_id INT NOT NULL,
+    song_id INT NOT NULL,
+
+    FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, song_id)
 );
