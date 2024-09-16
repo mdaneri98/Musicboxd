@@ -47,6 +47,9 @@ public class UserController {
         final ModelAndView mav = new ModelAndView("users/profile");
         LOGGER.info("Logged username: {}", loggedUser.getUsername());
         mav.addObject("user", loggedUser);
+        mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
+        mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
+        mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));
         return mav;
     }
 
@@ -104,22 +107,16 @@ public class UserController {
     }
 
     @RequestMapping("/{userId:\\d+}")
-    public ModelAndView user(@PathVariable(name = "userId") long userId) {
+    public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
+        if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/profile").addObject("user", loggedUser);
+
         final ModelAndView mav = new ModelAndView("/users/user");
 
         User user = userService.findById(userId).get();
-        // GET FAVOURITE MUSIC FROM USER
-//        Artist artists = artistService.findById(artistId).get();
-//        List<Album> albums = albumService.findByArtistId(artistId);
-//        List<Song> songs = songService.findByArtistId(artistId);
-//        List<ArtistReview> reviews = artistReviewService.findByUserId(artistId);
-
-
         mav.addObject("user", user);
-//        mav.addObject("albums", albums);
-//        mav.addObject("artists", artists);
-//        mav.addObject("songs", songs);
-//        mav.addObject("reviews", reviews);
+        mav.addObject("albums", userService.getFavoriteAlbums(userId));
+        mav.addObject("artists", userService.getFavoriteArtists(userId));
+        mav.addObject("songs", userService.getFavoriteSongs(userId));
 
         return mav;
     }
@@ -153,13 +150,13 @@ public class UserController {
     @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)
     public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
         final int done = userService.createFollowing(loggedUser, userId);
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/user/" + userId);
     }
 
     @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.POST)
     public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
         final int done = userService.undoFollowing(loggedUser, userId);
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/user/" + userId);
     }
 
 

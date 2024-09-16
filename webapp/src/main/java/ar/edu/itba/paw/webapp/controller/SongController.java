@@ -86,6 +86,18 @@ public class SongController {
                 0
         );
         reviewService.saveSongReview(songReview);
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/song/" + songId);
+    }
+
+    @RequestMapping(value = "/{songId:\\d}/add-favorite", method = RequestMethod.GET)
+    public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
+        userService.addFavoriteSong(loggedUser.getId(), songId);
+        return new ModelAndView("redirect:/album/" + songId);
+    }
+
+    @RequestMapping(value = "/{songId:\\d}/remove-favorite", method = RequestMethod.GET)
+    public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
+        userService.removeFavoriteSong(loggedUser.getId(), songId);
+        return new ModelAndView("redirect:/song/" + songId);
     }
 }

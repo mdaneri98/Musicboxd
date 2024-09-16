@@ -23,6 +23,17 @@
             <h1><c:out value="${user.username}"/></h1>
             <p class="artist-bio"><c:out value="${user.bio}"/></p>
         </div>
+        <div class="user-stats">
+            <span class="stat-item">
+                <strong><c:out value="${user.reviewAmount}"/></strong> Posts
+            </span>
+            <span class="stat-item">
+                <strong><c:out value="${user.followersAmount}"/></strong> Followers
+            </span>
+            <span class="stat-item">
+                <strong><c:out value="${user.followingAmount}"/></strong> Following
+            </span>
+        </div>
         <div>
             <c:url value="/user/edit" var="edit_profile_url" />
             <a href="${edit_profile_url}">

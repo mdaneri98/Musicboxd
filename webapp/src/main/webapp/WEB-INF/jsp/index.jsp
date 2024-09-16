@@ -24,13 +24,6 @@
     </form>
 </div>
 
-<div>
-    <c:url value="/mod/add/artist" var="new_artist_url" />
-    <a href="${new_artist_url}">
-        <button>Add Artist</button>
-    </a>
-</div>
-
 <script>
     var artists = [
         <c:forEach items="${artists}" var="artist" varStatus="status">

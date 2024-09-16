@@ -212,6 +212,10 @@
           </a>
           <c:url var="songReviewUrl" value="/song/${song.id}/reviews"/>
           <a href="${songReviewUrl}" class="button review-button">Make a review</a>
+          <c:url value="/song/${song.id}/add-favorite" var="favorite_url" />
+          <a href="${favorite_url}">
+            <button>Add to favorites</button>
+          </a>
         </div>
       </div>
     </div>
