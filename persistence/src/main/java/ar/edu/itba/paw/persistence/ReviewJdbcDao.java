@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.persistence.reviews;
+package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
@@ -8,7 +8,6 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.persistence.ReviewDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -21,7 +20,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -192,14 +191,19 @@ public class ReviewJdbcDao implements ReviewDao {
     public int saveArtistReview(ArtistReview review) {
         int result = 0;
         KeyHolder keyHolder = saveReviewWithNoId(review);
-        if (keyHolder!= null && keyHolder.getKey() != null) {
-            long reviewId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-            result = jdbcTemplate.update(
-                    "INSERT INTO artist_review (review_id, artist_id) VALUES (?, ?)",
-                    reviewId,
-                    review.getArtist().getId()
-            );
-            review.setId(reviewId);
+        if (keyHolder != null ) {
+            Map<String, Object> keys = keyHolder.getKeys();
+            if (keys != null && keys.containsKey("id")) {
+                long reviewId = ((Number) keys.get("id")).longValue();
+                jdbcTemplate.update(
+                        "INSERT INTO artist_review (review_id, artist_id) VALUES (?, ?)",
+                        reviewId,
+                        review.getArtist().getId()
+                );
+                review.setId(reviewId);
+            } else {
+                throw new RuntimeException("Failed to retrieve the generated review ID");
+            }
         }
         return result;
     }
@@ -238,14 +242,19 @@ public class ReviewJdbcDao implements ReviewDao {
     public int saveAlbumReview(AlbumReview review) {
         int result = 0;
         KeyHolder keyHolder = saveReviewWithNoId(review);
-        if (keyHolder!= null && keyHolder.getKey() != null) {
-            long reviewId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-            result = jdbcTemplate.update(
-                    "INSERT INTO album_review (review_id, album_id) VALUES (?, ?)",
-                    reviewId,
-                    review.getAlbum().getId()
-            );
-            review.setId(reviewId);
+        if (keyHolder != null ) {
+            Map<String, Object> keys = keyHolder.getKeys();
+            if (keys != null && keys.containsKey("id")) {
+                long reviewId = ((Number) keys.get("id")).longValue();
+                jdbcTemplate.update(
+                        "INSERT INTO album_review (review_id, album_id) VALUES (?, ?)",
+                        reviewId,
+                        review.getAlbum().getId()
+                );
+                review.setId(reviewId);
+            } else {
+                throw new RuntimeException("Failed to retrieve the generated review ID");
+            }
         }
         return result;
     }
@@ -291,14 +300,19 @@ public class ReviewJdbcDao implements ReviewDao {
     public int saveSongReview(SongReview review) {
         int result = 0;
         KeyHolder keyHolder = saveReviewWithNoId(review);
-        if (keyHolder!= null && keyHolder.getKey() != null) {
-            long reviewId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-            result = jdbcTemplate.update(
-                    "INSERT INTO song_review (review_id, song_id) VALUES (?, ?)",
-                    reviewId,
-                    review.getSong().getId()
-            );
-            review.setId(reviewId);
+        if (keyHolder != null ) {
+            Map<String, Object> keys = keyHolder.getKeys();
+            if (keys != null && keys.containsKey("id")) {
+                long reviewId = ((Number) keys.get("id")).longValue();
+                jdbcTemplate.update(
+                        "INSERT INTO song_review (review_id, song_id) VALUES (?, ?)",
+                        reviewId,
+                        review.getSong().getId()
+                );
+                review.setId(reviewId);
+            } else {
+                throw new RuntimeException("Failed to retrieve the generated review ID");
+            }
         }
         return result;
     }

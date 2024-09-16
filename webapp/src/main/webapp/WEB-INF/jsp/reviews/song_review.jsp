@@ -29,7 +29,6 @@
 
     <c:url var="posturl" value="/song/${song.id}/reviews" />
     <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
-        <jsp:param name="modelAttribute" value="songReviewForm"/>
         <jsp:param name="posturl" value="${posturl}"/>
     </jsp:include>
 </div>

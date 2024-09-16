@@ -2,12 +2,11 @@ package ar.edu.itba.paw.webapp.controller;
 
 
 import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.services.*;
-import ar.edu.itba.paw.webapp.form.AlbumReviewForm;
+import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,27 +19,21 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RequestMapping("/album")
 @Controller
 public class AlbumController {
 
     private final UserService userService;
-    private final ArtistService artistService;
     private final AlbumService albumService;
     private final SongService songService;
-    private final AlbumReviewService albumReviewService;
-    private final EmailService emailService;
+    private final ReviewService reviewService;
 
-
-    public AlbumController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService, EmailService emailService) {
+    public AlbumController(UserService userService, AlbumService albumService, SongService songService, ReviewService reviewService) {
         this.userService = userService;
-        this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
-        this.albumReviewService = albumReviewService;
-        this.emailService = emailService;
+        this.reviewService = reviewService;
     }
 
     @RequestMapping("/")
@@ -55,7 +48,7 @@ public class AlbumController {
 
         Album album = albumService.findById(albumId).orElseThrow();
         List<Song> songs = songService.findByAlbumId(albumId);
-        List<AlbumReview> reviews = albumReviewService.findByAlbumId(albumId);
+        List<AlbumReview> reviews = reviewService.findReviewsByAlbumId(albumId);
 
         mav.addObject("album", album);
         mav.addObject("songs", songs);
@@ -66,35 +59,33 @@ public class AlbumController {
     }
 
     @RequestMapping(value = "/{albumId}/reviews", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("albumReviewForm") final AlbumReviewForm albumReviewForm, @PathVariable Long albumId) {
+    public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
         Album album = albumService.findById(albumId).orElseThrow();
 
 
         ModelAndView modelAndView = new ModelAndView("reviews/album_review");
-        albumReviewForm.setAlbumId(album.getId());
         modelAndView.addObject("album", album);
 
         return modelAndView;
     }
 
     @RequestMapping(value = "/{albumId}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("albumReviewForm") final AlbumReviewForm albumReviewForm, final BindingResult errors, @PathVariable Long albumId) throws MessagingException {
+    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, @ModelAttribute("loggedUser") User loggedUser, final BindingResult errors, @PathVariable Long albumId) throws MessagingException {
         if (errors.hasErrors()) {
-            return createForm(albumReviewForm, albumId);
+            return createForm(reviewForm, albumId);
         }
 
-        User savedUser = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
-        userService.incrementReviewAmount(savedUser);
+        userService.incrementReviewAmount(loggedUser);
         AlbumReview albumReview = new AlbumReview(
-                savedUser,
+                loggedUser,
                 new Album(albumId),
-                albumReviewForm.getTitle(),
-                albumReviewForm.getDescription(),
-                albumReviewForm.getRating(),
+                reviewForm.getTitle(),
+                reviewForm.getDescription(),
+                reviewForm.getRating(),
                 LocalDateTime.now(),
                 0
         );
-        albumReviewService.save(albumReview);
+        reviewService.saveAlbumReview(albumReview);
         return new ModelAndView("redirect:/");
     }
 

@@ -21,27 +21,15 @@ import java.util.Map;
 @Controller
 public class IndexController {
     private final ArtistService artistService;
-    private final AlbumService albumService;
-    private final SongService songService;
 
-    private final AlbumReviewService albumReviewService;
-
-    public IndexController(ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService) {
+    public IndexController(ArtistService artistService) {
         this.artistService = artistService;
-        this.albumService = albumService;
-        this.songService = songService;
-        this.albumReviewService = albumReviewService;
     }
 
     @RequestMapping("/")
     public ModelAndView index() {
         final ModelAndView mav = new ModelAndView("index");
-
-        List<AlbumReview> allReviews = albumReviewService.findAll();
-        List<AlbumReview> albumReviews = allReviews.subList(0, Math.min(5, allReviews.size()));
-
         mav.addObject("artists", artistService.findAll());
-        mav.addObject("reviews", albumReviews);
         return mav;
     }
 }
