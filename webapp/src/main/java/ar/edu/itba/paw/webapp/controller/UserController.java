@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestMapping("/user")
@@ -56,7 +57,6 @@ public class UserController {
         ModelAndView modelAndView = new ModelAndView("users/edit_profile");
 
         userProfileForm.setUsername(loggedUser.getUsername());
-        userProfileForm.setEmail(loggedUser.getEmail());
         userProfileForm.setName(loggedUser.getName());
         userProfileForm.setBio(loggedUser.getBio());
 
@@ -81,16 +81,8 @@ public class UserController {
                 e.printStackTrace();    //Change to logging ERROR
             }
         }
-        if (upf.getUsername() != null)
-            loggedUser.setUsername(upf.getUsername());
-        if (upf.getEmail() != null)
-            loggedUser.setEmail(upf.getEmail());
-        if (upf.getName() != null)
-            loggedUser.setName(upf.getName());
-        if (upf.getBio() != null)
-            loggedUser.setBio(upf.getBio());
 
-        userService.update(loggedUser);
+        userService.update(loggedUser.getId(), upf.getUsername(), loggedUser.getEmail(), loggedUser.getPassword(), upf.getName(), upf.getBio(), LocalDateTime.now(), loggedUser.isVerified(), loggedUser.isModerator(), loggedUser.getImgId(), loggedUser.getFollowersAmount(), loggedUser.getFollowingAmount(), loggedUser.getReviewAmount());
         return new ModelAndView("redirect:/user/");
     }
 
@@ -141,8 +133,7 @@ public class UserController {
             return createForm(userForm);
         }
 
-        User user = new User(userForm.getUsername(), userForm.getPassword(), userForm.getEmail());
-        final int done = userService.create(user);
+        final int done = userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
         // "Generar una sesión" (así no redirije a /login)
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
         SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authenticationToken));

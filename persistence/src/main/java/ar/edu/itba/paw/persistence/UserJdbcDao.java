@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,18 +42,13 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public int create(User user) {
+    public int create(String username, String email, String password) {
         return jdbcTemplate.update(
-                "INSERT INTO cuser (username, email, password, name, bio, created_at, updated_at, verified, img_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getName(),
-                user.getBio(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.isVerified(),
-                user.getImgId()
+                "INSERT INTO cuser (username, email, password, img_id) VALUES (?, ?, ?, ?)",
+                username,
+                email,
+                password,
+                1
         );
     }
 
@@ -89,21 +85,22 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public int update(User user) {
+    public int update(Long userId, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount) {
         return jdbcTemplate.update(
-                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, verified = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getName(),
-                user.getBio(),
-                user.getUpdatedAt(),
-                user.isVerified(),
-                user.getImgId(),
-                user.getFollowersAmount(),
-                user.getFollowingAmount(),
-                user.getReviewAmount(),
-                user.getId()
+                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
+                username,
+                email,
+                password,
+                name,
+                bio,
+                updated_at,
+                verified,
+                moderator,
+                imgId,
+                followers_amount,
+                following_amount,
+                review_amount,
+                userId
         );
     }
 
