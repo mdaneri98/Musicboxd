@@ -101,7 +101,7 @@ public class UserController {
 
     @RequestMapping("/{userId:\\d+}")
     public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
-        if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/profile").addObject("user", loggedUser);
+        if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/").addObject("user", loggedUser);
 
         final ModelAndView mav = new ModelAndView("/users/user");
 

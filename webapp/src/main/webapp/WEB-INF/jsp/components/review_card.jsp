@@ -153,7 +153,7 @@
     </div>
     <div class="star-rating">
         <div class="fill" style="width: ${param.rating * 20}%;">
-            <span>&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            <span><c:forEach var="i" begin="1" end="${param.rating}">&#9733;</c:forEach></span>
         </div>
         <div class="base">
             <span>&#9733;&#9733;&#9733;&#9733;&#9733;</span>

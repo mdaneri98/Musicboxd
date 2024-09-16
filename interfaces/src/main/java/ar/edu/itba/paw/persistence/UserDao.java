@@ -35,17 +35,22 @@ public interface UserDao {
     boolean addFavoriteArtist(long userId, long artistId);
     boolean removeFavoriteArtist(long userId, long artistId);
     int getFavoriteArtistsCount(long userId);
+    boolean isArtistFavorite(Long userId, Long artistId);
 
     // Álbumes favoritos
     List<Album> getFavoriteAlbums(long userId);
     boolean addFavoriteAlbum(long userId, long albumId);
     boolean removeFavoriteAlbum(long userId, long albumId);
     int getFavoriteAlbumsCount(long userId);
+    boolean isAlbumFavorite(Long userId, Long albumId);
 
     // Canciones favoritas
     List<Song> getFavoriteSongs(long userId);
     boolean addFavoriteSong(long userId, long songId);
     boolean removeFavoriteSong(long userId, long songId);
     int getFavoriteSongsCount(long userId);
+    boolean isSongFavorite(Long userId, Long songId);
+
+
 
 }

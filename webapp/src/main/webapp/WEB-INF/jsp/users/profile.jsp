@@ -20,21 +20,20 @@
         <img src="${userImgURL}" alt="User Name" class="artist-image">
         <div class="artist-info">
             <p class="artist-type">User</p>
-            <h1><c:out value="${user.username}"/></h1>
+            <h1>@<c:out value="${user.username}"/></h1>
+            <h3><c:out value="${user.name}"/></h3>
             <p class="artist-bio"><c:out value="${user.bio}"/></p>
-        </div>
-        <div class="user-stats">
-            <span class="stat-item">
-                <strong><c:out value="${user.reviewAmount}"/></strong> Posts
-            </span>
-            <span class="stat-item">
-                <strong><c:out value="${user.followersAmount}"/></strong> Followers
-            </span>
-            <span class="stat-item">
-                <strong><c:out value="${user.followingAmount}"/></strong> Following
-            </span>
-        </div>
-        <div>
+            <div class="user-stats">
+      <span class="stat-item">
+        <strong><c:out value="${user.reviewAmount}"/></strong> Posts
+      </span>
+                <span class="stat-item">
+        <strong><c:out value="${user.followersAmount}"/></strong> Followers
+      </span>
+                <span class="stat-item">
+        <strong><c:out value="${user.followingAmount}"/></strong> Following
+      </span>
+            </div>
             <c:url value="/user/edit" var="edit_profile_url" />
             <a href="${edit_profile_url}">
                 <button>Edit Profile</button>
@@ -43,6 +42,11 @@
     </header>
 
     <h2>Favourite Albums</h2>
+    <c:if test="${albums.size() == 0}">
+        <div class="artist">
+            <p>Add up to 5 favorite albums!</p>
+        </div>
+    </c:if>
     <div class="carousel">
         <c:forEach var="album" items="${albums}" varStatus="status">
             <c:url var="albumUrl" value="/album/${album.id}"/>
@@ -57,6 +61,11 @@
     </div>
 
     <h2>Favourite artists</h2>
+    <c:if test="${artists.size() == 0}">
+        <div class="artist">
+            <p>Add up to 5 favorite artists!</p>
+        </div>
+    </c:if>
     <div class="carousel">
         <c:forEach var="artist" items="${artists}" varStatus="status">
             <c:url var="artistUrl" value="/artist/${artist.id}"/>
@@ -71,6 +80,11 @@
     </div>
 
     <h2>Favourite Songs</h2>
+    <c:if test="${songs.size() == 0}">
+        <div class="artist">
+            <p>Add up to 5 favorite songs!</p>
+        </div>
+    </c:if>
     <ul class="song-list">
         <c:forEach var="song" items="${songs}" varStatus="status">
             <c:url var="songUrl" value="/song/${song.id}"/>

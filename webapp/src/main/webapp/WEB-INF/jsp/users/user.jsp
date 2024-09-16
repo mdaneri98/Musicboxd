@@ -39,7 +39,7 @@
       <c:url value="/user/${user.id}/follow" var="follow_user_url" />
       <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
       <c:choose>
-        <c:when test="${isFollowing}">
+        <c:when test="${!isFollowing}">
           <form action="${follow_user_url}" method="post">
             <button type="submit">Follow</button>
           </form>
@@ -54,20 +54,23 @@
     </div>
   </header>
 
-  <h2>Favourite Albums</h2>
-  <div class="carousel">
-    <c:forEach var="album" items="${albums}" varStatus="status">
-      <c:url var="albumUrl" value="/album/${album.id}"/>
-      <a href="${albumUrl}">
-        <div class="album">
-          <c:url var="albumImgURL" value="/images/${album.imgId}"/>
-          <img src="${albumImgURL}" alt="Album ${status.index + 1}">
-          <p><c:out value="${album.title}"/></p>
-        </div>
-      </a>
-    </c:forEach>
-  </div>
+  <c:if test="${albums.size() > 0}">
+    <h2>Favourite Albums</h2>
+    <div class="carousel">
+      <c:forEach var="album" items="${albums}" varStatus="status">
+        <c:url var="albumUrl" value="/album/${album.id}"/>
+        <a href="${albumUrl}">
+          <div class="album">
+            <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+            <img src="${albumImgURL}" alt="Album ${status.index + 1}">
+            <p><c:out value="${album.title}"/></p>
+          </div>
+        </a>
+      </c:forEach>
+    </div>
+  </c:if>
 
+  <c:if test="${artists.size() > 0}">
   <h2>Favourite artists</h2>
   <div class="carousel">
     <c:forEach var="artist" items="${artists}" varStatus="status">
@@ -81,7 +84,9 @@
       </a>
     </c:forEach>
   </div>
+  </c:if>
 
+  <c:if test="${songs.size() > 0}">
   <h2>Favourite Songs</h2>
   <ul class="song-list">
     <c:forEach var="song" items="${songs}" varStatus="status">
@@ -94,6 +99,7 @@
       </a>
     </c:forEach>
   </ul>
+  </c:if>
 
   <!-- Cards Container -->
   <div class="cards-container">

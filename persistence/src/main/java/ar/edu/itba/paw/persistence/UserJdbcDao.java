@@ -63,6 +63,27 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
+    public boolean isArtistFavorite(Long userId, Long artistId) {
+        String sql = "SELECT COUNT(*) FROM favorite_artist WHERE user_id = ? AND artist_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, artistId);
+        return count > 0;
+    }
+
+    @Override
+    public boolean isAlbumFavorite(Long userId, Long albumId) {
+        String sql = "SELECT COUNT(*) FROM favorite_album WHERE user_id = ? AND album_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, albumId);
+        return count > 0;
+    }
+
+    @Override
+    public boolean isSongFavorite(Long userId, Long songId) {
+        String sql = "SELECT COUNT(*) FROM favorite_song WHERE user_id = ? AND song_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, songId);
+        return count > 0;
+    }
+
+    @Override
     public int createFollowing(User user, User following) {
         int result = jdbcTemplate.update(
                 "INSERT INTO follower (user_id, following) VALUES (?, ?)",
