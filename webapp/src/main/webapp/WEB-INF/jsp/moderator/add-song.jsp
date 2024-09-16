@@ -18,30 +18,30 @@
 <div class="container">
     <h1>Submit a Song</h1>
 
-    <c:url var="postUrl" value="/album/${albumId}/mod/add/song" />
-    <form action="${postUrl}" method="post" enctype="multipart/form-data">
+    <c:url var="postUrl" value="/mod/add/album/${albumId}/song" />
+    <form:form modelAttribute="modSongForm" action="${postUrl}" method="post">
         <div>
             <label>Title:
-                <input name="title" type="text" />
-                <form:errors path="title" cssClass="error" />
+                <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
+                <form:input path="title" type="text" />
             </label>
         </div>
         <div>
             <label>Duration:
-                <input name="duration" type="text" placeholder="MM:SS" />
-                <form:errors path="duration" cssClass="error" />
+                <form:errors path="duration" cssClass="error" element="p" cssStyle="color:red;"/>
+                <form:input path="duration" type="text" placeholder="MM:SS - Example: 10:24 or 3:15" />
             </label>
         </div>
         <div>
             <label>Track Number:
-                <input name="trackNumber" type="number" />
-                <form:errors path="trackNumber" cssClass="error" />
+                <form:errors path="trackNumber" cssClass="error" element="p" cssStyle="color:red;"/>
+                <form:input path="trackNumber" type="number" />
             </label>
         </div>
         <div>
             <button type="submit">Submit Song</button>
         </div>
-    </form>
+    </form:form>
 </div>
 </body>
 </html>

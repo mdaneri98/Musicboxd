@@ -18,7 +18,7 @@ public class ImageServiceImpl implements ImageService {
         return imageDao.findById(id);
     }
 
-    public Image save(byte[] bytes) {
+    public long save(byte[] bytes) {
         return imageDao.save(bytes);
     }
 

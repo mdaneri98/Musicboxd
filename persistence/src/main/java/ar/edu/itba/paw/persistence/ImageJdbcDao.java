@@ -41,10 +41,9 @@ public class ImageJdbcDao implements ImageDao {
     }
 
     @Override
-    public Image save(byte[] bytes) {
+    public long save(byte[] bytes) {
         Map<String, byte[]> imageData = Map.of("content",bytes);
-        Number generatedId = jdbcInsert.executeAndReturnKey(imageData);
-        return new Image(generatedId.longValue(), bytes);
+        return jdbcInsert.executeAndReturnKey(imageData).longValue();
     }
 
     @Override

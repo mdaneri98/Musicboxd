@@ -10,12 +10,18 @@ import ar.edu.itba.paw.services.ArtistService;
 import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.services.SongService;
 
+import ar.edu.itba.paw.webapp.form.ModAlbumForm;
+import ar.edu.itba.paw.webapp.form.ModArtistForm;
+import ar.edu.itba.paw.webapp.form.ModSongForm;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Optional;
 
 @RequestMapping("/mod")
 @Controller
@@ -26,6 +32,8 @@ public class ModeratorController {
     private final AlbumService albumService;
     private final SongService songService;
 
+    private final long DEFAULT_IMAGE_ID = 1;
+
     public ModeratorController(ImageService imageService, ArtistService artistService, AlbumService albumService, SongService songService) {
         this.imageService = imageService;
         this.artistService = artistService;
@@ -34,60 +42,86 @@ public class ModeratorController {
     }
 
     @RequestMapping(path = "add/artist", method = RequestMethod.GET)
-    public ModelAndView addArtistForm() {
+    public ModelAndView addArtistForm(@ModelAttribute("modArtistForm") final ModArtistForm modArtistForm) {
         return new ModelAndView("moderator/add-artist");
     }
 
     @RequestMapping(path = "add/artist", method = RequestMethod.POST)
-    public ModelAndView submitArtistForm(@ModelAttribute("artist") Artist artist,
-                                         @RequestParam("file") MultipartFile file) {
-        try {
-            Image image = imageService.save(file.getBytes());
-            artist.setImgId(image.getId());
-        } catch (IOException e) {
-            e.printStackTrace();
+    public ModelAndView submitArtistForm(@Valid @ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
+                                         final BindingResult errors) {
+
+        // Check if there are any validation errors
+        if (errors.hasErrors()) {
+            return addArtistForm(modArtistForm);
         }
+        long imageId = DEFAULT_IMAGE_ID;
+        try {
+            imageId = imageService.save(modArtistForm.getFile().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();    //Change to logging ERROR
+        }
+
+        Artist artist = new Artist(modArtistForm.getName(),modArtistForm.getBio(), imageId);
         long artistId = artistService.save(artist);
+
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
         modelAndView.addObject("artist", artist);
         return modelAndView;
     }
 
     @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.GET)
-    public ModelAndView addAlbumForm(@PathVariable(name = "artistId") long artistId) {
+    public ModelAndView addAlbumForm(@PathVariable(name = "artistId") final long artistId,
+                                     @ModelAttribute("modAlbumFrom") final ModAlbumForm modAlbumForm) {
         return new ModelAndView("moderator/add-album").addObject(artistId);
     }
 
     @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.POST)
-    public ModelAndView submitAlbumForm(@PathVariable(name = "artistId") long artistId,
-                                        @ModelAttribute("album") Album album,
-                                        @RequestParam("file") MultipartFile file) {
-        try {
-            Image image = imageService.save(file.getBytes());
-            album.setImgId(image.getId());
-            albumService.save(album);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public ModelAndView submitAlbumForm(@PathVariable(name = "artistId") final long artistId,
+                                        @Valid @ModelAttribute("modAlbumFrom") final ModAlbumForm modAlbumForm,
+                                        @RequestParam("file") final MultipartFile file,
+                                        final BindingResult errors) {
+
+        // Check if there are any validation errors
+        if (errors.hasErrors()) {
+            return addAlbumForm(artistId, modAlbumForm);
         }
+
+        long imageId = DEFAULT_IMAGE_ID;
+        try {
+            imageId = imageService.save(file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();    //Change to logging ERROR
+        }
+        Artist artist = artistService.findById(artistId).get();
+        Album album = new Album(modAlbumForm.getTitle(), modAlbumForm.getGenre(), imageId, artist);
+        albumService.save(album);
+
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
-        modelAndView.addObject("artist", artistService.findById(artistId).get());
+        modelAndView.addObject("artist", artist);
         return modelAndView;
     }
 
     @RequestMapping(path = "/add/album/{albumId:\\d+}/song", method = RequestMethod.GET)
-    public ModelAndView addSongForm(@PathVariable(name = "albumId") long albumId) {
+    public ModelAndView addSongForm(@PathVariable(name = "albumId") final long albumId,
+                                    @ModelAttribute("modSongForm") final ModSongForm modSongForm) {
         return new ModelAndView("moderator/add-song").addObject(albumId);
     }
 
     @RequestMapping(path = "add/album/{albumId:\\d+}/song", method = RequestMethod.POST)
-    public ModelAndView submitSongForm(@PathVariable(name = "albumId") long albumId,
-                                       @ModelAttribute("song") Song song,
-                                       @RequestParam("file") MultipartFile file) {
+    public ModelAndView submitSongForm(@PathVariable(name = "albumId") final long albumId,
+                                       @Valid @ModelAttribute("modSongForm") final ModSongForm modSongForm,
+                                       final BindingResult errors) {
 
+        if (errors.hasErrors()) {
+            return addSongForm(albumId, modSongForm);
+        }
+
+        Album album = albumService.findById(albumId).get();
+        Song song = new Song(modSongForm.getTitle(), modSongForm.getDuration(), modSongForm.getTrackNumber().intValue(), album);
         songService.save(song);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + albumId);
-        modelAndView.addObject("album", albumService.findById(albumId).get());
+        modelAndView.addObject("album", album);
         return modelAndView;
     }
 }

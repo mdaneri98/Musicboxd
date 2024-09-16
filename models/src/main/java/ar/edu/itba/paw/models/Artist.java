@@ -26,6 +26,12 @@ public class Artist {
         this.imgId = imgId;
     }
 
+    public Artist(String name, String bio, Long imgId) {
+        this.name = name;
+        this.bio = bio;
+        this.imgId = imgId;
+    }
+
     public Artist(Long id) {
         this.id = id;
     }

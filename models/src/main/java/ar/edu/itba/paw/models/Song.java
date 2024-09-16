@@ -30,6 +30,13 @@ public class Song {
         this.album = album;
     }
 
+    public Song(String title, String duration, Integer trackNumber, Album album) {
+        this.title = title;
+        this.duration = duration;
+        this.trackNumber = trackNumber;
+        this.album = album;
+    }
+
     public Song(Long id) {
         this.id = id;
     }
