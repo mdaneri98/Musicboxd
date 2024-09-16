@@ -5,10 +5,12 @@ import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
+import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.advice.UserControllerAdvice;
 import ar.edu.itba.paw.webapp.auth.AuthCUserDetails;
 import ar.edu.itba.paw.webapp.form.UserForm;
+import ar.edu.itba.paw.webapp.form.UserProfileForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/user")
@@ -30,10 +33,12 @@ public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
+    private final ImageService imageService;
     private final AuthenticationManager authenticationManager;
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager) {
+    public UserController(UserService userService, ImageService imageService, AuthenticationManager authenticationManager) {
         this.userService = userService;
+        this.imageService = imageService;
         this.authenticationManager = authenticationManager;
     }
 
@@ -43,6 +48,50 @@ public class UserController {
         LOGGER.info("Logged username: {}", loggedUser.getUsername());
         mav.addObject("user", loggedUser);
         return mav;
+    }
+
+    @RequestMapping(path = "/edit", method = RequestMethod.GET)
+    public ModelAndView editProfile(@ModelAttribute("userProfileForm") final UserProfileForm userProfileForm,
+                                    @ModelAttribute("loggedUser") User loggedUser) {
+        ModelAndView modelAndView = new ModelAndView("users/edit_profile");
+
+        userProfileForm.setUsername(loggedUser.getUsername());
+        userProfileForm.setEmail(loggedUser.getEmail());
+        userProfileForm.setName(loggedUser.getName());
+        userProfileForm.setBio(loggedUser.getBio());
+
+        modelAndView.addObject("userProfileForm", userProfileForm);
+        return modelAndView;
+    }
+
+    @RequestMapping(path = "/edit", method = RequestMethod.POST)
+    public ModelAndView submitProfile(@Valid @ModelAttribute("userProfileForm") final UserProfileForm upf,
+                                      @ModelAttribute("loggedUser") User loggedUser,
+                                      final BindingResult errors) {
+
+        // Check if there are any validation errors
+        if (errors.hasErrors()) {
+            return editProfile(upf, loggedUser);
+        }
+        if(upf.getProfilePicture() != null && !upf.getProfilePicture().isEmpty()) {
+            try {
+                long imageId = imageService.save(upf.getProfilePicture().getBytes());
+                loggedUser.setImgId(imageId);
+            } catch (IOException e) {
+                e.printStackTrace();    //Change to logging ERROR
+            }
+        }
+        if (upf.getUsername() != null)
+            loggedUser.setUsername(upf.getUsername());
+        if (upf.getEmail() != null)
+            loggedUser.setEmail(upf.getEmail());
+        if (upf.getName() != null)
+            loggedUser.setName(upf.getName());
+        if (upf.getBio() != null)
+            loggedUser.setBio(upf.getBio());
+
+        userService.update(loggedUser);
+        return new ModelAndView("redirect:/user/");
     }
 
     @RequestMapping("/verification")
