@@ -57,7 +57,7 @@ public class ArtistJdbcDao implements ArtistDao {
     @Override
     public int update(Artist artist) {
         return jdbcTemplate.update(
-                "UPDATE artist SET name = ?, bio = ?, created_at = ?, updated_at = ?, img_src = ? WHERE id = ?",
+                "UPDATE artist SET name = ?, bio = ?, created_at = ?, updated_at = ?, img_id = ? WHERE id = ?",
                 artist.getName(),
                 artist.getBio(),
                 artist.getCreatedAt(),
