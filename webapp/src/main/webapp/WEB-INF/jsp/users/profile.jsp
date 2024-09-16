@@ -23,6 +23,12 @@
             <h1><c:out value="${user.username}"/></h1>
             <p class="artist-bio"><c:out value="${user.bio}"/></p>
         </div>
+        <div>
+            <c:url value="/user/edit" var="edit_profile_url" />
+            <a href="${edit_profile_url}">
+                <button>Edit Profile</button>
+            </a>
+        </div>
     </header>
 
     <h2>Favourite Albums</h2>
