@@ -60,7 +60,7 @@ public class ArtistController {
         return mav;
     }
 
-    @RequestMapping(value = "/{artistId}/reviews", method = RequestMethod.GET)
+    @RequestMapping(value = "/{artistId:\\d}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long artistId) {
         Optional<Artist> artistOptional = artistService.findById(artistId);
         if (artistOptional.isEmpty())
@@ -74,7 +74,7 @@ public class ArtistController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/{artistId}/reviews", method = RequestMethod.POST)
+    @RequestMapping(value = "/{artistId:\\d}/reviews", method = RequestMethod.POST)
     public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, @ModelAttribute("loggedUser") User loggedUser, final BindingResult errors, @PathVariable Long artistId) throws MessagingException {
         if (errors.hasErrors()) {
             return createForm(reviewForm, artistId);
@@ -92,6 +92,18 @@ public class ArtistController {
                 0
         );
         reviewService.saveArtistReview(artistReview);
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/artist/" + artistId);
+    }
+
+    @RequestMapping(value = "/{artistId:\\d}/add-favorite", method = RequestMethod.GET)
+    public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
+        userService.addFavoriteArtist(loggedUser.getId(), artistId);
+        return new ModelAndView("redirect:/artist/" + artistId);
+    }
+
+    @RequestMapping(value = "/{artistId:\\d}/remove-favorite", method = RequestMethod.GET)
+    public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
+        userService.removeFavoriteArtist(loggedUser.getId(), artistId);
+        return new ModelAndView("redirect:/artist/" + artistId);
     }
 }

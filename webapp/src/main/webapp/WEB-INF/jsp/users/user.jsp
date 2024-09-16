@@ -16,23 +16,6 @@
 </head>
 <body>
 <div class="container">
-<%--  <header>--%>
-<%--    <c:url var="userImgURL" value="/images/${user.imgId}"/>--%>
-<%--    <img src="${userImgURL}" alt="User Name" class="artist-image">--%>
-<%--    <div class="artist-info">--%>
-<%--      <p class="artist-type">User</p>--%>
-<%--      <h1><c:out value="${user.username}"/></h1>--%>
-<%--      <p class="artist-bio"><c:out value="${user.bio}"/></p>--%>
-<%--      <c:url value="/user/${user.id}/follow" var="follow_user_url" />--%>
-<%--      <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />--%>
-<%--      <form action="${follow_user_url}" method="post">--%>
-<%--        <button type="submit">Follow</button>--%>
-<%--      </form>--%>
-<%--&lt;%&ndash;      <a href="${unfollow_user_url}">&ndash;%&gt;--%>
-<%--&lt;%&ndash;        <button>Unfollow</button>&ndash;%&gt;--%>
-<%--&lt;%&ndash;      </a>&ndash;%&gt;--%>
-<%--    </div>--%>
-<%--  </header>--%>
 
   <header>
     <c:url var="userImgURL" value="/images/${user.imgId}"/>
