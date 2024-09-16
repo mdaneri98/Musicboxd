@@ -27,12 +27,6 @@
             </label>
         </div>
         <div>
-            <label>Email:
-                <form:errors path="email" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="email" type="text" />
-            </label>
-        </div>
-        <div>
             <label>Name:
                 <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="name" type="text" />

@@ -19,6 +19,7 @@ import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,13 +59,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public int incrementReviewAmount(User user) {
         user.incrementReviewAmount();
-        return userDao.update(user);
+        return userDao.update(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getName(), user.getBio(), user.getUpdatedAt(), user.isVerified(), user.isModerator(), user.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());
     }
 
     @Override
     public int decrementReviewAmount(User user) {
         user.decrementReviewAmount();
-        return userDao.update(user);
+        return userDao.update(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getName(), user.getBio(), user.getUpdatedAt(), user.isVerified(), user.isModerator(), user.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());
     }
 
     @Override
@@ -73,22 +74,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int create(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public int create(String username, String email, String password) {
+        String hashedPassword = passwordEncoder.encode(password);
 
         /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
-        Optional<User> optUser = this.findByEmail(user.getEmail());
-        if (optUser.isPresent()) {
-            if (!optUser.get().getUsername().isEmpty())
-                throw new UserAlreadyExistsException("El correo " + user.getEmail() + " ya está en uso.");
-            user.setId(optUser.get().getId());
-            return this.update(user);
+        Optional<User> emailOptUser = this.findByEmail(email);
+        Optional<User> usernameOptUser = this.findByUsername(username);
+        if (emailOptUser.isPresent()) {
+                throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
+        }
+        if (usernameOptUser.isPresent()) {
+            throw new UserAlreadyExistsException("El usuario " + username + " ya está en uso.");
         }
 
-        int rowsChanged = userDao.create(user);
-        if (rowsChanged > 0)
-            user = userDao.findByEmail(user.getEmail()).orElseThrow();
-            this.createVerification(user);
+        int rowsChanged = userDao.create(username, email, hashedPassword);
+        if (rowsChanged > 0) {
+            User createdUser = userDao.findByEmail(email).get();
+            this.createVerification(createdUser);
+        }
         return rowsChanged;
     }
 
@@ -124,8 +127,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int update(User user) {
-        return userDao.update(user);
+    public int update(Long userId, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount) {
+        return userDao.update(userId, username, email, password, name, bio, updated_at, verified, moderator, imgId, followers_amount, following_amount, review_amount);
     }
 
     @Override

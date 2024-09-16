@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.form;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -12,17 +13,17 @@ public class UserProfileForm {
     @Size(min = 4, max = 50)
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "Username must start with a letter and contain only letters and numbers.")
     private String username;
-    @Email(message = "Please provide a valid email.")
-    private String email;
+
     @Size(max = 100, message = "Name can be up to 100 characters.")
     private String name;
+
     @Size(max = 400, message = "Bio can be up to 400 characters.")
     private String bio;
+
     private final MultipartFile profilePicture;
 
-    public UserProfileForm(String username, String email, String name, String bio, MultipartFile profilePicture) {
+    public UserProfileForm(String username, String name, String bio, MultipartFile profilePicture) {
         this.username = username;
-        this.email = email;
         this.name = name;
         this.bio = bio;
         this.profilePicture = profilePicture;
@@ -34,14 +35,6 @@ public class UserProfileForm {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getName() {
