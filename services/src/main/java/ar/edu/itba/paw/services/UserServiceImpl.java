@@ -95,7 +95,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isFollowing(Long userId, Long otherId) {
+        return userDao.isFollowing(userId, otherId);
+    }
+
+    @Override
     public int createFollowing(User userId, long followingId) {
+        //FIXME: Corregir que sea tipo 'Long userId'
+        if (this.isFollowing(userId.getId(), followingId)) {
+            return 0;
+        }
         return userDao.createFollowing(userId, findById(followingId).get());
     }
 

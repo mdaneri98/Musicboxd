@@ -81,7 +81,8 @@ public class UserController {
                 long imageId = imageService.save(upf.getProfilePicture().getBytes());
                 loggedUser.setImgId(imageId);
             } catch (IOException e) {
-                e.printStackTrace();    //Change to logging ERROR
+                LOGGER.debug("Error en '/user/edit' al leer los bytes del profile {}", e.getMessage());
+                return new ModelAndView("redirect:/error");
             }
         }
 
@@ -106,6 +107,7 @@ public class UserController {
 
         User user = userService.findById(userId).get();
         mav.addObject("user", user);
+        mav.addObject("isFollowing", userService.isFollowing(loggedUser.getId(), userId));
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
         mav.addObject("artists", userService.getFavoriteArtists(userId));
         mav.addObject("songs", userService.getFavoriteSongs(userId));

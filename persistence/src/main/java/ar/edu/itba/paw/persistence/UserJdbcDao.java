@@ -56,6 +56,13 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
+    public boolean isFollowing(Long userId, Long otherId) {
+        String sql = "SELECT COUNT(*) FROM follower WHERE user_id = ? AND following = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, otherId);
+        return count > 0;
+    }
+
+    @Override
     public int createFollowing(User user, User following) {
         int result = jdbcTemplate.update(
                 "INSERT INTO follower (user_id, following) VALUES (?, ?)",
@@ -79,8 +86,10 @@ public class UserJdbcDao implements UserDao {
                 following.getId()
         );
         if (result == 1) {
-            updateFollowingAmount(user, user.getFollowingAmount() - 1);
-            updateFollowersAmount(following, following.getFollowersAmount() - 1);
+            int followingAmount = user.getFollowingAmount();
+            int followersAmount = following.getFollowersAmount();
+            updateFollowingAmount(user, followingAmount == 0 ? 0 : followingAmount - 1);
+            updateFollowersAmount(following,  followersAmount == 0 ? 0 : followersAmount - 1);
         }
         return result;
     }

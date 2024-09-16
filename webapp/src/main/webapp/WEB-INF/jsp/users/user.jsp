@@ -38,9 +38,19 @@
       </div>
       <c:url value="/user/${user.id}/follow" var="follow_user_url" />
       <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
-      <form action="${follow_user_url}" method="post">
-        <button type="submit">Follow</button>
-      </form>
+      <c:choose>
+        <c:when test="${isFollowing}">
+          <form action="${follow_user_url}" method="post">
+            <button type="submit">Follow</button>
+          </form>
+        </c:when>
+        <c:otherwise>
+          <form action="${unfollow_user_url}" method="post">
+            <button type="submit">Unfollow</button>
+          </form>
+        </c:otherwise>
+      </c:choose>
+
     </div>
   </header>
 
