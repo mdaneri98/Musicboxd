@@ -217,12 +217,12 @@
           <c:choose>
             <c:when test="${!isFavorite}">
               <a href="${add_favorite_url}">
-                <button type="submit">Add to favorites</button>
+                <button type="submit" class="button review-button">Add to favorites</button>
               </a>
             </c:when>
             <c:otherwise>
               <a href="${remove_favorite_url}">
-                <button type="submit">Remove from favorites</button>
+                <button type="submit" class="button review-button">Remove from favorites</button>
               </a>
             </c:otherwise>
           </c:choose>
