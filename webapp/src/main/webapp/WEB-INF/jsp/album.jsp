@@ -17,7 +17,7 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
       </jsp:include>
     </div>
-    <div class="container">
+    <div class="main-content container">
       <div class="album-header">
         <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
         <img src="${albumImgUrl}" alt="${album.title}" class="album-image">

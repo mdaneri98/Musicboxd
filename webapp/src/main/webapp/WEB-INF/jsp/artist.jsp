@@ -19,7 +19,7 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
 </div>
-<div class="container">
+<div class="main-content container">
     <header>
         <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
         <img src="${artistImgURL}" alt="Artist Name" class="artist-image">
