@@ -15,12 +15,18 @@
 
 </head>
 <body>
-<div class="container">
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
+<div class="main-content container">
     <h1>Make a review</h1>
 
     <c:url value="/artist/${artist.id}" var="artistUrl" />
     <a href="${artistUrl}" class="artist-box">
-        <img src="/webapp_war/images/${artist.imgId}" alt="${artist.name}" class="artist-image">
+        <c:url var="imgUrl" value="/images/${artist.imgId}"/>
+        <img src="${imgUrl}" alt="${artist.name}" class="artist-image">
         <div class="artist-info">
             <h2 class="artist-name">${artist.name}</h2>
             <p class="artist-bio">${artist.bio}</p>
@@ -29,7 +35,6 @@
 
     <c:url var="posturl" value="/artist/${artist.id}/reviews" />
     <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
-        <jsp:param name="modelAttribute" value="artistReviewForm"/>
         <jsp:param name="posturl" value="${posturl}"/>
     </jsp:include>
 </div>

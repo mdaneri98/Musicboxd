@@ -6,7 +6,7 @@
 <html>
 <head>
 
-    <spring:message var="pageTitle" text="Artist Review"/>
+    <spring:message var="pageTitle" text="Album Review"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -16,12 +16,18 @@
 
 </head>
 <body>
-<div class="container">
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
+<div class="main-content container">
     <h1>Make a review</h1>
 
     <c:url value="/album/${album.id}" var="albumUrl" />
     <a href="${albumUrl}" class="artist-box">
-        <img src="/webapp_war/images/${album.imgId}" alt="${album.title}" class="artist-image">
+        <c:url var="imgUrl" value="/images/${album.imgId}"/>
+        <img src="${imgUrl}" alt="${album.title}" class="artist-image">
         <div class="artist-info">
             <h2 class="artist-name">${album.title}</h2>
             <p class="artist-bio">${album.releaseDate}</p>
@@ -30,7 +36,6 @@
 
     <c:url var="posturl" value="/album/${album.id}/reviews" />
     <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
-        <jsp:param name="modelAttribute" value="albumReviewForm"/>
         <jsp:param name="posturl" value="${posturl}"/>
     </jsp:include>
 </div>

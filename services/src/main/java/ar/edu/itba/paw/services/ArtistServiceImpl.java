@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.Album;
-import ar.edu.itba.paw.Artist;
-import ar.edu.itba.paw.persistence.AlbumDao;
+import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +25,13 @@ public class ArtistServiceImpl implements ArtistService {
         return artistDao.findAll();
     }
 
+    @Override
     public List<Artist> findBySongId(long id) {
         return artistDao.findBySongId(id);
     }
 
     @Override
-    public int save(Artist artist) {
+    public long save(Artist artist) {
         return artistDao.save(artist);
     }
 

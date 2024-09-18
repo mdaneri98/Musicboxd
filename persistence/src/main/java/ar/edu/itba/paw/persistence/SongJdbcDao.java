@@ -1,15 +1,13 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.Song;
+import ar.edu.itba.paw.models.Song;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,16 +16,6 @@ public class SongJdbcDao implements SongDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<Song> ROW_MAPPER = (rs, rowNum) -> new Song(
-            rs.getLong("id"),
-            rs.getString("title"),
-            rs.getString("duration"),
-            rs.getInt("track_number"),
-            rs.getObject("created_at", LocalDate.class),
-            rs.getObject("updated_at", LocalDate.class),
-            rs.getLong("album_id"),
-            rs.getLong("img_id")
-    );
 
     public SongJdbcDao(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -35,46 +23,44 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public Optional<Song> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM song WHERE id = ?",
+        return jdbcTemplate.query("SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id ,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id WHERE song.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
-                ROW_MAPPER
+                SimpleRowMappers.SONG_ROW_MAPPER
         ).stream().findFirst();
     }
 
     @Override
     public List<Song> findByArtistId(long id) {
-        return jdbcTemplate.query("SELECT DISTINCT s.* FROM song s JOIN song_artist sa ON s.id = sa.song_id WHERE sa.artist_id = ?",
+        return jdbcTemplate.query("SELECT DISTINCT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id ,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id LEFT JOIN song_artist ON song.id = song_artist.song_id WHERE song_artist.artist_id = ?;",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
-                ROW_MAPPER
+                SimpleRowMappers.SONG_ROW_MAPPER
         );
     }
 
     @Override
     public List<Song> findByAlbumId(long id) {
-        return jdbcTemplate.query("SELECT * FROM song WHERE album_id = ?",
+        return jdbcTemplate.query("SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id ,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id WHERE song.album_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
-                ROW_MAPPER
+                SimpleRowMappers.SONG_ROW_MAPPER
         );
     }
 
     @Override
     public List<Song> findAll() {
-        return jdbcTemplate.query("SELECT * FROM song", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id ,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id;", SimpleRowMappers.SONG_ROW_MAPPER);
     }
 
     @Override
     public int save(Song song) {
         return jdbcTemplate.update(
-                "INSERT INTO song (title, duration, track_number, created_at, updated_at, album_id) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO song (title, duration, track_number, album_id) VALUES (?, ?, ?, ?)",
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
-                song.getCreatedAt(),
-                song.getUpdatedAt(),
-                song.getAlbumId()
+                song.getAlbum().getId()
         );
     }
 
@@ -87,7 +73,7 @@ public class SongJdbcDao implements SongDao {
                 song.getTrackNumber(),
                 song.getCreatedAt(),
                 song.getUpdatedAt(),
-                song.getAlbumId(),
+                song.getAlbum().getId(),
                 song.getId()
         );
     }

@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.Song;
+import ar.edu.itba.paw.models.Song;
 import java.util.List;
 import java.util.Optional;
 

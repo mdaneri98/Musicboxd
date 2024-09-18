@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.Image;
+import ar.edu.itba.paw.models.Image;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,10 +41,9 @@ public class ImageJdbcDao implements ImageDao {
     }
 
     @Override
-    public Image create(byte[] bytes) {
-        final Map<String, Object> imageData = new HashMap<>();
-        imageData.put("bytes", bytes);
-        return new Image(jdbcInsert.executeAndReturnKey(imageData).longValue(), bytes);
+    public long save(byte[] bytes) {
+        Map<String, byte[]> imageData = Map.of("content",bytes);
+        return jdbcInsert.executeAndReturnKey(imageData).longValue();
     }
 
     @Override

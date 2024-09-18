@@ -1,16 +1,11 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.Album;
-import ar.edu.itba.paw.Artist;
-import ar.edu.itba.paw.User;
+import ar.edu.itba.paw.models.Album;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +24,7 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public Optional<Album> findById(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
-        return jdbcTemplate.query("SELECT * FROM album WHERE id = ?",
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE album.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.ALBUM_ROW_MAPPER
@@ -38,13 +33,13 @@ public class AlbumJdbcDao implements AlbumDao {
 
     @Override
     public List<Album> findAll() {
-        return jdbcTemplate.query("SELECT * FROM album", SimpleRowMappers.ALBUM_ROW_MAPPER);
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id", SimpleRowMappers.ALBUM_ROW_MAPPER);
     }
 
 
     @Override
     public List<Album> findByArtistId(long id) {
-        return jdbcTemplate.query("SELECT * FROM album WHERE artist_id = ?",
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE artist_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.ALBUM_ROW_MAPPER);
@@ -53,14 +48,12 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public int save(Album album) {
         return jdbcTemplate.update(
-                "INSERT INTO album (title, genre, release_date, created_at, updated_at, img_id, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO album (title, genre, release_date , img_id, artist_id) VALUES (?, ?, ?, ?, ?)",
                 album.getTitle(),
                 album.getGenre(),
                 album.getReleaseDate(),
-                album.getCreatedAt(),
-                album.getUpdatedAt(),
                 album.getImgId(),
-                album.getArtistId()
+                album.getArtist().getId()
         );
     }
 
@@ -74,7 +67,7 @@ public class AlbumJdbcDao implements AlbumDao {
                 album.getCreatedAt(),
                 album.getUpdatedAt(),
                 album.getImgId(),
-                album.getArtistId(),
+                album.getArtist().getId(),
                 album.getId()
         );
     }

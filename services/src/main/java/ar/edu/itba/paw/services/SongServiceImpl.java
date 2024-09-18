@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.services;
 
 
-import ar.edu.itba.paw.Song;
+import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.persistence.SongDao;
 import org.springframework.stereotype.Service;
 

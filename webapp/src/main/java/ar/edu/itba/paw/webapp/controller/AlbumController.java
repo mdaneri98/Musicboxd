@@ -1,13 +1,12 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.Album;
-import ar.edu.itba.paw.Artist;
-import ar.edu.itba.paw.Song;
-import ar.edu.itba.paw.User;
-import ar.edu.itba.paw.reviews.AlbumReview;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.services.*;
-import ar.edu.itba.paw.webapp.form.AlbumReviewForm;
+import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,27 +19,21 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RequestMapping("/album")
 @Controller
 public class AlbumController {
 
     private final UserService userService;
-    private final ArtistService artistService;
     private final AlbumService albumService;
     private final SongService songService;
-    private final AlbumReviewService albumReviewService;
-    private final EmailService emailService;
+    private final ReviewService reviewService;
 
-
-    public AlbumController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService, EmailService emailService) {
+    public AlbumController(UserService userService, AlbumService albumService, SongService songService, ReviewService reviewService) {
         this.userService = userService;
-        this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
-        this.albumReviewService = albumReviewService;
-        this.emailService = emailService;
+        this.reviewService = reviewService;
     }
 
     @RequestMapping("/")
@@ -50,59 +43,62 @@ public class AlbumController {
     }
 
     @RequestMapping("/{albumId:\\d+}")
-    public ModelAndView album(@PathVariable(name = "albumId") long albumId) {
+    public ModelAndView album(@PathVariable(name = "albumId") long albumId, @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("album");
 
         Album album = albumService.findById(albumId).orElseThrow();
-        Artist artist = artistService.findById(album.getArtistId()).orElseThrow();
         List<Song> songs = songService.findByAlbumId(albumId);
-        List<AlbumReview> reviews = albumReviewService.findByAlbumId(albumId);
+        List<AlbumReview> reviews = reviewService.findReviewsByAlbumId(albumId);
 
         mav.addObject("album", album);
         mav.addObject("songs", songs);
-        mav.addObject("artist", artist);
+        mav.addObject("artist", album.getArtist());
         mav.addObject("reviews", reviews);
+        mav.addObject("isFavorite", userService.isAlbumFavorite(loggedUser.getId(), albumId));
 
         return mav;
     }
 
-    @RequestMapping(value = "/{albumId}/reviews", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("albumReviewForm") final AlbumReviewForm albumReviewForm, @PathVariable Long albumId) {
+    @RequestMapping(value = "/{albumId:\\d}/reviews", method = RequestMethod.GET)
+    public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
         Album album = albumService.findById(albumId).orElseThrow();
 
 
         ModelAndView modelAndView = new ModelAndView("reviews/album_review");
-        albumReviewForm.setAlbumId(album.getId());
         modelAndView.addObject("album", album);
 
         return modelAndView;
     }
 
-    @RequestMapping(value = "/{albumId}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("albumReviewForm") final AlbumReviewForm albumReviewForm, final BindingResult errors, @PathVariable Long albumId) throws MessagingException {
+    @RequestMapping(value = "/{albumId:\\d}/reviews", method = RequestMethod.POST)
+    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, @ModelAttribute("loggedUser") User loggedUser, final BindingResult errors, @PathVariable Long albumId) throws MessagingException {
         if (errors.hasErrors()) {
-            return createForm(albumReviewForm, albumId);
+            return createForm(reviewForm, albumId);
         }
 
-        Optional<User> optUser = userService.findByEmail(albumReviewForm.getUserEmail());
-        if (optUser.isEmpty()) {
-            User unverifiedUser = User.unverifiedUser(albumReviewForm.getUserEmail());
-            userService.save(unverifiedUser);
-            emailService.sendVerification(unverifiedUser.getEmail());
-        }
-
-        User savedUser = userService.findByEmail(albumReviewForm.getUserEmail()).orElseThrow();
+        userService.incrementReviewAmount(loggedUser);
         AlbumReview albumReview = new AlbumReview(
-                savedUser.getId(),
-                albumId,
-                albumReviewForm.getTitle(),
-                albumReviewForm.getDescription(),
-                albumReviewForm.getRating(),
+                loggedUser,
+                new Album(albumId),
+                reviewForm.getTitle(),
+                reviewForm.getDescription(),
+                reviewForm.getRating(),
                 LocalDateTime.now(),
                 0
         );
-        albumReviewService.save(albumReview);
-        return new ModelAndView("redirect:/");
+        reviewService.saveAlbumReview(albumReview);
+        return new ModelAndView("redirect:/album/" + albumId);
     }
 
+    @RequestMapping(value = "/{albumId:\\d}/add-favorite", method = RequestMethod.GET)
+    public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
+        userService.addFavoriteAlbum(loggedUser.getId(), albumId);
+        return new ModelAndView("redirect:/album/" + albumId);
+    }
+
+    @RequestMapping(value = "/{albumId:\\d}/remove-favorite", method = RequestMethod.GET)
+    public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
+        userService.removeFavoriteAlbum(loggedUser.getId(), albumId);
+        return new ModelAndView("redirect:/album/" + albumId);
+    }
 }
