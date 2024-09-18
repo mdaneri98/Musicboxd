@@ -79,8 +79,12 @@ public class UserServiceImpl implements UserService {
         /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
         Optional<User> emailOptUser = this.findByEmail(email);
         Optional<User> usernameOptUser = this.findByUsername(username);
+
         if (emailOptUser.isPresent()) {
-                throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
+            if (emailOptUser.get().getUsername() == null){
+                User user = emailOptUser.get();
+                userDao.update(user.getId(), username,email,password, user.getName(),  user.getBio(), LocalDateTime.now(), user.isVerified(), user.isModerator(), user.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());
+            }else throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
         }
         if (usernameOptUser.isPresent()) {
             throw new UserAlreadyExistsException("El usuario " + username + " ya está en uso.");
