@@ -20,7 +20,7 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
 </div>
-<div class="container">
+<div class="main-content container">
     <h1>Edit Profile</h1>
 
     <c:url var="editProfileUrl" value="/user/edit" />
