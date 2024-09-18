@@ -15,6 +15,7 @@
         <img src="${profileImageUrl}" alt="Profile">
       </a>
     </li>
+    <!--
     <li>
       <a class="sidebar-icon">
         <i class="fas fa-search"></i>
@@ -33,6 +34,13 @@
     <li>
       <a class="sidebar-icon">
         <i class="fas fa-heart"></i>
+      </a>
+    </li>
+    -->
+    <li>
+      <c:url var="logoutUrl" value="/user/logout"/>
+      <a href="${logoutUrl}" class="sidebar-icon">
+        <i class="fas fa-sign-out-alt"></i>
       </a>
     </li>
   </ul>
