@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.Artist;
+import ar.edu.itba.paw.models.Artist;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,7 @@ public interface ArtistService {
 
     List<Artist> findBySongId(long id);
 
-    int save(Artist artist);
+    long save(Artist artist);
 
     int update(Artist artist);
 

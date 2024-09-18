@@ -6,10 +6,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
-public abstract class ReviewForm {
+public class ReviewForm {
 
-    @Email
-    private String userEmail;
     @Size(min = 8, max = 255)
     private String title;
     @Size(max = 255)
@@ -17,19 +15,10 @@ public abstract class ReviewForm {
     @Range(min = 0, max = 5)
     private Integer rating;
 
-    public ReviewForm(String userEmail, String title, String description, Integer rating) {
-        this.userEmail = userEmail;
+    public ReviewForm(String title, String description, Integer rating) {
         this.title = title;
         this.description = description;
         this.rating = rating;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
     }
 
     public String getTitle() {

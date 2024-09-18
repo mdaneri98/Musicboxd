@@ -1,24 +1,25 @@
 package ar.edu.itba.paw.services.email;
 
-import ar.edu.itba.paw.User;
 import ar.edu.itba.paw.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class EmailServiceImpl implements EmailService {
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -31,12 +32,13 @@ public class EmailServiceImpl implements EmailService {
     /**
      * This method will send compose and send a new message
      * */
-    public void sendHtmlMessage(String to, String subject, String body) throws MessagingException {
+    public void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
         helper.setTo(to);
+        helper.setFrom(MUSICBOXD_MAIL);
         helper.setSubject(subject);
-        helper.setText(body, true);
+        helper.setText(htmlBody, true);
         mailSender.send(message);
     }
 
@@ -48,9 +50,13 @@ public class EmailServiceImpl implements EmailService {
     }
 
     //@Async
-    public void sendVerification(String email) throws MessagingException {
+    public void sendVerification(String email, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
-        params.put("userEmail", email);
+
+        String url = "www.localhost:8080/webapp_war";
+        url = url + "/user/verification?code=" + code;
+
+        params.put("verificationURL", url);
         this.sendMessageUsingThymeleafTemplate(
                 "user_verification",
                 email,

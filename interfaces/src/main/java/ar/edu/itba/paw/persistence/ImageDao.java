@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 
-import ar.edu.itba.paw.Image;
+import ar.edu.itba.paw.models.Image;
 
 import java.util.Optional;
 
@@ -9,7 +9,7 @@ public interface ImageDao {
 
     Optional<Image> findById(long imageId);
 
-    Image create(byte[] bytes);
+    long save(byte[] bytes);
 
     boolean update(long imageId, byte[] bytes);
 

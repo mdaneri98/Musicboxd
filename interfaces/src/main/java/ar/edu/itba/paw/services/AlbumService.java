@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.Album;
+import ar.edu.itba.paw.models.Album;
 
 import java.util.List;
 import java.util.Optional;

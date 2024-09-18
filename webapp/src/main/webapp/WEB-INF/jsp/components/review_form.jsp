@@ -1,12 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<form:form modelAttribute="${param.modelAttribute}" action="${param.posturl}" method="POST" class="review-form">
-  <div class="form-group">
-    <label for="userEmail">Your email:</label>
-    <form:input path="userEmail" id="userEmail" type="text" />
-    <form:errors path="userEmail" cssClass="error" />
-  </div>
+<form:form modelAttribute="reviewForm" action="${param.posturl}" method="POST" class="review-form">
   <div class="form-group">
     <label for="title">Title:</label>
     <form:input path="title" id="title" type="text" />
