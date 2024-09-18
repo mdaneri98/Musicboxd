@@ -44,6 +44,13 @@
       padding: 24px;
     }
 
+    @media (max-width: 1553px) {
+      .container {
+        margin-left: 68px; /* For smaller screens, enforce a minimum margin of 68px */
+        margin-right: 0;
+      }
+    }
+
     .song-header {
       display: flex;
       align-items: flex-end;
