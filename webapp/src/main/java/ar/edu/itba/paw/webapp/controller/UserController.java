@@ -47,7 +47,6 @@ public class UserController {
     public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("users/profile");
         LOGGER.info("Logged username: {}", loggedUser.getUsername());
-        mav.addObject("user", loggedUser);
         mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
         mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
         mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));
@@ -86,12 +85,17 @@ public class UserController {
             }
         }
 
+        loggedUser.setUsername(upf.getUsername());
+        loggedUser.setName(upf.getName());
+        loggedUser.setBio(upf.getBio());
+        
         userService.update(loggedUser.getId(), upf.getUsername(), loggedUser.getEmail(), loggedUser.getPassword(), upf.getName(), upf.getBio(), LocalDateTime.now(), loggedUser.isVerified(), loggedUser.isModerator(), loggedUser.getImgId(), loggedUser.getFollowersAmount(), loggedUser.getFollowingAmount(), loggedUser.getReviewAmount());
         return new ModelAndView("redirect:/user/");
     }
 
     @RequestMapping("/verification")
-    public ModelAndView verify(@RequestParam(name = "code", defaultValue = "0") String verificationCode ){
+    public ModelAndView verify(@RequestParam(name = "code", defaultValue = "0") String verificationCode,
+                               @ModelAttribute("loggedUser") User loggedUser){
         boolean ok = userService.verify(verificationCode);
         if (!ok) {
             return new ModelAndView("users/verification_expired");
@@ -100,7 +104,8 @@ public class UserController {
     }
 
     @RequestMapping("/{userId:\\d+}")
-    public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
+    public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser,
+                             @PathVariable(name = "userId") long userId) {
         if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/").addObject("user", loggedUser);
 
         final ModelAndView mav = new ModelAndView("/users/user");
@@ -127,7 +132,8 @@ public class UserController {
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("userForm") final UserForm userForm, final BindingResult errors) {
+    public ModelAndView create(@Valid @ModelAttribute("userForm") final UserForm userForm,
+                               final BindingResult errors) {
         if (errors.hasErrors()) {
             return createForm(userForm);
         }
@@ -141,13 +147,15 @@ public class UserController {
     }
 
     @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)
-    public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
+    public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser,
+                               @PathVariable(name = "userId") long userId) {
         final int done = userService.createFollowing(loggedUser, userId);
         return new ModelAndView("redirect:/user/" + userId);
     }
 
     @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.POST)
-    public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "userId") long userId) {
+    public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser,
+                                 @PathVariable(name = "userId") long userId) {
         final int done = userService.undoFollowing(loggedUser, userId);
         return new ModelAndView("redirect:/user/" + userId);
     }

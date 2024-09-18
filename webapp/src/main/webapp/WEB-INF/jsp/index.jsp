@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 
-    <spring:message var="pageTitle" text="Index"/>
+    <spring:message var="pageTitle" text="Home"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -14,6 +14,11 @@
 
 </head>
 <body>
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
 <div class="search-container">
     <h1>Musicboxd</h1>
     <form class="search-form" action="#" method="get" autocomplete="off">

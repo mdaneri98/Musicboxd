@@ -1,5 +1,5 @@
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,24 +14,29 @@
 
 </head>
 <body>
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
 <div class="container">
     <header>
-        <c:url var="userImgURL" value="/images/${user.imgId}"/>
+        <c:url var="userImgURL" value="/images/${loggedUser.imgId}"/>
         <img src="${userImgURL}" alt="User Name" class="artist-image">
         <div class="artist-info">
-            <p class="artist-type">User</p>
-            <h1>@<c:out value="${user.username}"/></h1>
-            <h3><c:out value="${user.name}"/></h3>
-            <p class="artist-bio"><c:out value="${user.bio}"/></p>
+            <p class="artist-type"></p>
+            <h1>@<c:out value="${loggedUser.username}"/></h1>
+            <h3><c:out value="${loggedUser.name}"/></h3>
+            <p class="artist-bio"><c:out value="${loggedUser.bio}"/></p>
             <div class="user-stats">
       <span class="stat-item">
-        <strong><c:out value="${user.reviewAmount}"/></strong> Posts
+        <strong><c:out value="${loggedUser.reviewAmount}"/></strong> Posts
       </span>
                 <span class="stat-item">
-        <strong><c:out value="${user.followersAmount}"/></strong> Followers
+        <strong><c:out value="${loggedUser.followersAmount}"/></strong> Followers
       </span>
                 <span class="stat-item">
-        <strong><c:out value="${user.followingAmount}"/></strong> Following
+        <strong><c:out value="${loggedUser.followingAmount}"/></strong> Following
       </span>
             </div>
             <c:url value="/user/edit" var="edit_profile_url" />

@@ -1,11 +1,5 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: manuader
-  Date: 22/08/2024
-  Time: 4:45 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +14,11 @@
 
 </head>
 <body>
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
 <div class="container">
     <header>
         <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
