@@ -1,4 +1,3 @@
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
@@ -15,6 +14,11 @@
 
 </head>
 <body>
+<div>
+  <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+    <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+  </jsp:include>
+</div>
 <div class="container">
 
   <header>

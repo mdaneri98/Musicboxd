@@ -183,6 +183,11 @@
   </style>
 </head>
 <body>
+  <div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+      <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+  </div>
   <div class="container">
     <div class="song-header">
       <c:url var="songImgUrl" value="/images/${album.imgId}"/>

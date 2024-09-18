@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.*;
 
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ArtistService;
@@ -42,17 +39,19 @@ public class ModeratorController {
     }
 
     @RequestMapping(path = "add/artist", method = RequestMethod.GET)
-    public ModelAndView addArtistForm(@ModelAttribute("modArtistForm") final ModArtistForm modArtistForm) {
+    public ModelAndView addArtistForm(@ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
+                                      @ModelAttribute("loggedUser") User loggedUser) {
         return new ModelAndView("moderator/add-artist");
     }
 
     @RequestMapping(path = "add/artist", method = RequestMethod.POST)
     public ModelAndView submitArtistForm(@Valid @ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
+                                         @ModelAttribute("loggedUser") User loggedUser,
                                          final BindingResult errors) {
 
         // Check if there are any validation errors
         if (errors.hasErrors()) {
-            return addArtistForm(modArtistForm);
+            return addArtistForm(modArtistForm, loggedUser);
         }
         long imageId = DEFAULT_IMAGE_ID;
         try {
@@ -71,24 +70,25 @@ public class ModeratorController {
 
     @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.GET)
     public ModelAndView addAlbumForm(@PathVariable(name = "artistId") final long artistId,
-                                     @ModelAttribute("modAlbumFrom") final ModAlbumForm modAlbumForm) {
+                                     @ModelAttribute("modAlbumFrom") final ModAlbumForm modAlbumForm,
+                                     @ModelAttribute("loggedUser") User loggedUser) {
         return new ModelAndView("moderator/add-album").addObject(artistId);
     }
 
     @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.POST)
     public ModelAndView submitAlbumForm(@PathVariable(name = "artistId") final long artistId,
                                         @Valid @ModelAttribute("modAlbumFrom") final ModAlbumForm modAlbumForm,
-                                        @RequestParam("file") final MultipartFile file,
+                                        @ModelAttribute("loggedUser") User loggedUser,
                                         final BindingResult errors) {
 
         // Check if there are any validation errors
         if (errors.hasErrors()) {
-            return addAlbumForm(artistId, modAlbumForm);
+            return addAlbumForm(artistId, modAlbumForm, loggedUser);
         }
 
         long imageId = DEFAULT_IMAGE_ID;
         try {
-            imageId = imageService.save(file.getBytes());
+            imageId = imageService.save(modAlbumForm.getFile().getBytes());
         } catch (IOException e) {
             e.printStackTrace();    //Change to logging ERROR
         }
@@ -103,17 +103,19 @@ public class ModeratorController {
 
     @RequestMapping(path = "/add/album/{albumId:\\d+}/song", method = RequestMethod.GET)
     public ModelAndView addSongForm(@PathVariable(name = "albumId") final long albumId,
-                                    @ModelAttribute("modSongForm") final ModSongForm modSongForm) {
+                                    @ModelAttribute("modSongForm") final ModSongForm modSongForm,
+                                    @ModelAttribute("loggedUser") User loggedUser) {
         return new ModelAndView("moderator/add-song").addObject(albumId);
     }
 
     @RequestMapping(path = "add/album/{albumId:\\d+}/song", method = RequestMethod.POST)
     public ModelAndView submitSongForm(@PathVariable(name = "albumId") final long albumId,
                                        @Valid @ModelAttribute("modSongForm") final ModSongForm modSongForm,
+                                       @ModelAttribute("loggedUser") User loggedUser,
                                        final BindingResult errors) {
 
         if (errors.hasErrors()) {
-            return addSongForm(albumId, modSongForm);
+            return addSongForm(albumId, modSongForm, loggedUser);
         }
 
         Album album = albumService.findById(albumId).get();

@@ -12,7 +12,11 @@
   <link rel="stylesheet" href="${css}">
 </head>
   <body>
-
+    <div>
+      <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+      </jsp:include>
+    </div>
     <div class="container">
       <div class="album-header">
         <c:url var="albumImgUrl" value="/images/${album.imgId}"/>

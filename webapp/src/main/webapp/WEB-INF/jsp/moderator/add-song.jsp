@@ -15,6 +15,11 @@
 
 </head>
 <body>
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
 <div class="container">
     <h1>Submit a Song</h1>
 
