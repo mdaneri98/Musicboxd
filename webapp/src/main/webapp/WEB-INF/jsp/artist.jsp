@@ -75,7 +75,7 @@
         </c:forEach>
     </ul>
 
-    <!-- Cards Container -->
+    <h2>Reviews</h2>
     <div class="cards-container">
         <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
