@@ -136,11 +136,15 @@
       <label> Repeat password <form:input path="repeatPassword" type="password"/></label>
       <form:errors path="repeatPassword" cssStyle="color:error;" element="p"/>
     </div>
-    <button type="submit" class="button">Registrarse</button>
+    <!-- Mostrar errores a nivel de la clase para la validación de @PasswordMatch -->
+    <div class="form-group">
+      <form:errors path="" element="p" cssStyle="color:red;" />
+    </div>
+    <button type="submit" class="button">Register</button>
   </form:form>
   <div class="register-link">
     <c:url var="loginUrl" value="/user/login" />
-    <a href="${loginUrl}">¿Ya tenes una cuenta?</a>
+    <a href="${loginUrl}">Already have an account?</a>
   </div>
 </div>
 

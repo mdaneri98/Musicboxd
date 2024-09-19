@@ -1,4 +1,3 @@
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
@@ -15,24 +14,12 @@
 
 </head>
 <body>
-<div class="container">
-<%--  <header>--%>
-<%--    <c:url var="userImgURL" value="/images/${user.imgId}"/>--%>
-<%--    <img src="${userImgURL}" alt="User Name" class="artist-image">--%>
-<%--    <div class="artist-info">--%>
-<%--      <p class="artist-type">User</p>--%>
-<%--      <h1><c:out value="${user.username}"/></h1>--%>
-<%--      <p class="artist-bio"><c:out value="${user.bio}"/></p>--%>
-<%--      <c:url value="/user/${user.id}/follow" var="follow_user_url" />--%>
-<%--      <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />--%>
-<%--      <form action="${follow_user_url}" method="post">--%>
-<%--        <button type="submit">Follow</button>--%>
-<%--      </form>--%>
-<%--&lt;%&ndash;      <a href="${unfollow_user_url}">&ndash;%&gt;--%>
-<%--&lt;%&ndash;        <button>Unfollow</button>&ndash;%&gt;--%>
-<%--&lt;%&ndash;      </a>&ndash;%&gt;--%>
-<%--    </div>--%>
-<%--  </header>--%>
+<div>
+  <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+    <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+  </jsp:include>
+</div>
+<div class="main-content container">
 
   <header>
     <c:url var="userImgURL" value="/images/${user.imgId}"/>
@@ -55,26 +42,39 @@
       </div>
       <c:url value="/user/${user.id}/follow" var="follow_user_url" />
       <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
-      <form action="${follow_user_url}" method="post">
-        <button type="submit">Follow</button>
-      </form>
+      <c:choose>
+        <c:when test="${!isFollowing}">
+          <form action="${follow_user_url}" method="post">
+            <button type="submit">Follow</button>
+          </form>
+        </c:when>
+        <c:otherwise>
+          <form action="${unfollow_user_url}" method="post">
+            <button type="submit">Unfollow</button>
+          </form>
+        </c:otherwise>
+      </c:choose>
+
     </div>
   </header>
 
-  <h2>Favourite Albums</h2>
-  <div class="carousel">
-    <c:forEach var="album" items="${albums}" varStatus="status">
-      <c:url var="albumUrl" value="/album/${album.id}"/>
-      <a href="${albumUrl}">
-        <div class="album">
-          <c:url var="albumImgURL" value="/images/${album.imgId}"/>
-          <img src="${albumImgURL}" alt="Album ${status.index + 1}">
-          <p><c:out value="${album.title}"/></p>
-        </div>
-      </a>
-    </c:forEach>
-  </div>
+  <c:if test="${albums.size() > 0}">
+    <h2>Favourite Albums</h2>
+    <div class="carousel">
+      <c:forEach var="album" items="${albums}" varStatus="status">
+        <c:url var="albumUrl" value="/album/${album.id}"/>
+        <a href="${albumUrl}">
+          <div class="album">
+            <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+            <img src="${albumImgURL}" alt="Album ${status.index + 1}">
+            <p><c:out value="${album.title}"/></p>
+          </div>
+        </a>
+      </c:forEach>
+    </div>
+  </c:if>
 
+  <c:if test="${artists.size() > 0}">
   <h2>Favourite artists</h2>
   <div class="carousel">
     <c:forEach var="artist" items="${artists}" varStatus="status">
@@ -88,7 +88,9 @@
       </a>
     </c:forEach>
   </div>
+  </c:if>
 
+  <c:if test="${songs.size() > 0}">
   <h2>Favourite Songs</h2>
   <ul class="song-list">
     <c:forEach var="song" items="${songs}" varStatus="status">
@@ -101,6 +103,7 @@
       </a>
     </c:forEach>
   </ul>
+  </c:if>
 
   <!-- Cards Container -->
   <div class="cards-container">

@@ -1,26 +1,29 @@
 package ar.edu.itba.paw.models.reviews;
 
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.User;
+
 import java.time.LocalDateTime;
 
 public class SongReview extends Review {
 
-    private Long songId;
+    private Song song;
 
-    public SongReview(Long userId, Long songId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        super(userId, title, description, rating, createdAt, likes);
-        this.songId = songId;
+    public SongReview(User user, Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+        super(user, title, description, rating, createdAt, likes);
+        this.song = song;
     }
 
-    public SongReview(Long id, Long songId, Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        super(id, userId, title, description, rating, createdAt, likes);
-        this.songId = songId;
+    public SongReview(Long id, User user,Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+        super(id, user, title, description, rating, createdAt, likes);
+        this.song = song;
     }
 
-    public Long getSongId() {
-        return songId;
+    public Song getSong() {
+        return song;
     }
 
-    public void setSongId(Long songId) {
-        this.songId = songId;
+    public void setSong(Song song) {
+        this.song = song;
     }
 }
