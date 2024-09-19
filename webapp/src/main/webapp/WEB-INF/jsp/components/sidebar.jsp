@@ -9,7 +9,7 @@
       </a>
     </li>
     <li>
-      <c:url var="profileUrl" value="/user/"/>
+      <c:url var="profileUrl" value="/user/profile"/>
       <a href="${profileUrl}" class="sidebar-icon profile-icon">
         <c:url var="profileImageUrl" value="/images/${param.loggedUserImgId}"/>
         <img src="${profileImageUrl}" alt="Profile">
