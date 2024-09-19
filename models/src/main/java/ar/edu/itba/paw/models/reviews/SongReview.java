@@ -19,6 +19,31 @@ public class SongReview extends Review {
         this.song = song;
     }
 
+    @Override
+    public String getItemName() {
+        return song.getTitle();
+    }
+
+    @Override
+    public Long getItemId() {
+        return song.getId();
+    }
+
+    @Override
+    public Long getItemImgId() {
+        return song.getAlbum().getImgId();
+    }
+
+    @Override
+    public String getItemType() {
+        return "Song";
+    }
+
+    @Override
+    public String getItemLink() {
+        return "song/" + song.getId();
+    }
+
     public Song getSong() {
         return song;
     }

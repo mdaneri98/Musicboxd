@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewService {
-    Optional<Review> findById(long id);
-    List<Review> findAll();
-    List<Review> findByUserId(long userId);
     int update(Review review);
     int deleteById(long id);
 
@@ -27,14 +24,11 @@ public interface ReviewService {
     List<SongReview> findReviewsBySongId(long songId);
     int saveSongReview(SongReview review);
 
-    List<Review> findRecentReviews(int limit);
-    List<Review> findMostLikedReviews(int limit);
-    List<Review> findByRating(int rating);
 
     int incrementLikes(long reviewId);
     int decrementLikes(long reviewId);
 
-    List<Review> findAllPaginated(int page, int pageSize);
+    List<Review> findAllReviewsByUserPaginated(long userId, int page, int pageSize);
     List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize);
     List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize);
     List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize);

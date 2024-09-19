@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -27,21 +28,6 @@ import java.util.Optional;
 public class ReviewJdbcDao implements ReviewDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    private static final RowMapper<Review> REVIEW_ROW_MAPPER = (rs, rowNum) -> new Review(
-            rs.getLong("id"),
-            new User(
-                    rs.getLong("user_id"),
-                    rs.getString("username"),
-                    rs.getString("user_name"),
-                    rs.getLong("user_img_id")
-            ),
-            rs.getString("title"),
-            rs.getString("description"),
-            rs.getInt("rating"),
-            rs.getObject("created_at", LocalDateTime.class),
-            rs.getInt("likes")
-    );
 
     private static final RowMapper<ArtistReview> ARTIST_REVIEW_ROW_MAPPER = (rs, rowNum) -> new ArtistReview(
             rs.getLong("id"),
@@ -74,7 +60,11 @@ public class ReviewJdbcDao implements ReviewDao {
             new Album(
                     rs.getLong("album_id"),
                     rs.getString("album_title"),
-                    rs.getLong("album_img_id")
+                    rs.getLong("album_img_id"),
+                    new Artist(
+                            rs.getLong("album_artist_id")
+                    ),
+                    rs.getObject("album_release_date", LocalDate.class)
             ),
             rs.getString("title"),
             rs.getString("description"),
@@ -98,7 +88,11 @@ public class ReviewJdbcDao implements ReviewDao {
                     new Album(
                             rs.getLong("album_id"),
                             rs.getString("album_title"),
-                            rs.getLong("album_img_id")
+                            rs.getLong("album_img_id"),
+                            new Artist(
+                                    rs.getLong("album_artist_id")
+                            ),
+                            rs.getObject("album_release_date", LocalDate.class)
                     )
             ),
             rs.getString("title"),
@@ -110,34 +104,6 @@ public class ReviewJdbcDao implements ReviewDao {
 
     public ReviewJdbcDao(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
-    }
-
-    @Override
-    public Optional<Review> findById(long id) {
-        return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id FROM review r JOIN cuser u ON r.user_id = u.id WHERE r.id = ?",
-                new Object[]{id},
-                new int[]{Types.BIGINT},
-                REVIEW_ROW_MAPPER
-        ).stream().findFirst();
-    }
-
-    @Override
-    public List<Review> findAll() {
-        return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id FROM review r JOIN cuser u ON r.user_id = u.id",
-                REVIEW_ROW_MAPPER
-        );
-    }
-
-    @Override
-    public List<Review> findByUserId(long userId) {
-        return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id FROM review r JOIN cuser u ON r.user_id = u.id WHERE r.user_id = ?",
-                new Object[]{userId},
-                new int[]{Types.BIGINT},
-                REVIEW_ROW_MAPPER
-        );
     }
 
     @Override
@@ -211,7 +177,7 @@ public class ReviewJdbcDao implements ReviewDao {
     @Override
     public Optional<AlbumReview> findAlbumReviewById(long id) {
         return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id " +
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
                         "FROM review r " +
                         "JOIN cuser u ON r.user_id = u.id " +
                         "JOIN album_review ar ON r.id = ar.review_id " +
@@ -226,7 +192,7 @@ public class ReviewJdbcDao implements ReviewDao {
     @Override
     public List<AlbumReview> findReviewsByAlbumId(long albumId) {
         return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id " +
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
                         "FROM review r " +
                         "JOIN cuser u ON r.user_id = u.id " +
                         "JOIN album_review ar ON r.id = ar.review_id " +
@@ -265,7 +231,7 @@ public class ReviewJdbcDao implements ReviewDao {
         return jdbcTemplate.query(
                 "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, " +
                         "s.id AS song_id, s.title AS song_title, s.duration, " +
-                        "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id " +
+                        "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
                         "FROM review r " +
                         "JOIN cuser u ON r.user_id = u.id " +
                         "JOIN song_review sr ON r.id = sr.review_id " +
@@ -283,7 +249,7 @@ public class ReviewJdbcDao implements ReviewDao {
         return jdbcTemplate.query(
                 "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, " +
                         "s.id AS song_id, s.title AS song_title, s.duration, " +
-                        "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id " +
+                        "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
                         "FROM review r " +
                         "JOIN cuser u ON r.user_id = u.id " +
                         "JOIN song_review sr ON r.id = sr.review_id " +
@@ -322,7 +288,7 @@ public class ReviewJdbcDao implements ReviewDao {
         return jdbcTemplate.query(
                 "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, " +
                         "s.id AS song_id, s.title AS song_title, s.duration, " +
-                        "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id " +
+                        "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
                         "FROM review r " +
                         "JOIN cuser u ON r.user_id = u.id " +
                         "JOIN song_review sr ON r.id = sr.review_id " +
@@ -337,36 +303,6 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public List<Review> findRecentReviews(int limit) {
-        return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id FROM review r JOIN cuser u ON r.user_id = u.id ORDER BY r.created_at DESC LIMIT ?",
-                new Object[]{limit},
-                new int[]{Types.INTEGER},
-                REVIEW_ROW_MAPPER
-        );
-    }
-
-    @Override
-    public List<Review> findMostLikedReviews(int limit) {
-        return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id FROM review r JOIN cuser u ON r.user_id = u.id ORDER BY r.likes DESC LIMIT ?",
-                new Object[]{limit},
-                new int[]{Types.INTEGER},
-                REVIEW_ROW_MAPPER
-        );
-    }
-
-    @Override
-    public List<Review> findByRating(int rating) {
-        return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id FROM review r JOIN cuser u ON r.user_id = u.id WHERE r.rating = ?",
-                new Object[]{rating},
-                new int[]{Types.INTEGER},
-                REVIEW_ROW_MAPPER
-        );
-    }
-
-    @Override
     public int incrementLikes(long reviewId) {
         return jdbcTemplate.update("UPDATE review SET likes = likes + 1 WHERE id = ?", reviewId);
     }
@@ -374,16 +310,6 @@ public class ReviewJdbcDao implements ReviewDao {
     @Override
     public int decrementLikes(long reviewId) {
         return jdbcTemplate.update("UPDATE review SET likes = likes - 1 WHERE id = ?", reviewId);
-    }
-
-    @Override
-    public List<Review> findAllPaginated(int page, int pageSize) {
-        return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id FROM review r JOIN cuser u ON r.user_id = u.id ORDER BY r.created_at DESC LIMIT ? OFFSET ?",
-                new Object[]{pageSize, (page - 1) * pageSize},
-                new int[]{Types.INTEGER, Types.INTEGER},
-                REVIEW_ROW_MAPPER
-        );
     }
 
     @Override
@@ -405,7 +331,7 @@ public class ReviewJdbcDao implements ReviewDao {
     @Override
     public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize) {
         return jdbcTemplate.query(
-                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id " +
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
                         "FROM review r " +
                         "JOIN cuser u ON r.user_id = u.id " +
                         "JOIN album_review ar ON r.id = ar.review_id " +
@@ -435,5 +361,47 @@ public class ReviewJdbcDao implements ReviewDao {
         }, keyHolder);
         if (result == 0) return null;
         return keyHolder;
+    }
+
+    @Override
+    public List<ArtistReview> findArtistReviewsByUser(long userId) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
+                "FROM review r " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN artist_review ar ON r.id = ar.review_id " +
+                "JOIN artist a ON ar.artist_id = a.id " +
+                "WHERE r.user_id = ? " +
+                "ORDER BY r.created_at";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, ARTIST_REVIEW_ROW_MAPPER);
+    }
+
+    @Override
+    public List<AlbumReview> findAlbumReviewsByUser(long userId) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
+                "FROM review r " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN album_review ar ON r.id = ar.review_id " +
+                "JOIN album al ON ar.album_id = al.id " +
+                "WHERE r.user_id = ? " +
+                "ORDER BY r.created_at";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, ALBUM_REVIEW_ROW_MAPPER);
+    }
+
+    @Override
+    public List<SongReview> findSongReviewsByUser(long userId) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, " +
+                "s.id AS song_id, s.title AS song_title, s.duration, " +
+                "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
+                "FROM review r " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN song_review sr ON r.id = sr.review_id " +
+                "JOIN song s ON sr.song_id = s.id " +
+                "JOIN album al ON s.album_id = al.id " +
+                "WHERE r.user_id = ? " +
+                "ORDER BY r.created_at";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, SONG_REVIEW_ROW_MAPPER);
     }
 }

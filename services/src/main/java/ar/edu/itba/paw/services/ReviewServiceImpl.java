@@ -8,6 +8,7 @@ import ar.edu.itba.paw.persistence.ReviewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,20 +22,6 @@ public class ReviewServiceImpl implements ReviewService {
         this.reviewDao = reviewDao;
     }
 
-    @Override
-    public Optional<Review> findById(long id) {
-        return reviewDao.findById(id);
-    }
-
-    @Override
-    public List<Review> findAll() {
-        return reviewDao.findAll();
-    }
-
-    @Override
-    public List<Review> findByUserId(long userId) {
-        return reviewDao.findByUserId(userId);
-    }
 
     @Override
     public int update(Review review) {
@@ -92,21 +79,6 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> findRecentReviews(int limit) {
-        return reviewDao.findRecentReviews(limit);
-    }
-
-    @Override
-    public List<Review> findMostLikedReviews(int limit) {
-        return reviewDao.findMostLikedReviews(limit);
-    }
-
-    @Override
-    public List<Review> findByRating(int rating) {
-        return reviewDao.findByRating(rating);
-    }
-
-    @Override
     public int incrementLikes(long reviewId) {
         return reviewDao.incrementLikes(reviewId);
     }
@@ -114,11 +86,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public int decrementLikes(long reviewId) {
         return reviewDao.decrementLikes(reviewId);
-    }
-
-    @Override
-    public List<Review> findAllPaginated(int page, int pageSize) {
-        return reviewDao.findAllPaginated(page, pageSize);
     }
 
     @Override
@@ -134,5 +101,27 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize) {
         return reviewDao.findSongReviewsPaginated(songId, page, pageSize);
+    }
+
+    @Override
+    public List<Review> findAllReviewsByUserPaginated(long userId, int page, int pageSize) {
+        List<Review> allReviews = new ArrayList<>();
+
+        // Obtener las reviews de artistas
+        List<ArtistReview> artistReviews = reviewDao.findArtistReviewsByUser(userId);
+        List<AlbumReview> albumReviews = reviewDao.findAlbumReviewsByUser(userId);
+        List<SongReview> songReviews = reviewDao.findSongReviewsByUser(userId);
+
+        allReviews.addAll(artistReviews);
+        allReviews.addAll(albumReviews);
+        allReviews.addAll(songReviews);
+
+        allReviews.sort((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()));
+
+        // Aplicar la paginación
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, allReviews.size());
+
+        return allReviews.subList(start, end);
     }
 }

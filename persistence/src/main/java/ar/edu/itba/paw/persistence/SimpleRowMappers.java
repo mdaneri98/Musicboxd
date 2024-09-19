@@ -74,7 +74,9 @@ public class SimpleRowMappers {
                             rs.getLong("artist_id"),
                             rs.getString("name"),
                             rs.getLong("artist_img_id")
-                    )
+                    ),
+                    rs.getObject("album_release_date", LocalDate.class)
+
             )
     );
 

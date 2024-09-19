@@ -4,7 +4,7 @@ import ar.edu.itba.paw.models.User;
 
 import java.time.LocalDateTime;
 
-public class Review {
+public abstract class Review {
 
     private Long id;
     private User user;
@@ -32,6 +32,12 @@ public class Review {
         this.createdAt = createdAt;
         this.likes = likes;
     }
+
+    public abstract String getItemName();
+    public abstract Long getItemId();
+    public abstract Long getItemImgId();
+    public abstract String getItemType();
+    public abstract String getItemLink();
 
     public Long getId() {
         return id;

@@ -195,6 +195,7 @@
       <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
   </div>
+
   <div class="main-content container">
     <div class="song-header">
       <c:url var="songImgUrl" value="/images/${album.imgId}"/>
@@ -243,7 +244,8 @@
     </div>
 
     <div class="song-description">
-      <p><c:out value="${song.duration}"/></p>
+      <p>Duration: <c:out value="${song.duration}"/></p>
+      <p>Release Date: <c:out value="${song.album.releaseDate}"/></p>
     </div>
     <div class="cards-container">
       <c:forEach var="review" items="${reviews}">
@@ -251,15 +253,15 @@
           <jsp:param name="item_img_id" value="${review.song.album.imgId}"/>
           <jsp:param name="item_name" value="${review.song.title}"/>
           <jsp:param name="item_url" value="/song/${review.song.id}"/>
-          <jsp:param name="artist_url" value="/artist/${review.song.album.artist.id}"/>
-          <jsp:param name="item_type" value="${review.song.album.artist.name} - Song"/>
+          <jsp:param name="item_type" value="Song"/>
           <jsp:param name="title" value="${review.title}"/>
           <jsp:param name="rating" value="${review.rating}"/>
           <jsp:param name="review_content" value="${review.description}"/>
-          <jsp:param name="user_name" value="${review.user.name}"/>
+          <jsp:param name="user_name" value="@${review.user.username}"/>
           <jsp:param name="user_img_id" value="${review.user.imgId}"/>
           <jsp:param name="likes" value="${review.likes}"/>
           <jsp:param name="user_id" value="${review.user.id}"/>
+          <jsp:param name="review_id" value="${review.id}"/>
         </jsp:include>
       </c:forEach>
     </div>
