@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS review (
      id SERIAL PRIMARY KEY,
      user_id INT NOT NULL,
      title VARCHAR(50) NOT NULL,
-     description VARCHAR(300) NOT NULL,
+     description VARCHAR(2000) NOT NULL,
      rating INT NOT NULL,
      created_at TIMESTAMP DEFAULT NOW(),
      likes INT DEFAULT 0,

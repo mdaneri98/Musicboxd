@@ -68,15 +68,15 @@
             <jsp:param name="item_img_id" value="${review.album.imgId}"/>
             <jsp:param name="item_name" value="${review.album.title}"/>
             <jsp:param name="item_url" value="/album/${review.album.id}"/>
-            <jsp:param name="artist_url" value="/artist/${review.album.artist.id}"/>
-            <jsp:param name="item_type" value="${review.album.artist.name} - Album"/>
+            <jsp:param name="item_type" value="Album"/>
             <jsp:param name="title" value="${review.title}"/>
             <jsp:param name="rating" value="${review.rating}"/>
             <jsp:param name="review_content" value="${review.description}"/>
-            <jsp:param name="user_name" value="${review.user.name}"/>
+            <jsp:param name="user_name" value="@${review.user.username}"/>
             <jsp:param name="user_img_id" value="${review.user.imgId}"/>
             <jsp:param name="likes" value="${review.likes}"/>
             <jsp:param name="user_id" value="${review.user.id}"/>
+            <jsp:param name="review_id" value="${review.id}"/>
           </jsp:include>
         </c:forEach>
       </div>

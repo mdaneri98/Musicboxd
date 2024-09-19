@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.services.ImageService;
+import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.advice.UserControllerAdvice;
 import ar.edu.itba.paw.webapp.auth.AuthCUserDetails;
@@ -36,11 +37,13 @@ public class UserController {
     private final UserService userService;
     private final ImageService imageService;
     private final AuthenticationManager authenticationManager;
+    private final ReviewService reviewService;
 
-    public UserController(UserService userService, ImageService imageService, AuthenticationManager authenticationManager) {
+    public UserController(UserService userService, ImageService imageService, AuthenticationManager authenticationManager, ReviewService reviewService) {
         this.userService = userService;
         this.imageService = imageService;
         this.authenticationManager = authenticationManager;
+        this.reviewService = reviewService;
     }
 
     @RequestMapping("/")
@@ -50,6 +53,7 @@ public class UserController {
         mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
         mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
         mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));
+        mav.addObject("reviews", reviewService.findAllReviewsByUserPaginated(loggedUser.getId(), 1,5));
         return mav;
     }
 
@@ -116,6 +120,7 @@ public class UserController {
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
         mav.addObject("artists", userService.getFavoriteArtists(userId));
         mav.addObject("songs", userService.getFavoriteSongs(userId));
+        mav.addObject("reviews", reviewService.findAllReviewsByUserPaginated(userId, 1, 5));
 
         return mav;
     }

@@ -18,6 +18,31 @@ public class ArtistReview extends Review {
         this.artist = artist;
     }
 
+    @Override
+    public String getItemName() {
+        return artist.getName();
+    }
+
+    @Override
+    public Long getItemId() {
+        return artist.getId();
+    }
+
+    @Override
+    public Long getItemImgId() {
+        return artist.getImgId();
+    }
+
+    @Override
+    public String getItemType() {
+        return "Artist";
+    }
+
+    @Override
+    public String getItemLink() {
+        return "artist/" + artist.getId();
+    }
+
     public Artist getArtist() {
         return artist;
     }

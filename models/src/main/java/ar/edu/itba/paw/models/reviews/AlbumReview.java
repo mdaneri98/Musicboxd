@@ -18,6 +18,32 @@ public class AlbumReview extends Review {
         this.album = album;
     }
 
+
+    @Override
+    public String getItemName() {
+        return album.getTitle();
+    }
+
+    @Override
+    public Long getItemId() {
+        return album.getId();
+    }
+
+    @Override
+    public Long getItemImgId() {
+        return album.getImgId();
+    }
+
+    @Override
+    public String getItemType() {
+        return "Album";
+    }
+
+    @Override
+    public String getItemLink() {
+        return "album/" + album.getId();
+    }
+
     public Album getAlbum() {
         return album;
     }

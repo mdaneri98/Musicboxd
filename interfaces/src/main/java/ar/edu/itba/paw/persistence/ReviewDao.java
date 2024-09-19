@@ -10,9 +10,6 @@ import java.util.Optional;
 
 public interface ReviewDao {
     // Métodos generales para todos los tipos de reviews
-    Optional<Review> findById(long id);
-    List<Review> findAll();
-    List<Review> findByUserId(long userId);
     int update(Review review);
     int deleteById(long id);
 
@@ -31,18 +28,17 @@ public interface ReviewDao {
     List<SongReview> findReviewsBySongId(long songId);
     int saveSongReview(SongReview review);
 
-    // Métodos de búsqueda avanzada
-    List<Review> findRecentReviews(int limit);
-    List<Review> findMostLikedReviews(int limit);
-    List<Review> findByRating(int rating);
 
     // Métodos para likes
     int incrementLikes(long reviewId);
     int decrementLikes(long reviewId);
 
     // Métodos de paginación
-    List<Review> findAllPaginated(int page, int pageSize);
     List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize);
     List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize);
     List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize);
+
+    List<ArtistReview> findArtistReviewsByUser(long userId);
+    List<AlbumReview> findAlbumReviewsByUser(long userId);
+    List<SongReview> findSongReviewsByUser(long userId);
 }
