@@ -24,7 +24,14 @@ body {
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 40px 24px;
+}
+
+@media (max-width: 936px) {
+    .container {
+        margin-left: 68px; /* For smaller screens, enforce a minimum margin of 68px */
+        margin-right: 0;
+    }
 }
 
 h1 {

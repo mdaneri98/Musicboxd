@@ -19,7 +19,9 @@ public class User {
     private Integer reviewAmount;
     private Long imgId;
 
-    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean verified, Long imgId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
+    public User(){}
+
+    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Long imgId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -31,9 +33,9 @@ public class User {
         this.verified = verified;
         this.imgId = imgId;
         this.moderator = moderator;
-        this.followersAmount = followersAmount;
-        this.followingAmount = followingAmount;
-        this.reviewAmount = reviewAmount;
+        this.followersAmount = followersAmount != null ? followersAmount : 0;
+        this.followingAmount = followingAmount != null ? followingAmount : 0;
+        this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
     }
 
     public User(String username, String password, String email) {
@@ -51,63 +53,48 @@ public class User {
         this.reviewAmount = 0;
     }
 
-
-
-
-    public static User unverifiedUser(String email) {
-        return new User(
-            0L,
-                "",
-                email,
-                "",
-                "",
-                "",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                false,
-                1L,
-                false,
-                0,
-                0,
-                0
-        );
+    public User(Long id, String username, String name, Long imgId) {
+        this.id = id;
+        this.username = username;
+        this.name = name;
+        this.imgId = imgId;
     }
 
     // Getters y setters
 
     public Integer getReviewAmount() {
-        return reviewAmount;
+        return reviewAmount != null ? reviewAmount : 0;
     }
 
     public void setReviewAmount(Integer reviewsAmount) {
-        this.reviewAmount = reviewsAmount;
+        this.reviewAmount = reviewsAmount != null ? reviewsAmount : 0;
     }
 
     public void incrementReviewAmount() {
-        this.reviewAmount++;
+        this.reviewAmount = (this.reviewAmount != null ? this.reviewAmount : 0) + 1;
     }
 
     public void decrementReviewAmount() {
-        this.reviewAmount--;
+        this.reviewAmount = Math.max(0, (this.reviewAmount != null ? this.reviewAmount : 0) - 1);
     }
 
     public Integer getFollowingAmount() {
-        return followingAmount;
+        return followingAmount != null ? followingAmount : 0;
     }
 
     public void setFollowingAmount(Integer followingAmount) {
-        this.followingAmount = followingAmount;
+        this.followingAmount = followingAmount != null ? followingAmount : 0;
     }
 
     public Integer getFollowersAmount() {
-        return followersAmount;
+        return followersAmount != null ? followersAmount : 0;
     }
 
     public void setFollowersAmount(Integer followersAmount) {
-        this.followersAmount = followersAmount;
+        this.followersAmount = followersAmount != null ? followersAmount : 0;
     }
 
-    public Boolean isModerator() {
+    public boolean isModerator() {
         return moderator;
     }
 
@@ -175,11 +162,11 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public Boolean isVerified() {
-        return verified;
+    public boolean isVerified() {
+        return verified == null ? false : verified;
     }
 
-    public void setVerified(Boolean verified) {
+    public void setVerified(boolean verified) {
         this.verified = verified;
     }
 
@@ -189,5 +176,114 @@ public class User {
 
     public void setImgId(Long imgId) {
         this.imgId = imgId;
+    }
+
+    public static class Builder {
+        private Long id;
+        private String username;
+        private String email;
+        private String password;
+        private String name;
+        private String bio;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+        private Boolean verified;
+        private Boolean moderator;
+        private Integer followersAmount;
+        private Integer followingAmount;
+        private Integer reviewAmount;
+        private Long imgId;
+
+        public Builder() {
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder bio(String bio) {
+            this.bio = bio;
+            return this;
+        }
+
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder updatedAt(LocalDateTime updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
+        public Builder verified(Boolean verified) {
+            this.verified = verified;
+            return this;
+        }
+
+        public Builder moderator(Boolean moderator) {
+            this.moderator = moderator;
+            return this;
+        }
+
+        public Builder followersAmount(Integer followersAmount) {
+            this.followersAmount = followersAmount;
+            return this;
+        }
+
+        public Builder followingAmount(Integer followingAmount) {
+            this.followingAmount = followingAmount;
+            return this;
+        }
+
+        public Builder reviewAmount(Integer reviewAmount) {
+            this.reviewAmount = reviewAmount;
+            return this;
+        }
+
+        public Builder imgId(Long imgId) {
+            this.imgId = imgId;
+            return this;
+        }
+
+        public User build() {
+            User user = new User();
+            user.id = this.id;
+            user.username = this.username;
+            user.email = this.email;
+            user.password = this.password;
+            user.name = this.name;
+            user.bio = this.bio;
+            user.createdAt = this.createdAt;
+            user.updatedAt = this.updatedAt;
+            user.verified = this.verified;
+            user.moderator = this.moderator;
+            user.followersAmount = this.followersAmount;
+            user.followingAmount = this.followingAmount;
+            user.reviewAmount = this.reviewAmount;
+            user.imgId = this.imgId;
+            return user;
+        }
     }
 }

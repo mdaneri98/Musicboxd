@@ -1,14 +1,16 @@
 package ar.edu.itba.paw.webapp.form;
 
 
+import ar.edu.itba.paw.webapp.form.validation.PasswordMatch;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+@PasswordMatch(message = "Las contraseñas deben ser iguales")
 public class UserForm {
 
-
-    @Size(min = 8)
+    @Size(min = 4, max = 50)
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*")
     private String username;
     @Email
@@ -18,7 +20,12 @@ public class UserForm {
     @Size(min = 8)
     private String repeatPassword;
 
-    public UserForm() {}
+    public UserForm(String username, String email, String password, String repeatPassword) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.repeatPassword = repeatPassword;
+    }
 
     public String getUsername() {
         return username;

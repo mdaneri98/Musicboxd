@@ -29,6 +29,13 @@ public class SimpleRowMappers {
             rs.getInt("review_amount")
     );
 
+    public static final RowMapper<UserVerification> USER_VERIFICATION_ROW_MAPPER = (rs, rowNum) -> new UserVerification(
+            rs.getLong("id"),
+            rs.getLong("user_id"),
+            rs.getString("code"),
+            rs.getTimestamp("expire_date")
+    );
+
     public static final RowMapper<Artist> ARTIST_ROW_MAPPER = (rs, rowNum) -> new Artist(
             rs.getLong("id"),
             rs.getString("name"),
@@ -38,31 +45,37 @@ public class SimpleRowMappers {
             rs.getLong("img_id")
     );
     public static final RowMapper<Album> ALBUM_ROW_MAPPER = (rs, rowNum) -> new Album(
-            rs.getLong("id"),
+            rs.getLong("album_id"),
             rs.getString("title"),
             rs.getString("genre"),
             rs.getObject("release_date", LocalDate.class),
             rs.getObject("created_at", LocalDate.class),
             rs.getObject("updated_at", LocalDate.class),
-            rs.getLong("img_id"),
-            rs.getLong("artist_id")
-    );
-
-    public static final RowMapper<UserVerification> USER_VERIFICATION_ROW_MAPPER = (rs, rowNum) -> new UserVerification(
-            rs.getLong("id"),
-            rs.getLong("user_id"),
-            rs.getString("code"),
-            rs.getTimestamp("expire_date")
+            rs.getLong("album_img_id"),
+            new Artist(
+                    rs.getLong("artist_id"),
+                    rs.getString("name"),
+                    rs.getLong("artist_img_id")
+            )
     );
 
     public static final RowMapper<Song> SONG_ROW_MAPPER = (rs, rowNum) -> new Song(
-            rs.getLong("id"),
-            rs.getString("title"),
+            rs.getLong("song_id"),
+            rs.getString("song_title"),
             rs.getString("duration"),
             rs.getInt("track_number"),
-            rs.getObject("created_at", LocalDate.class),
-            rs.getObject("updated_at", LocalDate.class),
-            rs.getLong("album_id")
+            rs.getObject("song_created_at", LocalDate.class),
+            rs.getObject("song_updated_at", LocalDate.class),
+            new Album(
+                    rs.getLong("album_id"),
+                    rs.getString("album_title"),
+                    rs.getLong("album_img_id"),
+                    new Artist(
+                            rs.getLong("artist_id"),
+                            rs.getString("name"),
+                            rs.getLong("artist_img_id")
+                    )
+            )
     );
 
 }

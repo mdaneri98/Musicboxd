@@ -20,6 +20,22 @@ public class Artist {
         this.imgId = imgId;
     }
 
+    public Artist(Long id, String name, Long imgId) {
+        this.id = id;
+        this.name = name;
+        this.imgId = imgId;
+    }
+
+    public Artist(String name, String bio, Long imgId) {
+        this.name = name;
+        this.bio = bio;
+        this.imgId = imgId;
+    }
+
+    public Artist(Long id) {
+        this.id = id;
+    }
+
     // Getters y Setters
     public Long getId() {
         return id;

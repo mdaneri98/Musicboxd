@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 
-    <spring:message var="pageTitle" text="Index"/>
+    <spring:message var="pageTitle" text="Home"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -14,6 +14,11 @@
 
 </head>
 <body>
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
 <div class="search-container">
     <h1>Musicboxd</h1>
     <form class="search-form" action="#" method="get" autocomplete="off">
@@ -22,25 +27,6 @@
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
     </form>
-</div>
-
-<div>
-    <c:url value="/mod/add/artist" var="new_artist_url" />
-    <a href="${new_artist_url}">
-        <button>Add Artist</button>
-    </a>
-</div>
-
-<!-- Cards Container -->
-<div class="cards-container">
-    <c:forEach var="entry" items="${reviewsWithImg}">
-        <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
-            <jsp:param name="title" value="${entry.key.title}"/>
-            <jsp:param name="description" value="${entry.key.description}"/>
-            <jsp:param name="userId" value="${entry.key.userId}"/>
-            <jsp:param name="imgId" value="${entry.value}"/>
-        </jsp:include>
-    </c:forEach>
 </div>
 
 <script>

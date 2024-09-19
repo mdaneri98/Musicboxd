@@ -24,7 +24,7 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public Optional<Album> findById(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
-        return jdbcTemplate.query("SELECT * FROM album WHERE id = ?",
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE album.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.ALBUM_ROW_MAPPER
@@ -33,13 +33,13 @@ public class AlbumJdbcDao implements AlbumDao {
 
     @Override
     public List<Album> findAll() {
-        return jdbcTemplate.query("SELECT * FROM album", SimpleRowMappers.ALBUM_ROW_MAPPER);
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id", SimpleRowMappers.ALBUM_ROW_MAPPER);
     }
 
 
     @Override
     public List<Album> findByArtistId(long id) {
-        return jdbcTemplate.query("SELECT * FROM album WHERE artist_id = ?",
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE artist_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.ALBUM_ROW_MAPPER);
@@ -53,7 +53,7 @@ public class AlbumJdbcDao implements AlbumDao {
                 album.getGenre(),
                 album.getReleaseDate(),
                 album.getImgId(),
-                album.getArtistId()
+                album.getArtist().getId()
         );
     }
 
@@ -67,7 +67,7 @@ public class AlbumJdbcDao implements AlbumDao {
                 album.getCreatedAt(),
                 album.getUpdatedAt(),
                 album.getImgId(),
-                album.getArtistId(),
+                album.getArtist().getId(),
                 album.getId()
         );
     }

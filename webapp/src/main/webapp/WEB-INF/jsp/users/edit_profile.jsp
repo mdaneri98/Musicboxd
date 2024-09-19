@@ -5,7 +5,7 @@
 <html>
 <head>
 
-    <spring:message var="pageTitle" text="Submit Artist"/>
+    <spring:message var="pageTitle" text="Edit Profile"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -20,11 +20,17 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
 </div>
-<div class="container">
-    <h1>Submit an Artist</h1>
+<div class="main-content container">
+    <h1>Edit Profile</h1>
 
-    <c:url var="postUrl" value="/mod/add/artist" />
-    <form:form modelAttribute="modArtistForm" action="${postUrl}" method="post" enctype="multipart/form-data">
+    <c:url var="editProfileUrl" value="/user/edit" />
+    <form:form modelAttribute="userProfileForm" action="${editProfileUrl}" method="post" enctype="multipart/form-data">
+        <div>
+            <label>Username:
+                <form:errors path="username" cssClass="error" element="p" cssStyle="color:red;"/>
+                <form:input path="username" type="text" />
+            </label>
+        </div>
         <div>
             <label>Name:
                 <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
@@ -38,13 +44,17 @@
             </label>
         </div>
         <div>
-            <label>Image:
-                <form:errors path="file" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="file" type="file" accept=".jpg,.jpeg,.png" />
+            <label>Profile Picture:
+                <form:errors path="profilePicture" cssClass="error" element="p" cssStyle="color:red;"/>
+                <form:input path="profilePicture" type="file" accept=".jpg,.jpeg,.png" />
             </label>
         </div>
-        <div>
-            <button type="submit">Submit Artist</button>
+        <div style="display: flex; gap: 10px;">
+            <c:url value="/user/" var="discard_changes_url" />
+            <a href="${discard_changes_url}" style="flex: 1;">
+                <button type="button" style="width: 100%; height: 100%;">Discard Changes</button>
+            </a>
+            <button type="submit" style="flex: 1; width: 100%; height: 100%;">Update</button>
         </div>
     </form:form>
 </div>

@@ -14,7 +14,12 @@
 
 </head>
 <body>
-<div class="container">
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
+<div class="main-content container">
     <h1>Review Song</h1>
 
     <c:url value="/song/${song.id}" var="songUrl" />
@@ -29,7 +34,6 @@
 
     <c:url var="posturl" value="/song/${song.id}/reviews" />
     <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
-        <jsp:param name="modelAttribute" value="songReviewForm"/>
         <jsp:param name="posturl" value="${posturl}"/>
     </jsp:include>
 </div>

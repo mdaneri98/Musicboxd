@@ -12,8 +12,12 @@
   <link rel="stylesheet" href="${css}">
 </head>
   <body>
-
-    <div class="container">
+    <div>
+      <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+      </jsp:include>
+    </div>
+    <div class="main-content container">
       <div class="album-header">
         <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
         <img src="${albumImgUrl}" alt="${album.title}" class="album-image">
@@ -29,8 +33,20 @@
             </a>
             <c:url var="albumReviewUrl" value="/album/${album.id}/reviews" />
             <a href="${albumReviewUrl}" class="button review-button">Make a review</a>
-            <c:url var="NewAlbumUrl" value="/mod/add/album/${album.id}/song" />
-            <a href="${NewAlbumUrl}" class="button review-button">Add Song</a>
+            <c:url value="/album/${album.id}/add-favorite" var="add_favorite_url" />
+            <c:url value="/album/${album.id}/remove-favorite" var="remove_favorite_url" />
+            <c:choose>
+              <c:when test="${!isFavorite}">
+                <a href="${add_favorite_url}">
+                  <button type="submit" class="button review-button">Add to favorites</button>
+                </a>
+              </c:when>
+              <c:otherwise>
+                <a href="${remove_favorite_url}" >
+                  <button type="submit" class="button review-button">Remove from favorites</button>
+                </a>
+              </c:otherwise>
+            </c:choose>
           </div>
         </div>
       </div>
@@ -49,10 +65,18 @@
       <div class="cards-container">
         <c:forEach var="review" items="${reviews}">
           <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
+            <jsp:param name="item_img_id" value="${review.album.imgId}"/>
+            <jsp:param name="item_name" value="${review.album.title}"/>
+            <jsp:param name="item_url" value="/album/${review.album.id}"/>
+            <jsp:param name="artist_url" value="/artist/${review.album.artist.id}"/>
+            <jsp:param name="item_type" value="${review.album.artist.name} - Album"/>
             <jsp:param name="title" value="${review.title}"/>
-            <jsp:param name="description" value="${review.description}"/>
-            <jsp:param name="userId" value="${review.userId}"/>
-            <jsp:param name="imgId" value="${album.imgId}"/>
+            <jsp:param name="rating" value="${review.rating}"/>
+            <jsp:param name="review_content" value="${review.description}"/>
+            <jsp:param name="user_name" value="${review.user.name}"/>
+            <jsp:param name="user_img_id" value="${review.user.imgId}"/>
+            <jsp:param name="likes" value="${review.likes}"/>
+            <jsp:param name="user_id" value="${review.user.id}"/>
           </jsp:include>
         </c:forEach>
       </div>

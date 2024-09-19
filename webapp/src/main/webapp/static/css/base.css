@@ -8,6 +8,15 @@ body {
     margin: 0;
     padding: 0;
     line-height: 1.6;
+    display: flex;
+}
+
+/* Contenido principal */
+.main-content {
+    padding: 30px;
+    margin-left: 68px; /* Igual al ancho de la sidebar */
+    width: calc(100% - 80px);
+    min-height: 100vh;
 }
 
 /* Headings */
@@ -87,7 +96,6 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
     padding: 10px;
     border-radius: 5px;
     width: 100%;
-    margin-bottom: 20px;
 }
 
 input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus {

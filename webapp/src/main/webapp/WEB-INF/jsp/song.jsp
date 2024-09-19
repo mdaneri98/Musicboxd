@@ -44,6 +44,13 @@
       padding: 24px;
     }
 
+    @media (max-width: 1553px) {
+      .container {
+        margin-left: 68px; /* For smaller screens, enforce a minimum margin of 68px */
+        margin-right: 0;
+      }
+    }
+
     .song-header {
       display: flex;
       align-items: flex-end;
@@ -183,7 +190,12 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+      <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+  </div>
+  <div class="main-content container">
     <div class="song-header">
       <c:url var="songImgUrl" value="/images/${album.imgId}"/>
       <img src="${songImgUrl}" alt="${song.title}" class="song-image">
@@ -201,7 +213,7 @@
           </c:forEach>
         </div>
         <div class="buttons-container">
-          <c:url var="songUrl" value="/album/${song.albumId}"/>
+          <c:url var="songUrl" value="/album/${album.id}"/>
           <a href="${songUrl}" class="album-card">
             <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
             <img src="${albumImgUrl}" alt="${album.title}" class="album-image">
@@ -212,12 +224,44 @@
           </a>
           <c:url var="songReviewUrl" value="/song/${song.id}/reviews"/>
           <a href="${songReviewUrl}" class="button review-button">Make a review</a>
+          <c:url value="/song/${song.id}/add-favorite" var="add_favorite_url" />
+          <c:url value="/song/${song.id}/remove-favorite" var="remove_favorite_url" />
+          <c:choose>
+            <c:when test="${!isFavorite}">
+              <a href="${add_favorite_url}">
+                <button type="submit" class="button review-button">Add to favorites</button>
+              </a>
+            </c:when>
+            <c:otherwise>
+              <a href="${remove_favorite_url}">
+                <button type="submit" class="button review-button">Remove from favorites</button>
+              </a>
+            </c:otherwise>
+          </c:choose>
         </div>
       </div>
     </div>
 
     <div class="song-description">
       <p><c:out value="${song.duration}"/></p>
+    </div>
+    <div class="cards-container">
+      <c:forEach var="review" items="${reviews}">
+        <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
+          <jsp:param name="item_img_id" value="${review.song.album.imgId}"/>
+          <jsp:param name="item_name" value="${review.song.title}"/>
+          <jsp:param name="item_url" value="/song/${review.song.id}"/>
+          <jsp:param name="artist_url" value="/artist/${review.song.album.artist.id}"/>
+          <jsp:param name="item_type" value="${review.song.album.artist.name} - Song"/>
+          <jsp:param name="title" value="${review.title}"/>
+          <jsp:param name="rating" value="${review.rating}"/>
+          <jsp:param name="review_content" value="${review.description}"/>
+          <jsp:param name="user_name" value="${review.user.name}"/>
+          <jsp:param name="user_img_id" value="${review.user.imgId}"/>
+          <jsp:param name="likes" value="${review.likes}"/>
+          <jsp:param name="user_id" value="${review.user.id}"/>
+        </jsp:include>
+      </c:forEach>
     </div>
   </div>
 </body>

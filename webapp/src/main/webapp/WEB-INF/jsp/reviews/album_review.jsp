@@ -16,7 +16,12 @@
 
 </head>
 <body>
-<div class="container">
+<div>
+    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+        <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+    </jsp:include>
+</div>
+<div class="main-content container">
     <h1>Make a review</h1>
 
     <c:url value="/album/${album.id}" var="albumUrl" />
@@ -31,7 +36,6 @@
 
     <c:url var="posturl" value="/album/${album.id}/reviews" />
     <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
-        <jsp:param name="modelAttribute" value="albumReviewForm"/>
         <jsp:param name="posturl" value="${posturl}"/>
     </jsp:include>
 </div>

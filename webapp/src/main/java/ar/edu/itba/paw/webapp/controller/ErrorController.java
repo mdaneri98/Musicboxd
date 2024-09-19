@@ -9,7 +9,7 @@ public class ErrorController {
 
     @RequestMapping("/403")
     public ModelAndView forbidden() {
-        return new ModelAndView("errors/403.jsp");
+        return new ModelAndView("errors/403");
     }
 
 

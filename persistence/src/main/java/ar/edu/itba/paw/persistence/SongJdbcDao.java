@@ -23,7 +23,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public Optional<Song> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM song WHERE id = ?",
+        return jdbcTemplate.query("SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id ,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id WHERE song.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.SONG_ROW_MAPPER
@@ -32,7 +32,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findByArtistId(long id) {
-        return jdbcTemplate.query("SELECT DISTINCT s.* FROM song s JOIN song_artist sa ON s.id = sa.song_id WHERE sa.artist_id = ?",
+        return jdbcTemplate.query("SELECT DISTINCT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id ,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id LEFT JOIN song_artist ON song.id = song_artist.song_id WHERE song_artist.artist_id = ?;",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.SONG_ROW_MAPPER
@@ -41,7 +41,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findByAlbumId(long id) {
-        return jdbcTemplate.query("SELECT * FROM song WHERE album_id = ?",
+        return jdbcTemplate.query("SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id ,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id WHERE song.album_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.SONG_ROW_MAPPER
@@ -50,7 +50,7 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findAll() {
-        return jdbcTemplate.query("SELECT * FROM song", SimpleRowMappers.SONG_ROW_MAPPER);
+        return jdbcTemplate.query("SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id ,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id;", SimpleRowMappers.SONG_ROW_MAPPER);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class SongJdbcDao implements SongDao {
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
-                song.getAlbumId()
+                song.getAlbum().getId()
         );
     }
 
@@ -73,7 +73,7 @@ public class SongJdbcDao implements SongDao {
                 song.getTrackNumber(),
                 song.getCreatedAt(),
                 song.getUpdatedAt(),
-                song.getAlbumId(),
+                song.getAlbum().getId(),
                 song.getId()
         );
     }

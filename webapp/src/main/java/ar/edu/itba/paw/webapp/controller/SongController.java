@@ -1,16 +1,14 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.services.*;
-import ar.edu.itba.paw.webapp.form.AlbumReviewForm;
-import ar.edu.itba.paw.webapp.form.SongReviewForm;
+import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +20,6 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RequestMapping("/song")
 @Controller
@@ -30,19 +27,15 @@ public class SongController {
 
     private final UserService userService;
     private final ArtistService artistService;
-    private final AlbumService albumService;
     private final SongService songService;
-    private final SongReviewService songReviewService;
-    private final EmailService emailService;
+    private final ReviewService reviewService;
 
 
-    public SongController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, AlbumReviewService albumReviewService, SongReviewService songReviewService, EmailService emailService) {
+    public SongController(UserService userService, ArtistService artistService, SongService songService, ReviewService reviewService) {
         this.userService = userService;
         this.artistService = artistService;
-        this.albumService = albumService;
         this.songService = songService;
-        this.songReviewService = songReviewService;
-        this.emailService = emailService;
+        this.reviewService = reviewService;
     }
 
     @RequestMapping("/")
@@ -52,49 +45,60 @@ public class SongController {
     }
 
     @RequestMapping("/{songId:\\d+}")
-    public ModelAndView song(@PathVariable(name = "songId") long songId) {
+    public ModelAndView song(@PathVariable(name = "songId") long songId, @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("song");
 
         Song song = songService.findById(songId).get();
         List<Artist> artists = artistService.findBySongId(songId);
-        Album album = albumService.findById(song.getAlbumId()).get();
+        List<SongReview> reviews = reviewService.findReviewsBySongId(songId);
 
-        mav.addObject("album", album);
+        mav.addObject("album", song.getAlbum());
         mav.addObject("artists", artists);
         mav.addObject("song", song);
+        mav.addObject("reviews", reviews);
+        mav.addObject("isFavorite", userService.isSongFavorite(loggedUser.getId(), songId));
         return mav;
     }
 
     @RequestMapping(value = "/{songId:\\d+}/reviews", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("songReviewForm") final SongReviewForm songReviewForm, @PathVariable Long songId) {
+    public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long songId) {
         final ModelAndView mav = new ModelAndView("reviews/song_review");
-        songReviewForm.setSongId(songId);
         Song song = songService.findById(songId).get();
-        Album album = albumService.findById(song.getAlbumId()).get();
         mav.addObject("song", song);
-        mav.addObject("album", album);
+        mav.addObject("album", song.getAlbum());
         return mav;
     }
 
 
     @RequestMapping(value = "/{songId:\\d+}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("songReviewForm") final SongReviewForm songReviewForm, final BindingResult errors, @PathVariable Long songId) throws MessagingException {
+    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, @ModelAttribute("loggedUser") User loggedUser, final BindingResult errors, @PathVariable Long songId, Model model) throws MessagingException {
         if (errors.hasErrors()) {
-            return createForm(songReviewForm, songId);
+            return createForm(reviewForm, songId);
         }
 
-        User savedUser = userService.findByEmail(songReviewForm.getUserEmail()).orElseThrow();
-        userService.incrementReviewAmount(savedUser);
+        userService.incrementReviewAmount(loggedUser);
         SongReview songReview = new SongReview(
-                savedUser.getId(),
-                songId,
-                songReviewForm.getTitle(),
-                songReviewForm.getDescription(),
-                songReviewForm.getRating(),
+                loggedUser,
+                new Song(songId),
+                reviewForm.getTitle(),
+                reviewForm.getDescription(),
+                reviewForm.getRating(),
                 LocalDateTime.now(),
                 0
         );
-        songReviewService.save(songReview);
-        return new ModelAndView("redirect:/");
+        reviewService.saveSongReview(songReview);
+        return new ModelAndView("redirect:/song/" + songId);
+    }
+
+    @RequestMapping(value = "/{songId:\\d}/add-favorite", method = RequestMethod.GET)
+    public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
+        userService.addFavoriteSong(loggedUser.getId(), songId);
+        return new ModelAndView("redirect:/album/" + songId);
+    }
+
+    @RequestMapping(value = "/{songId:\\d}/remove-favorite", method = RequestMethod.GET)
+    public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
+        userService.removeFavoriteSong(loggedUser.getId(), songId);
+        return new ModelAndView("redirect:/song/" + songId);
     }
 }
