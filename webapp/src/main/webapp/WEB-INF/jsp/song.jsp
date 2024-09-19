@@ -247,6 +247,8 @@
       <p>Duration: <c:out value="${song.duration}"/></p>
       <p>Release Date: <c:out value="${song.album.releaseDate}"/></p>
     </div>
+
+    <h2>Reviews</h2>
     <div class="cards-container">
       <c:forEach var="review" items="${reviews}">
         <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
