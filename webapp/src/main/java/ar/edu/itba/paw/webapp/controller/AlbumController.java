@@ -19,6 +19,7 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RequestMapping("/album")
 @Controller
