@@ -1,12 +1,14 @@
 package ar.edu.itba.paw.webapp.form;
 
 
+import ar.edu.itba.paw.webapp.form.validation.PasswordMatch;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+@PasswordMatch(message = "Las contraseñas deben ser iguales")
 public class UserForm {
-
 
     @Size(min = 4, max = 50)
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*")

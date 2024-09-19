@@ -136,6 +136,10 @@
       <label> Repeat password <form:input path="repeatPassword" type="password"/></label>
       <form:errors path="repeatPassword" cssStyle="color:error;" element="p"/>
     </div>
+    <!-- Mostrar errores a nivel de la clase para la validación de @PasswordMatch -->
+    <div class="form-group">
+      <form:errors path="" element="p" cssStyle="color:red;" />
+    </div>
     <button type="submit" class="button">Register</button>
   </form:form>
   <div class="register-link">
