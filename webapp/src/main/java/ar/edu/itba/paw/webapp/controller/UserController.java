@@ -138,6 +138,7 @@ public class UserController {
             return createForm(userForm);
         }
 
+
         final int done = userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
         // "Generar una sesión" (así no redirije a /login)
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
