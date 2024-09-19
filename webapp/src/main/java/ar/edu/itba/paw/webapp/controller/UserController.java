@@ -46,14 +46,17 @@ public class UserController {
         this.reviewService = reviewService;
     }
 
-    @RequestMapping("/")
-    public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser) {
+    @RequestMapping("/profile/{pageNum:\\d+}")
+    public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "pageNum", required = false) Integer pageNum ) {
         final ModelAndView mav = new ModelAndView("users/profile");
         LOGGER.info("Logged username: {}", loggedUser.getUsername());
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
+
         mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
         mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
         mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));
-        mav.addObject("reviews", reviewService.findAllReviewsByUserPaginated(loggedUser.getId(), 1,5));
+        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(loggedUser.getId(), pageNum,5));
+        mav.addObject("pageNum", pageNum);
         return mav;
     }
 
@@ -107,10 +110,23 @@ public class UserController {
         return new ModelAndView("redirect:/");
     }
 
+    @RequestMapping("/profile")
+    public ModelAndView profile (@ModelAttribute("loggedUser") User loggedUser){
+        return profile(loggedUser,1);
+    }
+
+
     @RequestMapping("/{userId:\\d+}")
+    public ModelAndView user (@ModelAttribute("loggedUser") User loggedUser,
+                              @PathVariable(name = "userId") long userId){
+        return user(loggedUser,userId,1);
+    }
+
+    @RequestMapping("/{userId:\\d+}/{pageNum:\\d+}")
     public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser,
-                             @PathVariable(name = "userId") long userId) {
-        if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/").addObject("user", loggedUser);
+                             @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum ) {
+        if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/profile/").addObject("user", loggedUser);
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
 
         final ModelAndView mav = new ModelAndView("/users/user");
 
@@ -120,7 +136,8 @@ public class UserController {
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
         mav.addObject("artists", userService.getFavoriteArtists(userId));
         mav.addObject("songs", userService.getFavoriteSongs(userId));
-        mav.addObject("reviews", reviewService.findAllReviewsByUserPaginated(userId, 1, 5));
+        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(userId, pageNum, 5));
+        mav.addObject("pageNum", pageNum);
 
         return mav;
     }

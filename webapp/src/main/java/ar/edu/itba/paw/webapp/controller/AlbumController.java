@@ -38,25 +38,33 @@ public class AlbumController {
     }
 
     @RequestMapping("/")
-    public ModelAndView findAll() {
-        //TODO: Redirigir a algun artista.
+    public ModelAndView redirect() {
         return new ModelAndView("redirect:/");
     }
 
     @RequestMapping("/{albumId:\\d+}")
-    public ModelAndView album(@PathVariable(name = "albumId") long albumId, @ModelAttribute("loggedUser") User loggedUser) {
+    public ModelAndView album (@ModelAttribute("loggedUser") User loggedUser,
+                                 @PathVariable(name = "albumId") long albumId){
+        return album(albumId, 1, loggedUser);
+    }
+
+
+    @RequestMapping("/{albumId:\\d+}/{pageNum:\\d+}")
+    public ModelAndView album(@PathVariable(name = "albumId") long albumId, @PathVariable(name = "pageNum", required = false) Integer pageNum , @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("album");
+
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
 
         Album album = albumService.findById(albumId).orElseThrow();
         List<Song> songs = songService.findByAlbumId(albumId);
-        List<AlbumReview> reviews = reviewService.findReviewsByAlbumId(albumId);
+        List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId,pageNum,5);
 
         mav.addObject("album", album);
         mav.addObject("songs", songs);
         mav.addObject("artist", album.getArtist());
         mav.addObject("reviews", reviews);
         mav.addObject("isFavorite", userService.isAlbumFavorite(loggedUser.getId(), albumId));
-
+        mav.addObject("pageNum", pageNum);
         return mav;
     }
 

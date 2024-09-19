@@ -46,7 +46,7 @@
         </div>
     </header>
 
-    <h2>Favourite Albums</h2>
+    <h2>Favorite Albums</h2>
     <c:if test="${albums.size() == 0}">
         <div class="artist">
             <p>Add up to 5 favorite albums!</p>
@@ -65,7 +65,7 @@
         </c:forEach>
     </div>
 
-    <h2>Favourite artists</h2>
+    <h2>Favorite artists</h2>
     <c:if test="${artists.size() == 0}">
         <div class="artist">
             <p>Add up to 5 favorite artists!</p>
@@ -84,7 +84,7 @@
         </c:forEach>
     </div>
 
-    <h2>Favourite Songs</h2>
+    <h2>Favorite Songs</h2>
     <c:if test="${songs.size() == 0}">
         <div class="artist">
             <p>Add up to 5 favorite songs!</p>
@@ -122,6 +122,10 @@
             </jsp:include>
         </c:forEach>
     </div>
+    <c:url value="/user/profile/${pageNum + 1}" var="nextPage" />
+    <c:url value="/user/profile/${pageNum -1}" var="prevPage" />
+    <a href="${prevPage}" class="button review-button">Previous page</a>
+    <a href="${nextPage}" class="button review-button">Next page</a>
 </div>
 </body>
 </html>

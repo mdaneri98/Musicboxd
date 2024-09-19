@@ -104,7 +104,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> findAllReviewsByUserPaginated(long userId, int page, int pageSize) {
+    public List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize) {
         List<Review> allReviews = new ArrayList<>();
 
         // Obtener las reviews de artistas

@@ -80,6 +80,10 @@
           </jsp:include>
         </c:forEach>
       </div>
+      <c:url value="/album/${album.id}/${pageNum + 1}" var="nextPage" />
+      <c:url value="/album/${album.id}/${pageNum -1}" var="prevPage" />
+      <a href="${prevPage}" class="button review-button">Previous page</a>
+      <a href="${nextPage}" class="button review-button">Next page</a>
     </div>
   </body>
 </html>

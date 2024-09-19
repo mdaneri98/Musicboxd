@@ -59,7 +59,7 @@
   </header>
 
   <c:if test="${albums.size() > 0}">
-    <h2>Favourite Albums</h2>
+    <h2>Favorite Albums</h2>
     <div class="carousel">
       <c:forEach var="album" items="${albums}" varStatus="status">
         <c:url var="albumUrl" value="/album/${album.id}"/>
@@ -75,7 +75,7 @@
   </c:if>
 
   <c:if test="${artists.size() > 0}">
-  <h2>Favourite artists</h2>
+  <h2>Favorite artists</h2>
   <div class="carousel">
     <c:forEach var="artist" items="${artists}" varStatus="status">
       <c:url var="artistUrl" value="/artist/${artist.id}"/>
@@ -91,7 +91,7 @@
   </c:if>
 
   <c:if test="${songs.size() > 0}">
-  <h2>Favourite Songs</h2>
+  <h2>Favorite Songs</h2>
   <ul class="song-list">
     <c:forEach var="song" items="${songs}" varStatus="status">
       <c:url var="songUrl" value="/song/${song.id}"/>
@@ -124,6 +124,10 @@
       </jsp:include>
     </c:forEach>
   </div>
+  <c:url value="/user/${user.id}/${pageNum + 1}" var="nextPage" />
+  <c:url value="/user/${user.id}/${pageNum -1}" var="prevPage" />
+  <a href="${prevPage}" class="button review-button">Previous page</a>
+  <a href="${nextPage}" class="button review-button">Next page</a>
 </div>
 </body>
 </html>
