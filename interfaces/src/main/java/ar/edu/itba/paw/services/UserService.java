@@ -22,7 +22,7 @@ public interface UserService {
     boolean isAlbumFavorite(Long userId, Long albumId);
     boolean isArtistFavorite(Long userId, Long albumId);
     boolean isSongFavorite(Long userId, Long albumId);
-    UserFollowingData getFollowingData(Long userId);
+    UserFollowingData getFollowingData(Long userId, int limit, int offset);
 
     int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
 

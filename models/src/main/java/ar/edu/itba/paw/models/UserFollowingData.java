@@ -3,19 +3,19 @@ package ar.edu.itba.paw.models;
 import java.util.List;
 
 public class UserFollowingData {
-    private final List<Long> followers;
-    private final List<Long> following;
+    private final List<User> followers;
+    private final List<User> following;
 
-    public UserFollowingData(List<Long> followers, List<Long> following) {
+    public UserFollowingData(List<User> followers, List<User> following) {
         this.followers = followers;
         this.following = following;
     }
 
-    public List<Long> getFollowers() {
+    public List<User> getFollowers() {
         return followers;
     }
 
-    public List<Long> getFollowing() {
+    public List<User> getFollowing() {
         return following;
     }
 }

@@ -88,15 +88,29 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public List<Long> getFollowers(Long userId) {
-        String sql = "SELECT user_id FROM follower WHERE following = ?";
-        return jdbcTemplate.queryForList(sql, new Object[]{userId}, Long.class);
+    public List<User> getFollowers(Long userId, int limit, int offset) {
+        String sql = "SELECT user_id FROM follower WHERE following = ? LIMIT ? OFFSET ?";
+        List<Long> followerIds = jdbcTemplate.queryForList(sql, new Object[]{userId, limit, offset}, Long.class);
+
+        List<User> followers = new ArrayList<>();
+        for (Long followerId : followerIds) {
+            Optional<User> follower = this.findById(followerId);
+            follower.ifPresent(followers::add);
+        }
+        return followers;
     }
 
     @Override
-    public List<Long> getFollowing(Long userId) {
-        String sql = "SELECT following FROM follower WHERE user_id = ?";
-        return jdbcTemplate.queryForList(sql, new Object[]{userId}, Long.class);
+    public List<User> getFollowing(Long userId, int limit, int offset) {
+        String sql = "SELECT following FROM follower WHERE user_id = ? LIMIT ? OFFSET ?";
+        List<Long> followingIds = jdbcTemplate.queryForList(sql, new Object[]{userId, limit, offset}, Long.class);
+
+        List<User> following = new ArrayList<>();
+        for (Long followingId : followingIds) {
+            Optional<User> follower = this.findById(followingId);
+            follower.ifPresent(following::add);
+        }
+        return following;
     }
 
     @Override
