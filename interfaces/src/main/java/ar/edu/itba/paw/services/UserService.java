@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +22,7 @@ public interface UserService {
     boolean isAlbumFavorite(Long userId, Long albumId);
     boolean isArtistFavorite(Long userId, Long albumId);
     boolean isSongFavorite(Long userId, Long albumId);
-
+    UserFollowingData getFollowingData(Long userId);
 
     int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
 

@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,13 +44,19 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public int create(String username, String email, String password) {
-        return jdbcTemplate.update(
-                "INSERT INTO cuser (username, email, password, img_id) VALUES (?, ?, ?, ?)",
-                username,
-                email,
-                password,
-                1
-        );
+        int imgId = 1;
+
+        String checkImageSql = "SELECT COUNT(*) FROM image WHERE id = ?";
+        int count = jdbcTemplate.queryForObject(checkImageSql, Integer.class, imgId);
+
+        if (count == 0) {
+            // Image doesn't exist, throw an exception.
+            throw new IllegalArgumentException("Image with id " + imgId + " does not exist");
+        }
+
+        // If we get here, the image exists, so we can proceed with user creation
+        String insertUserSql = "INSERT INTO cuser (username, email, password, img_id) VALUES (?, ?, ?, ?)";
+        return jdbcTemplate.update(insertUserSql, username, email, password, imgId);
     }
 
     @Override
@@ -81,6 +85,18 @@ public class UserJdbcDao implements UserDao {
         String sql = "SELECT COUNT(*) FROM favorite_song WHERE user_id = ? AND song_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, songId);
         return count > 0;
+    }
+
+    @Override
+    public List<Long> getFollowers(Long userId) {
+        String sql = "SELECT user_id FROM follower WHERE following = ?";
+        return jdbcTemplate.queryForList(sql, new Object[]{userId}, Long.class);
+    }
+
+    @Override
+    public List<Long> getFollowing(Long userId) {
+        String sql = "SELECT following FROM follower WHERE user_id = ?";
+        return jdbcTemplate.queryForList(sql, new Object[]{userId}, Long.class);
     }
 
     @Override
