@@ -140,7 +140,7 @@ public class ReviewServiceImpl implements ReviewService {
         allReviews.addAll(albumReviews);
         allReviews.addAll(songReviews);
 
-        allReviews.sort((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()));
+        allReviews.sort((r1, r2) -> r2.getLikes().compareTo(r1.getLikes()));
 
         // Aplicar la paginación
         int start = (page - 1) * pageSize;
