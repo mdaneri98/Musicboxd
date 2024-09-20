@@ -404,4 +404,91 @@ public class ReviewJdbcDao implements ReviewDao {
 
         return jdbcTemplate.query(sql, new Object[]{userId}, SONG_REVIEW_ROW_MAPPER);
     }
+
+    @Override
+    public List<SongReview> findPopularSongReviewsSince(LocalDate date) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, " +
+                "s.id AS song_id, s.title AS song_title, s.duration, " +
+                "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
+                "FROM review r " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN song_review sr ON r.id = sr.review_id " +
+                "JOIN song s ON sr.song_id = s.id " +
+                "JOIN album al ON s.album_id = al.id " +
+                "WHERE r.created_at >= ? " +
+                "ORDER BY r.likes DESC LIMIT 30";
+
+        return jdbcTemplate.query(sql, new Object[]{date}, SONG_REVIEW_ROW_MAPPER);
+    }
+
+    @Override
+    public List<AlbumReview> findPopularAlbumReviewsSince(LocalDate date) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
+                "FROM review r " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN album_review ar ON r.id = ar.review_id " +
+                "JOIN album al ON ar.album_id = al.id " +
+                "WHERE r.created_at >= ? " +
+                "ORDER BY r.likes DESC LIMIT 30";
+
+        return jdbcTemplate.query(sql, new Object[]{date}, ALBUM_REVIEW_ROW_MAPPER);
+    }
+
+    @Override
+    public List<ArtistReview> findPopularArtistReviewsSince(LocalDate date) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
+                "FROM review r " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN artist_review ar ON r.id = ar.review_id " +
+                "JOIN artist a ON ar.artist_id = a.id " +
+                "WHERE r.created_at >= ? " +
+                "ORDER BY r.likes DESC LIMIT 30";
+
+        return jdbcTemplate.query(sql, new Object[]{date}, ARTIST_REVIEW_ROW_MAPPER);
+    }
+
+    @Override
+    public List<SongReview> findSongReviewsFromFollowedUsers(Long userId) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, " +
+                "s.id AS song_id, s.title AS song_title, s.duration, " +
+                "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
+                "FROM review r " +
+                "JOIN follower f ON r.user_id = f.following " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN song_review sr ON r.id = sr.review_id " +
+                "JOIN song s ON sr.song_id = s.id " +
+                "JOIN album al ON s.album_id = al.id " +
+                "WHERE f.user_id = ? " +
+                "ORDER BY r.created_at DESC LIMIT 20";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, SONG_REVIEW_ROW_MAPPER);
+    }
+
+    @Override
+    public List<AlbumReview> findAlbumReviewsFromFollowedUsers(Long userId) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date " +
+                "FROM review r " +
+                "JOIN follower f ON r.user_id = f.following " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN album_review ar ON r.id = ar.review_id " +
+                "JOIN album al ON ar.album_id = al.id " +
+                "WHERE f.user_id = ? " +
+                "ORDER BY r.created_at DESC LIMIT 20";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, ALBUM_REVIEW_ROW_MAPPER);
+    }
+
+    @Override
+    public List<ArtistReview> findArtistReviewsFromFollowedUsers(Long userId) {
+        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
+                "FROM review r " +
+                "JOIN follower f ON r.user_id = f.following " +
+                "JOIN cuser u ON r.user_id = u.id " +
+                "JOIN artist_review ar ON r.id = ar.review_id " +
+                "JOIN artist a ON ar.artist_id = a.id " +
+                "WHERE f.user_id = ? " +
+                "ORDER BY r.created_at DESC LIMIT 20";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, ARTIST_REVIEW_ROW_MAPPER);
+    }
 }

@@ -29,6 +29,9 @@ public interface ReviewService {
     int decrementLikes(long reviewId);
 
     List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize);
+    List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize);
+    List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize);
+
     List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize);
     List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize);
     List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize);
