@@ -98,6 +98,17 @@ public class UserServiceImpl implements UserService {
         return rowsChanged;
     }
 
+    public UserFollowingData getFollowingData(Long userId) {
+        if (userId == null || userDao.findById(userId).isEmpty()) {
+            throw new IllegalArgumentException("Doesn't exists a user id with value %d".formatted(userId));
+        }
+        List<Long> followers = userDao.getFollowers(userId);
+        List<Long> following = userDao.getFollowing(userId);
+        return new UserFollowingData(followers, following);
+    }
+
+
+
     @Override
     public boolean isFollowing(Long userId, Long otherId) {
         return userDao.isFollowing(userId, otherId);
