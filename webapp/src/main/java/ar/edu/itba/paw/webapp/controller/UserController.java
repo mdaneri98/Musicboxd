@@ -52,6 +52,7 @@ public class UserController {
         LOGGER.info("Logged username: {}", loggedUser.getUsername());
         if (pageNum == null || pageNum <= 0) pageNum = 1;
 
+        mav.addObject("followingUsers", userService.getFollowingData(loggedUser.getId(), pageNum, 0).getFollowing());
         mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
         mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
         mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));

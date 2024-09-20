@@ -126,6 +126,24 @@
     <c:url value="/user/profile/${pageNum -1}" var="prevPage" />
     <a href="${prevPage}" class="button review-button">Previous page</a>
     <a href="${nextPage}" class="button review-button">Next page</a>
+
+    <!-- Following / Followers -->
+    <div class="card-deck">
+        <c:forEach var="user" items="${followingUsers}">
+        <div class="card">
+            <c:url var="profileImgId" value="images/${user.imgId}" />
+            <img class="card-img-top" src="${profileImgId}" alt="User profile image">
+            <div class="card-body">
+                <h5 class="card-title">${user.username}</h5>
+                <p class="card-text">Followers: ${user.followersAmount}</p>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Total reviews ${user.reviewAmount}</small>
+            </div>
+        </div>
+        </c:forEach>
+    </div>
+
 </div>
 </body>
 </html>

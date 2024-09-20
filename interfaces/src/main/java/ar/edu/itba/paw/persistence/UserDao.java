@@ -20,8 +20,8 @@ public interface UserDao {
 
     boolean isFollowing(Long userId, Long otherId);
 
-    List<Long> getFollowers(Long userId);
-    List<Long> getFollowing(Long userId);
+    List<User> getFollowers(Long userId, int limit, int offset);
+    List<User> getFollowing(Long userId, int limit, int offset);
 
     int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
 
