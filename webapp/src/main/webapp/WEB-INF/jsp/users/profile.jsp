@@ -129,18 +129,20 @@
 
     <!-- Following / Followers -->
     <div class="card-deck">
+        Some of your friends
         <c:forEach var="user" items="${followingUsers}">
-        <div class="card">
-            <c:url var="profileImgId" value="images/${user.imgId}" />
-            <img class="card-img-top" src="${profileImgId}" alt="User profile image">
-            <div class="card-body">
-                <h5 class="card-title">${user.username}</h5>
-                <p class="card-text">Followers: ${user.followersAmount}</p>
+            <div class="card">
+                <c:url var="profileImgId" value="/images/${user.imgId}" />
+                <img class="card-img-top" src="${profileImgId}" alt="User profile image">
+                <div class="card-body">
+                    <h5 class="card-title">${user.username}</h5>
+                    <p class="card-text">Followers: ${user.followersAmount}</p>
+                    <p class="card-text">Total reviews: ${user.reviewAmount}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Since ${user.createdAt}</small>
+                </div>
             </div>
-            <div class="card-footer">
-                <small class="text-muted">Total reviews ${user.reviewAmount}</small>
-            </div>
-        </div>
         </c:forEach>
     </div>
 
