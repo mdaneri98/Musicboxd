@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,4 +42,12 @@ public interface ReviewDao {
     List<ArtistReview> findArtistReviewsByUser(long userId);
     List<AlbumReview> findAlbumReviewsByUser(long userId);
     List<SongReview> findSongReviewsByUser(long userId);
+
+    List<ArtistReview> findPopularArtistReviewsSince(LocalDate date);
+    List<AlbumReview> findPopularAlbumReviewsSince(LocalDate date);
+    List<SongReview> findPopularSongReviewsSince(LocalDate date);
+
+    List<ArtistReview> findArtistReviewsFromFollowedUsers(Long userId);
+    List<AlbumReview> findAlbumReviewsFromFollowedUsers(Long userId);
+    List<SongReview> findSongReviewsFromFollowedUsers(Long userId);
 }

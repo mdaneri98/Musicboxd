@@ -8,6 +8,7 @@ import ar.edu.itba.paw.persistence.ReviewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -111,6 +112,52 @@ public class ReviewServiceImpl implements ReviewService {
         List<ArtistReview> artistReviews = reviewDao.findArtistReviewsByUser(userId);
         List<AlbumReview> albumReviews = reviewDao.findAlbumReviewsByUser(userId);
         List<SongReview> songReviews = reviewDao.findSongReviewsByUser(userId);
+
+        allReviews.addAll(artistReviews);
+        allReviews.addAll(albumReviews);
+        allReviews.addAll(songReviews);
+
+        allReviews.sort((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()));
+
+        // Aplicar la paginación
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, allReviews.size());
+
+        return allReviews.subList(start, end);
+    }
+
+    @Override
+    public List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize) {
+        List<Review> allReviews = new ArrayList<>();
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+
+        // Obtener las reviews de artistas
+        List<ArtistReview> artistReviews = reviewDao.findPopularArtistReviewsSince(thirtyDaysAgo);
+        List<AlbumReview> albumReviews = reviewDao.findPopularAlbumReviewsSince(thirtyDaysAgo);
+        List<SongReview> songReviews = reviewDao.findPopularSongReviewsSince(thirtyDaysAgo);
+
+        allReviews.addAll(artistReviews);
+        allReviews.addAll(albumReviews);
+        allReviews.addAll(songReviews);
+
+        allReviews.sort((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()));
+
+        // Aplicar la paginación
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, allReviews.size());
+
+        return allReviews.subList(start, end);
+    }
+
+    @Override
+    public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
+        List<Review> allReviews = new ArrayList<>();
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+
+        // Obtener las reviews de artistas
+        List<ArtistReview> artistReviews = reviewDao.findArtistReviewsFromFollowedUsers(userId);
+        List<AlbumReview> albumReviews = reviewDao.findAlbumReviewsFromFollowedUsers(userId);
+        List<SongReview> songReviews = reviewDao.findSongReviewsFromFollowedUsers(userId);
 
         allReviews.addAll(artistReviews);
         allReviews.addAll(albumReviews);
