@@ -11,7 +11,6 @@ body {
     display: flex;
     flex-direction: row;
     gap: 30px;
-
 }
 
 /* Headings */
@@ -47,12 +46,14 @@ h6 {
 
 /* Links */
 a {
+    width: 100%;
     color: #1DB954;
     text-decoration: none;
 }
 
 /* Buttons */
 button {
+    width: 100%;
     background-color: #1DB954;
     color: #ffffff;
     font-size: 1rem;
@@ -184,6 +185,7 @@ label {
 
     display: flex;
     flex-direction: column;
+
     gap: 10px;
 }
 
@@ -227,7 +229,3 @@ label {
 }
 
 /* ------------ Forms ------------ */
-form {
-    max-width: 600px;
-    margin: 0 auto;
-}
