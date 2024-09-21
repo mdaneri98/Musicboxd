@@ -17,31 +17,6 @@
     --decorative-subdued: #292929;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Circular Std', Arial, sans-serif;
-    background-color: var(--background-base);
-    color: var(--text-base);
-    line-height: 1.6;
-}
-
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 24px;
-}
-
-@media (max-width: 1553px) {
-    .container {
-        margin-left: 68px; /* For smaller screens, enforce a minimum margin of 68px */
-        margin-right: 0;
-    }
-}
 
 header {
     display: flex;
@@ -71,24 +46,10 @@ header {
     margin-bottom: 8px;
 }
 
-h1 {
-    font-size: 96px;
-    line-height: 96px;
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    margin-bottom: 16px;
-}
-
 .artist-bio {
     font-size: 14px;
     color: var(--text-subdued);
     max-width: 800px;
-}
-
-h2 {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 32px 0 16px;
 }
 
 .carousel {
