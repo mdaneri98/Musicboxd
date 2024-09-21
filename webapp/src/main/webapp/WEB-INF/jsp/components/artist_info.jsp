@@ -5,14 +5,14 @@
 <div class="info-container">
   <c:url var="artistImgURL" value="/images/${param.imgId}"/>
   <img src="${artistImgURL}" alt="Artist Name" class="artist-image">
-  <div class="info-data">
+  <div class="data-container">
     <p class="artist-type">Artist</p>
     <div>
     <h1><c:out value="${param.name}"/></h1>
     <p class="artist-bio"><c:out value="${param.bio}"/></p>
     </div>
   </div>
-  <div class="info-data">
+  <div class="data-container">
     <c:url value="/artist/${param.id}/reviews" var="new_artist_review_url" />
     <a href="${new_artist_review_url}">
       <button>Make a review</button>
