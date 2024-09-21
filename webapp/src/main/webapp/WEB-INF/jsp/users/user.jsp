@@ -19,43 +19,19 @@
     <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
   </jsp:include>
 </div>
-<div class="main-content container">
+<div class="container">
 
   <header>
-    <c:url var="userImgURL" value="/images/${user.imgId}"/>
-    <img src="${userImgURL}" alt="User Name" class="artist-image">
-    <div class="artist-info">
-      <p class="artist-type">User</p>
-      <h1>@<c:out value="${user.username}"/></h1>
-      <h3><c:out value="${user.name}"/></h3>
-      <p class="artist-bio"><c:out value="${user.bio}"/></p>
-      <div class="user-stats">
-      <span class="stat-item">
-        <strong><c:out value="${user.reviewAmount}"/></strong> Posts
-      </span>
-        <span class="stat-item">
-        <strong><c:out value="${user.followersAmount}"/></strong> Followers
-      </span>
-        <span class="stat-item">
-        <strong><c:out value="${user.followingAmount}"/></strong> Following
-      </span>
-      </div>
-      <c:url value="/user/${user.id}/follow" var="follow_user_url" />
-      <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
-      <c:choose>
-        <c:when test="${!isFollowing}">
-          <form action="${follow_user_url}" method="post">
-            <button type="submit">Follow</button>
-          </form>
-        </c:when>
-        <c:otherwise>
-          <form action="${unfollow_user_url}" method="post">
-            <button type="submit">Unfollow</button>
-          </form>
-        </c:otherwise>
-      </c:choose>
-
-    </div>
+    <jsp:include page="/WEB-INF/jsp/components/artist_info.jsp">
+      <jsp:param name="id" value="${user.imgId}" />
+      <jsp:param name="imgId" value="${user.username}" />
+      <jsp:param name="bio" value="${user.name}" />
+      <jsp:param name="name" value="${user.bio}" />
+      <jsp:param name="name" value="${user.reviewAmount}" />
+      <jsp:param name="name" value="${user.followingAmount}" />
+      <jsp:param name="name" value="${user.followersAmount}" />
+      <jsp:param name="isFavorite" value="${isFollowing}" />
+    </jsp:include>
   </header>
 
   <c:if test="${albums.size() > 0}">
