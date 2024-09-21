@@ -21,7 +21,7 @@
 </div>
 <div class="container">
     <header class="artist-info">
-        <jsp:include page="/WEB-INF/jsp/components/artist_info.jsp">
+        <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
             <jsp:param name="imgId" value="${loggedUser.imgId}" />
             <jsp:param name="username" value="${loggedUser.username}" />
             <jsp:param name="name" value="${loggedUser.name}" />
@@ -29,8 +29,6 @@
             <jsp:param name="reviewAmount" value="${loggedUser.reviewAmount}" />
             <jsp:param name="followersAmount" value="${loggedUser.followersAmount}" />
             <jsp:param name="followingAmount" value="${loggedUser.followingAmount}" />
-
-
         </jsp:include>
     </header>
 

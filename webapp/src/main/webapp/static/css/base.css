@@ -179,7 +179,6 @@ label {
 
 /* ------------ Contenido principal ------------ */
 .container {
-    margin: 20px;
     width: 100%;
     min-height: 100vh;
 
@@ -187,6 +186,25 @@ label {
     flex-direction: column;
     gap: 10px;
 }
+
+/* ------------ info-display ------------ */
+.info-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.info-container .info-data {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: center;
+}
+
 
 
 /* ------------ Cards ------------ */
