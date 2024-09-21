@@ -10,7 +10,7 @@
             <jsp:param name="title" value="${pageTitle}"/>
         </jsp:include>
 
-        <c:url var="css" value="/static/css/artist.css" />
+        <c:url var="css" value="/static/css/home.css" />
         <link rel="stylesheet" href="${css}">
 
     </head>
