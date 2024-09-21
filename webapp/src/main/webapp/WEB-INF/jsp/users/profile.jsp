@@ -10,7 +10,7 @@
     </jsp:include>
 
     <c:url var="css" value="/static/css/artist.css" />
-    <link rel="stylesheet" href="${css}">
+    <!-- <link rel="stylesheet" href="${css}"> -->
 
 </head>
 <body>
