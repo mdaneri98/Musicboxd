@@ -10,7 +10,7 @@
     </jsp:include>
 
     <c:url var="css" value="/static/css/artist.css" />
-    <!-- <link rel="stylesheet" href="${css}"> -->
+    <link rel="stylesheet" href="${css}">
 
 </head>
 <body>
@@ -19,31 +19,19 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
 </div>
-<div class="main-content container">
-    <header>
-        <c:url var="userImgURL" value="/images/${loggedUser.imgId}"/>
-        <img src="${userImgURL}" alt="User Name" class="artist-image">
-        <div class="artist-info">
-            <p class="artist-type"></p>
-            <h1>@<c:out value="${loggedUser.username}"/></h1>
-            <h3><c:out value="${loggedUser.name}"/></h3>
-            <p class="artist-bio"><c:out value="${loggedUser.bio}"/></p>
-            <div class="user-stats">
-      <span class="stat-item">
-        <strong><c:out value="${loggedUser.reviewAmount}"/></strong> Posts
-      </span>
-                <span class="stat-item">
-        <strong><c:out value="${loggedUser.followersAmount}"/></strong> Followers
-      </span>
-                <span class="stat-item">
-        <strong><c:out value="${loggedUser.followingAmount}"/></strong> Following
-      </span>
-            </div>
-            <c:url value="/user/edit" var="edit_profile_url" />
-            <a href="${edit_profile_url}">
-                <button>Edit Profile</button>
-            </a>
-        </div>
+<div class="container">
+    <header class="artist-info">
+        <jsp:include page="/WEB-INF/jsp/components/artist_info.jsp">
+            <jsp:param name="imgId" value="${loggedUser.imgId}" />
+            <jsp:param name="username" value="${loggedUser.username}" />
+            <jsp:param name="name" value="${loggedUser.name}" />
+            <jsp:param name="bio" value="${loggedUser.bio}" />
+            <jsp:param name="reviewAmount" value="${loggedUser.reviewAmount}" />
+            <jsp:param name="followersAmount" value="${loggedUser.followersAmount}" />
+            <jsp:param name="followingAmount" value="${loggedUser.followingAmount}" />
+
+
+        </jsp:include>
     </header>
 
     <h2>Favorite Albums</h2>

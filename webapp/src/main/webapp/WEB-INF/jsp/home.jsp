@@ -45,7 +45,7 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
 </div>
-<div class="container main-content">
+<div class="container">
     <div>
         <span id="forYouButton" class="tab-button active">For You</span>
         <span id="followingButton" class="tab-button">Following</span>
