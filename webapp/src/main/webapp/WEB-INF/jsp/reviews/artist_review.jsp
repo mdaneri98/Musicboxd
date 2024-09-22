@@ -26,7 +26,7 @@
     <c:url value="/artist/${artist.id}" var="artistUrl" />
     <a href="${artistUrl}" class="artist-box">
         <c:url var="imgUrl" value="/images/${artist.imgId}"/>
-        <img src="${imgUrl}" alt="${artist.name}" class="artist-image">
+        <img src="${imgUrl}" alt="${artist.name}" class="primary-image">
         <div class="artist-info">
             <h2 class="artist-name">${artist.name}</h2>
             <p class="artist-bio">${artist.bio}</p>

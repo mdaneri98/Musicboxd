@@ -1,38 +1,9 @@
-:root {
-    --background-base: #121212;
-    --background-highlight: #1a1a1a;
-    --background-press: #2c2c2c;
-    --background-elevated-base: #242424;
-    --background-elevated-highlight: #2a2a2a;
-    --background-tinted-base: hsla(0,0%,100%,.07);
-    --background-tinted-highlight: hsla(0,0%,100%,.1);
-    --background-tinted-press: hsla(0,0%,100%,.04);
-    --text-base: #fff;
-    --text-subdued: #a7a7a7;
-    --text-bright-accent: #1ed760;
-    --essential-base: #fff;
-    --essential-subdued: #727272;
-    --essential-bright-accent: #20a34f;
-    --decorative-base: #fff;
-    --decorative-subdued: #292929;
-}
-
-
 header {
     display: flex;
     align-items: flex-end;
     margin-bottom: 40px;
     padding: 60px 0;
-    background: linear-gradient(transparent 0,rgba(0,0,0,.5) 100%);
-}
 
-.artist-image {
-    width: 232px;
-    height: 232px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 24px;
-    box-shadow: 0 4px 60px rgba(0,0,0,.5);
 }
 
 .artist-info {
@@ -142,24 +113,6 @@ header {
 .song-title {
     flex-grow: 1;
     font-size: 16px;
-}
-
-button {
-    display: inline-block;
-    background-color: var(--essential-bright-accent);
-    color: var(--background-base);
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none;
-    padding: 14px 32px;
-    border-radius: 500px;
-    margin-top: 24px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-button:hover {
-    background-color: #1fdf64;
-    transform: scale(1.04);
 }
 
 a {

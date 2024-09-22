@@ -72,16 +72,6 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* Secondary Button */
-button.secondary {
-    background-color: #333333;
-    color: #ffffff;
-}
-
-button.secondary:hover {
-    background-color: #444444;
-}
-
 /* Input Fields */
 input[type="text"], input[type="email"], input[type="password"], textarea {
     background-color: #333333;
@@ -184,8 +174,15 @@ label {
 
     display: flex;
     flex-direction: column;
-
+    justify-content: space-between;
     gap: 10px;
+
+    padding: 60px 0;
+}
+
+.header-content {
+    background: linear-gradient(transparent 0,rgba(0,0,0,.5) 100%);
+    padding: 10px;
 }
 
 /* ------------ info-display ------------ */
@@ -206,7 +203,21 @@ label {
     justify-content: center;
 }
 
+/* ------------ Imagenes grandes ------------ */
 
+.primary-image {
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.secondary-image {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
 
 /* ------------ Container & Cards ------------ */
 .h-reviews-container {
@@ -237,4 +248,20 @@ label {
     color: #b3b3b3;
 }
 
-/* ------------ Forms ------------ */
+/* ------------ Buttons ------------ */
+.primary-button {
+    background-color: var(--essential-bright-accent);
+    color: var(--background-base);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 500px;
+    margin-top: 24px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #1fdf64;
+    transform: scale(1.04);
+}
