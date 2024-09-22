@@ -1,0 +1,52 @@
+.buttons-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.album-info-container img {
+    width: 50px;
+    height: 50px;
+}
+
+.artist-button {
+    background-color: #242424;
+    color: white;
+    padding-right: 16px;
+}
+
+.album-card {
+    background-color: var(--background-tinted-highlight);
+    color: var(--text-base);
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    max-width: 250px;
+    margin-right: 20px;
+}
+
+.album-card:hover {
+    background-color: var(--background-tinted-press);
+    transform: scale(1.04);
+}
+
+.album-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+.album-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.album-name {
+    font-size: 16px;
+    font-weight: 700;
+}
