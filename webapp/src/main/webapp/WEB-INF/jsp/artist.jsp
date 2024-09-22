@@ -34,16 +34,16 @@
     </header>
 
     <h2>Albums</h2>
-    <div class="carousel">
+    <div class="albums-container">
         <c:forEach var="album" items="${albums}" varStatus="status">
             <c:url var="albumUrl" value="/album/${album.id}"/>
-            <a href="${albumUrl}">
-                <div class="album">
+            <div class="album-item">
+                <a href="${albumUrl}">
                     <c:url var="albumImgURL" value="/images/${album.imgId}"/>
                     <img src="${albumImgURL}" alt="Album ${status.index + 1}">
                     <p><c:out value="${album.title}"/></p>
-                </div>
-            </a>
+                </a>
+            </div>
         </c:forEach>
     </div>
 

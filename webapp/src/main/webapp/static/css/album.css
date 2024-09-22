@@ -1,18 +1,3 @@
-.album-image {
-    width: 232px;
-    height: 232px;
-    object-fit: cover;
-    margin-right: 24px;
-}
-
-.artist-image {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 8px;
-}
-
 .song-list {
     list-style-type: none;
     background-color: var(--background-elevated-base);
