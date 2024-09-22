@@ -9,9 +9,11 @@
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
 
-
   <c:url var="review_card" value="/static/css/review_card.css" />
   <link rel="stylesheet" href="${review_card}">
+
+  <c:url var="songcss" value="/static/css/song.css" />
+  <link rel="stylesheet" href="${songcss}">
 
 </head>
 <body>
@@ -30,26 +32,30 @@
       <div class="data-container">
         <p class="song-type">Song</p>
         <h1><c:out value="${song.title}"/></h1>
-        <div class="buttons-container">
+        <div class="small-container">
           <c:forEach var="artist" items="${artists}">
             <c:url var="artistUrl" value="/artist/${artist.id}"/>
-            <a href="${artistUrl}" class="artist-button">
-              <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
-              <img src="${artistImgUrl}" alt="${artist.name}" class="secondary-image">
-              <span><c:out value="${artist.name}"/></span>
-            </a>
-          </c:forEach>
-        </div>
-        <div class="album-info-container">
-          <c:url var="songUrl" value="/album/${album.id}"/>
-          <a href="${songUrl}" class="album-card">
-            <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
-            <img src="${albumImgUrl}" alt="${album.title}" class="secondary-image">
-            <div class="album-info">
-              <span class="album-name"><c:out value="${album.title}"/></span>
-              <span class="album-type">Album</span>
+            <div class="creator-item">
+              <a href="${artistUrl}">
+                <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
+                <img src="${artistImgUrl}" alt="${artist.name}" class="secondary-image">
+                <span><c:out value="${artist.name}"/></span>
+              </a>
             </div>
-          </a>
+          </c:forEach>
+          <div class="small-container">
+            <div class="album-info">
+              <c:url var="songUrl" value="/album/${album.id}"/>
+              <a href="${songUrl}" class="album-card">
+                <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
+                <img src="${albumImgUrl}" alt="${album.title}" class="album-image">
+                <div class="album-info">
+                  <span class="album-name"><c:out value="${album.title}"/></span>
+                  <span class="album-type">Album</span>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
       <div class="data-container">
