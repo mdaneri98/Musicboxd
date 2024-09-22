@@ -21,11 +21,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 5.0rem;
 }
 
 h2 {
-    font-size: 2rem;
+    font-size: 2.5rem;
 }
 
 h3 {
@@ -203,8 +203,7 @@ label {
     justify-content: center;
 }
 
-/* ------------ Imagenes grandes ------------ */
-
+/* ------------ Imagenes ------------ */
 .primary-image {
     width: 240px;
     height: 240px;
@@ -247,6 +246,43 @@ label {
 .card-text {
     color: #b3b3b3;
 }
+
+/* ------------ ALbum container & items  ------------ */
+.medium-box-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+
+}
+
+.medium-box-container-item {
+    background-color: #242424;
+    width: 225px;
+    height: auto;
+    border-radius: 8px;
+    padding: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.medium-box-container img {
+    margin-bottom: 10px;
+    width: 100%;
+    height: 80%;
+    object-fit: contain;
+}
+
+/* ------------ Song list ------------ */
+.song-list li {
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.song-list li:hover {
+    background-color: #2b2d30;
+}
+
 
 /* ------------ Buttons ------------ */
 .primary-button {

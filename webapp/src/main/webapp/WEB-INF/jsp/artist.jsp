@@ -34,10 +34,10 @@
     </header>
 
     <h2>Albums</h2>
-    <div class="albums-container">
+    <div class="medium-box-container">
         <c:forEach var="album" items="${albums}" varStatus="status">
             <c:url var="albumUrl" value="/album/${album.id}"/>
-            <div class="album-item">
+            <div class="medium-box-container-item">
                 <a href="${albumUrl}">
                     <c:url var="albumImgURL" value="/images/${album.imgId}"/>
                     <img src="${albumImgURL}" alt="Album ${status.index + 1}">
@@ -51,12 +51,12 @@
     <ul class="song-list">
         <c:forEach var="song" items="${songs}" varStatus="status">
             <c:url var="songUrl" value="/song/${song.id}"/>
-            <a href="${songUrl}">
-                <li>
+            <li>
+                <a href="${songUrl}">
                     <span class="song-number">${status.index + 1}</span>
                     <span class="song-title"><c:out value="${song.title}"/></span>
-                </li>
-            </a>
+                </a>
+            </li>
         </c:forEach>
     </ul>
 

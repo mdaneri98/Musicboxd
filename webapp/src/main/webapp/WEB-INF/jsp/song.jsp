@@ -13,7 +13,7 @@
       --background-elevated-base: #242424;
       --background-elevated-highlight: #2a2a2a;
       --background-tinted-base: hsla(0,0%,100%,.07);
-      --background-tinted-highlight: hsla(0,0%,100%,.1);
+      --background-tinted-highlight: hsl(216, 5%, 18%);
       --background-tinted-press: hsla(0,0%,100%,.04);
       --text-base: #fff;
       --text-subdued: #a7a7a7;

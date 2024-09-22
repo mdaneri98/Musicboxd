@@ -9,7 +9,7 @@
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
 
-  <c:url var="css" value="/static/css/artist.css" />
+  <c:url var="css" value="/static/css/user.css" />
   <link rel="stylesheet" href="${css}">
 
   <c:url var="review_card" value="/static/css/review_card.css" />
@@ -39,32 +39,32 @@
 
   <c:if test="${albums.size() > 0}">
     <h2>Favorite Albums</h2>
-    <div class="carousel">
+    <div class="medium-box-container">
       <c:forEach var="album" items="${albums}" varStatus="status">
         <c:url var="albumUrl" value="/album/${album.id}"/>
-        <a href="${albumUrl}">
-          <div class="album">
+        <div class="medium-box-container-item">
+          <a href="${albumUrl}">
             <c:url var="albumImgURL" value="/images/${album.imgId}"/>
             <img src="${albumImgURL}" alt="Album ${status.index + 1}">
             <p><c:out value="${album.title}"/></p>
-          </div>
-        </a>
+          </a>
+        </div>
       </c:forEach>
     </div>
   </c:if>
 
   <c:if test="${artists.size() > 0}">
   <h2>Favorite artists</h2>
-  <div class="carousel">
+  <div class="medium-box-container">
     <c:forEach var="artist" items="${artists}" varStatus="status">
       <c:url var="artistUrl" value="/artist/${artist.id}"/>
-      <a href="${artistUrl}">
-        <div class="artist">
+      <div class="medium-box-container-item">
+        <a href="${artistUrl}">
           <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
           <img src="${artistImgURL}" alt="Album ${status.index + 1}">
           <p><c:out value="${artist.name}"/></p>
-        </div>
-      </a>
+        </a>
+      </div>
     </c:forEach>
   </div>
   </c:if>

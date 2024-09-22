@@ -20,7 +20,7 @@
   </div>
   <div class="data-container">
     <c:url var="albumReviewUrl" value="/album/${param['album.id']}/reviews" />
-    <a href="${albumReviewUrl}" class="button primary-button">Make a review</a>
+    <a href="${albumReviewUrl}" class="primary-button">Make a review</a>
     <c:url value="/album/${param['album.id']}/add-favorite" var="add_favorite_url" />
     <c:url value="/album/${param['album.id']}/remove-favorite" var="remove_favorite_url" />
     <c:choose>
