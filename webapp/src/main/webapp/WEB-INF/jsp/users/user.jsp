@@ -12,6 +12,9 @@
   <c:url var="css" value="/static/css/artist.css" />
   <link rel="stylesheet" href="${css}">
 
+  <c:url var="review_card" value="/static/css/review_card.css" />
+  <link rel="stylesheet" href="${review_card}">
+
 </head>
 <body>
 <div>

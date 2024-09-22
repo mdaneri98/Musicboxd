@@ -13,6 +13,9 @@
         <c:url var="css" value="/static/css/home.css" />
         <link rel="stylesheet" href="${css}">
 
+        <c:url var="review_card" value="/static/css/review_card.css" />
+        <link rel="stylesheet" href="${review_card}">
+
     </head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

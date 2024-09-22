@@ -188,6 +188,10 @@
       background-color: transparent;
     }
   </style>
+
+  <c:url var="review_card" value="/static/css/review_card.css" />
+  <link rel="stylesheet" href="${review_card}">
+
 </head>
 <body>
   <div>
