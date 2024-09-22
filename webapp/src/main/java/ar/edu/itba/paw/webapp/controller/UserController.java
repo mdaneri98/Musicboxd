@@ -52,7 +52,7 @@ public class UserController {
         LOGGER.info("Logged username: {}", loggedUser.getUsername());
         if (pageNum == null || pageNum <= 0) pageNum = 1;
 
-        mav.addObject("followingUsers", userService.getFollowingData(loggedUser.getId(), pageNum, 0).getFollowing());
+        mav.addObject("followingUsers", userService.getFollowingData(loggedUser.getId(), 20, (pageNum-1)*20).getFollowing());
         mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
         mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
         mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));
@@ -141,6 +141,46 @@ public class UserController {
         mav.addObject("pageNum", pageNum);
 
         return mav;
+    }
+
+    @RequestMapping("/{userId:\\d+}/following/{pageNum:\\d+}")
+    public ModelAndView following (@ModelAttribute("loggedUser") User loggedUser,
+                              @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum){
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
+        ModelAndView mav = new ModelAndView("/users/follow_info");
+        mav.addObject("user", userService.findById(userId).get());
+        mav.addObject("userList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowing());
+        mav.addObject("loggedUser", loggedUser);
+        mav.addObject("pageNum", pageNum);
+        mav.addObject("title", "Following");
+
+        return mav;
+    }
+
+    @RequestMapping("/{userId:\\d+}/following")
+    public ModelAndView following (@ModelAttribute("loggedUser") User loggedUser,
+                                   @PathVariable(name = "userId") long userId){
+        return following(loggedUser,userId,1);
+    }
+
+    @RequestMapping("/{userId:\\d+}/followers/{pageNum:\\d+}")
+    public ModelAndView followers (@ModelAttribute("loggedUser") User loggedUser,
+                                   @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum){
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
+        ModelAndView mav = new ModelAndView("/users/follow_info");
+        mav.addObject("user", userService.findById(userId).get());
+        mav.addObject("userList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowers());
+        mav.addObject("loggedUser", loggedUser);
+        mav.addObject("pageNum", pageNum);
+        mav.addObject("title", "Followers");
+
+        return mav;
+    }
+
+    @RequestMapping("/{userId:\\d+}/followers")
+    public ModelAndView followers (@ModelAttribute("loggedUser") User loggedUser,
+                                   @PathVariable(name = "userId") long userId){
+        return followers(loggedUser,userId,1);
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)

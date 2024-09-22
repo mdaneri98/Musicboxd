@@ -29,15 +29,17 @@
             <h3><c:out value="${loggedUser.name}"/></h3>
             <p class="artist-bio"><c:out value="${loggedUser.bio}"/></p>
             <div class="user-stats">
-      <span class="stat-item">
-        <strong><c:out value="${loggedUser.reviewAmount}"/></strong> Posts
-      </span>
                 <span class="stat-item">
-        <strong><c:out value="${loggedUser.followersAmount}"/></strong> Followers
-      </span>
+                    <strong><c:out value="${loggedUser.reviewAmount}"/></strong> Posts
+                </span>
+                <c:url var="followingPageUrl" value="/user/${loggedUser.id}/following"/>
+                <c:url var="followersPageUrl" value="/user/${loggedUser.id}/followers"/>
                 <span class="stat-item">
-        <strong><c:out value="${loggedUser.followingAmount}"/></strong> Following
-      </span>
+                    <a href="${followersPageUrl}"><strong><c:out value="${loggedUser.followersAmount}"/></strong> Followers</a>
+                </span>
+                <span class="stat-item">
+                    <a href="${followingPageUrl}"><strong><c:out value="${loggedUser.followingAmount}"/></strong> Following </a>
+                </span>
             </div>
             <c:url value="/user/edit" var="edit_profile_url" />
             <a href="${edit_profile_url}">
@@ -127,25 +129,6 @@
     <c:url value="/user/profile/${pageNum -1}" var="prevPage" />
     <a href="${prevPage}" class="button review-button">Previous page</a>
     <a href="${nextPage}" class="button review-button">Next page</a>
-
-    <!-- Following / Followers -->
-    <div class="card-deck">
-        Some of your friends
-        <c:forEach var="user" items="${followingUsers}">
-            <div class="card">
-                <c:url var="profileImgId" value="/images/${user.imgId}" />
-                <img class="card-img-top" src="${profileImgId}" alt="User profile image">
-                <div class="card-body">
-                    <h5 class="card-title">${user.username}</h5>
-                    <p class="card-text">Followers: ${user.followersAmount}</p>
-                    <p class="card-text">Total reviews: ${user.reviewAmount}</p>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">Since ${user.createdAt}</small>
-                </div>
-            </div>
-        </c:forEach>
-    </div>
 
 </div>
 </body>
