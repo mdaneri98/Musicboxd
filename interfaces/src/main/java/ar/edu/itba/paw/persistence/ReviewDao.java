@@ -31,8 +31,11 @@ public interface ReviewDao {
 
 
     // Métodos para likes
+    int createLike(long userId, long reviewId);
+    int deleteLike(long userId, long reviewId);
     int incrementLikes(long reviewId);
     int decrementLikes(long reviewId);
+    boolean isLiked(Long userId, Long reviewId);
 
     // Métodos de paginación
     List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize);
@@ -50,4 +53,8 @@ public interface ReviewDao {
     List<ArtistReview> findArtistReviewsFromFollowedUsers(Long userId);
     List<AlbumReview> findAlbumReviewsFromFollowedUsers(Long userId);
     List<SongReview> findSongReviewsFromFollowedUsers(Long userId);
+
+    boolean isArtistReview(long reviewId);
+    boolean isAlbumReview(long reviewId);
+    boolean isSongReview(long reviewId);
 }

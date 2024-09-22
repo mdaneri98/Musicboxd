@@ -80,38 +80,90 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public int incrementLikes(long reviewId) {
+    public int createLike(long userId, long reviewId) {
+        reviewDao.createLike(userId, reviewId);
         return reviewDao.incrementLikes(reviewId);
     }
 
     @Override
-    public int decrementLikes(long reviewId) {
+    public int removeLike(long userId, long reviewId) {
+        reviewDao.deleteLike(userId, reviewId);
         return reviewDao.decrementLikes(reviewId);
     }
 
     @Override
-    public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize) {
-        return reviewDao.findArtistReviewsPaginated(artistId, page, pageSize);
+    public boolean isLiked(long userId, long reviewId) {
+        return reviewDao.isLiked(userId, reviewId);
+    }
+
+    private List<ArtistReview> setIsLikedArtistReview(List<ArtistReview> reviews, long userId) {
+        for (Review review : reviews) {
+            review.setLiked(isLiked(userId, review.getId()));
+        }
+        return reviews;
+    }
+
+    private List<AlbumReview> setIsLikedAlbumReview(List<AlbumReview> reviews, long userId) {
+        for (Review review : reviews) {
+            review.setLiked(isLiked(userId, review.getId()));
+        }
+        return reviews;
+    }
+
+    private List<SongReview> setIsLikedSongReview(List<SongReview> reviews, long userId) {
+        for (Review review : reviews) {
+            review.setLiked(isLiked(userId, review.getId()));
+        }
+        return reviews;
     }
 
     @Override
-    public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize) {
-        return reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize);
+    public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize, long loggedUserId) {
+        List<ArtistReview> reviews = reviewDao.findArtistReviewsPaginated(artistId, page, pageSize);
+        setIsLikedArtistReview(reviews, loggedUserId);
+        return reviews;
     }
 
     @Override
-    public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize) {
-        return reviewDao.findSongReviewsPaginated(songId, page, pageSize);
+    public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize, long loggedUserId) {
+        List<AlbumReview> reviews = reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize);
+        setIsLikedAlbumReview(reviews, loggedUserId);
+        return reviews;
     }
 
     @Override
-    public List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize) {
+    public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize, long loggedUserId) {
+        List<SongReview> reviews = reviewDao.findSongReviewsPaginated(songId, page, pageSize);
+        setIsLikedSongReview(reviews, loggedUserId);
+        return reviews;
+    }
+
+    @Override
+    public boolean isArtistReview(long reviewId) {
+        return reviewDao.isArtistReview(reviewId);
+    }
+
+    @Override
+    public boolean isAlbumReview(long reviewId) {
+        return reviewDao.isAlbumReview(reviewId);
+    }
+
+    @Override
+    public boolean isSongReview(long reviewId) {
+        return reviewDao.isSongReview(reviewId);
+    }
+
+    @Override
+    public List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize, long loggedUserId) {
         List<Review> allReviews = new ArrayList<>();
 
         // Obtener las reviews de artistas
         List<ArtistReview> artistReviews = reviewDao.findArtistReviewsByUser(userId);
+        setIsLikedArtistReview(artistReviews, loggedUserId);
         List<AlbumReview> albumReviews = reviewDao.findAlbumReviewsByUser(userId);
+        setIsLikedAlbumReview(albumReviews, loggedUserId);
         List<SongReview> songReviews = reviewDao.findSongReviewsByUser(userId);
+        setIsLikedSongReview(songReviews, loggedUserId);
 
         allReviews.addAll(artistReviews);
         allReviews.addAll(albumReviews);
@@ -127,14 +179,17 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize) {
+    public List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize, long loggedUserId) {
         List<Review> allReviews = new ArrayList<>();
-        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(days);
 
         // Obtener las reviews de artistas
         List<ArtistReview> artistReviews = reviewDao.findPopularArtistReviewsSince(thirtyDaysAgo);
+        setIsLikedArtistReview(artistReviews, loggedUserId);
         List<AlbumReview> albumReviews = reviewDao.findPopularAlbumReviewsSince(thirtyDaysAgo);
+        setIsLikedAlbumReview(albumReviews, loggedUserId);
         List<SongReview> songReviews = reviewDao.findPopularSongReviewsSince(thirtyDaysAgo);
+        setIsLikedSongReview(songReviews, loggedUserId);
 
         allReviews.addAll(artistReviews);
         allReviews.addAll(albumReviews);
@@ -150,14 +205,17 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
+    public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize, long loggedUserId) {
         List<Review> allReviews = new ArrayList<>();
         LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
 
         // Obtener las reviews de artistas
         List<ArtistReview> artistReviews = reviewDao.findArtistReviewsFromFollowedUsers(userId);
+        setIsLikedArtistReview(artistReviews, loggedUserId);
         List<AlbumReview> albumReviews = reviewDao.findAlbumReviewsFromFollowedUsers(userId);
+        setIsLikedAlbumReview(albumReviews, loggedUserId);
         List<SongReview> songReviews = reviewDao.findSongReviewsFromFollowedUsers(userId);
+        setIsLikedSongReview(songReviews, loggedUserId);
 
         allReviews.addAll(artistReviews);
         allReviews.addAll(albumReviews);

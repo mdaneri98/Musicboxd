@@ -152,3 +152,12 @@ CREATE TABLE IF NOT EXISTS favorite_song (
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, song_id)
 );
+
+CREATE TABLE IF NOT EXISTS review_like (
+    user_id INT NOT NULL,
+    review_id INT NOT NULL,
+
+    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, review_id)
+);

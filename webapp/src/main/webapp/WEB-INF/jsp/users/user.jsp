@@ -121,6 +121,7 @@
         <jsp:param name="likes" value="${review.likes}"/>
         <jsp:param name="user_id" value="${review.user.id}"/>
         <jsp:param name="review_id" value="${review.id}"/>
+        <jsp:param name="isLiked" value="${review.liked}"/>
       </jsp:include>
     </c:forEach>
   </div>

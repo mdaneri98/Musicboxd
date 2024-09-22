@@ -13,6 +13,7 @@ public abstract class Review {
     private Integer rating;
     private LocalDateTime createdAt;
     private Integer likes;
+    private Boolean isLiked;
 
     public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
         this.user = user;
@@ -45,6 +46,14 @@ public abstract class Review {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
     }
 
     public User getUser() {

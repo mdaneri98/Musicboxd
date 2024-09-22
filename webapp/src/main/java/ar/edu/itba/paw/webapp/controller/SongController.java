@@ -58,7 +58,7 @@ public class SongController {
 
         Song song = songService.findById(songId).get();
         List<Artist> artists = artistService.findBySongId(songId);
-        List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId,pageNum,5);
+        List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId,pageNum,5, loggedUser.getId());
 
         mav.addObject("album", song.getAlbum());
         mav.addObject("artists", artists);
