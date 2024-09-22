@@ -4,7 +4,7 @@
 
 <div class="info-container">
     <c:url var="userImgURL" value="/images/${param.imgId}"/>
-    <img src="${userImgURL}" alt="User Name" class="artist-image">
+    <img src="${userImgURL}" alt="User Name" class="primary-image">
     <div class="data-container">
         <p class="artist-type">User</p>
         <h1>@<c:out value="${param.username}"/></h1>
