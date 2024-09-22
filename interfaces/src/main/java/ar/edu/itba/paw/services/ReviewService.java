@@ -25,14 +25,21 @@ public interface ReviewService {
     int saveSongReview(SongReview review);
 
 
-    int incrementLikes(long reviewId);
-    int decrementLikes(long reviewId);
+    int createLike(long userId, long reviewId);
+    int removeLike(long userId, long reviewId);
+    boolean isLiked(long userId, long reviewId);
 
-    List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize);
-    List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize);
-    List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize);
+    List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize, long loggedUserId);
+    List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize, long loggedUserId);
 
-    List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize);
-    List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize);
-    List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize);
+
+    List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize, long loggedUserId);
+
+    List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize, long loggedUserId);
+    List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize, long loggedUserId);
+    List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize, long loggedUserId);
+
+    boolean isArtistReview(long reviewId);
+    boolean isAlbumReview(long reviewId);
+    boolean isSongReview(long reviewId);
 }

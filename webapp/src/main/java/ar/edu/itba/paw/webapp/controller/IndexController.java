@@ -52,8 +52,8 @@ public class IndexController {
     public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "pageNum", required = false) Integer pageNum) {
         final ModelAndView mav = new ModelAndView("home");
 
-        List<Review> popularReviews = reviewService.getPopularReviewsNDaysPaginated(30,pageNum, 10);
-        List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUser.getId(), pageNum, 10);
+        List<Review> popularReviews = reviewService.getPopularReviewsNDaysPaginated(30,pageNum, 10, loggedUser.getId());
+        List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUser.getId(), pageNum, 10, loggedUser.getId());
 
         mav.addObject("popularReviews", popularReviews);
         mav.addObject("followingReviews", followingReviews);

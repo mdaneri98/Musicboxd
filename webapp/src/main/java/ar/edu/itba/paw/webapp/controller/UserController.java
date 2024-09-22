@@ -56,7 +56,7 @@ public class UserController {
         mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
         mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
         mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));
-        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(loggedUser.getId(), pageNum,5));
+        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(loggedUser.getId(), pageNum,5, loggedUser.getId()));
         mav.addObject("pageNum", pageNum);
         return mav;
     }
@@ -98,7 +98,7 @@ public class UserController {
         loggedUser.setBio(upf.getBio());
         
         userService.update(loggedUser.getId(), upf.getUsername(), loggedUser.getEmail(), loggedUser.getPassword(), upf.getName(), upf.getBio(), LocalDateTime.now(), loggedUser.isVerified(), loggedUser.isModerator(), loggedUser.getImgId(), loggedUser.getFollowersAmount(), loggedUser.getFollowingAmount(), loggedUser.getReviewAmount());
-        return new ModelAndView("redirect:/user/");
+        return new ModelAndView("redirect:/user/profile");
     }
 
     @RequestMapping("/verification")
@@ -137,7 +137,7 @@ public class UserController {
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
         mav.addObject("artists", userService.getFavoriteArtists(userId));
         mav.addObject("songs", userService.getFavoriteSongs(userId));
-        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(userId, pageNum, 5));
+        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(userId, pageNum, 5, loggedUser.getId()));
         mav.addObject("pageNum", pageNum);
 
         return mav;

@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="error-container">
-    <h1>404 - Page Not Found</h1>
+    <h1>404 - User Not Found</h1>
     <p>Sorry, the page you are looking for does not exist.</p>
     <p>Please check the URL or go back to the <a href="${pageContext.request.contextPath}/">home page</a>.</p>
 </div>

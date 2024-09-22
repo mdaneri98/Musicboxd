@@ -190,7 +190,10 @@
         <c:choose>
             <c:when test="${fn:length(param.review_content) > 200}">
                 <c:out value="${fn:substring(param.review_content, 0, 200)}"/>...
-                <button class="read-more">Read more...</button>
+                <c:if test="${param.item_type == 'Artist'}" ><c:url var="reviewLink" value="review/artist/${param.review_id}"/></c:if>
+                <c:if test="${param.item_type == 'Album'}" ><c:url var="reviewLink" value="review/album/${param.review_id}"/></c:if>
+                <c:if test="${param.item_type == 'Song'}" ><c:url var="reviewLink" value="review/song/${param.review_id}"/></c:if>
+                <a class="read-more button" href="${reviewLink}">Read more...</a>
             </c:when>
             <c:otherwise>
                 <c:out value="${param.review_content}"/>
@@ -199,8 +202,16 @@
     </div>
     <div class="review-actions">
         <c:url var="likeReviewLink" value="/review/like/${param.review_id}" />
+        <c:url var="removeLikeReviewLink" value="/review/remove-like/${param.review_id}" />
         <c:url var="shareReviewLink" value="/review/share/${param.review_id}" />
-        <a href="${likeReviewLink}"><c:out value="${param.likes}"/> &#9825; Like</a>
+        <c:choose>
+            <c:when test="${!param.isLiked}">
+                <a href="${likeReviewLink}"><c:out value="${param.likes}"/> &#9825; Like</a>
+            </c:when>
+            <c:otherwise>
+                <a href="${removeLikeReviewLink}" style="color: red"><c:out value="${param.likes}"/> &#9825; Like</a>
+            </c:otherwise>
+        </c:choose>
         <a href="${shareReviewLink}">&#10150; Share</a>
     </div>
 </div>

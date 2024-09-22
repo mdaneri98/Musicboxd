@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
+import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -122,6 +123,7 @@ public class ReviewJdbcDao implements ReviewDao {
     public int deleteById(long id) {
         return jdbcTemplate.update("DELETE FROM review WHERE id = ?", id);
     }
+
 
     @Override
     public Optional<ArtistReview> findArtistReviewById(long id) {
@@ -303,6 +305,16 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
+    public int createLike(long userId, long reviewId) {
+        return jdbcTemplate.update("INSERT INTO review_like (user_id, review_id) VALUES (?, ?)", userId, reviewId);
+    }
+
+    @Override
+    public int deleteLike(long userId, long reviewId) {
+        return jdbcTemplate.update("DELETE FROM review_like WHERE user_id = ? AND review_id = ?", userId, reviewId);
+    }
+
+    @Override
     public int incrementLikes(long reviewId) {
         return jdbcTemplate.update("UPDATE review SET likes = likes + 1 WHERE id = ?", reviewId);
     }
@@ -310,6 +322,13 @@ public class ReviewJdbcDao implements ReviewDao {
     @Override
     public int decrementLikes(long reviewId) {
         return jdbcTemplate.update("UPDATE review SET likes = likes - 1 WHERE id = ?", reviewId);
+    }
+
+    @Override
+    public boolean isLiked(Long userId, Long reviewId) {
+        String sql = "SELECT COUNT(*) FROM review_like WHERE user_id = ? AND review_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, reviewId);
+        return count > 0;
     }
 
     @Override
@@ -462,6 +481,27 @@ public class ReviewJdbcDao implements ReviewDao {
                 "ORDER BY r.created_at DESC LIMIT 20";
 
         return jdbcTemplate.query(sql, new Object[]{userId}, SONG_REVIEW_ROW_MAPPER);
+    }
+
+    @Override
+    public boolean isArtistReview(long reviewId) {
+        String sql = "SELECT COUNT(*) FROM artist_review WHERE review_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, reviewId);
+        return count > 0;
+    }
+
+    @Override
+    public boolean isAlbumReview(long reviewId) {
+        String sql = "SELECT COUNT(*) FROM album_review WHERE review_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, reviewId);
+        return count > 0;
+    }
+
+    @Override
+    public boolean isSongReview(long reviewId) {
+        String sql = "SELECT COUNT(*) FROM song_review WHERE review_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, reviewId);
+        return count > 0;
     }
 
     @Override
