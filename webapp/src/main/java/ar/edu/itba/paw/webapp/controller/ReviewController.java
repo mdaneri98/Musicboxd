@@ -31,7 +31,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    public ReviewController(UserService userService, AlbumService albumService, SongService songService, ReviewService reviewService) {
+    public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
 
@@ -46,7 +46,7 @@ public class ReviewController {
         if (reviewService.isArtistReview(reviewId)) return artistReview(loggedUser, reviewId);
         if (reviewService.isAlbumReview(reviewId)) return albumReview(loggedUser, reviewId);
         if (reviewService.isSongReview(reviewId)) return songReview(loggedUser, reviewId);
-        return new ModelAndView("review_not_found");
+        return new ModelAndView("not_found/review_not_found");
     }
 
 

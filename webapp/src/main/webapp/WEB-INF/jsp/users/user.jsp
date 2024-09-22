@@ -33,12 +33,14 @@
       <span class="stat-item">
         <strong><c:out value="${user.reviewAmount}"/></strong> Posts
       </span>
+        <c:url var="followingPageUrl" value="/user/${user.id}/following"/>
+        <c:url var="followersPageUrl" value="/user/${user.id}/followers"/>
         <span class="stat-item">
-        <strong><c:out value="${user.followersAmount}"/></strong> Followers
-      </span>
+                    <a href="${followersPageUrl}"><strong><c:out value="${user.followersAmount}"/></strong> Followers</a>
+                </span>
         <span class="stat-item">
-        <strong><c:out value="${user.followingAmount}"/></strong> Following
-      </span>
+                    <a href="${followingPageUrl}"><strong><c:out value="${user.followingAmount}"/></strong> Following </a>
+                </span>
       </div>
       <c:url value="/user/${user.id}/follow" var="follow_user_url" />
       <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />

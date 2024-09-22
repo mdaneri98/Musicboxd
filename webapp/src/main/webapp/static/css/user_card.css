@@ -1,0 +1,71 @@
+.user-card {
+    background-color: #181818;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    color: #fff;
+}
+
+.user-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.user-card-header img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.user-card-info h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.user-card-bio {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #b3b3b3;
+}
+
+.user-card-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #b3b3b3;
+}
+
+.user-card-stat {
+    text-align: center;
+}
+
+.user-card-stat-value {
+    font-weight: bold;
+    color: #fff;
+}
+
+.user-card-badges {
+    margin-top: 12px;
+}
+
+.user-card-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.user-card-badge-verified {
+    background-color: #1DB954;
+    color: #000;
+}
+
+.user-card-badge-moderator {
+    background-color: #1E3A8A;
+    color: #fff;
+}
