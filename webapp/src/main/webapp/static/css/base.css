@@ -208,7 +208,17 @@ label {
 
 
 
-/* ------------ Cards ------------ */
+/* ------------ Container & Cards ------------ */
+.h-reviews-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: stretch;
+    align-content: flex-start;
+}
+
 .card {
     background-color: #181818;
     padding: 20px;

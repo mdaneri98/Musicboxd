@@ -56,7 +56,7 @@
 
     <div id="forYouTab">
         <h2>Popular Reviews</h2>
-        <div class="cards-container">
+        <div class="h-reviews-container">
             <c:forEach var="review" items="${popularReviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
                     <jsp:param name="item_img_id" value="${review.itemImgId}"/>

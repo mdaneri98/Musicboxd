@@ -61,7 +61,7 @@
     </ul>
 
     <h2>Reviews</h2>
-    <div class="cards-container">
+    <div class="h-reviews-container">
         <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
                 <jsp:param name="item_img_id" value="${review.artist.imgId}"/>
