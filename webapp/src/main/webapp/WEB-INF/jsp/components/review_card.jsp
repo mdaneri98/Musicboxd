@@ -18,7 +18,6 @@
             <p><c:out value="${param.item_type}"/></p>
         </div>
     </div>
-    <hr style="border: 1px solid #a6a6a6;">
     <div class="review-content">
         <div class="review-title"><c:out value="${param.title}"/></div>
         <div class="review-content">
