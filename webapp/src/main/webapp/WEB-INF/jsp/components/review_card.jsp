@@ -22,15 +22,7 @@
     <div class="review-content">
         <div class="review-title"><c:out value="${param.title}"/></div>
         <div class="review-content">
-            <c:choose>
-                <c:when test="${fn:length(param.review_content) > 200}">
-                    <c:out value="${fn:substring(param.review_content, 0, 200)}"/>...
-                    <button class="read-more">Read more...</button>
-                </c:when>
-                <c:otherwise>
-                    <c:out value="${param.review_content}"/>
-                </c:otherwise>
-            </c:choose>
+            <c:out value="${param.review_content}"/>
         </div>
     </div>
     <hr style="border: 1px solid #a6a6a6;">
