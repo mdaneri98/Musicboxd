@@ -25,6 +25,7 @@
           <header class="header-content">
             <jsp:include page="/WEB-INF/jsp/components/album_info.jsp">
               <jsp:param name="album.imgId" value="${album.imgId}" />
+              <jsp:param name="album.id" value="${album.id}" />
               <jsp:param name="album.title" value="${album.title}" />
               <jsp:param name="artist.id" value="${artist.id}" />
               <jsp:param name="artist.imgId" value="${artist.imgId}" />
