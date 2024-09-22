@@ -41,16 +41,16 @@
             <p>Add up to 5 favorite albums!</p>
         </div>
     </c:if>
-    <div class="carousel">
+    <div class="medium-box-container">
         <c:forEach var="album" items="${albums}" varStatus="status">
             <c:url var="albumUrl" value="/album/${album.id}"/>
-            <a href="${albumUrl}">
-                <div class="album">
+            <div class="medium-box-container-item">
+                <a href="${albumUrl}">
                     <c:url var="albumImgURL" value="/images/${album.imgId}"/>
                     <img src="${albumImgURL}" alt="Album ${status.index + 1}">
                     <p><c:out value="${album.title}"/></p>
-                </div>
-            </a>
+                </a>
+            </div>
         </c:forEach>
     </div>
 
@@ -60,16 +60,16 @@
             <p>Add up to 5 favorite artists!</p>
         </div>
     </c:if>
-    <div class="carousel">
+    <div class="medium-box-container">
         <c:forEach var="artist" items="${artists}" varStatus="status">
             <c:url var="artistUrl" value="/artist/${artist.id}"/>
-            <a href="${artistUrl}">
-                <div class="artist">
+            <div class="medium-box-container-item">
+                <a href="${artistUrl}">
                     <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
                     <img src="${artistImgURL}" alt="Album ${status.index + 1}">
                     <p><c:out value="${artist.name}"/></p>
-                </div>
-            </a>
+                </a>
+            </div>
         </c:forEach>
     </div>
 
@@ -82,12 +82,12 @@
     <ul class="song-list">
         <c:forEach var="song" items="${songs}" varStatus="status">
             <c:url var="songUrl" value="/song/${song.id}"/>
-            <a href="${songUrl}">
-                <li>
+            <li>
+                <a href="${songUrl}">
                     <span class="song-number">${status.index + 1}</span>
                     <span class="song-title"><c:out value="${song.title}"/></span>
-                </li>
-            </a>
+                </a>
+            </li>
         </c:forEach>
     </ul>
 
