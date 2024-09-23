@@ -14,11 +14,13 @@
           <span class="stat-item">
             <strong><c:out value="${param.reviewAmount}"/></strong> Posts
           </span>
+            <c:url var="followingUrl" value="/user/${param.id}/following"/>
+            <c:url var="followersUrl" value="/user/${param.id}/followers"/>
             <span class="stat-item">
-            <strong><c:out value="${param.followersAmount}"/></strong> Followers
+            <a href="${followersUrl}"><strong><c:out value="${param.followersAmount}"/></strong> Followers</a>
           </span>
             <span class="stat-item">
-            <strong><c:out value="${param.followingAmount}"/></strong> Following
+            <a href="${followingUrl}"><strong><c:out value="${param.followingAmount}"/></strong> Following</a>
           </span>
         </div>
     </div>

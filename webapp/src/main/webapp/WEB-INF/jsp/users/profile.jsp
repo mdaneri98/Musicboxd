@@ -32,6 +32,7 @@
             <jsp:param name="reviewAmount" value="${loggedUser.reviewAmount}" />
             <jsp:param name="followersAmount" value="${loggedUser.followersAmount}" />
             <jsp:param name="followingAmount" value="${loggedUser.followingAmount}" />
+            <jsp:param name="id" value="${loggedUser.id}" />
         </jsp:include>
     </header>
 
