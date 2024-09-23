@@ -34,9 +34,14 @@
                 <div class="user-name"><c:out value="${param.user_name}"/></div>
             </a>
         </div>
-        <div class="star-rating">
+        <div>
             <div class="fill" style="width: ${param.rating * 20}%;">
-                <span><c:forEach var="i" begin="1" end="${param.rating}">&#9733;</c:forEach></span>
+                <c:forEach var="i" begin="1" end="5">
+                    <c:choose>
+                        <c:when test="${i <= 5}"><span class="star-rating">&#9733;</span></c:when>
+                    </c:choose>
+                </c:forEach>
+
             </div>
         </div>
         <div class="review-actions">
