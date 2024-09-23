@@ -10,8 +10,11 @@
             <jsp:param name="title" value="${pageTitle}"/>
         </jsp:include>
 
-        <c:url var="css" value="/static/css/artist.css" />
+        <c:url var="css" value="/static/css/home.css" />
         <link rel="stylesheet" href="${css}">
+
+        <c:url var="review_card" value="/static/css/review_card.css" />
+        <link rel="stylesheet" href="${review_card}">
 
     </head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -45,7 +48,7 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
 </div>
-<div class="container main-content">
+<div class="container">
     <div>
         <span id="forYouButton" class="tab-button active">For You</span>
         <span id="followingButton" class="tab-button">Following</span>
@@ -53,7 +56,7 @@
 
     <div id="forYouTab">
         <h2>Popular Reviews</h2>
-        <div class="cards-container">
+        <div class="h-reviews-container">
             <c:forEach var="review" items="${popularReviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
                     <jsp:param name="item_img_id" value="${review.itemImgId}"/>

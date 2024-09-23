@@ -9,8 +9,11 @@
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
 
-  <c:url var="css" value="/static/css/artist.css" />
+  <c:url var="css" value="/static/css/user.css" />
   <link rel="stylesheet" href="${css}">
+
+  <c:url var="review_card" value="/static/css/review_card.css" />
+  <link rel="stylesheet" href="${review_card}">
 
 </head>
 <body>
@@ -19,75 +22,49 @@
     <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
   </jsp:include>
 </div>
-<div class="main-content container">
+<div class="container">
 
   <header>
-    <c:url var="userImgURL" value="/images/${user.imgId}"/>
-    <img src="${userImgURL}" alt="User Name" class="artist-image">
-    <div class="artist-info">
-      <p class="artist-type">User</p>
-      <h1>@<c:out value="${user.username}"/></h1>
-      <h3><c:out value="${user.name}"/></h3>
-      <p class="artist-bio"><c:out value="${user.bio}"/></p>
-      <div class="user-stats">
-      <span class="stat-item">
-        <strong><c:out value="${user.reviewAmount}"/></strong> Posts
-      </span>
-        <c:url var="followingPageUrl" value="/user/${user.id}/following"/>
-        <c:url var="followersPageUrl" value="/user/${user.id}/followers"/>
-        <span class="stat-item">
-                    <a href="${followersPageUrl}"><strong><c:out value="${user.followersAmount}"/></strong> Followers</a>
-                </span>
-        <span class="stat-item">
-                    <a href="${followingPageUrl}"><strong><c:out value="${user.followingAmount}"/></strong> Following </a>
-                </span>
-      </div>
-      <c:url value="/user/${user.id}/follow" var="follow_user_url" />
-      <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
-      <c:choose>
-        <c:when test="${!isFollowing}">
-          <form action="${follow_user_url}" method="post">
-            <button type="submit">Follow</button>
-          </form>
-        </c:when>
-        <c:otherwise>
-          <form action="${unfollow_user_url}" method="post">
-            <button type="submit">Unfollow</button>
-          </form>
-        </c:otherwise>
-      </c:choose>
-
-    </div>
+    <jsp:include page="/WEB-INF/jsp/components/artist_info.jsp">
+      <jsp:param name="id" value="${user.imgId}" />
+      <jsp:param name="imgId" value="${user.username}" />
+      <jsp:param name="bio" value="${user.name}" />
+      <jsp:param name="name" value="${user.bio}" />
+      <jsp:param name="name" value="${user.reviewAmount}" />
+      <jsp:param name="name" value="${user.followingAmount}" />
+      <jsp:param name="name" value="${user.followersAmount}" />
+      <jsp:param name="isFavorite" value="${isFollowing}" />
+    </jsp:include>
   </header>
 
   <c:if test="${albums.size() > 0}">
     <h2>Favorite Albums</h2>
-    <div class="carousel">
+    <div class="medium-box-container">
       <c:forEach var="album" items="${albums}" varStatus="status">
         <c:url var="albumUrl" value="/album/${album.id}"/>
-        <a href="${albumUrl}">
-          <div class="album">
+        <div class="medium-box-container-item">
+          <a href="${albumUrl}">
             <c:url var="albumImgURL" value="/images/${album.imgId}"/>
             <img src="${albumImgURL}" alt="Album ${status.index + 1}">
             <p><c:out value="${album.title}"/></p>
-          </div>
-        </a>
+          </a>
+        </div>
       </c:forEach>
     </div>
   </c:if>
 
   <c:if test="${artists.size() > 0}">
   <h2>Favorite artists</h2>
-  <div class="carousel">
+  <div class="medium-box-container">
     <c:forEach var="artist" items="${artists}" varStatus="status">
       <c:url var="artistUrl" value="/artist/${artist.id}"/>
-      <a href="${artistUrl}">
-        <div class="artist">
+      <div class="medium-box-container-item">
+        <a href="${artistUrl}">
           <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
           <img src="${artistImgURL}" alt="Album ${status.index + 1}">
           <p><c:out value="${artist.name}"/></p>
-        </div>
-      </a>
+        </a>
+      </div>
     </c:forEach>
   </div>
   </c:if>
@@ -108,7 +85,7 @@
   </c:if>
 
   <h2>Reviews</h2>
-  <div class="cards-container">
+  <div class="h-reviews-container">
     <c:forEach var="review" items="${reviews}">
       <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
         <jsp:param name="item_img_id" value="${review.itemImgId}"/>
@@ -123,7 +100,6 @@
         <jsp:param name="likes" value="${review.likes}"/>
         <jsp:param name="user_id" value="${review.user.id}"/>
         <jsp:param name="review_id" value="${review.id}"/>
-        <jsp:param name="isLiked" value="${review.liked}"/>
       </jsp:include>
     </c:forEach>
   </div>

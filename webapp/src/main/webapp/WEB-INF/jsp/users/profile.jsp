@@ -12,6 +12,9 @@
     <c:url var="css" value="/static/css/artist.css" />
     <link rel="stylesheet" href="${css}">
 
+    <c:url var="review_card" value="/static/css/review_card.css" />
+    <link rel="stylesheet" href="${review_card}">
+
 </head>
 <body>
 <div>
@@ -19,33 +22,17 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
 </div>
-<div class="main-content container">
-    <header>
-        <c:url var="userImgURL" value="/images/${loggedUser.imgId}"/>
-        <img src="${userImgURL}" alt="User Name" class="artist-image">
-        <div class="artist-info">
-            <p class="artist-type"></p>
-            <h1>@<c:out value="${loggedUser.username}"/></h1>
-            <h3><c:out value="${loggedUser.name}"/></h3>
-            <p class="artist-bio"><c:out value="${loggedUser.bio}"/></p>
-            <div class="user-stats">
-                <span class="stat-item">
-                    <strong><c:out value="${loggedUser.reviewAmount}"/></strong> Posts
-                </span>
-                <c:url var="followingPageUrl" value="/user/${loggedUser.id}/following"/>
-                <c:url var="followersPageUrl" value="/user/${loggedUser.id}/followers"/>
-                <span class="stat-item">
-                    <a href="${followersPageUrl}"><strong><c:out value="${loggedUser.followersAmount}"/></strong> Followers</a>
-                </span>
-                <span class="stat-item">
-                    <a href="${followingPageUrl}"><strong><c:out value="${loggedUser.followingAmount}"/></strong> Following </a>
-                </span>
-            </div>
-            <c:url value="/user/edit" var="edit_profile_url" />
-            <a href="${edit_profile_url}">
-                <button>Edit Profile</button>
-            </a>
-        </div>
+<div class="container">
+    <header class="artist-info">
+        <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
+            <jsp:param name="imgId" value="${loggedUser.imgId}" />
+            <jsp:param name="username" value="${loggedUser.username}" />
+            <jsp:param name="name" value="${loggedUser.name}" />
+            <jsp:param name="bio" value="${loggedUser.bio}" />
+            <jsp:param name="reviewAmount" value="${loggedUser.reviewAmount}" />
+            <jsp:param name="followersAmount" value="${loggedUser.followersAmount}" />
+            <jsp:param name="followingAmount" value="${loggedUser.followingAmount}" />
+        </jsp:include>
     </header>
 
     <h2>Favorite Albums</h2>
@@ -54,16 +41,16 @@
             <p>Add up to 5 favorite albums!</p>
         </div>
     </c:if>
-    <div class="carousel">
+    <div class="medium-box-container">
         <c:forEach var="album" items="${albums}" varStatus="status">
             <c:url var="albumUrl" value="/album/${album.id}"/>
-            <a href="${albumUrl}">
-                <div class="album">
+            <div class="medium-box-container-item">
+                <a href="${albumUrl}">
                     <c:url var="albumImgURL" value="/images/${album.imgId}"/>
                     <img src="${albumImgURL}" alt="Album ${status.index + 1}">
                     <p><c:out value="${album.title}"/></p>
-                </div>
-            </a>
+                </a>
+            </div>
         </c:forEach>
     </div>
 
@@ -73,16 +60,16 @@
             <p>Add up to 5 favorite artists!</p>
         </div>
     </c:if>
-    <div class="carousel">
+    <div class="medium-box-container">
         <c:forEach var="artist" items="${artists}" varStatus="status">
             <c:url var="artistUrl" value="/artist/${artist.id}"/>
-            <a href="${artistUrl}">
-                <div class="artist">
+            <div class="medium-box-container-item">
+                <a href="${artistUrl}">
                     <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
                     <img src="${artistImgURL}" alt="Album ${status.index + 1}">
                     <p><c:out value="${artist.name}"/></p>
-                </div>
-            </a>
+                </a>
+            </div>
         </c:forEach>
     </div>
 
@@ -95,18 +82,18 @@
     <ul class="song-list">
         <c:forEach var="song" items="${songs}" varStatus="status">
             <c:url var="songUrl" value="/song/${song.id}"/>
-            <a href="${songUrl}">
-                <li>
+            <li>
+                <a href="${songUrl}">
                     <span class="song-number">${status.index + 1}</span>
                     <span class="song-title"><c:out value="${song.title}"/></span>
-                </li>
-            </a>
+                </a>
+            </li>
         </c:forEach>
     </ul>
 
     <!-- Cards Container -->
     <h2>Reviews</h2>
-    <div class="cards-container">
+    <div class="h-reviews-container">
         <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
                 <jsp:param name="item_img_id" value="${review.itemImgId}"/>

@@ -8,15 +8,10 @@ body {
     margin: 0;
     padding: 0;
     line-height: 1.6;
-    display: flex;
-}
 
-/* Contenido principal */
-.main-content {
-    padding: 30px;
-    margin-left: 68px; /* Igual al ancho de la sidebar */
-    width: calc(100% - 80px);
-    min-height: 100vh;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
 }
 
 /* Headings */
@@ -27,11 +22,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 5.0rem;
 }
 
 h2 {
-    font-size: 2rem;
+    font-size: 2.5rem;
 }
 
 h3 {
@@ -56,9 +51,9 @@ a {
     text-decoration: none;
 }
 
-
 /* Buttons */
 button {
+    width: 100%;
     background-color: #1DB954;
     color: #ffffff;
     font-size: 1rem;
@@ -76,16 +71,6 @@ button:hover {
 button:disabled {
     background-color: #6c6c6c;
     cursor: not-allowed;
-}
-
-/* Secondary Button */
-button.secondary {
-    background-color: #333333;
-    color: #ffffff;
-}
-
-button.secondary:hover {
-    background-color: #444444;
 }
 
 /* Input Fields */
@@ -137,25 +122,6 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
     color: #1ed760;
 }
 
-/* Cards */
-.card {
-    background-color: #181818;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.card-title {
-    font-size: 1.5rem;
-    color: #ffffff;
-    margin-bottom: 10px;
-}
-
-.card-text {
-    color: #b3b3b3;
-}
-
 /* Lists */
 ul {
     list-style: none;
@@ -169,12 +135,6 @@ li {
 
 li:last-child {
     border-bottom: none;
-}
-
-/* Forms */
-form {
-    max-width: 600px;
-    margin: 0 auto;
 }
 
 label {
@@ -203,4 +163,142 @@ label {
 
 .p-2 {
     padding: 20px;
+}
+
+/* ------------------ General components ------------------ */
+
+
+/* ------------ Contenido principal ------------ */
+.container {
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding: 60px 0;
+}
+
+.header-content {
+    background: linear-gradient(transparent 0,rgba(0,0,0,.5) 100%);
+    padding: 10px;
+}
+
+/* ------------ info-display ------------ */
+.info-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.info-container .data-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: center;
+}
+
+/* ------------ Imagenes ------------ */
+.primary-image {
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.secondary-image {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* ------------ Container & Cards ------------ */
+.h-reviews-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: stretch;
+    align-content: flex-start;
+}
+
+.card {
+    background-color: #181818;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    color: #b3b3b3;
+}
+
+/* ------------ ALbum container & items  ------------ */
+.medium-box-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+
+}
+
+.medium-box-container-item {
+    background-color: #242424;
+    width: 225px;
+    height: auto;
+    border-radius: 8px;
+    padding: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.medium-box-container img {
+    margin-bottom: 10px;
+    width: 100%;
+    height: 80%;
+    object-fit: contain;
+}
+
+/* ------------ Song list ------------ */
+.song-list li {
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.song-list li:hover {
+    background-color: #2b2d30;
+}
+
+
+/* ------------ Buttons ------------ */
+.primary-button {
+    background-color: var(--essential-bright-accent);
+    color: var(--background-base);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 500px;
+    margin-top: 24px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #1fdf64;
+    transform: scale(1.04);
 }
