@@ -69,3 +69,36 @@
     background-color: #1E3A8A;
     color: #fff;
 }
+
+.user-card-follow-btn {
+    width: 100%;
+    padding: 8px 16px;
+    margin: 12px 0;
+    background-color: #1DB954;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.user-card-follow-btn:hover {
+    background-color: #1ed760;
+}
+
+.user-card-follow-btn.following {
+    background-color: #333;
+    color: #fff;
+}
+
+.user-card-follow-btn.following:hover {
+    background-color: #c51e3a;
+}
+
+.user-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}

@@ -25,15 +25,15 @@
 <div class="container">
 
   <header>
-    <jsp:include page="/WEB-INF/jsp/components/artist_info.jsp">
-      <jsp:param name="id" value="${user.imgId}" />
-      <jsp:param name="imgId" value="${user.username}" />
-      <jsp:param name="bio" value="${user.name}" />
-      <jsp:param name="name" value="${user.bio}" />
-      <jsp:param name="name" value="${user.reviewAmount}" />
-      <jsp:param name="name" value="${user.followingAmount}" />
-      <jsp:param name="name" value="${user.followersAmount}" />
-      <jsp:param name="isFavorite" value="${isFollowing}" />
+    <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
+      <jsp:param name="imgId" value="${user.imgId}" />
+      <jsp:param name="username" value="${user.username}" />
+      <jsp:param name="name" value="${user.name}" />
+      <jsp:param name="bio" value="${user.bio}" />
+      <jsp:param name="reviewAmount" value="${user.reviewAmount}" />
+      <jsp:param name="followersAmount" value="${user.followersAmount}" />
+      <jsp:param name="followingAmount" value="${user.followingAmount}" />
+      <jsp:param name="id" value="${user.id}" />
     </jsp:include>
   </header>
 
