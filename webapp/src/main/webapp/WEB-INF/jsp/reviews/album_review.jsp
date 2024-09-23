@@ -27,7 +27,7 @@
     <c:url value="/album/${album.id}" var="albumUrl" />
     <a href="${albumUrl}" class="artist-box">
         <c:url var="imgUrl" value="/images/${album.imgId}"/>
-        <img src="${imgUrl}" alt="${album.title}" class="artist-image">
+        <img src="${imgUrl}" alt="${album.title}" class="primary-image">
         <div class="artist-info">
             <h2 class="artist-name">${album.title}</h2>
             <p class="artist-bio">${album.releaseDate}</p>

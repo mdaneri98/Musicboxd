@@ -106,21 +106,3 @@ textarea {
     height: 120px;
     resize: vertical;
 }
-
-button {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    background-color: var(--essential-bright-accent);
-    color: var(--background-base);
-    border: none;
-    border-radius: 500px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-}
-
-button:hover {
-    background-color: #1fea68;
-}
