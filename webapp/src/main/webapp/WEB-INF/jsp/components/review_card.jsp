@@ -2,55 +2,67 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <div class="review-container">
-    <div class="review-header">
-        <c:url var="itemUrl" value="${param.item_url}" />
-        <c:url var="artistUrl" value="${param.artist_url}" />
+    <c:url var="itemUrl" value="${param.item_url}" />
+    <a href="${itemUrl}" class="review-header">
         <div>
-            <a href="${itemUrl}">
-                <c:url var="reviewImgUrl" value="/images/${param.item_img_id}" />
-                <img src="${reviewImgUrl}" alt="${param.item_name} Cover" class="item-cover">
-            </a>
+            <c:url var="reviewImgUrl" value="/images/${param.item_img_id}" />
+            <img src="${reviewImgUrl}" alt="${param.item_name} Cover" class="item-cover">
         </div>
-        <div>
+        <div class="review-header-info">
             <h2><c:out value="${param.item_name}"/></h2>
-        </div>
-        <div>
             <p><c:out value="${param.item_type}"/></p>
         </div>
+    </a>
+    <div class="star-rating-container review-header">
+        <div class="star-rating">
+            <c:forEach var="i" begin="1" end="5">
+                <c:choose>
+                    <c:when test="${i <= param.rating}">&#9733;</c:when>
+                    <c:otherwise>&#9734;</c:otherwise>
+                </c:choose>
+            </c:forEach>
+        </div>
     </div>
+    <div class="separator"></div>
     <div class="review-content">
         <div class="review-title"><c:out value="${param.title}"/></div>
         <div class="review-content">
             <c:out value="${param.review_content}"/>
         </div>
     </div>
-    <hr style="border: 1px solid #a6a6a6;">
+    <div class="separator"></div>
     <div class="review-footer">
-        <div>
-            <c:url var="userUrl" value="/user/${param.user_id}" />
-            <a href="${userUrl}">
-                <c:url var="userImgUrl" value="/images/${param.user_img_id}" />
-                <img src="${userImgUrl}" alt="${param.user_name} Avatar" class="user-avatar">
-                <div class="user-name"><c:out value="${param.user_name}"/></div>
-            </a>
-        </div>
-        <div>
-            <div class="fill" style="width: ${param.rating * 20}%;">
-                <c:forEach var="i" begin="1" end="5">
-                    <c:choose>
-                        <c:when test="${i <= 5}"><span class="star-rating">&#9733;</span></c:when>
-                    </c:choose>
-                </c:forEach>
-
+        <c:url var="userUrl" value="/user/${param.user_id}" />
+        <a href="${userUrl}" class="user-info">
+            <c:url var="userImgUrl" value="/images/${param.user_img_id}" />
+            <img src="${userImgUrl}" alt="${param.user_name} Avatar" class="user-avatar">
+            <div class="user-data">
+            <div class="user-name"><c:out value="${param.user_name}"/></div>
+                <c:if test="${param.verified || param.moderator}">
+                    <div class="user-card-badges">
+                        <c:if test="${param.verified}">
+                            <span class="user-card-badge user-card-badge-verified">Verified</span>
+                        </c:if>
+                        <c:if test="${param.moderator}">
+                            <span class="user-card-badge user-card-badge-moderator">Moderator</span>
+                        </c:if>
+                    </div>
+                </c:if>
             </div>
-        </div>
+        </a>
         <div class="review-actions">
             <c:url var="likeReviewLink" value="/review/like/${param.review_id}" />
+            <c:url var="removeLikeReviewLink" value="/review/remove-like/${param.review_id}" />
             <c:url var="shareReviewLink" value="/review/share/${param.review_id}" />
-            <a href="${likeReviewLink}"><c:out value="${param.likes}"/> &#9825; Like</a>
+            <c:choose>
+                <c:when test="${!param.isLiked}">
+                    <a href="${likeReviewLink}"><c:out value="${param.likes}"/> &#9825; Like</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${removeLikeReviewLink}" style="color: red"><c:out value="${param.likes}"/> &#9825; Like</a>
+                </c:otherwise>
+            </c:choose>
             <a href="${shareReviewLink}">&#10150; Share</a>
         </div>
     </div>
 </div>
-</body>
-</html>

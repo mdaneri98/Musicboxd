@@ -47,7 +47,7 @@ h6 {
 
 /* Links */
 a {
-    color: #1DB954;
+    color: #fbfbfb;
     text-decoration: none;
 }
 
@@ -222,7 +222,7 @@ label {
 /* ------------ Container & Cards ------------ */
 .h-reviews-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: flex-start;
     flex-wrap: wrap;
     gap: 10px;
@@ -302,3 +302,28 @@ button:hover {
     background-color: #1fdf64;
     transform: scale(1.04);
 }
+
+/* ------------ User ------------ */
+.user-card-badges {
+    margin-top: 8px;
+}
+
+.user-card-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.user-card-badge-verified {
+    background-color: #1DB954;
+    color: #000;
+}
+
+.user-card-badge-moderator {
+    background-color: #1E3A8A;
+    color: #fff;
+}
+
