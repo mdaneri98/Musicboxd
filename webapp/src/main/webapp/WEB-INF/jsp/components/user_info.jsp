@@ -12,7 +12,7 @@
         <p class="artist-bio"><c:out value="${param.bio}"/></p>
         <div class="user-stats">
           <span class="stat-item">
-            <strong><c:out value="${param.reviewAmount}"/></strong> Posts
+            <strong><c:out value="${param.reviewAmount}"/></strong> Reviews
           </span>
             <c:url var="followingUrl" value="/user/${param.id}/following"/>
             <c:url var="followersUrl" value="/user/${param.id}/followers"/>

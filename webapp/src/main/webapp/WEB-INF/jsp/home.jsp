@@ -3,8 +3,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <head>
-
         <spring:message var="pageTitle" text="Home"/>
         <jsp:include page="/WEB-INF/jsp/components/head.jsp">
             <jsp:param name="title" value="${pageTitle}"/>
@@ -16,7 +14,7 @@
         <c:url var="review_card" value="/static/css/review_card.css" />
         <link rel="stylesheet" href="${review_card}">
 
-    </head>
+</head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -56,7 +54,7 @@
 
     <div id="forYouTab">
         <h2>Popular Reviews</h2>
-        <div class="h-reviews-container">
+        <div class="cards-container">
             <c:forEach var="review" items="${popularReviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
                     <jsp:param name="item_img_id" value="${review.itemImgId}"/>
@@ -68,6 +66,8 @@
                     <jsp:param name="review_content" value="${review.description}"/>
                     <jsp:param name="user_name" value="@${review.user.username}"/>
                     <jsp:param name="user_img_id" value="${review.user.imgId}"/>
+                    <jsp:param name="verified" value="${review.user.verified}"/>
+                    <jsp:param name="moderator" value="${review.user.moderator}"/>
                     <jsp:param name="likes" value="${review.likes}"/>
                     <jsp:param name="user_id" value="${review.user.id}"/>
                     <jsp:param name="review_id" value="${review.id}"/>
@@ -91,6 +91,8 @@
                     <jsp:param name="review_content" value="${review.description}"/>
                     <jsp:param name="user_name" value="@${review.user.username}"/>
                     <jsp:param name="user_img_id" value="${review.user.imgId}"/>
+                    <jsp:param name="verified" value="${review.user.verified}"/>
+                    <jsp:param name="moderator" value="${review.user.moderator}"/>
                     <jsp:param name="likes" value="${review.likes}"/>
                     <jsp:param name="user_id" value="${review.user.id}"/>
                     <jsp:param name="review_id" value="${review.id}"/>

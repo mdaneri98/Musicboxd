@@ -16,16 +16,16 @@
     <p class="user-card-bio"><c:out value="${param.bio}"/></p>
     <div class="user-card-stats">
         <div class="user-card-stat">
+            <span class="user-card-stat-value">${param.reviewAmount}</span>
+            <span>reviews</span>
+        </div>
+        <div class="user-card-stat">
             <span class="user-card-stat-value">${param.followersAmount}</span>
             <span>followers</span>
         </div>
         <div class="user-card-stat">
             <span class="user-card-stat-value">${param.followingAmount}</span>
             <span>following</span>
-        </div>
-        <div class="user-card-stat">
-            <span class="user-card-stat-value">${param.reviewAmount}</span>
-            <span>reviews</span>
         </div>
     </div>
     <c:if test="${param.verified || param.moderator}">

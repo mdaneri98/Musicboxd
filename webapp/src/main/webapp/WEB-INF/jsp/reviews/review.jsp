@@ -1,20 +1,19 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: manuader
-  Date: 22/09/2024
-  Time: 3:16 PM
-  To change this template use File | Settings | File Templates.
---%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <spring:message var="pageTitle" text="Review Page"/>
+    <spring:message var="pageTitle" text="Review"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
 
-    <c:url var="css" value="/static/css/artist.css" />
+    <c:url var="css" value="/static/css/home.css" />
     <link rel="stylesheet" href="${css}">
+
+    <c:url var="review_card" value="/static/css/review_card.css" />
+    <link rel="stylesheet" href="${review_card}">
+
 </head>
 <body>
 <div>
@@ -22,7 +21,7 @@
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
     </jsp:include>
 </div>
-<div class="container main-content">
+<div class="container">
     <div class="cards-container">
         <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
             <jsp:param name="item_img_id" value="${review.itemImgId}"/>
