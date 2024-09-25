@@ -39,11 +39,13 @@
         <div>
           <ul class="song-list">
             <c:forEach var="song" items="${songs}" varStatus="status">
-              <li>
-                <span class="song-number">${status.index + 1}     </span>
-                <c:url var="songUrl" value="/song/${song.id}" />
-                <a href="${songUrl}" class="song-title"><c:out value="${song.title}"/></a>
-              </li>
+              <c:url var="songUrl" value="/song/${song.id}" />
+              <a href="${songUrl}" class="song-title">
+                <li>
+                  <span class="song-number">${status.index + 1}     </span>
+                  <span class="song-title"><c:out value="${song.title}"/></span>
+                </li>
+              </a>
             </c:forEach>
           </ul>
         </div>
