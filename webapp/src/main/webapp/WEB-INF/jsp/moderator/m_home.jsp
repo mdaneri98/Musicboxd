@@ -35,12 +35,14 @@
         </div>
     </div>
     <div class="search-wrapper">
-        <input type="text" class="search-input" id="searchInput" placeholder="Search Musicboxd...">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <input type="text" style="display: none" class="search-input" id="searchInput" placeholder="Search Musicboxd...">
+        <svg class="search-icon" id="searchIcon" style="display: none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
         <div id="autocompleteList" class="autocomplete-items"></div>
-        <button id="redirectButton" style="" onclick="redirect()">Complete</button>
+    </div>
+    <div>
+        <button id="redirectButton" onclick="redirect()">Complete</button>
     </div>
 </div>
 
@@ -78,13 +80,13 @@
         // Cambia el texto del botón dependiendo de la pestaña
         switch (activeTab) {
             case 'artists':
-                button.textContent = "Complete";
+                button.textContent = "Complete form";
                 break;
             case 'albums':
-                button.textContent = "Complete";
+                button.textContent = "Complete form";
                 break;
             case 'songs':
-                button.textContent = "Complete";
+                button.textContent = "Complete form";
                 break;
         }
         button.style.display = 'inline-block';
@@ -128,10 +130,25 @@
     // Funcionalidad de las pestañas
     document.querySelectorAll('.search-tab').forEach(tab => {
         tab.addEventListener('click', function () {
+            // Eliminar la clase activa de todas las pestañas
             document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+            // Agregar clase activa a la pestaña clickeada
             this.classList.add('active');
+            // Limpiar el campo de entrada
             document.getElementById('searchInput').value = '';
             closeAllLists();
+
+            // Verificar el tipo de pestaña y mostrar/ocultar el input
+            const activeTab = this.dataset.type;
+            const searchInput = document.getElementById('searchInput');
+            const searchIcon = document.getElementById('searchIcon');
+            if (activeTab === 'artists') {
+                searchInput.style.display = 'none'; // Oculta el input
+                searchIcon.style.display = 'none'; // Oculta el input
+            } else {
+                searchInput.style.display = 'block'; // Muestra el input
+                searchIcon.style.display = 'inline-block'; // Mostrar el ícono de búsqueda
+            }
         });
     });
 
@@ -150,14 +167,11 @@
             var activeTab = document.querySelector('.search-tab.active').dataset.type;
             var searchArray;
             switch(activeTab) {
-                case 'artists':
+                case 'albums':
                     searchArray = artists;
                     break;
-                case 'albums':
-                    searchArray = albums;
-                    break;
                 case 'songs':
-                    searchArray = songs;
+                    searchArray = albums;
                     break;
                 default:
                     searchArray = [];
