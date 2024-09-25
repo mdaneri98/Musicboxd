@@ -16,7 +16,7 @@
       </a>
     </li>
     <li>
-      <c:url var="musicSearchUrl" value="/music"/>
+      <c:url var="musicSearchUrl" value="/search"/>
       <a href="${musicSearchUrl}" class="sidebar-icon">
         <i class="fas fa-search"></i>
       </a>
