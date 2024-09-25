@@ -67,7 +67,6 @@
   </div>
 
   <div id="followersTab">
-    <div class="cards-container">
       <c:forEach var="user_item" items="${followersList}">
         <jsp:include page="/WEB-INF/jsp/components/user_card.jsp">
           <jsp:param name="imgId" value="${user_item.imgId}"/>
@@ -82,11 +81,9 @@
           <jsp:param name="id" value="${user_item.id}"/>
         </jsp:include>
       </c:forEach>
-    </div>
   </div>
 
   <div id="followingTab">
-    <div class="cards-container">
       <c:forEach var="user_item" items="${followingList}">
         <jsp:include page="/WEB-INF/jsp/components/user_card.jsp">
           <jsp:param name="imgId" value="${user_item.imgId}"/>
@@ -102,6 +99,5 @@
         </jsp:include>
       </c:forEach>
     </div>
-  </div>
 </div>
 </body>

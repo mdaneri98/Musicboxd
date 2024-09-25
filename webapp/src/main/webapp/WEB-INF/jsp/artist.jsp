@@ -21,16 +21,39 @@
     </jsp:include>
 </div>
 <div class="container">
-    <header>
-        <jsp:include page="/WEB-INF/jsp/components/artist_info.jsp">
-            <jsp:param name="id" value="${artist.id}" />
-            <jsp:param name="imgId" value="${artist.imgId}" />
-            <jsp:param name="bio" value="${artist.bio}" />
-            <jsp:param name="name" value="${artist.name}" />
-            <jsp:param name="isFavorite" value="${isFavorite}" />
-        </jsp:include>
-    </header>
+    <div class="info-container">
+        <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
+        <img src="${artistImgURL}" alt="Artist Name" class="primary-image">
+        <div class="data-container">
+            <p class="type">Artist</p>
+            <div>
+                <h1><c:out value="${artist.name}"/></h1>
+                <p class="artist-bio"><c:out value="${artist.bio}"/></p>
+            </div>
+        </div>
+    </div>
+    <div class="data-container">
+        <c:url value="/artist/${artist.id}/reviews" var="new_artist_review_url" />
+        <a href="${new_artist_review_url}">
+            <button>Make a review</button>
+        </a>
+        <c:url value="/artist/${artist.id}/add-favorite" var="add_favorite_url" />
+        <c:url value="/artist/${artist.id}/remove-favorite" var="remove_favorite_url" />
+        <c:choose>
+            <c:when test="${!isFavorite}">
+                <a href="${add_favorite_url}">
+                    <button type="submit">Add to favorites</button>
+                </a>
+            </c:when>
+            <c:otherwise>
+                <a href="${remove_favorite_url}">
+                    <button type="submit">Remove from favorites</button>
+                </a>
+            </c:otherwise>
+        </c:choose>
+    </div>
 
+    <c:if test="${albums.size() > 0}">
     <h2>Albums</h2>
     <div class="carousel-container">
         <div class="carousel">
@@ -46,7 +69,9 @@
             </c:forEach>
         </div>
     </div>
+    </c:if>
 
+    <c:if test="${songs.size() > 0}">
     <h2>Popular Songs</h2>
     <ul class="song-list">
         <c:forEach var="song" items="${songs}" varStatus="status">
@@ -59,6 +84,7 @@
             </a>
         </c:forEach>
     </ul>
+    </c:if>
 
     <c:if test="${reviews.size() > 0}">
     <h2>Reviews</h2>

@@ -8,9 +8,6 @@
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
 
-  <c:url var="css" value="/static/css/album.css" />
-  <link rel="stylesheet" href="${css}">
-
   <c:url var="review_card" value="/static/css/review_card.css" />
   <link rel="stylesheet" href="${review_card}">
 </head>
@@ -21,20 +18,46 @@
       </jsp:include>
     </div>
     <div class="container">
-      <section>
-          <header class="header-content">
-            <jsp:include page="/WEB-INF/jsp/components/album_info.jsp">
-              <jsp:param name="album.imgId" value="${album.imgId}" />
-              <jsp:param name="album.id" value="${album.id}" />
-              <jsp:param name="album.title" value="${album.title}" />
-              <jsp:param name="artist.id" value="${artist.id}" />
-              <jsp:param name="artist.imgId" value="${artist.imgId}" />
-              <jsp:param name="artist.name" value="${artist.name}" />
-              <jsp:param name="isFavorite" value="${isFavorite}" />
-            </jsp:include>
-          </header>
-      </section>
+      <div class="info-container">
+        <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
+        <img src="${albumImgUrl}" alt="${album.title}" class="album">
+          <div class="data-container">
+          <p class="type">Album</p>
+          <h1><c:out value="${album.title}"/></h1>
+          <div class="button-group">
+            <c:url var="artistUrl" value="/artist/${artist.id}" />
+            <a href="${artistUrl}" class="button artist-button">
+              <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
+              <img src="${artistImgUrl}" alt="${artist.name}" class="secondary-image">
+              <span><c:out value="${artist.name}"/></span>
+            </a>
+          </div>
+        </div>
+      </div>
+        <div class="data-container">
+          <c:url var="albumReviewUrl" value="/album/${album.id}/reviews" />
+          <a href="${albumReviewUrl}"><button>Make a review</button></a>
+          <c:url value="/album/${album.id}/add-favorite" var="add_favorite_url" />
+          <c:url value="/album/${album.id}/remove-favorite" var="remove_favorite_url" />
+          <c:choose>
+            <c:when test="${!param.isFavorite}">
+              <a href="${add_favorite_url}"><button>Add to favorites</button></a>
+            </c:when>
+            <c:otherwise>
+              <a href="${remove_favorite_url}">
+                <button>Remove from favorites</button>
+              </a>
+            </c:otherwise>
+          </c:choose>
+        </div>
+
+      <div class="song-description">
+        <p>Genre: <c:out value="${album.genre}"/></p>
+        <p>Release Date: <c:out value="${album.releaseDate}"/></p>
+      </div>
+
       <section id="main-section">
+        <c:if test="${songs.size() > 0}">
         <h2>Songs</h2>
         <div>
           <ul class="song-list">
@@ -49,6 +72,7 @@
             </c:forEach>
           </ul>
         </div>
+        </c:if>
 
   <c:if test="${reviews.size() > 0}">
       <h2>Reviews</h2>

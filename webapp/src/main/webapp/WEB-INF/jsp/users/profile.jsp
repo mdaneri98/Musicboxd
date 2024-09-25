@@ -125,7 +125,7 @@
         <c:url value="/user/profile/${pageNum + 1}" var="nextPage" />
         <c:url value="/user/profile/${pageNum -1}" var="prevPage" />
         <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-        <c:if test="${reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+        <c:if test="${5*(pageNum-1)+reviews.size() != loggedUser.reviewAmount && reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
     </div>
     </c:if>
 </div>
