@@ -201,13 +201,13 @@ public class ReviewServiceImpl implements ReviewService {
         int start = (page - 1) * pageSize;
         int end = Math.min(start + pageSize, allReviews.size());
 
-        return allReviews.subList(start, end);
+        if (start < end) return allReviews.subList(start, end);
+        return allReviews;
     }
 
     @Override
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize, long loggedUserId) {
         List<Review> allReviews = new ArrayList<>();
-        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
 
         // Obtener las reviews de artistas
         List<ArtistReview> artistReviews = reviewDao.findArtistReviewsFromFollowedUsers(userId);
@@ -227,6 +227,7 @@ public class ReviewServiceImpl implements ReviewService {
         int start = (page - 1) * pageSize;
         int end = Math.min(start + pageSize, allReviews.size());
 
-        return allReviews.subList(start, end);
+        if (start < end) return allReviews.subList(start, end);
+        return allReviews;
     }
 }
