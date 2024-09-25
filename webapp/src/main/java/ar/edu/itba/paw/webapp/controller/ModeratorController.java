@@ -45,7 +45,7 @@ public class ModeratorController {
     public ModelAndView home() {
         final ModelAndView mav = new ModelAndView("/moderator/m_home");
 
-        mav.addObject("artist", artistService.findAll());
+        mav.addObject("artists", artistService.findAll());
         mav.addObject("albums", albumService.findAll());
         mav.addObject("songs", songService.findAll());
 
