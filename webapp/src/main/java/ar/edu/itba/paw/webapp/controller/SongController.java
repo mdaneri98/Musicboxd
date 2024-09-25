@@ -93,7 +93,8 @@ public class SongController {
                 reviewForm.getDescription(),
                 reviewForm.getRating(),
                 LocalDateTime.now(),
-                0
+                0,
+                false
         );
         reviewService.saveSongReview(songReview);
         return new ModelAndView("redirect:/song/" + songId);

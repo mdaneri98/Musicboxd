@@ -42,4 +42,8 @@ public interface ReviewService {
     boolean isArtistReview(long reviewId);
     boolean isAlbumReview(long reviewId);
     boolean isSongReview(long reviewId);
+
+    boolean block(Long reviewId);
+    boolean unblock(Long reviewId);
+
 }

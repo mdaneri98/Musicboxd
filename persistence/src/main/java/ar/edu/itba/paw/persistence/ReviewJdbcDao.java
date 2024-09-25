@@ -49,7 +49,8 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getString("description"),
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
-            rs.getInt("likes")
+            rs.getInt("likes"),
+            rs.getBoolean("isBlocked")
     );
 
     private static final RowMapper<AlbumReview> ALBUM_REVIEW_ROW_MAPPER = (rs, rowNum) -> new AlbumReview(
@@ -76,7 +77,8 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getString("description"),
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
-            rs.getInt("likes")
+            rs.getInt("likes"),
+            rs.getBoolean("isBlocked")
     );
 
     private static final RowMapper<SongReview> SONG_REVIEW_ROW_MAPPER = (rs, rowNum) -> new SongReview(
@@ -108,7 +110,8 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getString("description"),
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
-            rs.getInt("likes")
+            rs.getInt("likes"),
+            rs.getBoolean("isBlocked")
     );
 
     public ReviewJdbcDao(final DataSource ds) {
@@ -118,12 +121,13 @@ public class ReviewJdbcDao implements ReviewDao {
     @Override
     public int update(Review review) {
         return jdbcTemplate.update(
-                "UPDATE review SET title = ?, description = ?, rating = ?, likes = ? WHERE id = ?",
+                "UPDATE review SET title = ?, description = ?, rating = ?, likes = ?, blocked = ? WHERE id = ?",
                 review.getTitle(),
                 review.getDescription(),
                 review.getRating(),
                 review.getLikes(),
-                review.getId()
+                review.getId(),
+                review.isBlocked()
         );
     }
 
@@ -539,4 +543,17 @@ public class ReviewJdbcDao implements ReviewDao {
 
         return jdbcTemplate.query(sql, new Object[]{userId}, ARTIST_REVIEW_ROW_MAPPER);
     }
+
+    @Override
+    public boolean block(Long reviewId) {
+        final String sql = "UPDATE review SET isBlocked = true WHERE id = ?";
+        return jdbcTemplate.update(sql, reviewId) == 1;
+    }
+
+    @Override
+    public boolean unblock(Long reviewId) {
+        final String sql = "UPDATE review SET isBlocked = false WHERE id = ?";
+        return jdbcTemplate.update(sql, reviewId) == 1;
+    }
+
 }

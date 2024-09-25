@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS review (
      rating INT NOT NULL,
      created_at TIMESTAMP DEFAULT NOW(),
      likes INT DEFAULT 0,
+     blocked BOOLEAN DEFAULT FALSE,
 
      FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
 );

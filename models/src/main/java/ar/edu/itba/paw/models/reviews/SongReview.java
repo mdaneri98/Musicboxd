@@ -9,13 +9,13 @@ public class SongReview extends Review {
 
     private Song song;
 
-    public SongReview(User user, Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        super(user, title, description, rating, createdAt, likes);
+    public SongReview(User user, Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
+        super(user, title, description, rating, createdAt, likes, isBlocked);
         this.song = song;
     }
 
-    public SongReview(Long id, User user,Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        super(id, user, title, description, rating, createdAt, likes);
+    public SongReview(Long id, User user,Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
+        super(id, user, title, description, rating, createdAt, likes, isBlocked);
         this.song = song;
     }
 

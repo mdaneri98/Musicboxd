@@ -107,8 +107,6 @@ public class UserServiceImpl implements UserService {
         return new UserFollowingData(followers, following);
     }
 
-
-
     @Override
     public boolean isFollowing(Long userId, Long otherId) {
         return userDao.isFollowing(userId, otherId);

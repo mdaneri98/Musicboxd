@@ -18,6 +18,7 @@
 <div>
     <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+        <jsp:param name="moderator" value="${loggedUser.moderator}"/>
     </jsp:include>
 </div>
 <div class="main-content container">
