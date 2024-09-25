@@ -4,6 +4,7 @@
 <html>
 <head>
   <title>Create form</title>
+  <!--
   <style>
     :root {
       --background-base: #121212;
@@ -114,6 +115,7 @@
       text-decoration: underline;
     }
   </style>
+   -->
 </head>
 <body>
 <div class="container">

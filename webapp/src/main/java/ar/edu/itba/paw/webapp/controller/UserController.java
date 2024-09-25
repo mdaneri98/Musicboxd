@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.services.ImageService;
+import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.advice.UserControllerAdvice;
 import ar.edu.itba.paw.webapp.auth.AuthCUserDetails;
@@ -36,20 +37,27 @@ public class UserController {
     private final UserService userService;
     private final ImageService imageService;
     private final AuthenticationManager authenticationManager;
+    private final ReviewService reviewService;
 
-    public UserController(UserService userService, ImageService imageService, AuthenticationManager authenticationManager) {
+    public UserController(UserService userService, ImageService imageService, AuthenticationManager authenticationManager, ReviewService reviewService) {
         this.userService = userService;
         this.imageService = imageService;
         this.authenticationManager = authenticationManager;
+        this.reviewService = reviewService;
     }
 
-    @RequestMapping("/")
-    public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser) {
+    @RequestMapping("/profile/{pageNum:\\d+}")
+    public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "pageNum", required = false) Integer pageNum ) {
         final ModelAndView mav = new ModelAndView("users/profile");
         LOGGER.info("Logged username: {}", loggedUser.getUsername());
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
+
+        mav.addObject("followingUsers", userService.getFollowingData(loggedUser.getId(), 20, (pageNum-1)*20).getFollowing());
         mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
         mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
         mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));
+        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(loggedUser.getId(), pageNum,5, loggedUser.getId()));
+        mav.addObject("pageNum", pageNum);
         return mav;
     }
 
@@ -90,7 +98,7 @@ public class UserController {
         loggedUser.setBio(upf.getBio());
         
         userService.update(loggedUser.getId(), upf.getUsername(), loggedUser.getEmail(), loggedUser.getPassword(), upf.getName(), upf.getBio(), LocalDateTime.now(), loggedUser.isVerified(), loggedUser.isModerator(), loggedUser.getImgId(), loggedUser.getFollowersAmount(), loggedUser.getFollowingAmount(), loggedUser.getReviewAmount());
-        return new ModelAndView("redirect:/user/");
+        return new ModelAndView("redirect:/user/profile");
     }
 
     @RequestMapping("/verification")
@@ -103,10 +111,23 @@ public class UserController {
         return new ModelAndView("redirect:/");
     }
 
+    @RequestMapping("/profile")
+    public ModelAndView profile (@ModelAttribute("loggedUser") User loggedUser){
+        return profile(loggedUser,1);
+    }
+
+
     @RequestMapping("/{userId:\\d+}")
+    public ModelAndView user (@ModelAttribute("loggedUser") User loggedUser,
+                              @PathVariable(name = "userId") long userId){
+        return user(loggedUser,userId,1);
+    }
+
+    @RequestMapping("/{userId:\\d+}/{pageNum:\\d+}")
     public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser,
-                             @PathVariable(name = "userId") long userId) {
-        if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/").addObject("user", loggedUser);
+                             @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum ) {
+        if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/profile/").addObject("user", loggedUser);
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
 
         final ModelAndView mav = new ModelAndView("/users/user");
 
@@ -116,8 +137,31 @@ public class UserController {
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
         mav.addObject("artists", userService.getFavoriteArtists(userId));
         mav.addObject("songs", userService.getFavoriteSongs(userId));
+        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(userId, pageNum, 5, loggedUser.getId()));
+        mav.addObject("pageNum", pageNum);
 
         return mav;
+    }
+
+    @RequestMapping("/{userId:\\d+}/follow-info/{pageNum:\\d+}")
+    public ModelAndView followInfo (@ModelAttribute("loggedUser") User loggedUser,
+                              @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum){
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
+        ModelAndView mav = new ModelAndView("/users/follow_info");
+        mav.addObject("user", userService.findById(userId).get());
+        mav.addObject("followingList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowing());
+        mav.addObject("followersList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowers());
+        mav.addObject("loggedUser", loggedUser);
+        mav.addObject("pageNum", pageNum);
+        mav.addObject("title", "Following");
+
+        return mav;
+    }
+
+    @RequestMapping("/{userId:\\d+}/follow-info")
+    public ModelAndView followInfo (@ModelAttribute("loggedUser") User loggedUser,
+                                   @PathVariable(name = "userId") long userId){
+        return followInfo(loggedUser,userId,1);
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)
@@ -160,7 +204,6 @@ public class UserController {
         final int done = userService.undoFollowing(loggedUser, userId);
         return new ModelAndView("redirect:/user/" + userId);
     }
-
 
 
 }

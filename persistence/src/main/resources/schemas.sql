@@ -73,10 +73,11 @@ CREATE TABLE IF NOT EXISTS review (
      id SERIAL PRIMARY KEY,
      user_id INT NOT NULL,
      title VARCHAR(50) NOT NULL,
-     description VARCHAR(300) NOT NULL,
+     description VARCHAR(2000) NOT NULL,
      rating INT NOT NULL,
      created_at TIMESTAMP DEFAULT NOW(),
      likes INT DEFAULT 0,
+     blocked BOOLEAN DEFAULT FALSE,
 
      FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
 );
@@ -151,4 +152,13 @@ CREATE TABLE IF NOT EXISTS favorite_song (
     FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, song_id)
+);
+
+CREATE TABLE IF NOT EXISTS review_like (
+    user_id INT NOT NULL,
+    review_id INT NOT NULL,
+
+    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, review_id)
 );

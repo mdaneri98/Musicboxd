@@ -16,9 +16,6 @@ public class AlbumServiceImpl implements AlbumService {
      */
     private final AlbumDao albumDao;
 
-    @Autowired
-    private ArtistDao artistDao;
-
     public AlbumServiceImpl(AlbumDao albumDao) {
         this.albumDao = albumDao;
     }

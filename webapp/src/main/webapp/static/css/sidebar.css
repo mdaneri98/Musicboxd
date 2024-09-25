@@ -1,18 +1,24 @@
-
-
 /* Sidebar */
 .sidebar {
     background-color: #2c2c2c;
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 68px;
-    height: 100vh;
+    height: 100vh; /* Cambiado a 100vh para ocupar toda la altura de la ventana */
+    position: fixed; /* Fija la barra lateral */
+    left: 0;
+    top: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-right: 1px solid #1a1a1a;
-    z-index: 1000; /* Asegura que la sidebar esté por encima del contenido */
+    z-index: 1000; /* Aumentado para asegurar que esté por encima de otros elementos */
+    overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
 }
 
 .sidebar-icon {
@@ -24,7 +30,7 @@
     color: #a7a7a7;
     text-decoration: none;
     font-size: 24px;
-    margin-bottom: 20px;
+    margin: 10px auto; /* Cambiado de margin-bottom a margin para centrar verticalmente */
     border-radius: 50%;
     transition: color 0.3s ease, background-color 0.3s ease;
 }
@@ -50,6 +56,18 @@
 }
 
 /* Ensure the logout icon is at the bottom */
-.logout {
-    margin-top: auto; /* Pushes the logout icon to the bottom */
+.sidebar ul li:last-child {
+    margin-top: auto;
+    margin-bottom: 20px; /* Añade un poco de espacio en la parte inferior */
+}
+
+/* Ajusta el contenido principal para que no se superponga con la sidebar */
+body {
+    margin-left: 68px; /* Debe ser igual al ancho de la sidebar */
+}
+
+/* Si tienes un contenedor principal, puedes usar esto en su lugar */
+.main-content {
+    margin-left: 68px;
+    width: calc(100% - 68px);
 }

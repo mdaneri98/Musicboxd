@@ -53,11 +53,13 @@ public class User {
         this.reviewAmount = 0;
     }
 
-    public User(Long id, String username, String name, Long imgId) {
+    public User(Long id, String username, String name, Long imgId, Boolean verified, Boolean moderator) {
         this.id = id;
         this.username = username;
         this.name = name;
         this.imgId = imgId;
+        this.verified = verified;
+        this.moderator = moderator;
     }
 
     // Getters y setters

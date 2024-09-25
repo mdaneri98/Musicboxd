@@ -2,10 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.models.*;
 
-import ar.edu.itba.paw.services.AlbumService;
-import ar.edu.itba.paw.services.ArtistService;
-import ar.edu.itba.paw.services.ImageService;
-import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.*;
 
 import ar.edu.itba.paw.webapp.form.ModAlbumForm;
 import ar.edu.itba.paw.webapp.form.ModArtistForm;
@@ -17,6 +14,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RequestMapping("/mod")
 @Controller
@@ -26,14 +27,33 @@ public class ModeratorController {
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final SongService songService;
+    private final ReviewService reviewService;
 
     private final long DEFAULT_IMAGE_ID = 1;
 
-    public ModeratorController(ImageService imageService, ArtistService artistService, AlbumService albumService, SongService songService) {
+    public ModeratorController(ImageService imageService, ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService) {
         this.imageService = imageService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
+        this.reviewService = reviewService;
+    }
+
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
+    public ModelAndView home() {
+        final ModelAndView mav = new ModelAndView("/moderator/m_home");
+
+        mav.addObject("artists", artistService.findAll());
+        mav.addObject("albums", albumService.findAll());
+        mav.addObject("songs", songService.findAll());
+
+        return mav;
+    }
+
+    @RequestMapping(value = "/block/{reviewId:\\d+}", method = RequestMethod.GET)
+    public ModelAndView block(@PathVariable(name = "reviewId") final long reviewId) {
+        reviewService.block(reviewId);
+        return new ModelAndView("redirect:/");
     }
 
     @RequestMapping(path = "add/artist", method = RequestMethod.GET)

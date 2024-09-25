@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,13 +44,19 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public int create(String username, String email, String password) {
-        return jdbcTemplate.update(
-                "INSERT INTO cuser (username, email, password, img_id) VALUES (?, ?, ?, ?)",
-                username,
-                email,
-                password,
-                1
-        );
+        int imgId = 1;
+
+        String checkImageSql = "SELECT COUNT(*) FROM image WHERE id = ?";
+        int count = jdbcTemplate.queryForObject(checkImageSql, Integer.class, imgId);
+
+        if (count == 0) {
+            // Image doesn't exist, throw an exception.
+            throw new IllegalArgumentException("Image with id " + imgId + " does not exist");
+        }
+
+        // If we get here, the image exists, so we can proceed with user creation
+        String insertUserSql = "INSERT INTO cuser (username, email, password, img_id) VALUES (?, ?, ?, ?)";
+        return jdbcTemplate.update(insertUserSql, username, email, password, imgId);
     }
 
     @Override
@@ -84,6 +88,32 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
+    public List<User> getFollowers(Long userId, int limit, int offset) {
+        String sql = "SELECT user_id FROM follower WHERE following = ? LIMIT ? OFFSET ?";
+        List<Long> followerIds = jdbcTemplate.queryForList(sql, new Object[]{userId, limit, offset}, Long.class);
+
+        List<User> followers = new ArrayList<>();
+        for (Long followerId : followerIds) {
+            Optional<User> follower = this.findById(followerId);
+            follower.ifPresent(followers::add);
+        }
+        return followers;
+    }
+
+    @Override
+    public List<User> getFollowing(Long userId, int limit, int offset) {
+        String sql = "SELECT following FROM follower WHERE user_id = ? LIMIT ? OFFSET ?";
+        List<Long> followingIds = jdbcTemplate.queryForList(sql, new Object[]{userId, limit, offset}, Long.class);
+
+        List<User> following = new ArrayList<>();
+        for (Long followingId : followingIds) {
+            Optional<User> follower = this.findById(followingId);
+            follower.ifPresent(following::add);
+        }
+        return following;
+    }
+
+    @Override
     public int createFollowing(User user, User following) {
         int result = jdbcTemplate.update(
                 "INSERT INTO follower (user_id, following) VALUES (?, ?)",
@@ -99,8 +129,6 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public int undoFollowing(User user, User following) {
-        updateFollowingAmount(user, user.getFollowingAmount() - 1);
-        updateFollowersAmount(following, following.getFollowersAmount() - 1);
         int result = jdbcTemplate.update(
                 "DELETE FROM follower WHERE user_id = ? AND following = ?",
                 user.getId(),
@@ -246,7 +274,7 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public List<Song> getFavoriteSongs(long userId) {
-        final String sql = "SELECT s.id AS song_id, s.title AS song_title, duration, track_number, s.created_at AS song_created_at, s.updated_at AS song_updated_at, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id ,ar.id AS artist_id, name, ar.img_id AS artist_img_id FROM song s " +
+        final String sql = "SELECT s.id AS song_id, s.title AS song_title, duration, track_number, s.created_at AS song_created_at, s.updated_at AS song_updated_at, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.genre, ar.id AS artist_id, name, ar.img_id AS artist_img_id, al.release_date AS album_release_date FROM song s " +
                 "JOIN favorite_song fs ON s.id = fs.song_id JOIN album al ON s.album_id = al.id JOIN artist ar ON al.artist_id = ar.id " +
                 "WHERE fs.user_id = ?";
         return jdbcTemplate.query(sql, new Object[]{userId}, SimpleRowMappers.SONG_ROW_MAPPER);

@@ -17,6 +17,7 @@
 <div>
     <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
         <jsp:param name="loggedUserImgId" value="${loggedUser.imgId}"/>
+        <jsp:param name="moderator" value="${loggedUser.moderator}"/>
     </jsp:include>
 </div>
 <div class="main-content container">
@@ -25,7 +26,7 @@
     <c:url value="/song/${song.id}" var="songUrl" />
     <a href="${songUrl}" class="artist-box">
         <c:url var="imgUrl" value="/images/${album.imgId}"/>
-        <img src="${imgUrl}" alt="${song.title}" class="artist-image">
+        <img src="${imgUrl}" alt="${song.title}" class="primary-image">
         <div class="artist-info">
             <h2 class="artist-name">${song.title}</h2>
             <p class="artist-bio">${song.duration}</p>

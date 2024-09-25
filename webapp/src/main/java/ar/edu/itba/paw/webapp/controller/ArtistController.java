@@ -45,19 +45,28 @@ public class ArtistController {
     }
 
     @RequestMapping("/{artistId:\\d+}")
-    public ModelAndView artist(@PathVariable(name = "artistId") long artistId, @ModelAttribute("loggedUser") User loggedUser) {
+    public ModelAndView album (@ModelAttribute("loggedUser") User loggedUser,
+                               @PathVariable(name = "artistId") long artistId){
+        return artist(artistId, 1, loggedUser);
+    }
+
+    @RequestMapping("/{artistId:\\d+}/{pageNum:\\d+}")
+    public ModelAndView artist(@PathVariable(name = "artistId") long artistId, @PathVariable(name = "pageNum", required = false) Integer pageNum , @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("artist");
+
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
 
         Artist artist = artistService.findById(artistId).get();
         List<Album> albums = albumService.findByArtistId(artistId);
         List<Song> songs = songService.findByArtistId(artistId);
-        List<ArtistReview> reviews = reviewService.findReviewsByArtistId(artistId);
+        List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(artistId,pageNum,5, loggedUser.getId());
 
         mav.addObject("artist", artist);
         mav.addObject("albums", albums);
         mav.addObject("songs", songs);
         mav.addObject("reviews", reviews);
         mav.addObject("isFavorite", userService.isArtistFavorite(loggedUser.getId(), artistId));
+        mav.addObject("pageNum", pageNum);
         return mav;
     }
 
@@ -90,7 +99,8 @@ public class ArtistController {
                 reviewForm.getDescription(),
                 reviewForm.getRating(),
                 LocalDateTime.now(),
-                0
+                0,
+                false
         );
         reviewService.saveArtistReview(artistReview);
         return new ModelAndView("redirect:/artist/" + artistId);
