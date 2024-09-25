@@ -13,12 +13,10 @@ import ar.edu.itba.paw.webapp.form.ModSongForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Optional;
 
 @RequestMapping("/mod")
 @Controller
@@ -55,13 +53,28 @@ public class ModeratorController {
         }
         long imageId = DEFAULT_IMAGE_ID;
         try {
-            imageId = imageService.save(modArtistForm.getFile().getBytes());
+            imageId = imageService.save(modArtistForm.getArtistImage().getBytes());
         } catch (IOException e) {
             e.printStackTrace();    //Change to logging ERROR
         }
 
         Artist artist = new Artist(modArtistForm.getName(),modArtistForm.getBio(), imageId);
         long artistId = artistService.save(artist);
+        artist.setId(artistId);
+
+        //  List of albums
+        for (ModAlbumForm albumForm : modArtistForm.getAlbums()) {
+            if (albumForm.getTitle() != null) {
+                long imgId = DEFAULT_IMAGE_ID;
+                try {
+                    imgId = imageService.save(albumForm.getAlbumImage().getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Album album = new Album(albumForm.getTitle(), albumForm.getGenre(), imgId, artist);
+                albumService.save(album);  // Save each album in the service
+            }
+        }
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
         modelAndView.addObject("artist", artist);
@@ -88,7 +101,7 @@ public class ModeratorController {
 
         long imageId = DEFAULT_IMAGE_ID;
         try {
-            imageId = imageService.save(modAlbumForm.getFile().getBytes());
+            imageId = imageService.save(modAlbumForm.getAlbumImage().getBytes());
         } catch (IOException e) {
             e.printStackTrace();    //Change to logging ERROR
         }
