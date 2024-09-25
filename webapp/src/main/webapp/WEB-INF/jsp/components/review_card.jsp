@@ -26,9 +26,7 @@
     <div class="separator"></div>
     <div class="review-content">
         <div class="review-title"><c:out value="${param.title}"/></div>
-        <div class="review-content">
-            <c:out value="${param.review_content}"/>
-        </div>
+        <p class="review-content"><c:out value="${param.review_content}"/></p>
     </div>
     <div class="separator"></div>
     <div class="review-footer">
@@ -56,10 +54,12 @@
             <c:url var="shareReviewLink" value="/review/share/${param.review_id}" />
             <c:choose>
                 <c:when test="${!param.isLiked}">
-                    <a href="${likeReviewLink}"><c:out value="${param.likes}"/> &#9825; Like</a>
+                    <span> <c:out value="${param.likes}"/></span>
+                    <a href="${likeReviewLink}" style="font-size: 14px;"> &#9825; </a>
                 </c:when>
                 <c:otherwise>
-                    <a href="${removeLikeReviewLink}" style="color: red"><c:out value="${param.likes}"/> &#9825; Like</a>
+                    <span> <c:out value="${param.likes}"/> </span>
+                    <a href="${removeLikeReviewLink}" style="color: red; font-size: 25px;">&#9829; </a>
                 </c:otherwise>
             </c:choose>
             <a href="${shareReviewLink}">&#10150; Share</a>

@@ -57,6 +57,7 @@ public class IndexController {
 
         mav.addObject("popularReviews", popularReviews);
         mav.addObject("followingReviews", followingReviews);
+        mav.addObject("pageNum", pageNum);
 
         return mav;
     }

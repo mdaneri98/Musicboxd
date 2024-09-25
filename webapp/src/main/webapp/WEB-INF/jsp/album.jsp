@@ -40,7 +40,7 @@
           <ul class="song-list">
             <c:forEach var="song" items="${songs}" varStatus="status">
               <li>
-                <span class="song-number">${status.index + 1}</span>
+                <span class="song-number">${status.index + 1}     </span>
                 <c:url var="songUrl" value="/song/${song.id}" />
                 <a href="${songUrl}" class="song-title"><c:out value="${song.title}"/></a>
               </li>
@@ -48,6 +48,7 @@
           </ul>
         </div>
 
+  <c:if test="${reviews.size() > 0}">
       <h2>Reviews</h2>
       <div class="cards-container">
         <c:forEach var="review" items="${reviews}">
@@ -76,11 +77,12 @@
                 <div>
                   <c:url value="/album/${album.id}/${pageNum + 1}" var="nextPage" />
                   <c:url value="/album/${album.id}/${pageNum -1}" var="prevPage" />
-                  <a href="${prevPage}" class="button review-button">Previous page</a>
-                  <a href="${nextPage}" class="button review-button">Next page</a>
+                  <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
+                  <c:if test="${reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
                 </div>
             </footer>
         </section>
+      </c:if>
     </div>
   </body>
 </html>

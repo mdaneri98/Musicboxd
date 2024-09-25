@@ -143,13 +143,14 @@ public class UserController {
         return mav;
     }
 
-    @RequestMapping("/{userId:\\d+}/following/{pageNum:\\d+}")
-    public ModelAndView following (@ModelAttribute("loggedUser") User loggedUser,
+    @RequestMapping("/{userId:\\d+}/follow-info/{pageNum:\\d+}")
+    public ModelAndView followInfo (@ModelAttribute("loggedUser") User loggedUser,
                               @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum){
         if (pageNum == null || pageNum <= 0) pageNum = 1;
         ModelAndView mav = new ModelAndView("/users/follow_info");
         mav.addObject("user", userService.findById(userId).get());
-        mav.addObject("userList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowing());
+        mav.addObject("followingList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowing());
+        mav.addObject("followersList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowers());
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("pageNum", pageNum);
         mav.addObject("title", "Following");
@@ -157,30 +158,10 @@ public class UserController {
         return mav;
     }
 
-    @RequestMapping("/{userId:\\d+}/following")
-    public ModelAndView following (@ModelAttribute("loggedUser") User loggedUser,
+    @RequestMapping("/{userId:\\d+}/follow-info")
+    public ModelAndView followInfo (@ModelAttribute("loggedUser") User loggedUser,
                                    @PathVariable(name = "userId") long userId){
-        return following(loggedUser,userId,1);
-    }
-
-    @RequestMapping("/{userId:\\d+}/followers/{pageNum:\\d+}")
-    public ModelAndView followers (@ModelAttribute("loggedUser") User loggedUser,
-                                   @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum){
-        if (pageNum == null || pageNum <= 0) pageNum = 1;
-        ModelAndView mav = new ModelAndView("/users/follow_info");
-        mav.addObject("user", userService.findById(userId).get());
-        mav.addObject("userList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowers());
-        mav.addObject("loggedUser", loggedUser);
-        mav.addObject("pageNum", pageNum);
-        mav.addObject("title", "Followers");
-
-        return mav;
-    }
-
-    @RequestMapping("/{userId:\\d+}/followers")
-    public ModelAndView followers (@ModelAttribute("loggedUser") User loggedUser,
-                                   @PathVariable(name = "userId") long userId){
-        return followers(loggedUser,userId,1);
+        return followInfo(loggedUser,userId,1);
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)

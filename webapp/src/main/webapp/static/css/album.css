@@ -30,9 +30,6 @@
     font-size: 16px;
     color: var(--text-base);
     text-decoration: none;
-}
-
-.song-title:hover {
-    text-decoration: underline;
+    margin-left: 10px;
 }
 

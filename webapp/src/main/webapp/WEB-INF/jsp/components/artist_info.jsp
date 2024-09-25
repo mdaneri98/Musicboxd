@@ -6,7 +6,7 @@
   <c:url var="artistImgURL" value="/images/${param.imgId}"/>
   <img src="${artistImgURL}" alt="Artist Name" class="primary-image">
   <div class="data-container">
-    <p class="artist-type">Artist</p>
+    <p class="type">Artist</p>
     <div>
     <h1><c:out value="${param.name}"/></h1>
     <p class="artist-bio"><c:out value="${param.bio}"/></p>
