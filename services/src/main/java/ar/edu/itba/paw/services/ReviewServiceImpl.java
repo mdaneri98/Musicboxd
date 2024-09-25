@@ -230,4 +230,15 @@ public class ReviewServiceImpl implements ReviewService {
         if (start < end) return allReviews.subList(start, end);
         return allReviews;
     }
+
+    @Override
+    public boolean block(Long reviewId) {
+        return reviewDao.block(reviewId);
+    }
+
+    @Override
+    public boolean unblock(Long reviewId) {
+        return reviewDao.unblock(reviewId);
+    }
+
 }

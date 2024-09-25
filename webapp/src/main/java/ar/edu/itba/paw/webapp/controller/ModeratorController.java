@@ -18,6 +18,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequestMapping("/mod")
@@ -36,6 +39,17 @@ public class ModeratorController {
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
+    }
+
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
+    public ModelAndView home() {
+        final ModelAndView mav = new ModelAndView("/moderator/m_home");
+
+        mav.addObject("artist", artistService.findAll());
+        mav.addObject("albums", albumService.findAll());
+        mav.addObject("songs", songService.findAll());
+
+        return mav;
     }
 
     @RequestMapping(path = "add/artist", method = RequestMethod.GET)

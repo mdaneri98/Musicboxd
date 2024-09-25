@@ -99,7 +99,8 @@ public class ArtistController {
                 reviewForm.getDescription(),
                 reviewForm.getRating(),
                 LocalDateTime.now(),
-                0
+                0,
+                false
         );
         reviewService.saveArtistReview(artistReview);
         return new ModelAndView("redirect:/artist/" + artistId);

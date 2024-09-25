@@ -45,6 +45,14 @@
       </a>
     </li>
     -->
+    <c:if test="${param.moderator}">
+      <li>
+        <c:url var="moderatorUrl" value="/mod"/>
+        <a href="${moderatorUrl}" class="sidebar-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </a>
+      </li>
+    </c:if>
     <li>
       <c:url var="logoutUrl" value="/user/logout"/>
       <a href="${logoutUrl}" class="sidebar-icon">

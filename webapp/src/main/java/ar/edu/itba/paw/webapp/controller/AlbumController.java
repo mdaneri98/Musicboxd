@@ -93,7 +93,8 @@ public class AlbumController {
                 reviewForm.getDescription(),
                 reviewForm.getRating(),
                 LocalDateTime.now(),
-                0
+                0,
+                false
         );
         reviewService.saveAlbumReview(albumReview);
         return new ModelAndView("redirect:/album/" + albumId);

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <spring:message var="pageTitle" text="Search"/>
+    <spring:message var="pageTitle" text="Moderator"/>
     <title>${pageTitle}</title>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
@@ -24,8 +24,9 @@
 <div class="search-container">
     <h1>Musicboxd</h1>
     <div class="search-tabs">
-        <span class="search-tab active" data-type="music">Music</span>
-        <span class="search-tab" data-type="users">Users</span>
+        <span class="search-tab active" data-type="artists">Artist</span>
+        <span class="search-tab" data-type="albums">Album</span>
+        <span class="search-tab" data-type="songs">Song</span>
     </div>
     <div class="search-wrapper">
         <input type="text" class="search-input" id="searchInput" placeholder="Search Musicboxd...">
@@ -37,7 +38,6 @@
 </div>
 
 <script>
-    // Datos de ejemplo (reemplaza esto con tus datos reales)
     var artists = [
         <c:forEach items="${artists}" var="artist" varStatus="status">
         {id: ${artist.id}, name: "${artist.name}", type: "Artist", url: "<c:url value="/artist/${artist.id}"/>", imgUrl: "<c:url value="/images/${artist.imgId}"/>" }<c:if test="${!status.last}">,</c:if>
@@ -51,11 +51,6 @@
     var songs = [
         <c:forEach items="${songs}" var="song" varStatus="status">
         {id: ${song.id}, name: "${song.title}", type: "Song", url: "<c:url value="/song/${song.id}"/>", imgUrl: "<c:url value="/images/${song.album.imgId}"/>"}<c:if test="${!status.last}">,</c:if>
-        </c:forEach>
-    ];
-    var users = [
-        <c:forEach items="${users}" var="user" varStatus="status">
-        {id: ${user.id}, name: "${user.username}", type: "", url: "<c:url value="/user/${user.id}"/>", imgUrl: "<c:url value="/images/${user.imgId}"/>"}<c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];
 
@@ -86,13 +81,26 @@
             this.parentNode.appendChild(a);
 
             var activeTab = document.querySelector('.search-tab.active').dataset.type;
-            var searchArray = (activeTab === 'music') ? [...artists, ...albums, ...songs] : users;
+            var searchArray;
+            switch(activeTab) {
+                case 'artists':
+                    searchArray = artists;
+                    break;
+                case 'albums':
+                    searchArray = albums;
+                    break;
+                case 'songs':
+                    searchArray = songs;
+                    break;
+                default:
+                    searchArray = [];
+            }
 
             searchArray.forEach(function (item) {
-                if (item.name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                    var b = document.createElement("DIV");
+                if (item.name.toUpperCase().includes(val.toUpperCase())) {
+                    b = document.createElement("DIV");
                     b.innerHTML = createAutocompleteItem(item);
-                    b.addEventListener("click", function (e) {
+                    b.addEventListener("click", function(e) {
                         inp.value = item.name;
                         window.location.href = item.url;
                         closeAllLists();
