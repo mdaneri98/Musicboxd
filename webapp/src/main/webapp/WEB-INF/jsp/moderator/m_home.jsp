@@ -22,11 +22,17 @@
     </jsp:include>
 </div>
 <div class="search-container">
-    <h1>Musicboxd</h1>
+    <h1>Moderator</h1>
     <div class="search-tabs">
-        <span class="search-tab active" data-type="artists">Artist</span>
-        <span class="search-tab" data-type="albums">Album</span>
-        <span class="search-tab" data-type="songs">Song</span>
+        <div class="search-tab active" data-type="artists">
+            <span>Artist</span>
+        </div>
+        <div class="search-tab" data-type="albums">
+            <span>Album</span>
+        </div>
+        <div class="search-tab" data-type="songs">
+            <span>Song</span>
+        </div>
     </div>
     <div class="search-wrapper">
         <input type="text" class="search-input" id="searchInput" placeholder="Search Musicboxd...">
@@ -34,46 +40,107 @@
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
         <div id="autocompleteList" class="autocomplete-items"></div>
+        <button id="redirectButton" style="" onclick="redirect()">Complete</button>
     </div>
 </div>
 
 <script>
+    var selected_item;
+
+    // Define los arrays de datos
     var artists = [
         <c:forEach items="${artists}" var="artist" varStatus="status">
-        {id: ${artist.id}, name: "${artist.name}", type: "Artist", url: "<c:url value="/artist/${artist.id}"/>", imgUrl: "<c:url value="/images/${artist.imgId}"/>" }<c:if test="${!status.last}">,</c:if>
+            {   id: ${artist.id},
+                name: "${artist.name}",
+                type: "Artist",
+                url: "#",
+                imgUrl: "<c:url value='/images/${artist.imgId}'/>" }
+        <c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];
+
     var albums = [
         <c:forEach items="${albums}" var="album" varStatus="status">
-        {id: ${album.id}, name: "${album.title}", type: "Album", url: "<c:url value="/album/${album.id}"/>", imgUrl: "<c:url value="/images/${album.imgId}"/>" }<c:if test="${!status.last}">,</c:if>
+        {id: ${album.id}, name: "${album.title}", type: "Album", url: "#", imgUrl: "<c:url value='/images/${album.imgId}'/>" }<c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];
+
     var songs = [
         <c:forEach items="${songs}" var="song" varStatus="status">
-        {id: ${song.id}, name: "${song.title}", type: "Song", url: "<c:url value="/song/${song.id}"/>", imgUrl: "<c:url value="/images/${song.album.imgId}"/>"}<c:if test="${!status.last}">,</c:if>
+        {id: ${song.id}, name: "${song.title}", type: "Song", url: "#", imgUrl: "<c:url value='/images/${song.album.imgId}'/>"}<c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];
 
-    function handleTabClick(event) {
-        document.querySelectorAll('.search-tab').forEach(tab => tab.classList.remove('active'));
-        event.target.classList.add('active');
-        const searchInput = document.getElementById('searchInput');
-        searchInput.value = '';
-        closeAllLists();
+    function show_button() {
+        var activeTab = document.querySelector('.search-tab.active').dataset.type;
+        var button = document.getElementById('redirectButton');
+
+        // Cambia el texto del botón dependiendo de la pestaña
+        switch (activeTab) {
+            case 'artists':
+                button.textContent = "Complete";
+                break;
+            case 'albums':
+                button.textContent = "Complete";
+                break;
+            case 'songs':
+                button.textContent = "Complete";
+                break;
+        }
+        button.style.display = 'inline-block';
     }
 
+    function hide_button() {
+        // Oculta el botón al cambiar de pestaña o limpiar el input
+        document.getElementById('redirectButton').style.display = 'none';
+    }
+
+    function redirect() {
+        <c:url var="addArtistUrl" value="/mod/add/artist"/>
+        <c:url var="addAlbumUrlBase" value="/mod/add/artist/"/>
+        <c:url var="addSongUrlBase" value="/mod/add/album/"/>
+
+        var addArtistUrl = "${addArtistUrl}";
+        var addAlbumUrlBase = "${addAlbumUrlBase}";
+        var addSongUrlBase = "${addSongUrlBase}";
+
+        var activeTab = document.querySelector('.search-tab.active').dataset.type;
+        switch (activeTab) {
+            case 'artists':
+                console.log("Changed href");
+                window.location.href = addArtistUrl;
+                break;
+            case 'albums':
+                if (selected_item) {
+                    var url = addAlbumUrlBase + selected_item.id + "/album";
+                    window.location.href = url;
+                }
+                break;
+            case 'songs':
+                if (selected_item) {
+                    var url = addSongUrlBase + selected_item.id + "/song";
+                    window.location.href = url;
+                }
+                break;
+        }
+    }
+
+    // Funcionalidad de las pestañas
     document.querySelectorAll('.search-tab').forEach(tab => {
-        tab.addEventListener('click', handleTabClick);
+        tab.addEventListener('click', function () {
+            document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('searchInput').value = '';
+            closeAllLists();
+        });
     });
 
     function autocomplete(inp) {
         var currentFocus;
         inp.addEventListener("input", function(e) {
-            var a, b, i, val = this.value;
+            var a, val = this.value;
             closeAllLists();
-            if (!val) {
-                return false;
-            }
+            if (!val) { return false; }
             currentFocus = -1;
             a = document.createElement("DIV");
             a.setAttribute("id", this.id + "autocomplete-list");
@@ -97,12 +164,13 @@
             }
 
             searchArray.forEach(function (item) {
-                if (item.name.toUpperCase().includes(val.toUpperCase())) {
-                    b = document.createElement("DIV");
+                if (item.name.toLowerCase().includes(val.toLowerCase())) {
+                    var b = document.createElement("DIV");
                     b.innerHTML = createAutocompleteItem(item);
                     b.addEventListener("click", function(e) {
-                        inp.value = item.name;
-                        window.location.href = item.url;
+                        inp.value = item.name
+                        selected_item = item
+                        show_button()
                         closeAllLists();
                     });
                     a.appendChild(b);
@@ -135,8 +203,15 @@
             x[currentFocus].classList.add("autocomplete-active");
         }
 
-        function createAutocompleteItem(item) {
-            return `
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+    }
+
+    function createAutocompleteItem(item) {
+        return `
         <div class="autocomplete-item">
             <img src="`+ item.imgUrl + `" alt="`+ item.name +`">
             <div class="autocomplete-item-info">
@@ -145,13 +220,6 @@
             </div>
         </div>
     `;
-        }
-
-        function removeActive(x) {
-            for (var i = 0; i < x.length; i++) {
-                x[i].classList.remove("autocomplete-active");
-            }
-        }
     }
 
     function closeAllLists(elmnt) {
@@ -162,7 +230,6 @@
             }
         }
     }
-
 
     document.addEventListener("click", function (e) {
         closeAllLists(e.target);
