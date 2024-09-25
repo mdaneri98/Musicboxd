@@ -9,9 +9,6 @@
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
 
-  <c:url var="css" value="/static/css/user.css" />
-  <link rel="stylesheet" href="${css}">
-
   <c:url var="review_card" value="/static/css/review_card.css" />
   <link rel="stylesheet" href="${review_card}">
 
@@ -36,37 +33,57 @@
       <jsp:param name="id" value="${user.id}" />
     </jsp:include>
   </header>
+  <div class="data-container">
+    <c:url value="/user/${param.id}/follow" var="follow_user_url" />
+    <c:url value="/user/${param.id}/unfollow" var="unfollow_user_url" />
+    <c:choose>
+      <c:when test="${!isFollowing}">
+        <form action="${follow_user_url}" method="post">
+          <button type="submit">Follow</button>
+        </form>
+      </c:when>
+      <c:otherwise>
+        <form action="${unfollow_user_url}" method="post">
+          <button type="submit">Unfollow</button>
+        </form>
+      </c:otherwise>
+    </c:choose>
+  </div>
 
   <c:if test="${albums.size() > 0}">
     <h2>Favorite Albums</h2>
-    <div class="medium-box-container">
-      <c:forEach var="album" items="${albums}" varStatus="status">
-        <c:url var="albumUrl" value="/album/${album.id}"/>
-        <div class="medium-box-container-item">
-          <a href="${albumUrl}">
-            <c:url var="albumImgURL" value="/images/${album.imgId}"/>
-            <img src="${albumImgURL}" alt="Album ${status.index + 1}">
-            <p><c:out value="${album.title}"/></p>
-          </a>
-        </div>
-      </c:forEach>
+    <div class="carousel-container">
+      <div class="carousel">
+        <c:forEach var="album" items="${albums}" varStatus="status">
+          <c:url var="albumUrl" value="/album/${album.id}"/>
+          <div class="item">
+            <a href="${albumUrl}" class="album">
+              <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+              <img src="${albumImgURL}" alt="Album ${status.index + 1}">
+              <p><c:out value="${album.title}"/></p>
+            </a>
+          </div>
+        </c:forEach>
+      </div>
     </div>
   </c:if>
 
   <c:if test="${artists.size() > 0}">
-  <h2>Favorite artists</h2>
-  <div class="medium-box-container">
-    <c:forEach var="artist" items="${artists}" varStatus="status">
-      <c:url var="artistUrl" value="/artist/${artist.id}"/>
-      <div class="medium-box-container-item">
-        <a href="${artistUrl}">
-          <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
-          <img src="${artistImgURL}" alt="Album ${status.index + 1}">
-          <p><c:out value="${artist.name}"/></p>
-        </a>
+    <h2>Favorite artists</h2>
+    <div class="carousel-container">
+      <div class="carousel">
+        <c:forEach var="artist" items="${artists}" varStatus="status">
+          <c:url var="artistUrl" value="/artist/${artist.id}"/>
+          <div class="item">
+            <a href="${artistUrl}" class="artist">
+              <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
+              <img src="${artistImgURL}" alt="Album ${status.index + 1}">
+              <p><c:out value="${artist.name}"/></p>
+            </a>
+          </div>
+        </c:forEach>
       </div>
-    </c:forEach>
-  </div>
+    </div>
   </c:if>
 
   <c:if test="${songs.size() > 0}">
@@ -76,7 +93,7 @@
       <c:url var="songUrl" value="/song/${song.id}"/>
       <a href="${songUrl}">
         <li>
-          <span class="song-number">${status.index + 1}</span>
+          <span class="song-number">${status.index + 1}     </span>
           <span class="song-title"><c:out value="${song.title}"/></span>
         </li>
       </a>
@@ -84,6 +101,7 @@
   </ul>
   </c:if>
 
+  <c:if test="${reviews.size() > 0}">
   <h2>Reviews</h2>
   <div class="cards-container">
     <c:forEach var="review" items="${reviews}">
@@ -107,8 +125,9 @@
   </div>
   <c:url value="/user/${user.id}/${pageNum + 1}" var="nextPage" />
   <c:url value="/user/${user.id}/${pageNum -1}" var="prevPage" />
-  <a href="${prevPage}" class="button review-button">Previous page</a>
-  <a href="${nextPage}" class="button review-button">Next page</a>
+  <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
+  <c:if test="${reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+  </c:if>
 </div>
 </body>
 </html>

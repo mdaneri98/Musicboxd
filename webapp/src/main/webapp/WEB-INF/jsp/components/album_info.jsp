@@ -7,7 +7,7 @@
   <c:url var="albumImgUrl" value="/images/${param['album.imgId']}"/>
   <img src="${albumImgUrl}" alt="${param['album.title']}" class="primary-image">
   <div class="data-container">
-    <p class="album-type">Album</p>
+    <p class="type">Album</p>
     <h1><c:out value="${param['album.title']}"/></h1>
     <div class="button-group">
       <c:url var="artistUrl" value="/artist/${param['artist.id']}" />

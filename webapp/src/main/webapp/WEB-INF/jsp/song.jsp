@@ -30,7 +30,7 @@
         <img src="${songImgUrl}" alt="${song.title}" class="primary-image">
       </div>
       <div class="data-container">
-        <p class="song-type">Song</p>
+        <p class="type">Song</p>
         <h1><c:out value="${song.title}"/></h1>
         <div class="small-container">
           <c:forEach var="artist" items="${artists}">
@@ -81,6 +81,7 @@
       <p>Release Date: <c:out value="${song.album.releaseDate}"/></p>
     </div>
 
+    <c:if test="${reviews.size() > 0}">
     <h2>Reviews</h2>
     <div class="cards-container">
       <c:forEach var="review" items="${reviews}">
@@ -105,8 +106,9 @@
     </div>
     <c:url value="/song/${song.id}/${pageNum + 1}" var="nextPage" />
     <c:url value="/song/${song.id}/${pageNum -1}" var="prevPage" />
-    <a href="${prevPage}" class="button review-button">Previous page</a>
-    <a href="${nextPage}" class="button review-button">Next page</a>
+    <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
+    <c:if test="${reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
   </div>
+  </c:if>
 </body>
 </html>

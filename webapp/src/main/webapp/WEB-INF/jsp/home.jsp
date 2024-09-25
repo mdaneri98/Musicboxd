@@ -13,8 +13,6 @@
 
         <c:url var="review_card" value="/static/css/review_card.css" />
         <link rel="stylesheet" href="${review_card}">
-
-</head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -75,6 +73,10 @@
                 </jsp:include>
             </c:forEach>
         </div>
+        <c:url value="/home/${pageNum + 1}" var="nextPage" />
+        <c:url value="/home/${pageNum -1}" var="prevPage" />
+        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
+        <c:if test="${popularReviews.size() == 10}"><a href="${nextPage}"><button>Next page</button></a></c:if>
     </div>
 
     <div id="followingTab">
@@ -100,7 +102,13 @@
                 </jsp:include>
             </c:forEach>
         </div>
+        <c:url value="/home/${pageNum + 1}" var="nextPage" />
+        <c:url value="/home/${pageNum -1}" var="prevPage" />
+        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
+        <c:if test="${followingReviews.size() == 10}"><a href="${nextPage}"><button>Next page</button></a></c:if>
     </div>
+
+
 </div>
 </body>
 </html>

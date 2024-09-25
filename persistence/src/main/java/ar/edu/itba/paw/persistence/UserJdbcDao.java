@@ -129,8 +129,6 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public int undoFollowing(User user, User following) {
-        updateFollowingAmount(user, user.getFollowingAmount() - 1);
-        updateFollowersAmount(following, following.getFollowersAmount() - 1);
         int result = jdbcTemplate.update(
                 "DELETE FROM follower WHERE user_id = ? AND following = ?",
                 user.getId(),
