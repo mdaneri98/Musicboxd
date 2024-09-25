@@ -10,12 +10,14 @@ public class ModAlbumForm {
     private String title;
     @Size(min = 1, max = 50)
     private String genre;
-    private MultipartFile file;
+    private MultipartFile albumImage;
 
-    public ModAlbumForm(String title, String genre, MultipartFile file) {
+    public ModAlbumForm() {}
+
+    public ModAlbumForm(String title, String genre, MultipartFile albumImage) {
         this.title = title;
         this.genre = genre;
-        this.file = file;
+        this.albumImage = albumImage;
     }
 
     public String getTitle() {
@@ -34,11 +36,11 @@ public class ModAlbumForm {
         this.genre = genre;
     }
 
-    public MultipartFile getFile() {
-        return file;
+    public MultipartFile getAlbumImage() {
+        return albumImage;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setAlbumImage(MultipartFile albumImage) {
+        this.albumImage = albumImage;
     }
 }

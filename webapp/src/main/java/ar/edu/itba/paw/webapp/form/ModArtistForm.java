@@ -3,20 +3,28 @@ package ar.edu.itba.paw.webapp.form;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModArtistForm {
 
     @Size(min = 2, max = 50)
     private String name;
-    @Size(min = 2, max = 400)
+    @Size(min = 2, max = 2048)
     private String bio;
+    private MultipartFile artistImage;
 
-    private MultipartFile file;
+    private List<ModAlbumForm> albums = new ArrayList<>();
 
-    public ModArtistForm(String name, String bio, MultipartFile file) {
+    public ModArtistForm() {
+
+    }
+
+    public ModArtistForm(String name, String bio, MultipartFile artistImage, List<ModAlbumForm> albums) {
         this.name = name;
         this.bio = bio;
-        this.file = file;
+        this.artistImage = artistImage;
+        this.albums = albums;
     }
 
     public String getName() {
@@ -35,11 +43,21 @@ public class ModArtistForm {
         this.bio = bio;
     }
 
-    public MultipartFile getFile() {
-        return file;
+    public MultipartFile getArtistImage() {
+        return artistImage;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setArtistImage(MultipartFile artistImage) {
+        this.artistImage = artistImage;
     }
+
+    public List<ModAlbumForm> getAlbums() {
+        return albums;
+    }
+
+    public void setAlbum(List<ModAlbumForm> albums) {
+        this.albums = albums;
+    }
+
+
 }
