@@ -33,6 +33,9 @@
             <jsp:param name="id" value="${loggedUser.id}" />
         </jsp:include>
     </header>
+    <c:url var="editProfileUrl" value="/user/edit"></c:url>
+    <a href="${editProfileUrl}"><button>Edit profile</button></a>
+
 
     <h2>Favorite Albums</h2>
     <c:if test="${albums.size() == 0}">
