@@ -10,7 +10,7 @@ public class ReviewForm {
 
     @Size(min = 8, max = 255)
     private String title;
-    @Size(max = 255)
+    @Size(max = 2000)
     private String description;
     @Range(min = 0, max = 5)
     private Integer rating;

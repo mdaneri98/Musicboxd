@@ -24,17 +24,13 @@ public class Album {
         this.artist = artist;
     }
 
-    public Album(Long id, String title, Long imgId, Artist artist) {
+    public Album(Long id, String title, Long imgId, String genre, Artist artist, LocalDate releaseDate) {
         this.id = id;
         this.title = title;
         this.imgId = imgId;
         this.artist = artist;
-    }
-
-    public Album(Long id, String title, Long imgId) {
-        this.id = id;
-        this.title = title;
-        this.imgId = imgId;
+        this.releaseDate = releaseDate;
+        this.genre = genre;
     }
 
     public Album(String title, String genre, Long imgId, Artist artist) {

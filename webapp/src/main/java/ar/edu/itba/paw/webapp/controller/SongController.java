@@ -45,18 +45,27 @@ public class SongController {
     }
 
     @RequestMapping("/{songId:\\d+}")
-    public ModelAndView song(@PathVariable(name = "songId") long songId, @ModelAttribute("loggedUser") User loggedUser) {
+    public ModelAndView song (@ModelAttribute("loggedUser") User loggedUser,
+                               @PathVariable(name = "songId") long songId){
+        return song(songId, 1, loggedUser);
+    }
+
+    @RequestMapping("/{songId:\\d+}/{pageNum:\\d+}")
+    public ModelAndView song(@PathVariable(name = "songId") long songId, @PathVariable(name = "pageNum", required = false) Integer pageNum , @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("song");
+
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
 
         Song song = songService.findById(songId).get();
         List<Artist> artists = artistService.findBySongId(songId);
-        List<SongReview> reviews = reviewService.findReviewsBySongId(songId);
+        List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId,pageNum,5, loggedUser.getId());
 
         mav.addObject("album", song.getAlbum());
         mav.addObject("artists", artists);
         mav.addObject("song", song);
         mav.addObject("reviews", reviews);
         mav.addObject("isFavorite", userService.isSongFavorite(loggedUser.getId(), songId));
+        mav.addObject("pageNum", pageNum);
         return mav;
     }
 
@@ -84,7 +93,8 @@ public class SongController {
                 reviewForm.getDescription(),
                 reviewForm.getRating(),
                 LocalDateTime.now(),
-                0
+                0,
+                false
         );
         reviewService.saveSongReview(songReview);
         return new ModelAndView("redirect:/song/" + songId);
@@ -93,7 +103,7 @@ public class SongController {
     @RequestMapping(value = "/{songId:\\d}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
         userService.addFavoriteSong(loggedUser.getId(), songId);
-        return new ModelAndView("redirect:/album/" + songId);
+        return new ModelAndView("redirect:/song/" + songId);
     }
 
     @RequestMapping(value = "/{songId:\\d}/remove-favorite", method = RequestMethod.GET)

@@ -4,7 +4,7 @@ import ar.edu.itba.paw.models.User;
 
 import java.time.LocalDateTime;
 
-public class Review {
+public abstract class Review {
 
     private Long id;
     private User user;
@@ -13,17 +13,20 @@ public class Review {
     private Integer rating;
     private LocalDateTime createdAt;
     private Integer likes;
+    private Boolean isLiked;
+    private Boolean isBlocked;
 
-    public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+    public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
         this.user = user;
         this.title = title;
         this.description = description;
         this.rating = rating;
         this.createdAt = createdAt;
         this.likes = likes;
+        this.isBlocked = isBlocked;
     }
 
-    public Review(Long id, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
+    public Review(Long id, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -31,6 +34,29 @@ public class Review {
         this.rating = rating;
         this.createdAt = createdAt;
         this.likes = likes;
+        this.isBlocked = isBlocked;
+    }
+
+    public abstract String getItemName();
+    public abstract Long getItemId();
+    public abstract Long getItemImgId();
+    public abstract String getItemType();
+    public abstract String getItemLink();
+
+    public Boolean getLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(Boolean liked) {
+        isLiked = liked;
+    }
+
+    public Boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(Boolean isBlocked) {
+        this.isBlocked = isBlocked;
     }
 
     public Long getId() {
@@ -39,6 +65,14 @@ public class Review {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
     }
 
     public User getUser() {

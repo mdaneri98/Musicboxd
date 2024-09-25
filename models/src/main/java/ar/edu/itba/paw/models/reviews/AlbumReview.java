@@ -8,14 +8,40 @@ import java.time.LocalDateTime;
 public class AlbumReview extends Review {
     private Album album;
 
-    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        super(user, title, description, rating, createdAt, likes);
+    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked) {
+        super(user, title, description, rating, createdAt, likes, blocked);
         this.album = album;
     }
 
-    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes) {
-        super(id, user, title, description, rating, createdAt, likes);
+    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked) {
+        super(id, user, title, description, rating, createdAt, likes, blocked);
         this.album = album;
+    }
+
+
+    @Override
+    public String getItemName() {
+        return album.getTitle();
+    }
+
+    @Override
+    public Long getItemId() {
+        return album.getId();
+    }
+
+    @Override
+    public Long getItemImgId() {
+        return album.getImgId();
+    }
+
+    @Override
+    public String getItemType() {
+        return "Album";
+    }
+
+    @Override
+    public String getItemLink() {
+        return "album/" + album.getId();
     }
 
     public Album getAlbum() {

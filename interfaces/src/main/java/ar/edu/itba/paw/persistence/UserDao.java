@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +19,9 @@ public interface UserDao {
     int undoFollowing(User loggedUser, User following);
 
     boolean isFollowing(Long userId, Long otherId);
+
+    List<User> getFollowers(Long userId, int limit, int offset);
+    List<User> getFollowing(Long userId, int limit, int offset);
 
     int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
 
