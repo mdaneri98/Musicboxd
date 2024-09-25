@@ -8,9 +8,6 @@
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
 
-  <c:url var="css" value="/static/css/home.css" />
-  <link rel="stylesheet" href="${css}">
-
   <c:url var="review_card" value="/static/css/review_card.css" />
   <link rel="stylesheet" href="${review_card}">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -46,8 +43,9 @@
 </div>
 <div class="container">
 
-  <c:url var="profileUrl" value="/user/${user.id}"/>
-  <a href="${profileUrl}">
+  <c:url value="/user/${user.id}/follow-info/${pageNum + 1}" var="nextPage" />
+  <c:url value="/user/${user.id}/follow-info/${pageNum -1}" var="prevPage" />
+
   <header>
     <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
       <jsp:param name="imgId" value="${user.imgId}" />
@@ -60,10 +58,9 @@
       <jsp:param name="id" value="${user.id}" />
     </jsp:include>
   </header>
-  </a>
   <div>
-    <span id="followersButton" class="tab-button active">Followers</span>
-    <span id="followingButton" class="tab-button">Following</span>
+    <span id="followersButton" class="tab-button active"><c:out value="${user.followersAmount}"/> Followers</span>
+    <span id="followingButton" class="tab-button"><c:out value="${user.followingAmount}"/> Following</span>
   </div>
 
   <div id="followersTab">
@@ -81,6 +78,8 @@
           <jsp:param name="id" value="${user_item.id}"/>
         </jsp:include>
       </c:forEach>
+    <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
+    <c:if test="${100*(pageNum-1)+followersList.size() != user.followersAmount && followersList.size() == 100}"><a href="${nextPage}"><button>Next page</button></a></c:if>
   </div>
 
   <div id="followingTab">
@@ -98,6 +97,8 @@
           <jsp:param name="id" value="${user_item.id}"/>
         </jsp:include>
       </c:forEach>
-    </div>
+  <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
+  <c:if test="${100*(pageNum-1)+followingList.size() != user.followingAmount && followingList.size() == 100}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+  </div>
 </div>
 </body>
