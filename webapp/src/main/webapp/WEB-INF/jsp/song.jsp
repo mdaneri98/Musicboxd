@@ -12,9 +12,6 @@
   <c:url var="review_card" value="/static/css/review_card.css" />
   <link rel="stylesheet" href="${review_card}">
 
-  <c:url var="songcss" value="/static/css/song.css" />
-  <link rel="stylesheet" href="${songcss}">
-
 </head>
 <body>
   <div>
@@ -27,57 +24,49 @@
     <div class="info-container">
       <div>
         <c:url var="songImgUrl" value="/images/${album.imgId}"/>
-        <img src="${songImgUrl}" alt="${song.title}" class="primary-image">
+        <img src="${songImgUrl}" alt="${song.title}" class="album">
       </div>
       <div class="data-container">
-        <p class="type">Song</p>
+        <p class="type">SONG</p>
         <h1><c:out value="${song.title}"/></h1>
-        <div class="small-container">
+        <div class="artist-album-container">
           <c:forEach var="artist" items="${artists}">
-            <c:url var="artistUrl" value="/artist/${artist.id}"/>
-            <div class="creator-item">
-              <a href="${artistUrl}">
-                <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
-                <img src="${artistImgUrl}" alt="${artist.name}" class="secondary-image">
-                <span><c:out value="${artist.name}"/></span>
-              </a>
-            </div>
+            <c:url var="artistUrl" value="/artist/${artist.id}" />
+            <a href="${artistUrl}" class="artist-button">
+              <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
+              <img src="${artistImgUrl}" alt="${artist.name}" class="secondary-image">
+              <span><c:out value="${artist.name}"/></span>
+            </a>
           </c:forEach>
-          <div class="small-container">
-            <div class="album-info">
-              <c:url var="songUrl" value="/album/${album.id}"/>
-              <a href="${songUrl}" class="album-card">
-                <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
-                <img src="${albumImgUrl}" alt="${album.title}" class="album-image">
-                <div class="album-info">
-                  <span class="album-name"><c:out value="${album.title}"/></span>
-                  <span class="album-type">Album</span>
-                </div>
-              </a>
-            </div>
-          </div>
+          <c:url var="albumUrl" value="/album/${album.id}"/>
+          <a href="${albumUrl}" class="artist-button">
+            <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
+            <img src="${albumImgUrl}" alt="${album.title}" class="primary-image">
+            <span><c:out value="${album.title}"/></span>
+          </a>
         </div>
       </div>
-      <div class="data-container">
-        <c:url var="songReviewUrl" value="/song/${song.id}/reviews"/>
-        <a href="${songReviewUrl}"><button>Make a review</button></a>
-        <c:url value="/song/${song.id}/add-favorite" var="add_favorite_url" />
-        <c:url value="/song/${song.id}/remove-favorite" var="remove_favorite_url" />
-        <c:choose>
-          <c:when test="${!isFavorite}">
-            <a href="${add_favorite_url}">
-              <button type="submit">Add to favorites</button>
-            </a>
-          </c:when>
-          <c:otherwise>
-            <a href="${remove_favorite_url}"><button>Remove from favorites</button></a>
-          </c:otherwise>
-        </c:choose>
-      </div>
+    </div>
+    <div class="button-group">
+      <c:url var="songReviewUrl" value="/song/${song.id}/reviews"/>
+      <a href="${songReviewUrl}"><button>Make a review</button></a>
+      <c:url value="/song/${song.id}/add-favorite" var="add_favorite_url" />
+      <c:url value="/song/${song.id}/remove-favorite" var="remove_favorite_url" />
+      <c:choose>
+        <c:when test="${!isFavorite}">
+          <a href="${add_favorite_url}">
+            <button type="submit">Add to favorites</button>
+          </a>
+        </c:when>
+        <c:otherwise>
+          <a href="${remove_favorite_url}"><button>Remove from favorites</button></a>
+        </c:otherwise>
+      </c:choose>
     </div>
 
     <div class="song-description">
       <p>Duration: <c:out value="${song.duration}"/></p>
+      <p>Genre: <c:out value="${song.album.genre}"/></p>
       <p>Release Date: <c:out value="${song.album.releaseDate}"/></p>
     </div>
 

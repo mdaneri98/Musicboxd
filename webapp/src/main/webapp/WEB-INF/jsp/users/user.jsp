@@ -34,8 +34,8 @@
     </jsp:include>
   </header>
   <div class="data-container">
-    <c:url value="/user/${param.id}/follow" var="follow_user_url" />
-    <c:url value="/user/${param.id}/unfollow" var="unfollow_user_url" />
+    <c:url value="/user/${user.id}/follow" var="follow_user_url" />
+    <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
     <c:choose>
       <c:when test="${!isFollowing}">
         <form action="${follow_user_url}" method="post">
@@ -50,24 +50,6 @@
     </c:choose>
   </div>
 
-  <c:if test="${albums.size() > 0}">
-    <h2>Favorite Albums</h2>
-    <div class="carousel-container">
-      <div class="carousel">
-        <c:forEach var="album" items="${albums}" varStatus="status">
-          <c:url var="albumUrl" value="/album/${album.id}"/>
-          <div class="item">
-            <a href="${albumUrl}" class="album">
-              <c:url var="albumImgURL" value="/images/${album.imgId}"/>
-              <img src="${albumImgURL}" alt="Album ${status.index + 1}">
-              <p><c:out value="${album.title}"/></p>
-            </a>
-          </div>
-        </c:forEach>
-      </div>
-    </div>
-  </c:if>
-
   <c:if test="${artists.size() > 0}">
     <h2>Favorite artists</h2>
     <div class="carousel-container">
@@ -79,6 +61,24 @@
               <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
               <img src="${artistImgURL}" alt="Album ${status.index + 1}">
               <p><c:out value="${artist.name}"/></p>
+            </a>
+          </div>
+        </c:forEach>
+      </div>
+    </div>
+  </c:if>
+
+  <c:if test="${albums.size() > 0}">
+    <h2>Favorite Albums</h2>
+    <div class="carousel-container">
+      <div class="carousel">
+        <c:forEach var="album" items="${albums}" varStatus="status">
+          <c:url var="albumUrl" value="/album/${album.id}"/>
+          <div class="item">
+            <a href="${albumUrl}" class="album">
+              <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+              <img src="${albumImgURL}" alt="Album ${status.index + 1}">
+              <p><c:out value="${album.title}"/></p>
             </a>
           </div>
         </c:forEach>
@@ -126,7 +126,7 @@
   <c:url value="/user/${user.id}/${pageNum + 1}" var="nextPage" />
   <c:url value="/user/${user.id}/${pageNum -1}" var="prevPage" />
   <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-  <c:if test="${reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+    <c:if test="${5*(pageNum-1)+reviews.size() != user.reviewAmount && reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
   </c:if>
 </div>
 </body>

@@ -70,6 +70,7 @@ public class SimpleRowMappers {
                     rs.getLong("album_id"),
                     rs.getString("album_title"),
                     rs.getLong("album_img_id"),
+                    rs.getString("genre"),
                     new Artist(
                             rs.getLong("artist_id"),
                             rs.getString("name"),
