@@ -13,6 +13,12 @@
             <p><c:out value="${param.item_type}"/></p>
         </div>
     </a>
+    <div class="review-block-btn">
+        <c:url value="/mod/" />
+        <a href="" class="btn-icon">
+            <i class="fa-solid fa-ban"></i>
+        </a>
+    </div>
     <div class="star-rating-container review-header">
         <div class="star-rating">
             <c:forEach var="i" begin="1" end="5">
