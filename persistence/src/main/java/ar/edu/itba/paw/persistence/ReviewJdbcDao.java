@@ -508,7 +508,7 @@ public class ReviewJdbcDao implements ReviewDao {
                 "LEFT JOIN artist_review arr ON r.id = arr.review_id "+
                 "LEFT JOIN artist ar ON arr.artist_id = ar.id OR a.artist_id = ar.id "+
                 "LEFT JOIN artist aa ON a.artist_id = aa.id " +
-                "WHERE r.created_at >= ? " +
+                "WHERE r.created_at >= ? AND r.isblocked = false " +
                 "ORDER BY r.likes DESC " +
                 "LIMIT ? OFFSET ?";
 
@@ -529,7 +529,7 @@ public class ReviewJdbcDao implements ReviewDao {
                 "LEFT JOIN artist_review arr ON r.id = arr.review_id "+
                 "LEFT JOIN artist ar ON arr.artist_id = ar.id OR a.artist_id = ar.id "+
                 "LEFT JOIN artist aa ON a.artist_id = aa.id " +
-                "WHERE f.user_id = ? " +
+                "WHERE f.user_id = ? AND r.isblocked = false " +
                 "ORDER BY r.created_at DESC " +
                 "LIMIT ? OFFSET ?";
 

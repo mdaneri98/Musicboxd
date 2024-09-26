@@ -2,6 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <div class="review-container">
+    <c:if test="${!param.blocked}">
     <c:url var="itemUrl" value="${param.item_url}" />
     <a href="${itemUrl}" class="review-header">
         <div>
@@ -24,10 +25,11 @@
         </div>
     </div>
     <div class="separator"></div>
-    <div class="review-content">
-        <div class="review-title"><c:out value="${param.title}"/></div>
-        <p class="review-content"><c:out value="${param.review_content}"/></p>
-    </div>
+
+        <div class="review-content">
+            <div class="review-title"><c:out value="${param.title}"/></div>
+            <p class="review-content"><c:out value="${param.review_content}"/></p>
+        </div>
     <div class="separator"></div>
     <div class="review-footer">
         <c:url var="userUrl" value="/user/${param.user_id}" />
@@ -73,4 +75,19 @@
             <a href="${shareReviewLink}">&#10150; Share</a>
         </div>
     </div>
+    </c:if>
+    <c:if test="${param.blocked}">
+        <div class="review-content">
+            <div class="review-title">This review was blocked by a moderator</div>
+            <p class="review-content">Try making another one</p>
+        </div>
+        <c:if test="${param.moderator}">
+            <div class="review-block-btn">
+                <c:url value="/mod/unblock/${param.review_id}" var="unblockReviewUrl"/>
+                <a href="${unblockReviewUrl}" class="btn-icon">
+                    <span>Unblock  <i class="fa-solid fa-ban"></i></span>
+                </a>
+            </div>
+        </c:if>
+    </c:if>
 </div>
