@@ -23,7 +23,6 @@ public class ReviewServiceImpl implements ReviewService {
         this.reviewDao = reviewDao;
     }
 
-
     @Override
     public int update(Review review) {
         return reviewDao.update(review);
@@ -40,11 +39,6 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ArtistReview> findReviewsByArtistId(long artistId) {
-        return reviewDao.findReviewsByArtistId(artistId);
-    }
-
-    @Override
     public int saveArtistReview(ArtistReview review) {
         return reviewDao.saveArtistReview(review);
     }
@@ -52,11 +46,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Optional<AlbumReview> findAlbumReviewById(long id) {
         return reviewDao.findAlbumReviewById(id);
-    }
-
-    @Override
-    public List<AlbumReview> findReviewsByAlbumId(long albumId) {
-        return reviewDao.findReviewsByAlbumId(albumId);
     }
 
     @Override
@@ -69,10 +58,6 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.findSongReviewById(id);
     }
 
-    @Override
-    public List<SongReview> findReviewsBySongId(long songId) {
-        return reviewDao.findReviewsBySongId(songId);
-    }
 
     @Override
     public int saveSongReview(SongReview review) {
@@ -96,45 +81,30 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.isLiked(userId, reviewId);
     }
 
-    private List<ArtistReview> setIsLikedArtistReview(List<ArtistReview> reviews, long userId) {
-        for (Review review : reviews) {
+    private <T extends Review> void setIsLiked(List<T> reviews, long userId) {
+        for (T review : reviews) {
             review.setLiked(isLiked(userId, review.getId()));
         }
-        return reviews;
-    }
-
-    private List<AlbumReview> setIsLikedAlbumReview(List<AlbumReview> reviews, long userId) {
-        for (Review review : reviews) {
-            review.setLiked(isLiked(userId, review.getId()));
-        }
-        return reviews;
-    }
-
-    private List<SongReview> setIsLikedSongReview(List<SongReview> reviews, long userId) {
-        for (Review review : reviews) {
-            review.setLiked(isLiked(userId, review.getId()));
-        }
-        return reviews;
     }
 
     @Override
     public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize, long loggedUserId) {
         List<ArtistReview> reviews = reviewDao.findArtistReviewsPaginated(artistId, page, pageSize);
-        setIsLikedArtistReview(reviews, loggedUserId);
+        setIsLiked(reviews, loggedUserId);
         return reviews;
     }
 
     @Override
     public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize, long loggedUserId) {
         List<AlbumReview> reviews = reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize);
-        setIsLikedAlbumReview(reviews, loggedUserId);
+        setIsLiked(reviews, loggedUserId);
         return reviews;
     }
 
     @Override
     public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize, long loggedUserId) {
         List<SongReview> reviews = reviewDao.findSongReviewsPaginated(songId, page, pageSize);
-        setIsLikedSongReview(reviews, loggedUserId);
+        setIsLiked(reviews, loggedUserId);
         return reviews;
     }
 
@@ -155,80 +125,24 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize, long loggedUserId) {
-        List<Review> allReviews = new ArrayList<>();
-
-        // Obtener las reviews de artistas
-        List<ArtistReview> artistReviews = reviewDao.findArtistReviewsByUser(userId);
-        setIsLikedArtistReview(artistReviews, loggedUserId);
-        List<AlbumReview> albumReviews = reviewDao.findAlbumReviewsByUser(userId);
-        setIsLikedAlbumReview(albumReviews, loggedUserId);
-        List<SongReview> songReviews = reviewDao.findSongReviewsByUser(userId);
-        setIsLikedSongReview(songReviews, loggedUserId);
-
-        allReviews.addAll(artistReviews);
-        allReviews.addAll(albumReviews);
-        allReviews.addAll(songReviews);
-
-        allReviews.sort((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()));
-
-        // Aplicar la paginación
-        int start = (page - 1) * pageSize;
-        int end = Math.min(start + pageSize, allReviews.size());
-
-        return allReviews.subList(start, end);
+        List<Review> list = reviewDao.findReviewsByUserPaginated(userId, page, pageSize);
+        setIsLiked(list, loggedUserId);
+        return list;
     }
 
     @Override
     public List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize, long loggedUserId) {
-        List<Review> allReviews = new ArrayList<>();
-        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(days);
-
-        // Obtener las reviews de artistas
-        List<ArtistReview> artistReviews = reviewDao.findPopularArtistReviewsSince(thirtyDaysAgo);
-        setIsLikedArtistReview(artistReviews, loggedUserId);
-        List<AlbumReview> albumReviews = reviewDao.findPopularAlbumReviewsSince(thirtyDaysAgo);
-        setIsLikedAlbumReview(albumReviews, loggedUserId);
-        List<SongReview> songReviews = reviewDao.findPopularSongReviewsSince(thirtyDaysAgo);
-        setIsLikedSongReview(songReviews, loggedUserId);
-
-        allReviews.addAll(artistReviews);
-        allReviews.addAll(albumReviews);
-        allReviews.addAll(songReviews);
-
-        allReviews.sort((r1, r2) -> r2.getLikes().compareTo(r1.getLikes()));
-
-        // Aplicar la paginación
-        int start = (page - 1) * pageSize;
-        int end = Math.min(start + pageSize, allReviews.size());
-
-        if (start < end) return allReviews.subList(start, end);
-        return allReviews;
+        LocalDate nDaysAgo = LocalDate.now().minusDays(days);
+        List<Review> list = reviewDao.getPopularReviewsSincePaginated(nDaysAgo,page, pageSize);
+        setIsLiked(list, loggedUserId);
+        return list;
     }
 
     @Override
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize, long loggedUserId) {
-        List<Review> allReviews = new ArrayList<>();
-
-        // Obtener las reviews de artistas
-        List<ArtistReview> artistReviews = reviewDao.findArtistReviewsFromFollowedUsers(userId);
-        setIsLikedArtistReview(artistReviews, loggedUserId);
-        List<AlbumReview> albumReviews = reviewDao.findAlbumReviewsFromFollowedUsers(userId);
-        setIsLikedAlbumReview(albumReviews, loggedUserId);
-        List<SongReview> songReviews = reviewDao.findSongReviewsFromFollowedUsers(userId);
-        setIsLikedSongReview(songReviews, loggedUserId);
-
-        allReviews.addAll(artistReviews);
-        allReviews.addAll(albumReviews);
-        allReviews.addAll(songReviews);
-
-        allReviews.sort((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()));
-
-        // Aplicar la paginación
-        int start = (page - 1) * pageSize;
-        int end = Math.min(start + pageSize, allReviews.size());
-
-        if (start < end) return allReviews.subList(start, end);
-        return allReviews;
+        List<Review> list = reviewDao.getReviewsFromFollowedUsersPaginated(userId, page, pageSize);
+        setIsLiked(list, loggedUserId);
+        return list;
     }
 
     @Override

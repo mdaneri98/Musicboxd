@@ -13,12 +13,6 @@
             <p><c:out value="${param.item_type}"/></p>
         </div>
     </a>
-    <div class="review-block-btn">
-        <c:url value="/mod/block/${param.id}" />
-        <a href="" class="btn-icon">
-            <i class="fa-solid fa-ban"></i>
-        </a>
-    </div>
     <div class="star-rating-container review-header">
         <div class="star-rating">
             <c:forEach var="i" begin="1" end="5">
@@ -47,7 +41,7 @@
                         <c:if test="${param.verified}">
                             <span class="user-card-badge user-card-badge-verified">Verified</span>
                         </c:if>
-                        <c:if test="${param.moderator}">
+                        <c:if test="${param.userModerator}">
                             <span class="user-card-badge user-card-badge-moderator">Moderator</span>
                         </c:if>
                     </div>
@@ -55,6 +49,14 @@
             </div>
         </a>
         <div class="review-actions">
+            <c:if test="${param.moderator}">
+                <div class="review-block-btn">
+                    <c:url value="/mod/block/${param.review_id}" var="blockReviewUrl"/>
+                    <a href="${blockReviewUrl}" class="btn-icon">
+                        <i class="fa-solid fa-ban"></i>
+                    </a>
+                </div>
+            </c:if>
             <c:url var="likeReviewLink" value="/review/like/${param.review_id}" />
             <c:url var="removeLikeReviewLink" value="/review/remove-like/${param.review_id}" />
             <c:url var="shareReviewLink" value="/review/share/${param.review_id}" />
