@@ -34,6 +34,11 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
+    public List<Album> findByTitleContaining(String sub) {
+        return albumDao.findByTitleContaining(sub);
+    }
+
+    @Override
     public int save(Album album) {
         return albumDao.save(album);
     }

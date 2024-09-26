@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Types;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +49,24 @@ public class SongJdbcDao implements SongDao {
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.SONG_ROW_MAPPER
         );
+    }
+
+    @Override
+    public List<Song> findByTitleContaining(String sub) {
+        // SQL para seleccionar todos los ids que coinciden con el título
+        String sql = "SELECT id FROM song WHERE title ILIKE ?";
+
+        // Obtenemos la lista de ids
+        List<Integer> ids = jdbcTemplate.queryForList(sql, new Object[]{"%" + sub + "%"}, Integer.class);
+
+        // Buscamos los álbumes correspondientes a cada id
+        List<Song> songs = new ArrayList<>();
+        for (Integer id : ids) {
+            Optional<Song> song = this.findById(id);
+            song.ifPresent(songs::add);
+        }
+
+        return songs;
     }
 
     @Override

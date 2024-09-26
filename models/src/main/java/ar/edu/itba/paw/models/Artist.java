@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
 
+
 import java.time.LocalDate;
 
 public class Artist {
@@ -84,4 +85,20 @@ public class Artist {
     public void setImgId(Long imgId) {
         this.imgId = imgId;
     }
+
+    // Método para convertir a JSON
+    public String toJson() {
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"type\":\"").append("artist").append("\",");
+        json.append("\"id\":").append(id).append(",");
+        json.append("\"name\":\"").append(name).append("\",");
+        json.append("\"bio\":\"").append(bio).append("\",");
+        json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
+        json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
+        json.append("\"imgId\":").append(imgId);
+        json.append("}");
+        return json.toString();
+    }
+
 }

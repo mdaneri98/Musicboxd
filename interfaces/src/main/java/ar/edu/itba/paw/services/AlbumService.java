@@ -13,6 +13,8 @@ public interface AlbumService {
 
     List<Album> findAll();
 
+    List<Album> findByTitleContaining(String sub);
+
     int save(Album album);
 
     int update(Album album);
