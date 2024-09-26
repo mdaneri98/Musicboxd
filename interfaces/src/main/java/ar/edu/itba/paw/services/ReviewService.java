@@ -43,6 +43,7 @@ public interface ReviewService {
     boolean isAlbumReview(long reviewId);
     boolean isSongReview(long reviewId);
 
+    //boolean toggleBlock(Long reviewId);
     boolean block(Long reviewId);
     boolean unblock(Long reviewId);
 
