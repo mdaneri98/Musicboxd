@@ -3,13 +3,9 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +36,14 @@ public class UserJdbcDao implements UserDao {
     @Override
     public List<User> findAll() {
         return jdbcTemplate.query("SELECT * FROM cuser", SimpleRowMappers.USER_ROW_MAPPER);
+    }
+
+    @Override
+    public List<User> findByUsernameContaining(String sub) {
+        String sql = "SELECT * FROM cuser WHERE username ILIKE ?";
+
+        // Ejecutamos la consulta y mapeamos los resultados a objetos User
+        return jdbcTemplate.query(sql, new Object[]{"%" + sub + "%"}, SimpleRowMappers.USER_ROW_MAPPER);
     }
 
     @Override
