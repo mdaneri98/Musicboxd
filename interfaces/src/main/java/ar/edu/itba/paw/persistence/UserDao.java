@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface UserDao {
 
     Optional<User> findById(long id);
-
     List<User> findAll();
+    List<User> findByUsernameContaining(String sub);
 
     int create(String username, String email, String password);
 

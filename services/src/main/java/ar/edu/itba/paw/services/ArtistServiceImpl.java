@@ -26,6 +26,11 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    public List<Artist> findByNameContaining(String sub) {
+        return artistDao.findByNameContaining(sub);
+    }
+
+    @Override
     public List<Artist> findBySongId(long id) {
         return artistDao.findBySongId(id);
     }
