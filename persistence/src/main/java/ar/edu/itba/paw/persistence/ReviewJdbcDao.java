@@ -16,11 +16,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -114,9 +113,91 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getBoolean("isBlocked")
     );
 
+    public class ReviewRowMapper implements RowMapper<Review> {
+
+        @Override
+        public Review mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User(
+                    rs.getLong("user_id"),
+                    rs.getString("username"),
+                    rs.getString("user_name"),
+                    rs.getLong("user_img_id"),
+                    rs.getBoolean("verified"),
+                    rs.getBoolean("moderator")
+            );
+
+            String title = rs.getString("title");
+            String description = rs.getString("description");
+            int rating = rs.getInt("rating");
+            LocalDateTime createdAt = rs.getObject("created_at", LocalDateTime.class);
+            int likes = rs.getInt("likes");
+            boolean isBlocked = rs.getBoolean("isBlocked");
+
+            Long songReviewId = getLongOrNull(rs, "song_review_id");
+            Long albumReviewId = getLongOrNull(rs, "album_review_id");
+            Long artistReviewId = getLongOrNull(rs, "artist_review_id");
+
+
+            if (songReviewId != null) {
+                Song song = new Song(
+                        rs.getLong("song_id"),
+                        rs.getString("song_title"),
+                        rs.getString("duration"),
+                        new Album(
+                                rs.getLong("album_id"),
+                                rs.getString("album_title"),
+                                rs.getLong("album_img_id"),
+                                rs.getString("genre"),
+                                new Artist(rs.getLong("album_artist_id")),
+                                rs.getObject("album_release_date", LocalDate.class)
+                        )
+                );
+                return new SongReview(rs.getLong("id"), user, song, title, description, rating, createdAt, likes, isBlocked);
+            }
+            if (albumReviewId != null) {
+                Album album = new Album(
+                        rs.getLong("album_id"),
+                        rs.getString("album_title"),
+                        rs.getLong("album_img_id"),
+                        rs.getString("genre"),
+                        new Artist(rs.getLong("album_artist_id")),
+                        rs.getObject("album_release_date", LocalDate.class)
+                );
+                return new AlbumReview(rs.getLong("id"), user, album, title, description, rating, createdAt, likes, isBlocked);
+            }
+            if (artistReviewId != null) {
+                Artist artist = new Artist(
+                        rs.getLong("artist_id"),
+                        rs.getString("artist_name"),
+                        rs.getLong("artist_img_id")
+                );
+                return new ArtistReview(rs.getLong("id"), artist, user, title, description, rating, createdAt, likes, isBlocked);
+            } else {
+                return null;
+            }
+        }
+
+        public List<Review> mapRows(ResultSet rs) throws SQLException {
+            List<Review> reviews = new ArrayList<>();
+            while (rs.next()) {
+                Review r = mapRow(rs, rs.getRow());
+                if (r != null) reviews.add(r);
+            }
+            return reviews;
+        }
+
+        private Long getLongOrNull(ResultSet rs, String columnName) throws SQLException {
+            long value = rs.getLong(columnName);
+            return rs.wasNull() ? null : value;
+        }
+    }
+
+    private final ReviewRowMapper reviewRowMapper = new ReviewRowMapper();
+
     public ReviewJdbcDao(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
     }
+
 
     @Override
     public int update(Review review) {
@@ -395,107 +476,6 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public List<ArtistReview> findArtistReviewsByUser(long userId) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.verified, u.moderator, u.img_id AS user_img_id, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
-                "FROM review r " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN artist_review ar ON r.id = ar.review_id " +
-                "JOIN artist a ON ar.artist_id = a.id " +
-                "WHERE r.user_id = ? " +
-                "ORDER BY r.created_at";
-
-        return jdbcTemplate.query(sql, new Object[]{userId}, ARTIST_REVIEW_ROW_MAPPER);
-    }
-
-    @Override
-    public List<AlbumReview> findAlbumReviewsByUser(long userId) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.verified, u.moderator, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
-                "FROM review r " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN album_review ar ON r.id = ar.review_id " +
-                "JOIN album al ON ar.album_id = al.id " +
-                "WHERE r.user_id = ? " +
-                "ORDER BY r.created_at";
-
-        return jdbcTemplate.query(sql, new Object[]{userId}, ALBUM_REVIEW_ROW_MAPPER);
-    }
-
-    @Override
-    public List<SongReview> findSongReviewsByUser(long userId) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, " +
-                "s.id AS song_id, s.title AS song_title, s.duration, " +
-                "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
-                "FROM review r " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN song_review sr ON r.id = sr.review_id " +
-                "JOIN song s ON sr.song_id = s.id " +
-                "JOIN album al ON s.album_id = al.id " +
-                "WHERE r.user_id = ? " +
-                "ORDER BY r.created_at";
-
-        return jdbcTemplate.query(sql, new Object[]{userId}, SONG_REVIEW_ROW_MAPPER);
-    }
-
-    @Override
-    public List<SongReview> findPopularSongReviewsSince(LocalDate date) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, " +
-                "s.id AS song_id, s.title AS song_title, s.duration, " +
-                "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
-                "FROM review r " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN song_review sr ON r.id = sr.review_id " +
-                "JOIN song s ON sr.song_id = s.id " +
-                "JOIN album al ON s.album_id = al.id " +
-                "WHERE r.created_at >= ? " +
-                "ORDER BY r.likes DESC LIMIT 30";
-
-        return jdbcTemplate.query(sql, new Object[]{date}, SONG_REVIEW_ROW_MAPPER);
-    }
-
-    @Override
-    public List<AlbumReview> findPopularAlbumReviewsSince(LocalDate date) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.verified, u.moderator, u.img_id AS user_img_id, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
-                "FROM review r " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN album_review ar ON r.id = ar.review_id " +
-                "JOIN album al ON ar.album_id = al.id " +
-                "WHERE r.created_at >= ? " +
-                "ORDER BY r.likes DESC LIMIT 30";
-
-        return jdbcTemplate.query(sql, new Object[]{date}, ALBUM_REVIEW_ROW_MAPPER);
-    }
-
-    @Override
-    public List<ArtistReview> findPopularArtistReviewsSince(LocalDate date) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.verified, u.moderator, u.img_id AS user_img_id, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
-                "FROM review r " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN artist_review ar ON r.id = ar.review_id " +
-                "JOIN artist a ON ar.artist_id = a.id " +
-                "WHERE r.created_at >= ? " +
-                "ORDER BY r.likes DESC LIMIT 30";
-
-        return jdbcTemplate.query(sql, new Object[]{date}, ARTIST_REVIEW_ROW_MAPPER);
-    }
-
-    @Override
-    public List<SongReview> findSongReviewsFromFollowedUsers(Long userId) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.verified, u.moderator, u.img_id AS user_img_id, " +
-                "s.id AS song_id, s.title AS song_title, s.duration, " +
-                "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
-                "FROM review r " +
-                "JOIN follower f ON r.user_id = f.following " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN song_review sr ON r.id = sr.review_id " +
-                "JOIN song s ON sr.song_id = s.id " +
-                "JOIN album al ON s.album_id = al.id " +
-                "WHERE f.user_id = ? " +
-                "ORDER BY r.created_at DESC LIMIT 20";
-
-        return jdbcTemplate.query(sql, new Object[]{userId}, SONG_REVIEW_ROW_MAPPER);
-    }
-
-    @Override
     public boolean isArtistReview(long reviewId) {
         String sql = "SELECT COUNT(*) FROM artist_review WHERE review_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, reviewId);
@@ -517,31 +497,64 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public List<AlbumReview> findAlbumReviewsFromFollowedUsers(Long userId) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
-                "FROM review r " +
-                "JOIN follower f ON r.user_id = f.following " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN album_review ar ON r.id = ar.review_id " +
-                "JOIN album al ON ar.album_id = al.id " +
-                "WHERE f.user_id = ? " +
-                "ORDER BY r.created_at DESC LIMIT 20";
+    public List<Review> getPopularReviewsSincePaginated(LocalDate date, int page, int pageSize) {
+        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
+                "FROM review r "+
+                "LEFT JOIN cuser u ON r.user_id = u.id "+
+                "LEFT JOIN song_review sr ON r.id = sr.review_id "+
+                "LEFT JOIN song s ON sr.song_id = s.id "+
+                "LEFT JOIN album_review alr ON r.id = alr.review_id "+
+                "LEFT JOIN album a ON alr.album_id = a.id OR a.id = s.album_id "+
+                "LEFT JOIN artist_review arr ON r.id = arr.review_id "+
+                "LEFT JOIN artist ar ON arr.artist_id = ar.id OR a.artist_id = ar.id "+
+                "LEFT JOIN artist aa ON a.artist_id = aa.id " +
+                "WHERE r.created_at >= ? " +
+                "ORDER BY r.likes DESC " +
+                "LIMIT ? OFFSET ?";
 
-        return jdbcTemplate.query(sql, new Object[]{userId}, ALBUM_REVIEW_ROW_MAPPER);
+        int offset = (page - 1) * pageSize;
+        return jdbcTemplate.query(sql, new Object[]{date, pageSize, offset}, reviewRowMapper::mapRows);
     }
 
     @Override
-    public List<ArtistReview> findArtistReviewsFromFollowedUsers(Long userId) {
-        final String sql = "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
-                "FROM review r " +
+    public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
+        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
+                "FROM review r "+
                 "JOIN follower f ON r.user_id = f.following " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN artist_review ar ON r.id = ar.review_id " +
-                "JOIN artist a ON ar.artist_id = a.id " +
+                "LEFT JOIN cuser u ON r.user_id = u.id "+
+                "LEFT JOIN song_review sr ON r.id = sr.review_id "+
+                "LEFT JOIN song s ON sr.song_id = s.id "+
+                "LEFT JOIN album_review alr ON r.id = alr.review_id "+
+                "LEFT JOIN album a ON alr.album_id = a.id OR a.id = s.album_id "+
+                "LEFT JOIN artist_review arr ON r.id = arr.review_id "+
+                "LEFT JOIN artist ar ON arr.artist_id = ar.id OR a.artist_id = ar.id "+
+                "LEFT JOIN artist aa ON a.artist_id = aa.id " +
                 "WHERE f.user_id = ? " +
-                "ORDER BY r.created_at DESC LIMIT 20";
+                "ORDER BY r.created_at DESC " +
+                "LIMIT ? OFFSET ?";
 
-        return jdbcTemplate.query(sql, new Object[]{userId}, ARTIST_REVIEW_ROW_MAPPER);
+        int offset = (page - 1) * pageSize;
+        return jdbcTemplate.query(sql, new Object[]{userId, pageSize, offset}, reviewRowMapper::mapRows);
+    }
+
+    @Override
+    public List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize) {
+        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
+                "FROM review r "+
+                "LEFT JOIN cuser u ON r.user_id = u.id "+
+                "LEFT JOIN song_review sr ON r.id = sr.review_id "+
+                "LEFT JOIN song s ON sr.song_id = s.id "+
+                "LEFT JOIN album_review alr ON r.id = alr.review_id "+
+                "LEFT JOIN album a ON alr.album_id = a.id OR a.id = s.album_id "+
+                "LEFT JOIN artist_review arr ON r.id = arr.review_id "+
+                "LEFT JOIN artist ar ON arr.artist_id = ar.id OR a.artist_id = ar.id "+
+                "LEFT JOIN artist aa ON a.artist_id = aa.id " +
+                "WHERE r.user_id = ? " +
+                "ORDER BY r.created_at DESC " +
+                "LIMIT ? OFFSET ?";
+
+        int offset = (page - 1) * pageSize;
+        return jdbcTemplate.query(sql, new Object[]{userId, pageSize, offset}, reviewRowMapper::mapRows);
     }
 
     @Override
