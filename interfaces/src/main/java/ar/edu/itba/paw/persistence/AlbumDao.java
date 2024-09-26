@@ -8,10 +8,9 @@ import java.util.Optional;
 public interface AlbumDao {
 
     Optional<Album> findById(long id);
-
     List<Album> findByArtistId(long id);
-
     List<Album> findAll();
+    List<Album> findByTitleContaining(String sub);
 
     int save(Album album);
 

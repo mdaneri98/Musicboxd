@@ -11,6 +11,7 @@ public interface UserService {
 
     Optional<User> findById(long id);
     List<User> findAll();
+    List<User> findByUsernameContaining(String sub);
 
     int create(String username, String email, String password);
 

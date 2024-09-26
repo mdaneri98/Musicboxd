@@ -108,4 +108,24 @@ public class Album {
     public void setArtist(Artist artist) {
         this.artist = artist;
     }
+
+    // Método para convertir a JSON
+    public String toJson() {
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"id\":").append(id).append(",");
+        json.append("\"title\":\"").append(title).append("\",");
+        json.append("\"genre\":\"").append(genre).append("\",");
+        json.append("\"releaseDate\":\"").append(releaseDate != null ? releaseDate.toString() : null).append("\",");
+        json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
+        json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
+        json.append("\"imgId\":").append(imgId).append(",");
+
+        // Convertir el artista a JSON si no es nulo
+        json.append("\"artist\":").append(artist != null ? artist.toJson() : null);
+
+        json.append("}");
+        return json.toString();
+    }
+
 }

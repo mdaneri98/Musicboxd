@@ -29,6 +29,11 @@ public class SongServiceImpl implements SongService {
         return songDao.findAll();
     }
 
+    @Override
+    public List<Song> findByTitleContaining(String sub) {
+        return songDao.findByTitleContaining(sub);
+    }
+
     public List<Song> findByArtistId(long id) {
         return songDao.findByArtistId(id);
     }

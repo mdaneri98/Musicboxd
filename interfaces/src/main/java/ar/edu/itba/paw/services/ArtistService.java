@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public interface ArtistService {
     List<Artist> findAll();
 
     List<Artist> findBySongId(long id);
+
+    List<Artist> findByNameContaining(String sub);
 
     long save(Artist artist);
 

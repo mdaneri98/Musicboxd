@@ -1,19 +1,26 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class IndexController {
+
+    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+
     private final ArtistService artistService;
     private final ReviewService reviewService;
     private final UserService userService;
@@ -42,6 +49,52 @@ public class IndexController {
         mav.addObject("users", userService.findAll());
         return mav;
     }
+
+    @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
+    @ResponseBody
+    public String subSearch(@PathVariable("type") String type, @RequestParam(name = "s", defaultValue = "") String substringSearch) {
+        logger.debug("Iniciando búsqueda en subSearch con type={} y substringSearch={}", type, substringSearch);
+
+        String jsonResult = "";
+        switch (type) {
+            case "song":
+                List<Song> songs = songService.findByTitleContaining(substringSearch);
+                // Convertimos la lista a un string JSON
+                jsonResult = songs.stream()
+                        .map(Song::toJson)
+                        .collect(Collectors.joining(",", "[", "]"));
+                break;
+
+            case "album":
+                List<Album> albums = albumService.findByTitleContaining(substringSearch);
+                // Convertimos la lista a un string JSON
+                jsonResult = albums.stream()
+                        .map(Album::toJson)
+                        .collect(Collectors.joining(",", "[", "]"));
+                break;
+
+            case "artist":
+                List<Artist> artists = artistService.findByNameContaining(substringSearch);
+                // Convertimos la lista a un string JSON
+                jsonResult = artists.stream()
+                        .map(Artist::toJson)
+                        .collect(Collectors.joining(",", "[", "]"));
+                break;
+            case "user":
+                List<User> users = userService.findByUsernameContaining(substringSearch);
+                // Convertimos la lista a un string JSON
+                jsonResult = users.stream()
+                        .map(User::toJson)
+                        .collect(Collectors.joining(",", "[", "]"));
+                break;
+            default:
+                logger.warn("Tipo de búsqueda no reconocido: {}", type);
+                return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
+        }
+
+        return jsonResult;
+    }
+
 
     @RequestMapping("/home")
     public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser) {
