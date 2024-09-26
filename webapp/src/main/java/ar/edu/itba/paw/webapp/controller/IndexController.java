@@ -42,12 +42,7 @@ public class IndexController {
 
     @RequestMapping("/search")
     public ModelAndView search(@ModelAttribute("loggedUser") User loggedUser) {
-        final ModelAndView mav = new ModelAndView("search");
-        mav.addObject("artists", artistService.findAll());
-        mav.addObject("albums", albumService.findAll());
-        mav.addObject("songs", songService.findAll());
-        mav.addObject("users", userService.findAll());
-        return mav;
+        return new ModelAndView("search");
     }
 
     @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
@@ -107,6 +102,7 @@ public class IndexController {
 
         List<Review> popularReviews = reviewService.getPopularReviewsNDaysPaginated(30,pageNum, 10, loggedUser.getId());
         List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUser.getId(), pageNum, 10, loggedUser.getId());
+        if (popularReviews.isEmpty() && followingReviews.isEmpty()) return home(loggedUser);
 
         mav.addObject("popularReviews", popularReviews);
         mav.addObject("followingReviews", followingReviews);

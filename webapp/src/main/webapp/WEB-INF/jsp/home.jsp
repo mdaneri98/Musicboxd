@@ -85,6 +85,12 @@
 
     <div id="followingTab">
         <h2>Reviews from Users You Follow</h2>
+        <c:if test="${followingReviews.size() == 0}">
+            <div class="page-empty">
+                <h3>This page is empty</h3>
+                <h4>Try following more users or going to the previous page</h4>
+            </div>
+        </c:if>
         <div class="cards-container">
             <c:forEach var="review" items="${followingReviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">

@@ -49,7 +49,7 @@
       <li>
         <c:url var="moderatorUrl" value="/mod"/>
         <a href="${moderatorUrl}" class="sidebar-icon">
-          <i class="fa-solid fa-bolt"></i>
+          <i class="fas fa-plus-square"></i>
         </a>
       </li>
     </c:if>
