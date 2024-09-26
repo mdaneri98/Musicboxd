@@ -101,6 +101,7 @@ public class Song {
     public String toJson() {
         StringBuilder json = new StringBuilder();
         json.append("{");
+        json.append("\"song\":\"").append("album").append("\",");
         json.append("\"id\":").append(id).append(",");
         json.append("\"title\":\"").append(title).append("\",");
         json.append("\"duration\":\"").append(duration).append("\",");
