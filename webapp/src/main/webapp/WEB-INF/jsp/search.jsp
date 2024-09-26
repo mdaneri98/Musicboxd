@@ -155,7 +155,7 @@
             <img src="` + imgUrl + `/` + item.imgId + `" alt="`+ item.name +`">
             <div class="autocomplete-item-info">
                 <span class="autocomplete-item-name">` + item.name + `</span>
-                <span class="autocomplete-item-type">` + item.type.charAt(0).toUpperCase() + `</span>
+                <span class="autocomplete-item-type">` + item.type.charAt(0).toUpperCase() + item.type.slice(1) + `</span>
             </div>
         </div>
     `;
@@ -185,7 +185,7 @@
             var substring = this.value;
             if (substring.length >= 3) {
                 searchAndDisplay(substring);
-                console.log(s_artists)
+                console.log(s_users)
             }
         });
     });
