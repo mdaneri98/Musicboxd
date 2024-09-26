@@ -294,10 +294,10 @@ public class User {
         json.append("{");
         json.append("\"type\":\"").append("user").append("\",");
         json.append("\"id\":").append(id).append(",");
-        json.append("\"username\":\"").append(username).append("\",");
+        json.append("\"name\":\"").append(username).append("\",");
         json.append("\"email\":\"").append(email).append("\",");
         json.append("\"password\":\"").append(password).append("\",");
-        json.append("\"name\":\"").append(name).append("\",");
+        //json.append("\"name\":\"").append(name).append("\",");
         json.append("\"bio\":\"").append(bio).append("\",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
         json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");

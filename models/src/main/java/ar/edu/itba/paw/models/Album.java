@@ -115,7 +115,7 @@ public class Album {
         json.append("{");
         json.append("\"type\":\"").append("album").append("\",");
         json.append("\"id\":").append(id).append(",");
-        json.append("\"title\":\"").append(title).append("\",");
+        json.append("\"name\":\"").append(title).append("\",");
         json.append("\"genre\":\"").append(genre).append("\",");
         json.append("\"releaseDate\":\"").append(releaseDate != null ? releaseDate.toString() : null).append("\",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
