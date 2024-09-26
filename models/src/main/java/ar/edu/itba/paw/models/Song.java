@@ -101,13 +101,14 @@ public class Song {
     public String toJson() {
         StringBuilder json = new StringBuilder();
         json.append("{");
-        json.append("\"song\":\"").append("album").append("\",");
+        json.append("\"type\":\"").append("song").append("\",");
         json.append("\"id\":").append(id).append(",");
-        json.append("\"title\":\"").append(title).append("\",");
+        json.append("\"name\":\"").append(title).append("\",");
         json.append("\"duration\":\"").append(duration).append("\",");
         json.append("\"trackNumber\":").append(trackNumber).append(",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
         json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
+        json.append("\"imgId\":").append(album.getImgId()).append(",");
 
         // Convertir el álbum a JSON si no es nulo
         json.append("\"album\":").append(album != null ? album.toJson() : null);

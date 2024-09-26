@@ -102,11 +102,11 @@
 
                 <c:url var="elementUrl" value="/"/>
                 searchArray.forEach(function (item) {
-                    if (item.name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    if (item.name.toUpperCase().includes(val.toUpperCase())) {
                         b = document.createElement("DIV");
                         b.innerHTML = createAutocompleteItem(item);
                         b.addEventListener("click", function (e) {
-                            item.url = "${elementUrl}" + "/" + item.type + "/" + item.id
+                            item.url = "${elementUrl}" + item.type + "/" + item.id
 
                             inp.value = item.name;
                             window.location.href = item.url;
@@ -152,7 +152,7 @@
         function createAutocompleteItem(item) {
             return `
         <div class="autocomplete-item">
-            <img src="` + imgUrl + `/` + item.imgId + `" alt="`+ item.name +`">
+            <img src="` + imgUrl + item.imgId + `" alt="`+ item.name +`">
             <div class="autocomplete-item-info">
                 <span class="autocomplete-item-name">` + item.name + `</span>
                 <span class="autocomplete-item-type">` + item.type.charAt(0).toUpperCase() + item.type.slice(1) + `</span>
@@ -172,6 +172,16 @@
             }
         }
 
+        function debounce(func, delay) {
+            let debounceTimer;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
         // Event listener para cerrar listas al hacer clic fuera
         document.addEventListener("click", function (e) {
             closeAllLists(e.target);
@@ -181,12 +191,11 @@
         autocomplete(document.getElementById("searchInput"));
 
         // Agregar event listener para la búsqueda
-        document.getElementById('searchInput').addEventListener('input', function() {
+        document.getElementById('searchInput').addEventListener('input', debounce(function() {
             var substring = this.value;
-            if (substring.length >= 3) {
-                searchAndDisplay(substring);
-            }
-        });
+            searchAndDisplay(substring);
+        }, 50));
+
     });
 </script>
 </body>
