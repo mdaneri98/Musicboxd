@@ -43,6 +43,9 @@
                         <c:if test="${param.verified}">
                             <span class="user-card-badge user-card-badge-verified">Verified</span>
                         </c:if>
+                        <c:if test="${!param.verified}">
+                            <span class="user-card-badge user-card-badge-unverified">Unverified</span>
+                        </c:if>
                         <c:if test="${param.userModerator}">
                             <span class="user-card-badge user-card-badge-moderator">Moderator</span>
                         </c:if>
