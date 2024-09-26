@@ -185,7 +185,6 @@
             var substring = this.value;
             if (substring.length >= 3) {
                 searchAndDisplay(substring);
-                console.log(s_users)
             }
         });
     });
