@@ -90,6 +90,7 @@ public class Artist {
     public String toJson() {
         StringBuilder json = new StringBuilder();
         json.append("{");
+        json.append("\"type\":\"").append("artist").append("\",");
         json.append("\"id\":").append(id).append(",");
         json.append("\"name\":\"").append(name).append("\",");
         json.append("\"bio\":\"").append(bio).append("\",");

@@ -292,6 +292,7 @@ public class User {
     public String toJson() {
         StringBuilder json = new StringBuilder();
         json.append("{");
+        json.append("\"type\":\"").append("user").append("\",");
         json.append("\"id\":").append(id).append(",");
         json.append("\"username\":\"").append(username).append("\",");
         json.append("\"email\":\"").append(email).append("\",");

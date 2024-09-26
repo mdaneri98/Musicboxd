@@ -37,130 +37,158 @@
 </div>
 
 <script>
-    // Datos de ejemplo (reemplaza esto con tus datos reales)
-    var artists = [
-        <c:forEach items="${artists}" var="artist" varStatus="status">
-        {id: ${artist.id}, name: "${artist.name}", type: "Artist", url: "<c:url value="/artist/${artist.id}"/>", imgUrl: "<c:url value="/images/${artist.imgId}"/>" }<c:if test="${!status.last}">,</c:if>
-        </c:forEach>
-    ];
-    var albums = [
-        <c:forEach items="${albums}" var="album" varStatus="status">
-        {id: ${album.id}, name: "${album.title}", type: "Album", url: "<c:url value="/album/${album.id}"/>", imgUrl: "<c:url value="/images/${album.imgId}"/>" }<c:if test="${!status.last}">,</c:if>
-        </c:forEach>
-    ];
-    var songs = [
-        <c:forEach items="${songs}" var="song" varStatus="status">
-        {id: ${song.id}, name: "${song.title}", type: "Song", url: "<c:url value="/song/${song.id}"/>", imgUrl: "<c:url value="/images/${song.album.imgId}"/>"}<c:if test="${!status.last}">,</c:if>
-        </c:forEach>
-    ];
-    var users = [
-        <c:forEach items="${users}" var="user" varStatus="status">
-        {id: ${user.id}, name: "${user.username}", type: "", url: "<c:url value="/user/${user.id}"/>", imgUrl: "<c:url value="/images/${user.imgId}"/>"}<c:if test="${!status.last}">,</c:if>
-        </c:forEach>
-    ];
+    var imgUrl = "<c:url value='/images/'/>";
+    <c:url var="searchUrl" value="/search"/>
 
-    function handleTabClick(event) {
-        document.querySelectorAll('.search-tab').forEach(tab => tab.classList.remove('active'));
-        event.target.classList.add('active');
-        const searchInput = document.getElementById('searchInput');
-        searchInput.value = '';
-        closeAllLists();
-    }
 
-    document.querySelectorAll('.search-tab').forEach(tab => {
-        tab.addEventListener('click', handleTabClick);
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Variables globales para almacenar los resultados de búsqueda
+        var s_artists = [];
+        var s_albums = [];
+        var s_songs = [];
+        var s_users = [];
 
-    function autocomplete(inp) {
-        var currentFocus;
-        inp.addEventListener("input", function(e) {
-            var a, b, i, val = this.value;
-            closeAllLists();
-            if (!val) {
-                return false;
+        // URL base para las búsquedas. Actualiza esto con tu URL real
+        var searchUrl = "${searchUrl}";
+
+        // Función para realizar búsquedas y mostrar resultados
+        function searchAndDisplay(substring) {
+            // Función interna para realizar llamadas AJAX
+            function makeAjaxCall(endpoint, successCallback) {
+                fetch(searchUrl + endpoint + "?s=" + encodeURIComponent(substring))
+                    .then(response => response.json())
+                    .then(data => successCallback(data))
+                    .catch(error => console.error("Error al obtener datos:", error));
             }
-            currentFocus = -1;
-            a = document.createElement("DIV");
-            a.setAttribute("id", this.id + "autocomplete-list");
-            a.setAttribute("class", "autocomplete-items");
-            this.parentNode.appendChild(a);
 
-            var activeTab = document.querySelector('.search-tab.active').dataset.type;
-            var searchArray = (activeTab === 'music') ? [...artists, ...albums, ...songs] : users;
+            // Realizar llamadas AJAX para cada tipo de dato
+            makeAjaxCall("/artist", data => s_artists = data);
+            makeAjaxCall("/album", data => s_albums = data);
+            makeAjaxCall("/song", data => s_songs = data);
+            makeAjaxCall("/user", data => s_users = data);
+        }
 
-            searchArray.forEach(function (item) {
-                if (item.name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                    var b = document.createElement("DIV");
-                    b.innerHTML = createAutocompleteItem(item);
-                    b.addEventListener("click", function (e) {
-                        inp.value = item.name;
-                        window.location.href = item.url;
-                        closeAllLists();
-                    });
-                    a.appendChild(b);
+        // Manejar clics en las pestañas de búsqueda
+        function handleTabClick(event) {
+            document.querySelectorAll('.search-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            closeAllLists();
+        }
+
+        // Agregar event listeners a las pestañas de búsqueda
+        document.querySelectorAll('.search-tab').forEach(tab => {
+            tab.addEventListener('click', handleTabClick);
+        });
+
+        // Función principal de autocompletado
+        function autocomplete(inp) {
+            var currentFocus;
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) {
+                    return false;
+                }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+
+                var activeTab = document.querySelector('.search-tab.active').dataset.type;
+                var searchArray = (activeTab === 'music') ? [...s_artists, ...s_albums, ...s_songs] : s_users;
+
+                <c:url var="elementUrl" value="/"/>
+                searchArray.forEach(function (item) {
+                    if (item.name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = createAutocompleteItem(item);
+                        b.addEventListener("click", function (e) {
+                            item.url = "${elementUrl}" + "/" + item.type + "/" + item.id
+
+                            inp.value = item.name;
+                            window.location.href = item.url;
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                });
+            });
+
+            inp.addEventListener("keydown", function(e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                    currentFocus++;
+                    addActive(x);
+                } else if (e.keyCode == 38) {
+                    currentFocus--;
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        if (x) x[currentFocus].click();
+                    }
                 }
             });
-        });
 
-        inp.addEventListener("keydown", function(e) {
-            var x = document.getElementById(this.id + "autocomplete-list");
-            if (x) x = x.getElementsByTagName("div");
-            if (e.keyCode == 40) {
-                currentFocus++;
-                addActive(x);
-            } else if (e.keyCode == 38) {
-                currentFocus--;
-                addActive(x);
-            } else if (e.keyCode == 13) {
-                e.preventDefault();
-                if (currentFocus > -1) {
-                    if (x) x[currentFocus].click();
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+
+            function removeActive(x) {
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
                 }
             }
-        });
-
-        function addActive(x) {
-            if (!x) return false;
-            removeActive(x);
-            if (currentFocus >= x.length) currentFocus = 0;
-            if (currentFocus < 0) currentFocus = (x.length - 1);
-            x[currentFocus].classList.add("autocomplete-active");
         }
 
         function createAutocompleteItem(item) {
             return `
         <div class="autocomplete-item">
-            <img src="`+ item.imgUrl + `" alt="`+ item.name +`">
+            <img src="` + imgUrl + `/` + item.imgId + `" alt="`+ item.name +`">
             <div class="autocomplete-item-info">
                 <span class="autocomplete-item-name">` + item.name + `</span>
-                <span class="autocomplete-item-type">` + item.type + `</span>
+                <span class="autocomplete-item-type">` + item.type.charAt(0).toUpperCase() + `</span>
             </div>
         </div>
     `;
         }
 
-        function removeActive(x) {
+
+        // Cerrar todas las listas de autocompletado
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
             for (var i = 0; i < x.length; i++) {
-                x[i].classList.remove("autocomplete-active");
+                if (elmnt != x[i] && elmnt != document.getElementById('searchInput')) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
             }
         }
-    }
 
-    function closeAllLists(elmnt) {
-        var x = document.getElementsByClassName("autocomplete-items");
-        for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != document.getElementById('searchInput')) {
-                x[i].parentNode.removeChild(x[i]);
+        // Event listener para cerrar listas al hacer clic fuera
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+
+        // Inicializar autocompletado
+        autocomplete(document.getElementById("searchInput"));
+
+        // Agregar event listener para la búsqueda
+        document.getElementById('searchInput').addEventListener('input', function() {
+            var substring = this.value;
+            if (substring.length >= 3) {
+                searchAndDisplay(substring);
+                console.log(s_artists)
             }
-        }
-    }
-
-
-    document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
+        });
     });
-
-    autocomplete(document.getElementById("searchInput"));
 </script>
 </body>
 </html>

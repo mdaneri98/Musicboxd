@@ -113,6 +113,7 @@ public class Album {
     public String toJson() {
         StringBuilder json = new StringBuilder();
         json.append("{");
+        json.append("\"type\":\"").append("album").append("\",");
         json.append("\"id\":").append(id).append(",");
         json.append("\"title\":\"").append(title).append("\",");
         json.append("\"genre\":\"").append(genre).append("\",");
