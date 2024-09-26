@@ -41,7 +41,7 @@
           <c:url value="/album/${album.id}/add-favorite" var="add_favorite_url" />
           <c:url value="/album/${album.id}/remove-favorite" var="remove_favorite_url" />
           <c:choose>
-            <c:when test="${!param.isFavorite}">
+            <c:when test="${!isFavorite}">
               <a href="${add_favorite_url}"><button>Add to favorites</button></a>
             </c:when>
             <c:otherwise>
