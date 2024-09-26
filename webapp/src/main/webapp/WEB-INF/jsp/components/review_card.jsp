@@ -14,7 +14,7 @@
         </div>
     </a>
     <div class="review-block-btn">
-        <c:url value="/mod/" />
+        <c:url value="/mod/block/${param.id}" />
         <a href="" class="btn-icon">
             <i class="fa-solid fa-ban"></i>
         </a>
