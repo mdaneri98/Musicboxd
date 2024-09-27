@@ -84,30 +84,6 @@
     text-transform: uppercase;
 }
 
-.user-card-badges {
-    display: flex;
-    justify-content: flex-start;
-    margin-top: 16px;
-    gap: 8px;
-}
-
-.user-card-badge {
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-}
-
-.user-card-badge-verified {
-    background-color: #1DB954;
-    color: #fff;
-}
-
-.user-card-badge-moderator {
-    background-color: #E91E63;
-    color: #fff;
-}
-
 a {
     text-decoration: none;
 }

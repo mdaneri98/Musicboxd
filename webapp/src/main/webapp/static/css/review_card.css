@@ -120,6 +120,10 @@
     font-size: 14px;
 }
 
+.review-actions span {
+    margin-left: 6px;
+}
+
 .review-actions a:hover {
     color: #fff;
 }

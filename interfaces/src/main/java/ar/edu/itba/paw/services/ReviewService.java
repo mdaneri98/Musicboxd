@@ -13,15 +13,12 @@ public interface ReviewService {
     int deleteById(long id);
 
     Optional<ArtistReview> findArtistReviewById(long id);
-    List<ArtistReview> findReviewsByArtistId(long artistId);
     int saveArtistReview(ArtistReview review);
 
     Optional<AlbumReview> findAlbumReviewById(long id);
-    List<AlbumReview> findReviewsByAlbumId(long albumId);
     int saveAlbumReview(AlbumReview review);
 
     Optional<SongReview> findSongReviewById(long id);
-    List<SongReview> findReviewsBySongId(long songId);
     int saveSongReview(SongReview review);
 
 
@@ -31,8 +28,6 @@ public interface ReviewService {
 
     List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize, long loggedUserId);
     List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize, long loggedUserId);
-
-
     List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize, long loggedUserId);
 
     List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize, long loggedUserId);

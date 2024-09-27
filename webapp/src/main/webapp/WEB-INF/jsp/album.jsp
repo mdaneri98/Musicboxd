@@ -41,7 +41,7 @@
           <c:url value="/album/${album.id}/add-favorite" var="add_favorite_url" />
           <c:url value="/album/${album.id}/remove-favorite" var="remove_favorite_url" />
           <c:choose>
-            <c:when test="${!param.isFavorite}">
+            <c:when test="${!isFavorite}">
               <a href="${add_favorite_url}"><button>Add to favorites</button></a>
             </c:when>
             <c:otherwise>
@@ -90,7 +90,8 @@
             <jsp:param name="user_name" value="@${review.user.username}"/>
             <jsp:param name="user_img_id" value="${review.user.imgId}"/>
             <jsp:param name="verified" value="${review.user.verified}"/>
-            <jsp:param name="moderator" value="${review.user.moderator}"/>
+            <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+            <jsp:param name="userModerator" value="${review.user.moderator}"/>
             <jsp:param name="likes" value="${review.likes}"/>
             <jsp:param name="user_id" value="${review.user.id}"/>
             <jsp:param name="review_id" value="${review.id}"/>

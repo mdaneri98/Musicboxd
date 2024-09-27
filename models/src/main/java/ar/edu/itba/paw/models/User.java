@@ -63,7 +63,6 @@ public class User {
     }
 
     // Getters y setters
-
     public Integer getReviewAmount() {
         return reviewAmount != null ? reviewAmount : 0;
     }
@@ -288,4 +287,27 @@ public class User {
             return user;
         }
     }
+
+    // Método para convertir a JSON
+    public String toJson() {
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"type\":\"").append("user").append("\",");
+        json.append("\"id\":").append(id).append(",");
+        json.append("\"name\":\"").append(username).append("\",");
+        json.append("\"email\":\"").append(email).append("\",");
+        //json.append("\"name\":\"").append(name).append("\",");
+        json.append("\"bio\":\"").append(bio).append("\",");
+        json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
+        json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
+        json.append("\"verified\":").append(verified).append(",");
+        json.append("\"moderator\":").append(moderator).append(",");
+        json.append("\"followersAmount\":").append(followersAmount).append(",");
+        json.append("\"followingAmount\":").append(followingAmount).append(",");
+        json.append("\"reviewAmount\":").append(reviewAmount).append(",");
+        json.append("\"imgId\":").append(imgId);
+        json.append("}");
+        return json.toString();
+    }
+
 }

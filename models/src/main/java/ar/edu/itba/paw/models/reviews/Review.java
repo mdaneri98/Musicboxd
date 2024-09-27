@@ -46,17 +46,12 @@ public abstract class Review {
     public Boolean getLiked() {
         return isLiked;
     }
-
-    public void setLiked(Boolean liked) {
-        isLiked = liked;
-    }
-
     public Boolean isBlocked() {
         return isBlocked;
     }
 
-    public void setBlocked(Boolean isBlocked) {
-        this.isBlocked = isBlocked;
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
     }
 
     public Long getId() {

@@ -2,6 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <div class="review-container">
+    <c:if test="${!param.blocked}">
     <c:url var="itemUrl" value="${param.item_url}" />
     <a href="${itemUrl}" class="review-header">
         <div>
@@ -13,12 +14,6 @@
             <p><c:out value="${param.item_type}"/></p>
         </div>
     </a>
-    <div class="review-block-btn">
-        <c:url value="/mod/" />
-        <a href="" class="btn-icon">
-            <i class="fa-solid fa-ban"></i>
-        </a>
-    </div>
     <div class="star-rating-container review-header">
         <div class="star-rating">
             <c:forEach var="i" begin="1" end="5">
@@ -30,10 +25,11 @@
         </div>
     </div>
     <div class="separator"></div>
-    <div class="review-content">
-        <div class="review-title"><c:out value="${param.title}"/></div>
-        <p class="review-content"><c:out value="${param.review_content}"/></p>
-    </div>
+
+        <div class="review-content">
+            <div class="review-title"><c:out value="${param.title}"/></div>
+            <p class="review-content"><c:out value="${param.review_content}"/></p>
+        </div>
     <div class="separator"></div>
     <div class="review-footer">
         <c:url var="userUrl" value="/user/${param.user_id}" />
@@ -47,7 +43,10 @@
                         <c:if test="${param.verified}">
                             <span class="user-card-badge user-card-badge-verified">Verified</span>
                         </c:if>
-                        <c:if test="${param.moderator}">
+                        <c:if test="${!param.verified}">
+                            <span class="user-card-badge user-card-badge-unverified">Unverified</span>
+                        </c:if>
+                        <c:if test="${param.userModerator}">
                             <span class="user-card-badge user-card-badge-moderator">Moderator</span>
                         </c:if>
                     </div>
@@ -55,6 +54,14 @@
             </div>
         </a>
         <div class="review-actions">
+            <c:if test="${param.moderator}">
+                <div class="review-block-btn">
+                    <c:url value="/mod/block/${param.review_id}" var="blockReviewUrl"/>
+                    <a href="${blockReviewUrl}" class="btn-icon">
+                        <i class="fa-solid fa-ban"></i>
+                    </a>
+                </div>
+            </c:if>
             <c:url var="likeReviewLink" value="/review/like/${param.review_id}" />
             <c:url var="removeLikeReviewLink" value="/review/remove-like/${param.review_id}" />
             <c:url var="shareReviewLink" value="/review/share/${param.review_id}" />
@@ -71,4 +78,19 @@
             <a href="${shareReviewLink}">&#10150; Share</a>
         </div>
     </div>
+    </c:if>
+    <c:if test="${param.blocked}">
+        <div class="review-content">
+            <div class="review-title">This review was blocked by a moderator</div>
+            <p class="review-content">Try making another one</p>
+        </div>
+        <c:if test="${param.moderator}">
+            <div class="review-block-btn">
+                <c:url value="/mod/unblock/${param.review_id}" var="unblockReviewUrl"/>
+                <a href="${unblockReviewUrl}" class="btn-icon">
+                    <span>Unblock  <i class="fa-solid fa-ban"></i></span>
+                </a>
+            </div>
+        </c:if>
+    </c:if>
 </div>
