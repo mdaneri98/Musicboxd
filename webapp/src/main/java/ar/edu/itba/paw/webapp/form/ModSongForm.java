@@ -13,6 +13,8 @@ public class ModSongForm {
     @Positive
     private Number trackNumber;
 
+    public ModSongForm() {}
+
     public ModSongForm(String title, String duration, Number trackNumber) {
         this.title = title;
         this.duration = duration;

@@ -42,7 +42,7 @@
         <div id="autocompleteList" class="autocomplete-items"></div>
     </div>
     <div>
-        <button id="redirectButton" onclick="redirect()">Complete</button>
+        <button id="redirectButton" onclick="redirect()">Add Artist</button>
     </div>
 </div>
 
@@ -80,13 +80,13 @@
         // Cambia el texto del botón dependiendo de la pestaña
         switch (activeTab) {
             case 'artists':
-                button.textContent = "Complete form";
+                button.textContent = "Add Artist";
                 break;
             case 'albums':
-                button.textContent = "Complete form";
+                button.textContent = "Add Album";
                 break;
             case 'songs':
-                button.textContent = "Complete form";
+                button.textContent = "Add Song";
                 break;
         }
         button.style.display = 'inline-block';
@@ -134,6 +134,8 @@
             document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
             // Agregar clase activa a la pestaña clickeada
             this.classList.add('active');
+            // Cambiar boton a la clase activa
+            show_button();
             // Limpiar el campo de entrada
             document.getElementById('searchInput').value = '';
             closeAllLists();

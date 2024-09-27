@@ -3,6 +3,8 @@ package ar.edu.itba.paw.webapp.form;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModAlbumForm {
 
@@ -12,12 +14,15 @@ public class ModAlbumForm {
     private String genre;
     private MultipartFile albumImage;
 
+    private List<ModSongForm> songs = new ArrayList<>();
+
     public ModAlbumForm() {}
 
-    public ModAlbumForm(String title, String genre, MultipartFile albumImage) {
+    public ModAlbumForm(String title, String genre, MultipartFile albumImage, List<ModSongForm> songs) {
         this.title = title;
         this.genre = genre;
         this.albumImage = albumImage;
+        this.songs = songs;
     }
 
     public String getTitle() {
@@ -42,5 +47,13 @@ public class ModAlbumForm {
 
     public void setAlbumImage(MultipartFile albumImage) {
         this.albumImage = albumImage;
+    }
+
+    public List<ModSongForm> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(List<ModSongForm> songs) {
+        this.songs = songs;
     }
 }

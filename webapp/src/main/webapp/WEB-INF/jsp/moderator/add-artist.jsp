@@ -10,7 +10,7 @@
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
 
-    <c:url var="css" value="/static/css/artist_review.css" />
+    <c:url var="css" value="/static/css/moderator.css" />
     <link rel="stylesheet" href="${css}">
 
 </head>
@@ -30,36 +30,36 @@
         <div>
             <label>Name:
                 <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="name" required="true" />
+                <form:input path="name" type="text" required="true"/>
             </label>
         </div>
         <div>
             <label>Bio:
                 <form:errors path="bio" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:textarea path="bio" rows="5" required="true" />
+                <form:textarea path="bio" rows="5" required="true"/>
             </label>
         </div>
         <div>
             <label>Image:
                 <form:errors path="artistImage" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="artistImage" type="file" accept=".jpg,.jpeg,.png" required="true"/>
+                <form:input path="artistImage" type="file" accept=".jpg,.jpeg,.png" required="true" onchange="previewImage(event,0)"/>
+                <!-- Image Preview -->
+                <img id="imagePreview-0" class="element-image-preview" style="display:none;"/>
             </label>
         </div>
 
         <!-- Album List Section -->
         <h2>Albums</h2>
-        <div id="AlbumContainer">
+        <div id="AlbumContainer" class="element-table">
             <c:forEach items="${modArtistForm.albums}" var="album" varStatus="status">
-                <div id="album-${status.index}" class="album-entry">
-                    <label>Album Title:</label>
-                    <form:input path="albums[${status.index}].title" type="text"/>
-                    <label>Album Genre:</label>
-                    <form:input path="albums[${status.index}].genre" type="text"/>
-                    <label>Album Image:</label>
-                    <form:input path="albums[${status.index}].albumImage" type="file" accept=".jpg,.jpeg,.png"/>
-
-                    <!-- Remove button for existing artist -->
-                    <button type="button" class="remove-album" onclick="removeAlbum(${status.index})">Remove Album</button>
+                <div id="album-${status.index}" class="element-row">
+                    <form:input path="albums[${status.index}].title" type="text" placeholder="Title" required="true" class="element-field"/>
+                    <form:input path="albums[${status.index}].genre" type="text" placeholder="Genre" required="true" class="element-field"/>
+                    <label class="element-field">Album Image:</label>
+                    <img id="imagePreview-${status.index+1}" class="sub-element-image-preview" style="display:none;"/>
+                    <form:input path="albums[${status.index}].albumImage" type="file" required="true" accept=".jpg,.jpeg,.png" class="element-field" onchange="previewImage(event,${status.index+1})"/>
+                    <!-- Remove button for existing albums -->
+                    <button type="button" class="remove-button" onclick="removeAlbum(${status.index})">Remove Album</button>
                 </div>
             </c:forEach>
         </div>
@@ -76,47 +76,57 @@
     </form:form>
 
     <script>
-        let albumIndex = 0;
-        let albumCount = 0;
-        let maxAlbums = 3;
+        var albumIndex = 0;
+        var albumCount = 0;
+        var maxAlbums = 3;
         function addAlbum() {
-            let container = document.getElementById("AlbumContainer");
-            let newAlbumDiv = document.createElement("div");
-            newAlbumDiv.setAttribute("class", "album-entry");
+            var container = document.getElementById("AlbumContainer");
+            container.setAttribute("class", "element-table");
 
-            let nameLabel = document.createElement("label");
-            nameLabel.textContent = "Album Title: ";
-            newAlbumDiv.appendChild(nameLabel);
+            var newAlbumDiv = document.createElement("div");
+            newAlbumDiv.setAttribute("class", "element-row");
 
-            let nameInput = document.createElement("input");
-            nameInput.setAttribute("type", "text");
-            nameInput.setAttribute("name", "albums[" + albumIndex + "].title");
-            newAlbumDiv.appendChild(nameInput);
+            var titleInput = document.createElement("input");
+            titleInput.setAttribute("type", "text");
+            titleInput.setAttribute("name", "albums[" + albumIndex + "].title");
+            titleInput.setAttribute("placeholder", "Title");
+            titleInput.setAttribute("required", "true");
+            titleInput.setAttribute("class", "element-field");
+            newAlbumDiv.appendChild(titleInput);
 
-            let bioLabel = document.createElement("label");
-            bioLabel.textContent = "Album Genre: ";
-            newAlbumDiv.appendChild(bioLabel);
+            var genreInput = document.createElement("input");
+            genreInput.setAttribute("type", "text");
+            genreInput.setAttribute("name", "albums[" + albumIndex + "].genre");
+            genreInput.setAttribute("placeholder", "Genre");
+            genreInput.setAttribute("required", "true");
+            genreInput.setAttribute("class", "element-field");
+            newAlbumDiv.appendChild(genreInput);
 
-            let bioInput = document.createElement("input");
-            bioInput.setAttribute("type", "text");
-            bioInput.setAttribute("name", "albums[" + albumIndex + "].genre");
-            newAlbumDiv.appendChild(bioInput);
-
-            let ImageLabel = document.createElement("label");
-            ImageLabel.textContent = "Album Image: ";
+            var ImageLabel = document.createElement("label");
+            ImageLabel.setAttribute("class", "element-field");
+            ImageLabel.textContent = "Image: ";
             newAlbumDiv.appendChild(ImageLabel);
 
-            let ImageInput = document.createElement("input");
+            var ImagePreview = document.createElement("img");
+            ImagePreview.setAttribute("id", "imagePreview-" + (albumIndex + 1));
+            ImagePreview.setAttribute("class", "sub-element-image-preview");
+            ImagePreview.setAttribute("style", "display:none;");
+            newAlbumDiv.appendChild(ImagePreview);
+
+            var ImageInput = document.createElement("input");
             ImageInput.setAttribute("type", "file");
             ImageInput.setAttribute("name", "albums[" + albumIndex + "].albumImage");
+            ImageInput.setAttribute("required", "true");
             ImageInput.setAttribute("accept", ".jpg,.jpeg,.png");
+            ImageInput.setAttribute("class", "element-field");
+            ImageInput.setAttribute("onchange", "previewImage(event," + (albumIndex + 1) + ")")
             newAlbumDiv.appendChild(ImageInput);
 
-            // Add Remove Button
-            let removeButton = document.createElement("button");
+            var removeButton = document.createElement("button");
             removeButton.textContent = "Remove Album";
             removeButton.setAttribute("type", "button");
-            removeButton.onclick = function() {
+            removeButton.setAttribute("class", "remove-button");
+            removeButton.onclick = function () {
                 container.removeChild(newAlbumDiv);
             };
             newAlbumDiv.appendChild(removeButton);
@@ -131,8 +141,8 @@
         }
 
         function removeAlbum(index) {
-            let container = document.getElementById("AlbumContainer");
-            let albumDiv = document.getElementById("album-" + index);
+            var container = document.getElementById("AlbumContainer");
+            var albumDiv = document.getElementById("album-" + index);
 
             if (albumDiv) {
                 container.removeChild(albumDiv);
@@ -146,7 +156,7 @@
         /* Disables but does not enable the button
 
         function toggleAddButton(count) {
-            let addAlbumButton = document.getElementById("addAlbumButton");
+            var addAlbumButton = document.getElementById("addAlbumButton");
 
             if (count >= maxAlbums) {
                 addAlbumButton.disabled = true;  // Disable the button when the max is reached
@@ -156,20 +166,24 @@
         }
         */
 
-    </script>
-    <style>
-        .album-entry button.remove-album {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
+        // Previews Image inserted
+        function previewImage(event,index) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview-' + index);
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block'; // Show the image element
+                }
+                reader.readAsDataURL(file); // Read the file and convert it to a data URL
+            } else {
+                preview.style.display = 'none'; // Hide the preview if no image is selected
+            }
         }
 
-        .album-entry button.remove-album:hover {
-            background-color: #c0392b;
-        }
-    </style>
+    </script>
 </div>
 </body>
 </html>
