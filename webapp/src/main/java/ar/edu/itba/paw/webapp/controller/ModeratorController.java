@@ -103,14 +103,14 @@ public class ModeratorController {
 
     @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.GET)
     public ModelAndView addAlbumForm(@PathVariable(name = "artistId") final long artistId,
-                                     @ModelAttribute("modAlbumFrom") final ModAlbumForm modAlbumForm,
+                                     @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
                                      @ModelAttribute("loggedUser") User loggedUser) {
         return new ModelAndView("moderator/add-album").addObject(artistId);
     }
 
     @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.POST)
     public ModelAndView submitAlbumForm(@PathVariable(name = "artistId") final long artistId,
-                                        @Valid @ModelAttribute("modAlbumFrom") final ModAlbumForm modAlbumForm,
+                                        @Valid @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
                                         @ModelAttribute("loggedUser") User loggedUser,
                                         final BindingResult errors) {
 
@@ -128,6 +128,14 @@ public class ModeratorController {
         Artist artist = artistService.findById(artistId).get();
         Album album = new Album(modAlbumForm.getTitle(), modAlbumForm.getGenre(), imageId, artist);
         albumService.save(album);
+
+        //  List of songs
+        for (ModSongForm songForm : modAlbumForm.getSongs()) {
+            if (songForm.getTitle() != null) {
+                Song song = new Song(songForm.getTitle(), songForm.getDuration(), songForm.getTrackNumber().intValue(), album);
+                songService.save(song); //save each song in the service
+            }
+        }
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
         modelAndView.addObject("artist", artist);
