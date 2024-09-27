@@ -38,19 +38,16 @@
             <img src="${userImgUrl}" alt="${param.user_name} Avatar" class="user-avatar">
             <div class="user-data">
             <div class="user-name"><c:out value="${param.user_name}"/></div>
-                <c:if test="${param.verified || param.moderator}">
-                    <div class="user-card-badges">
-                        <c:if test="${param.verified}">
-                            <span class="user-card-badge user-card-badge-verified">Verified</span>
-                        </c:if>
-                        <c:if test="${!param.verified}">
-                            <span class="user-card-badge user-card-badge-unverified">Unverified</span>
-                        </c:if>
-                        <c:if test="${param.userModerator}">
-                            <span class="user-card-badge user-card-badge-moderator">Moderator</span>
-                        </c:if>
-                    </div>
+                <c:if test="${param.verified}">
+                    <span class="user-card-badge user-card-badge-verified">Verified</span>
                 </c:if>
+                <c:if test="${!param.verified}">
+                    <span class="user-card-badge user-card-badge-unverified">Unverified</span>
+                </c:if>
+                <c:if test="${param.userModerator}">
+                    <span class="user-card-badge user-card-badge-moderator">Moderator</span>
+                </c:if>
+            </div>
             </div>
         </a>
         <div class="review-actions">
