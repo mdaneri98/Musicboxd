@@ -99,7 +99,7 @@
 
                 var activeTab = document.querySelector('.search-tab.active').dataset.type;
                 var searchArray = (activeTab === 'music') ? [...s_artists, ...s_albums, ...s_songs] : s_users;
-
+                searchArray = sortBySubstring(searchArray, val).slice(0,6);
                 <c:url var="elementUrl" value="/"/>
                 searchArray.forEach(function (item) {
                     if (item.name.toUpperCase().includes(val.toUpperCase())) {
@@ -160,6 +160,37 @@
         </div>
     `;
         }
+
+        function sortBySubstring(arr, substring) {
+            return arr.sort((a, b) => {
+                const nameA = a.name.toLowerCase();
+                const nameB = b.name.toLowerCase();
+                const sub = substring.toLowerCase();
+
+                // Si el nombre comienza con el substring, darle mayor prioridad
+                const startsWithA = nameA.startsWith(sub);
+                const startsWithB = nameB.startsWith(sub);
+
+                if (startsWithA && !startsWithB) return -1; // a tiene prioridad sobre b
+                if (!startsWithA && startsWithB) return 1;  // b tiene prioridad sobre a
+
+                // Si ambos contienen el substring pero no al principio, ordenar por posición
+                const indexA = nameA.indexOf(sub);
+                const indexB = nameB.indexOf(sub);
+
+                if (indexA !== -1 && indexB !== -1) {
+                    return indexA - indexB;  // El que tiene la coincidencia antes tiene prioridad
+                }
+
+                // Si solo uno de ellos contiene el substring, darle prioridad
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+
+                // Si ninguno lo contiene, mantener el orden original
+                return 0;
+            });
+        }
+
 
 
         // Cerrar todas las listas de autocompletado
