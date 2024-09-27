@@ -56,6 +56,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> findByUsernameContaining(String sub) {
+        return userDao.findByUsernameContaining(sub);
+    }
+
+    @Override
     public int incrementReviewAmount(User user) {
         user.incrementReviewAmount();
         return userDao.update(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getName(), user.getBio(), user.getUpdatedAt(), user.isVerified(), user.isModerator(), user.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());

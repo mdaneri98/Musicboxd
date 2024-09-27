@@ -47,6 +47,12 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
+    public List<Artist> findByNameContaining(String sub) {
+        String sql = "SELECT * FROM artist WHERE name ILIKE ?";
+        return jdbcTemplate.query(sql, new Object[]{"%" + sub + "%"}, SimpleRowMappers.ARTIST_ROW_MAPPER);
+    }
+
+    @Override
     public long save(Artist artist) {
         Map<String, Object> imageData = Map.of("name", artist.getName(),
                 "bio", artist.getBio(), "img_id", artist.getImgId());

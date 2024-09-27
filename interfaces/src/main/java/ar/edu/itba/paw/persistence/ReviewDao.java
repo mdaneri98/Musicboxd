@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,17 +43,9 @@ public interface ReviewDao {
     List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize);
     List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize);
 
-    List<ArtistReview> findArtistReviewsByUser(long userId);
-    List<AlbumReview> findAlbumReviewsByUser(long userId);
-    List<SongReview> findSongReviewsByUser(long userId);
-
-    List<ArtistReview> findPopularArtistReviewsSince(LocalDate date);
-    List<AlbumReview> findPopularAlbumReviewsSince(LocalDate date);
-    List<SongReview> findPopularSongReviewsSince(LocalDate date);
-
-    List<ArtistReview> findArtistReviewsFromFollowedUsers(Long userId);
-    List<AlbumReview> findAlbumReviewsFromFollowedUsers(Long userId);
-    List<SongReview> findSongReviewsFromFollowedUsers(Long userId);
+    List<Review> getPopularReviewsSincePaginated(LocalDate date, int page, int pageSize);
+    List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize);
+    List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize);
 
     boolean isArtistReview(long reviewId);
     boolean isAlbumReview(long reviewId);

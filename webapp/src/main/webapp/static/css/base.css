@@ -379,6 +379,11 @@ button:hover:not(:disabled) {
     color: #000;
 }
 
+.user-card-badge-unverified {
+    background-color: #ea1a2b;
+    color: #fff;
+}
+
 .user-card-badge-moderator {
     background-color: #1E3A8A;
     color: #fff;

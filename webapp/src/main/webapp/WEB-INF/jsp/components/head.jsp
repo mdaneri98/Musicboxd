@@ -10,3 +10,6 @@
 <link rel="icon" type="image/x-icon" href="${logoUrl}">
 <c:url var="cssUrl" value="/static/css/base.css"/>
 <link rel="stylesheet" href="${cssUrl}">
+
+<!-- jQuery desde CDN -->
+<script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>

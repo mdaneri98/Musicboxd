@@ -56,6 +56,12 @@ public class ModeratorController {
         return new ModelAndView("redirect:/");
     }
 
+    @RequestMapping(value = "/unblock/{reviewId:\\d+}", method = RequestMethod.GET)
+    public ModelAndView unblock(@PathVariable(name = "reviewId") final long reviewId) {
+        reviewService.unblock(reviewId);
+        return new ModelAndView("redirect:/");
+    }
+
     @RequestMapping(path = "add/artist", method = RequestMethod.GET)
     public ModelAndView addArtistForm(@ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
                                       @ModelAttribute("loggedUser") User loggedUser) {

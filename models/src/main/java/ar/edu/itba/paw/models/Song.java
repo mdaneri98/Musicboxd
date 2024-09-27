@@ -1,8 +1,7 @@
 package ar.edu.itba.paw.models;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 public class Song {
     private Long id;
@@ -96,6 +95,26 @@ public class Song {
 
     public void setAlbum(Album albumId) {
         this.album = album;
+    }
+
+    // Método para convertir a JSON
+    public String toJson() {
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"type\":\"").append("song").append("\",");
+        json.append("\"id\":").append(id).append(",");
+        json.append("\"name\":\"").append(title).append("\",");
+        json.append("\"duration\":\"").append(duration).append("\",");
+        json.append("\"trackNumber\":").append(trackNumber).append(",");
+        json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
+        json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
+        json.append("\"imgId\":").append(album.getImgId()).append(",");
+
+        // Convertir el álbum a JSON si no es nulo
+        json.append("\"album\":").append(album != null ? album.toJson() : null);
+
+        json.append("}");
+        return json.toString();
     }
 
 }

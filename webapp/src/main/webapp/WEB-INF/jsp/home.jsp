@@ -66,7 +66,8 @@
                     <jsp:param name="user_name" value="@${review.user.username}"/>
                     <jsp:param name="user_img_id" value="${review.user.imgId}"/>
                     <jsp:param name="verified" value="${review.user.verified}"/>
-                    <jsp:param name="moderator" value="${review.user.moderator}"/>
+                    <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+                    <jsp:param name="userModerator" value="${review.user.moderator}"/>
                     <jsp:param name="likes" value="${review.likes}"/>
                     <jsp:param name="user_id" value="${review.user.id}"/>
                     <jsp:param name="review_id" value="${review.id}"/>
@@ -84,6 +85,12 @@
 
     <div id="followingTab">
         <h2>Reviews from Users You Follow</h2>
+        <c:if test="${followingReviews.size() == 0}">
+            <div class="page-empty">
+                <h3>This page is empty</h3>
+                <h4>Try following more users or going to the previous page</h4>
+            </div>
+        </c:if>
         <div class="cards-container">
             <c:forEach var="review" items="${followingReviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
@@ -97,7 +104,8 @@
                     <jsp:param name="user_name" value="@${review.user.username}"/>
                     <jsp:param name="user_img_id" value="${review.user.imgId}"/>
                     <jsp:param name="verified" value="${review.user.verified}"/>
-                    <jsp:param name="moderator" value="${review.user.moderator}"/>
+                    <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+                    <jsp:param name="userModerator" value="${review.user.moderator}"/>
                     <jsp:param name="likes" value="${review.likes}"/>
                     <jsp:param name="user_id" value="${review.user.id}"/>
                     <jsp:param name="review_id" value="${review.id}"/>
