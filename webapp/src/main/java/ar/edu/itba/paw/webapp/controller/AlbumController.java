@@ -68,7 +68,7 @@ public class AlbumController {
         return mav;
     }
 
-    @RequestMapping(value = "/{albumId:\\d}/reviews", method = RequestMethod.GET)
+    @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
         Album album = albumService.findById(albumId).orElseThrow();
 
@@ -79,7 +79,7 @@ public class AlbumController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/{albumId:\\d}/reviews", method = RequestMethod.POST)
+    @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.POST)
     public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, @ModelAttribute("loggedUser") User loggedUser, final BindingResult errors, @PathVariable Long albumId) throws MessagingException {
         if (errors.hasErrors()) {
             return createForm(reviewForm, albumId);
@@ -100,13 +100,13 @@ public class AlbumController {
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
-    @RequestMapping(value = "/{albumId:\\d}/add-favorite", method = RequestMethod.GET)
+    @RequestMapping(value = "/{albumId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
         userService.addFavoriteAlbum(loggedUser.getId(), albumId);
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
-    @RequestMapping(value = "/{albumId:\\d}/remove-favorite", method = RequestMethod.GET)
+    @RequestMapping(value = "/{albumId:\\d+}/remove-favorite", method = RequestMethod.GET)
     public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
         userService.removeFavoriteAlbum(loggedUser.getId(), albumId);
         return new ModelAndView("redirect:/album/" + albumId);

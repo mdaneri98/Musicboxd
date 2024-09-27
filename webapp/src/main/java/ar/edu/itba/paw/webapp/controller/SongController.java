@@ -100,7 +100,7 @@ public class SongController {
         return new ModelAndView("redirect:/song/" + songId);
     }
 
-    @RequestMapping(value = "/{songId:\\d}/add-favorite", method = RequestMethod.GET)
+    @RequestMapping(value = "/{songId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
         userService.addFavoriteSong(loggedUser.getId(), songId);
         return new ModelAndView("redirect:/song/" + songId);
