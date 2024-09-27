@@ -47,17 +47,40 @@
         <div>
             <label>Profile Picture:
                 <form:errors path="profilePicture" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="profilePicture" type="file" accept=".jpg,.jpeg,.png" />
+                <form:input path="profilePicture" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(event)"/>
             </label>
+            <img id="imagePreview" style="display:none;"/>
         </div>
         <div style="display: flex; gap: 10px;">
-            <c:url value="/user/" var="discard_changes_url" />
+            <c:url value="/user/profile" var="discard_changes_url" />
             <a href="${discard_changes_url}" style="flex: 1;">
                 <button type="button" style="width: 100%; height: 100%;">Discard Changes</button>
             </a>
             <button type="submit" style="flex: 1; width: 100%; height: 100%;">Update</button>
         </div>
     </form:form>
+
+    <script>
+        // Previews Image inserted
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block'; // Show the image element
+                    preview.style.width = 'auto';
+                    preview.style.height = '150px';
+                    preview.style.marginBottom = '10px';
+                }
+                reader.readAsDataURL(file); // Read the file and convert it to a data URL
+            } else {
+                preview.style.display = 'none'; // Hide the preview if no image is selected
+            }
+        }
+    </script>
 </div>
 </body>
 </html>
