@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.stereotype.Controller;
@@ -60,12 +61,16 @@ public class ArtistController {
         List<Album> albums = albumService.findByArtistId(artistId);
         List<Song> songs = songService.findByArtistId(artistId);
         List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(artistId,pageNum,5, loggedUser.getId());
+        boolean isReviewed = reviewService.hasUserReviewedArtist(loggedUser.getId(), artistId);
+        Integer loggedUserRating = isReviewed? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get().getRating(): 0;
 
         mav.addObject("artist", artist);
         mav.addObject("albums", albums);
         mav.addObject("songs", songs);
         mav.addObject("reviews", reviews);
         mav.addObject("isFavorite", userService.isArtistFavorite(loggedUser.getId(), artistId));
+        mav.addObject("isReviewed", isReviewed);
+        mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
         return mav;
     }

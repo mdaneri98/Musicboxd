@@ -14,6 +14,9 @@ public interface ArtistDao {
     List<Artist> findBySongId(long id);
     List<Artist> findByNameContaining(String sub);
 
+    void updateRating(long artistId, float newRating, int newRatingAmount);
+    boolean hasUserReviewed(long userId, long artistId);
+
     long save(Artist artist);
     int update(Artist artist);
     int deleteById(long id);

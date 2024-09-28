@@ -234,6 +234,21 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
+    public Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId) {
+        return jdbcTemplate.query(
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
+                        "FROM review r " +
+                        "JOIN cuser u ON r.user_id = u.id " +
+                        "JOIN artist_review ar ON r.id = ar.review_id " +
+                        "JOIN artist a ON ar.artist_id = a.id " +
+                        "WHERE ar.artist_id = ? AND r.user_id = ?",
+                new Object[]{artistId, userId},
+                new int[]{Types.BIGINT, Types.BIGINT},
+                ARTIST_REVIEW_ROW_MAPPER
+        ).stream().findFirst();
+    }
+
+    @Override
     public List<ArtistReview> findReviewsByArtistId(long artistId) {
         return jdbcTemplate.query(
                 "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
@@ -256,7 +271,7 @@ public class ReviewJdbcDao implements ReviewDao {
             Map<String, Object> keys = keyHolder.getKeys();
             if (keys != null && keys.containsKey("id")) {
                 long reviewId = ((Number) keys.get("id")).longValue();
-                jdbcTemplate.update(
+                result = jdbcTemplate.update(
                         "INSERT INTO artist_review (review_id, artist_id) VALUES (?, ?)",
                         reviewId,
                         review.getArtist().getId()
@@ -285,6 +300,21 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
+    public Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId) {
+        return jdbcTemplate.query(
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
+                        "FROM review r " +
+                        "JOIN cuser u ON r.user_id = u.id " +
+                        "JOIN album_review ar ON r.id = ar.review_id " +
+                        "JOIN album al ON ar.album_id = al.id " +
+                        "WHERE ar.album_id = ? AND r.user_id = ?",
+                new Object[]{albumId, userId},
+                new int[]{Types.BIGINT, Types.BIGINT},
+                ALBUM_REVIEW_ROW_MAPPER
+        ).stream().findFirst();
+    }
+
+    @Override
     public List<AlbumReview> findReviewsByAlbumId(long albumId) {
         return jdbcTemplate.query(
                 "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
@@ -307,7 +337,7 @@ public class ReviewJdbcDao implements ReviewDao {
             Map<String, Object> keys = keyHolder.getKeys();
             if (keys != null && keys.containsKey("id")) {
                 long reviewId = ((Number) keys.get("id")).longValue();
-                jdbcTemplate.update(
+                result = jdbcTemplate.update(
                         "INSERT INTO album_review (review_id, album_id) VALUES (?, ?)",
                         reviewId,
                         review.getAlbum().getId()
@@ -358,6 +388,24 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
+    public Optional<SongReview> findSongReviewByUserId(long userId, long songId) {
+        return jdbcTemplate.query(
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, " +
+                        "s.id AS song_id, s.title AS song_title, s.duration, " +
+                        "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
+                        "FROM review r " +
+                        "JOIN cuser u ON r.user_id = u.id " +
+                        "JOIN song_review sr ON r.id = sr.review_id " +
+                        "JOIN song s ON sr.song_id = s.id " +
+                        "JOIN album al ON s.album_id = al.id " +
+                        "WHERE sr.song_id = ? AND r.user_id = ?",
+                new Object[]{songId, userId},
+                new int[]{Types.BIGINT, Types.BIGINT},
+                SONG_REVIEW_ROW_MAPPER
+        ).stream().findFirst();
+    }
+
+    @Override
     public int saveSongReview(SongReview review) {
         int result = 0;
         KeyHolder keyHolder = saveReviewWithNoId(review);
@@ -365,7 +413,7 @@ public class ReviewJdbcDao implements ReviewDao {
             Map<String, Object> keys = keyHolder.getKeys();
             if (keys != null && keys.containsKey("id")) {
                 long reviewId = ((Number) keys.get("id")).longValue();
-                jdbcTemplate.update(
+                result = jdbcTemplate.update(
                         "INSERT INTO song_review (review_id, song_id) VALUES (?, ?)",
                         reviewId,
                         review.getSong().getId()

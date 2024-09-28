@@ -12,6 +12,9 @@ public interface AlbumDao {
     List<Album> findAll();
     List<Album> findByTitleContaining(String sub);
 
+    void updateRating(long albumId, float newRating, int newRatingAmount);
+    boolean hasUserReviewed(long userId, long albumId);
+
     int save(Album album);
 
     int update(Album album);

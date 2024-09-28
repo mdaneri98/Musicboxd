@@ -42,7 +42,9 @@ public class SimpleRowMappers {
             rs.getString("bio"),
             rs.getObject("created_at", LocalDate.class),
             rs.getObject("updated_at", LocalDate.class),
-            rs.getLong("img_id")
+            rs.getLong("img_id"),
+            rs.getInt("rating_amount"),
+            rs.getFloat("avg_rating")
     );
     public static final RowMapper<Album> ALBUM_ROW_MAPPER = (rs, rowNum) -> new Album(
             rs.getLong("album_id"),
@@ -56,7 +58,9 @@ public class SimpleRowMappers {
                     rs.getLong("artist_id"),
                     rs.getString("name"),
                     rs.getLong("artist_img_id")
-            )
+            ),
+            rs.getInt("rating_amount"),
+            rs.getFloat("avg_rating")
     );
 
     public static final RowMapper<Song> SONG_ROW_MAPPER = (rs, rowNum) -> new Song(
@@ -78,7 +82,9 @@ public class SimpleRowMappers {
                     ),
                     rs.getObject("album_release_date", LocalDate.class)
 
-            )
+            ),
+            rs.getInt("rating_amount"),
+            rs.getFloat("avg_rating")
     );
 
 }

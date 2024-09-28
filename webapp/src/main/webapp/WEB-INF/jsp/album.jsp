@@ -33,11 +33,19 @@
               <span><c:out value="${artist.name}"/></span>
             </a>
           </div>
+            <div class="rating-card-container">
+              <jsp:include page="/WEB-INF/jsp/components/rating_card.jsp">
+                <jsp:param name="totalRatings" value="${album.ratingCount}"/>
+                <jsp:param name="averageRating" value="${album.avgRating}"/>
+                <jsp:param name="userRating" value="${loggedUserRating}"/>
+                <jsp:param name="reviewed" value="${isReviewed}"/>
+                <jsp:param name="entityType" value="album"/>
+                <jsp:param name="entityId" value="${albumId}"/>
+              </jsp:include>
+            </div>
         </div>
       </div>
         <div class="data-container">
-          <c:url var="albumReviewUrl" value="/album/${album.id}/reviews" />
-          <a href="${albumReviewUrl}"><button>Make a review</button></a>
           <c:url value="/album/${album.id}/add-favorite" var="add_favorite_url" />
           <c:url value="/album/${album.id}/remove-favorite" var="remove_favorite_url" />
           <c:choose>

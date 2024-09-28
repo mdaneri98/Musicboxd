@@ -151,6 +151,11 @@ label {
     justify-content: center;
 }
 
+.data-container h1 {
+    flex-wrap: wrap;
+    max-width: 400px;
+}
+
 .info-container .album {
     width: 200px;
     height: 200px;
@@ -473,6 +478,7 @@ button:hover:not(:disabled) {
     border-radius: 20px;
     padding: 5px 10px;
     transition: background-color 0.3s ease;
+    max-width: 350px;
 }
 
 .artist-button:hover {
@@ -505,4 +511,13 @@ button:hover:not(:disabled) {
     align-items: center;
     gap: 10px;
     margin-top: 10px;
+}
+
+.rating-card-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 80px;
+    display: flex;
+    align-items: center;
 }

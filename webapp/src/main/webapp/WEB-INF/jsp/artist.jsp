@@ -32,12 +32,18 @@
                 <p class="artist-bio"><c:out value="${artist.bio}"/></p>
             </div>
         </div>
+        <div class="rating-card-container">
+        <jsp:include page="/WEB-INF/jsp/components/rating_card.jsp">
+            <jsp:param name="totalRatings" value="${artist.ratingCount}"/>
+            <jsp:param name="averageRating" value="${artist.avgRating}"/>
+            <jsp:param name="userRating" value="${loggedUserRating}"/>
+            <jsp:param name="reviewed" value="${isReviewed}"/>
+            <jsp:param name="entityType" value="artist"/>
+            <jsp:param name="entityId" value="${artistId}"/>
+        </jsp:include>
+        </div>
     </div>
     <div class="data-container">
-        <c:url value="/artist/${artist.id}/reviews" var="new_artist_review_url" />
-        <a href="${new_artist_review_url}">
-            <button>Make a review</button>
-        </a>
         <c:url value="/artist/${artist.id}/add-favorite" var="add_favorite_url" />
         <c:url value="/artist/${artist.id}/remove-favorite" var="remove_favorite_url" />
         <c:choose>

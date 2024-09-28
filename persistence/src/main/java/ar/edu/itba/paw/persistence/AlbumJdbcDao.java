@@ -26,7 +26,7 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public Optional<Album> findById(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
-        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE album.id = ?",
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, album.avg_rating AS avg_rating, album.rating_amount AS rating_amount, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE album.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.ALBUM_ROW_MAPPER
@@ -35,7 +35,7 @@ public class AlbumJdbcDao implements AlbumDao {
 
     @Override
     public List<Album> findAll() {
-        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id", SimpleRowMappers.ALBUM_ROW_MAPPER);
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, album.avg_rating AS avg_rating, album.rating_amount AS rating_amount, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id", SimpleRowMappers.ALBUM_ROW_MAPPER);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class AlbumJdbcDao implements AlbumDao {
 
     @Override
     public List<Album> findByArtistId(long id) {
-        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE artist_id = ?",
+        return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, album.avg_rating AS avg_rating, album.rating_amount AS rating_amount, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE artist_id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
                 SimpleRowMappers.ALBUM_ROW_MAPPER);
@@ -89,6 +89,19 @@ public class AlbumJdbcDao implements AlbumDao {
                 album.getArtist().getId(),
                 album.getId()
         );
+    }
+
+    @Override
+    public void updateRating(long albumId, float newRating, int newRatingAmount) {
+        final String sql = "UPDATE album SET avg_rating = ?, rating_amount = ? WHERE id = ?";
+        jdbcTemplate.update(sql, newRating, newRatingAmount, albumId);
+    }
+
+    @Override
+    public boolean hasUserReviewed(long userId, long albumId) {
+        final String sql = "SELECT COUNT(*) FROM album_review ar JOIN review r ON ar.review_id = r.id WHERE r.user_id = ? AND ar.album_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, albumId);
+        return count > 0;
     }
 
     @Override
