@@ -151,4 +151,10 @@ public class ModeratorController {
         modelAndView.addObject("album", album);
         return modelAndView;
     }
+
+    @RequestMapping(path = "/update-ratings", method = RequestMethod.GET)
+    public ModelAndView addSongForm(@ModelAttribute("loggedUser") User loggedUser) {
+        reviewService.updateAvgRatingForAll();
+        return new ModelAndView("redirect:/");
+    }
 }

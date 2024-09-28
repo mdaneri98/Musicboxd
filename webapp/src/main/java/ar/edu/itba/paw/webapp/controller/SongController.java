@@ -59,12 +59,16 @@ public class SongController {
         Song song = songService.findById(songId).get();
         List<Artist> artists = artistService.findBySongId(songId);
         List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId,pageNum,5, loggedUser.getId());
+        boolean isReviewed = reviewService.hasUserReviewedSong(loggedUser.getId(), songId);
+        Integer loggedUserRating = isReviewed? reviewService.findSongReviewByUserId(loggedUser.getId(), songId).get().getRating(): 0;
 
         mav.addObject("album", song.getAlbum());
         mav.addObject("artists", artists);
         mav.addObject("song", song);
         mav.addObject("reviews", reviews);
         mav.addObject("isFavorite", userService.isSongFavorite(loggedUser.getId(), songId));
+        mav.addObject("isReviewed", isReviewed);
+        mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
         return mav;
     }

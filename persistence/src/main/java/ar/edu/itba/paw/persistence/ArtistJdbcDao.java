@@ -74,6 +74,19 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
+    public void updateRating(long artistId, float newRating, int newRatingAmount) {
+        final String sql = "UPDATE artist SET avg_rating = ?, rating_amount = ? WHERE id = ?";
+        jdbcTemplate.update(sql, newRating, newRatingAmount, artistId);
+    }
+
+    @Override
+    public boolean hasUserReviewed(long userId, long artistId) {
+        final String sql = "SELECT COUNT(*) FROM artist_review ar JOIN review r ON ar.review_id = r.id WHERE r.user_id = ? AND ar.artist_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, artistId);
+        return count > 0;
+    }
+
+    @Override
     public int deleteById(long id) {
         return jdbcTemplate.update("DELETE FROM artist WHERE id = ?", id);
     }

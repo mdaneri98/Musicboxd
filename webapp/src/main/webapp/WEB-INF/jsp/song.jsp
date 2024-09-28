@@ -39,18 +39,28 @@
               <span><c:out value="${artist.name}"/></span>
             </a>
           </c:forEach>
-          <c:url var="albumUrl" value="/album/${album.id}"/>
-          <a href="${albumUrl}" class="artist-button">
-            <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
-            <img src="${albumImgUrl}" alt="${album.title}" class="primary-image">
-            <span><c:out value="${album.title}"/></span>
-          </a>
         </div>
+        <div class="artist-album-container">
+        <c:url var="albumUrl" value="/album/${album.id}"/>
+        <a href="${albumUrl}" class="artist-button">
+          <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
+          <img src="${albumImgUrl}" alt="${album.title}" class="primary-image">
+          <span><c:out value="${album.title}"/></span>
+        </a>
+      </div>
+      </div>
+      <div class="rating-card-container">
+        <jsp:include page="/WEB-INF/jsp/components/rating_card.jsp">
+          <jsp:param name="totalRatings" value="${song.ratingCount}"/>
+          <jsp:param name="averageRating" value="${song.avgRating}"/>
+          <jsp:param name="userRating" value="${loggedUserRating}"/>
+          <jsp:param name="reviewed" value="${isReviewed}"/>
+          <jsp:param name="entityType" value="song"/>
+          <jsp:param name="entityId" value="${songId}"/>
+        </jsp:include>
       </div>
     </div>
     <div class="button-group">
-      <c:url var="songReviewUrl" value="/song/${song.id}/reviews"/>
-      <a href="${songReviewUrl}"><button>Make a review</button></a>
       <c:url value="/song/${song.id}/add-favorite" var="add_favorite_url" />
       <c:url value="/song/${song.id}/remove-favorite" var="remove_favorite_url" />
       <c:choose>
