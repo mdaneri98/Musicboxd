@@ -40,86 +40,70 @@
     var imgUrl = "<c:url value='/images/'/>";
     <c:url var="searchUrl" value="/search"/>
 
+    let isErrorMessageShown = false;
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Variables globales para almacenar los resultados de búsqueda
         var s_artists = [];
         var s_albums = [];
         var s_songs = [];
         var s_users = [];
 
-        // URL base para las búsquedas. Actualiza esto con tu URL real
         var searchUrl = "${searchUrl}";
+        var currentFocus = -1;
 
-        // Función para realizar búsquedas y mostrar resultados
         function searchAndDisplay(substring) {
-            // Función interna para realizar llamadas AJAX
-            function makeAjaxCall(endpoint, successCallback) {
-                fetch(searchUrl + endpoint + "?s=" + encodeURIComponent(substring))
-                    .then(response => response.json())
-                    .then(data => successCallback(data))
-                    .catch(error => console.error("Error al obtener datos:", error));
-            }
-
-            // Realizar llamadas AJAX para cada tipo de dato
-            makeAjaxCall("/artist", data => s_artists = data);
-            makeAjaxCall("/album", data => s_albums = data);
-            makeAjaxCall("/song", data => s_songs = data);
-            makeAjaxCall("/user", data => s_users = data);
+            Promise.all([
+                makeAjaxCall("/artist", substring),
+                makeAjaxCall("/album", substring),
+                makeAjaxCall("/song", substring),
+                makeAjaxCall("/user", substring)
+            ]).then(([artists, albums, songs, users]) => {
+                s_artists = artists;
+                s_albums = albums;
+                s_songs = songs;
+                s_users = users;
+                updateAutocompleteResults(substring);
+            }).catch(error => {
+                console.error("Error al obtener datos:", error);
+                showErrorMessage("Error fetching results");
+            });
         }
 
-        // Manejar clics en las pestañas de búsqueda
+        function makeAjaxCall(endpoint, substring) {
+            return fetch(searchUrl + endpoint + "?s=" + encodeURIComponent(substring))
+                .then(response => response.json())
+                .catch(error => {
+                    console.error("Error en llamada AJAX:", error);
+                    return [];
+                });
+        }
+
         function handleTabClick(event) {
             document.querySelectorAll('.search-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
-            const searchInput = document.getElementById('searchInput');
-            searchInput.value = '';
+            document.getElementById('searchInput').value = '';
             closeAllLists();
         }
 
-        // Agregar event listeners a las pestañas de búsqueda
         document.querySelectorAll('.search-tab').forEach(tab => {
             tab.addEventListener('click', handleTabClick);
         });
 
-        // Función principal de autocompletado
         function autocomplete(inp) {
-            var currentFocus;
             inp.addEventListener("input", function(e) {
-                var a, b, i, val = this.value;
-                closeAllLists();
-                if (!val) {
-                    return false;
-                }
-                currentFocus = -1;
-                a = document.createElement("DIV");
-                a.setAttribute("id", this.id + "autocomplete-list");
-                a.setAttribute("class", "autocomplete-items");
-                this.parentNode.appendChild(a);
-
-                var activeTab = document.querySelector('.search-tab.active').dataset.type;
-                var searchArray = (activeTab === 'music') ? [...s_artists, ...s_albums, ...s_songs] : s_users;
-                searchArray = sortBySubstring(searchArray, val).slice(0,6);
-                <c:url var="elementUrl" value="/"/>
-                searchArray.forEach(function (item) {
-                    if (item.name.toUpperCase().includes(val.toUpperCase())) {
-                        b = document.createElement("DIV");
-                        b.innerHTML = createAutocompleteItem(item);
-                        b.addEventListener("click", function (e) {
-                            item.url = "${elementUrl}" + item.type + "/" + item.id
-
-                            inp.value = item.name;
-                            window.location.href = item.url;
-                            closeAllLists();
-                        });
-                        a.appendChild(b);
+                if (e.keyCode != 40 || e.keyCode != 38 || e.keyCode != 13) {
+                    var val = this.value;
+                    if (!val) {
+                        closeAllLists();
+                        return false;
                     }
-                });
+                    searchAndDisplay(val);
+                }
             });
 
             inp.addEventListener("keydown", function(e) {
                 var x = document.getElementById(this.id + "autocomplete-list");
-                if (x) x = x.getElementsByTagName("div");
+                if (x) x = x.getElementsByClassName("autocomplete-item");
                 if (e.keyCode == 40) {
                     currentFocus++;
                     addActive(x);
@@ -128,72 +112,105 @@
                     addActive(x);
                 } else if (e.keyCode == 13) {
                     e.preventDefault();
-                    if (currentFocus > -1) {
-                        if (x) x[currentFocus].click();
+                    if (x && x.length > 0) {
+                        if (currentFocus > -1) {
+                            x[currentFocus].click();
+                        } else {
+                            x[0].click();
+                        }
+                    } else {
+                        showErrorMessage("No se encontraron resultados");
                     }
                 }
             });
+        }
 
-            function addActive(x) {
-                if (!x) return false;
-                removeActive(x);
-                if (currentFocus >= x.length) currentFocus = 0;
-                if (currentFocus < 0) currentFocus = (x.length - 1);
-                x[currentFocus].classList.add("autocomplete-active");
+        function updateAutocompleteResults(val) {
+            closeAllLists();
+            var a = document.createElement("DIV");
+            a.setAttribute("id", "searchInputautocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            document.getElementById('searchInput').parentNode.appendChild(a);
+
+            var activeTab = document.querySelector('.search-tab.active').dataset.type;
+            var searchArray = (activeTab === 'music') ? [...s_artists, ...s_albums, ...s_songs] : s_users;
+            searchArray = sortBySubstring(searchArray, val);
+
+            if (searchArray.length === 0) {
+                showErrorMessage("No se encontraron resultados");
+                return;
             }
 
-            function removeActive(x) {
-                for (var i = 0; i < x.length; i++) {
-                    x[i].classList.remove("autocomplete-active");
-                }
+            <c:url var="elementUrl" value="/"/>
+            searchArray.slice(0, 7).forEach(function (item) {
+                var b = document.createElement("DIV");
+                b.className = "autocomplete-item";
+                b.innerHTML = createAutocompleteItem(item);
+                b.addEventListener("click", function (e) {
+                    item.url = "${elementUrl}" + item.type + "/" + item.id;
+                    document.getElementById('searchInput').value = item.name;
+                    window.location.href = item.url;
+                });
+                a.appendChild(b);
+            });
+        }
+
+        function showErrorMessage(message) {
+            closeAllLists();
+            var errorDiv = document.createElement("DIV");
+            errorDiv.setAttribute("class", "autocomplete-error");
+            errorDiv.textContent = message;
+
+            var searchWrapper = document.querySelector('.search-wrapper');
+            searchWrapper.appendChild(errorDiv);
+
+            isErrorMessageShown = true;
+        }
+
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
             }
         }
 
         function createAutocompleteItem(item) {
             return `
-        <div class="autocomplete-item">
-            <img src="` + imgUrl + item.imgId + `" alt="`+ item.name +`">
-            <div class="autocomplete-item-info">
-                <span class="autocomplete-item-name">` + item.name + `</span>
-                <span class="autocomplete-item-type">` + item.type.charAt(0).toUpperCase() + item.type.slice(1) + `</span>
-            </div>
-        </div>
-    `;
+                <img src="` + imgUrl + item.imgId + `" alt="`+ item.name +`">
+                <div class="autocomplete-item-info">
+                    <span class="autocomplete-item-name">` + item.name + `</span>
+                    <span class="autocomplete-item-type">` + item.type.charAt(0).toUpperCase() + item.type.slice(1) + `</span>
+                </div>
+            `;
         }
 
         function sortBySubstring(arr, substring) {
-            return arr.sort((a, b) => {
-                const nameA = a.name.toLowerCase();
-                const nameB = b.name.toLowerCase();
-                const sub = substring.toLowerCase();
+            const sub = substring.toLowerCase();
+            return arr.filter(item => item.name.toLowerCase().includes(sub))
+                      .sort((a, b) => {
+                          const nameA = a.name.toLowerCase();
+                          const nameB = b.name.toLowerCase();
 
-                // Si el nombre comienza con el substring, darle mayor prioridad
-                const startsWithA = nameA.startsWith(sub);
-                const startsWithB = nameB.startsWith(sub);
+                          const startsWithA = nameA.startsWith(sub);
+                          const startsWithB = nameB.startsWith(sub);
 
-                if (startsWithA && !startsWithB) return -1; // a tiene prioridad sobre b
-                if (!startsWithA && startsWithB) return 1;  // b tiene prioridad sobre a
+                          if (startsWithA && !startsWithB) return -1;
+                          if (!startsWithA && startsWithB) return 1;
 
-                // Si ambos contienen el substring pero no al principio, ordenar por posición
-                const indexA = nameA.indexOf(sub);
-                const indexB = nameB.indexOf(sub);
+                          const indexA = nameA.indexOf(sub);
+                          const indexB = nameB.indexOf(sub);
 
-                if (indexA !== -1 && indexB !== -1) {
-                    return indexA - indexB;  // El que tiene la coincidencia antes tiene prioridad
-                }
-
-                // Si solo uno de ellos contiene el substring, darle prioridad
-                if (indexA !== -1) return -1;
-                if (indexB !== -1) return 1;
-
-                // Si ninguno lo contiene, mantener el orden original
-                return 0;
-            });
+                          return indexA - indexB;
+                      });
         }
 
-
-
-        // Cerrar todas las listas de autocompletado
         function closeAllLists(elmnt) {
             var x = document.getElementsByClassName("autocomplete-items");
             for (var i = 0; i < x.length; i++) {
@@ -201,32 +218,18 @@
                     x[i].parentNode.removeChild(x[i]);
                 }
             }
+            var errorMsg = document.querySelector('.autocomplete-error');
+            if (errorMsg) {
+                errorMsg.remove();
+                isErrorMessageShown = false;
+            }
         }
 
-        function debounce(func, delay) {
-            let debounceTimer;
-            return function() {
-                const context = this;
-                const args = arguments;
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => func.apply(context, args), delay);
-            };
-        }
-
-        // Event listener para cerrar listas al hacer clic fuera
         document.addEventListener("click", function (e) {
             closeAllLists(e.target);
         });
 
-        // Inicializar autocompletado
         autocomplete(document.getElementById("searchInput"));
-
-        // Agregar event listener para la búsqueda
-        document.getElementById('searchInput').addEventListener('input', debounce(function() {
-            var substring = this.value;
-            searchAndDisplay(substring);
-        }, 50));
-
     });
 </script>
 </body>
