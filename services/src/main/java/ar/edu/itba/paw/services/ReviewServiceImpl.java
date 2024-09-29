@@ -191,7 +191,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     private <T extends Review> void setIsLiked(List<T> reviews, long userId) {
         for (T review : reviews) {
-            review.setLiked(isLiked(userId, review.getId()));
+            if (userId < 1)
+                review.setLiked(false);
+            else
+                review.setLiked(isLiked(userId, review.getId()));
         }
     }
 
