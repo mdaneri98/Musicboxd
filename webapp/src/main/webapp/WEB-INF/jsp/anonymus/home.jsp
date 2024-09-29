@@ -11,13 +11,44 @@
 
     <c:url var="css" value="/static/css/home.css" />
     <link rel="stylesheet" href="${css}">
+
+    <c:url var="review_card" value="/static/css/review_card.css" />
+    <link rel="stylesheet" href="${review_card}">
+
 </head>
 <body>
 <div>
     <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp" />
 </div>
-<div class="container">
+<div class="v-container">
+    <div class="call-to-action-container">
+        <h1>Musicboxd</h1>
+        <h6>Descubre Nueva Música</h6>
+        <p>Únete a una comunidad apasionada por la música y comparte tus opiniones sobre artistas, álbumes y canciones.</p>
+    </div>
     <div>
+
+    </div>
+    <div class="max-width">
+        <c:if test="${popularAlbums.size() > 0}">
+            <h2>Popular albums</h2>
+            <div class="carousel-container">
+                <div class="carousel">
+                    <c:forEach var="album" items="${popularAlbums}" varStatus="status">
+                        <c:url var="albumUrl" value="/album/${album.id}"/>
+                        <div class="item">
+                            <a href="${albumUrl}" class="album">
+                                <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+                                <img src="${albumImgURL}" alt="Album ${status.index + 1}">
+                                <p><c:out value="${album.title}"/></p>
+                            </a>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:if>
+    </div>
+    <div class="max-width">
         <h2>Popular Reviews</h2>
         <div class="cards-container">
             <c:forEach var="review" items="${popularReviews}">

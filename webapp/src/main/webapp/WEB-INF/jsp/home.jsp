@@ -50,7 +50,6 @@
         <span id="forYouButton" class="tab-button active">For You</span>
         <span id="followingButton" class="tab-button">Following</span>
     </div>
-
     <div id="forYouTab">
         <h2>Popular Reviews</h2>
         <div class="cards-container">
