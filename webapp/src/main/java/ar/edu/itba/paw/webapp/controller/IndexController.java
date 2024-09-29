@@ -54,7 +54,6 @@ public class IndexController {
         switch (type) {
             case "song":
                 List<Song> songs = songService.findByTitleContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = songs.stream()
                         .map(Song::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -62,7 +61,6 @@ public class IndexController {
 
             case "album":
                 List<Album> albums = albumService.findByTitleContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = albums.stream()
                         .map(Album::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -70,14 +68,12 @@ public class IndexController {
 
             case "artist":
                 List<Artist> artists = artistService.findByNameContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = artists.stream()
                         .map(Artist::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
                 break;
             case "user":
                 List<User> users = userService.findByUsernameContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = users.stream()
                         .map(User::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -86,7 +82,6 @@ public class IndexController {
                 logger.warn("Tipo de búsqueda no reconocido: {}", type);
                 return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
         }
-
         return jsonResult;
     }
 
