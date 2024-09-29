@@ -6,19 +6,10 @@ import ar.edu.itba.paw.models.Artist;
 import java.util.List;
 import java.util.Optional;
 
-public interface ArtistService {
-    Optional<Artist> findById(long id);
-
-    List<Artist> findAll();
+public interface ArtistService extends CrudService<Artist> {
 
     List<Artist> findBySongId(long id);
 
     List<Artist> findByNameContaining(String sub);
-
-    long save(Artist artist);
-
-    int update(Artist artist);
-
-    int deleteById(long id);
 
 }

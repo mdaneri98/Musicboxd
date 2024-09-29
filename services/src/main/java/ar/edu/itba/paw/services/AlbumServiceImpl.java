@@ -39,7 +39,7 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public int save(Album album) {
+    public long save(Album album) {
         return albumDao.save(album);
     }
 
