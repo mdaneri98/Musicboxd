@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import org.slf4j.Logger;
@@ -44,8 +41,8 @@ public class IndexController {
     public ModelAndView search(@ModelAttribute("loggedUser") User loggedUser) {
         ModelAndView mav = new ModelAndView("search");
 
-        List<Album> albums = albumService.findPaginated(10, 0);
-        List<Artist> artists = artistService.findPaginated(10, 0);
+        List<Album> albums = albumService.findPaginated(FilterType.NEWEST,10, 0);
+        List<Artist> artists = artistService.findPaginated(FilterType.RATING,10, 0);
 
         mav.addObject("top_albums", albums);
         mav.addObject("top_artists", artists);

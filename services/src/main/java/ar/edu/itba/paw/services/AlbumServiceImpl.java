@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Filter;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -26,8 +28,8 @@ public class AlbumServiceImpl implements AlbumService {
         return albumDao.findById(id);
     }
 
-    public List<Album> findPaginated(int limit, int offset) {
-        return albumDao.findPaginated(limit, offset);
+    public List<Album> findPaginated(FilterType filterType, int limit, int offset) {
+        return albumDao.findPaginated(filterType, limit, offset);
     }
 
     @Override

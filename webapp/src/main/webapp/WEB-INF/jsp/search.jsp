@@ -45,7 +45,7 @@
                     <c:forEach var="artist" items="${top_artists}" varStatus="status">
                         <c:url var="artistUrl" value="/artist/${artist.id}"/>
                         <div class="item">
-                            <a href="${albumUrl}" class="artist">
+                            <a href="${artistUrl}" class="artist">
                                 <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
                                 <img src="${artistImgUrl}" alt="Artist ${status.index + 1}">
                                 <p><c:out value="${artist.name}"/></p>
