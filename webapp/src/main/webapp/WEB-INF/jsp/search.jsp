@@ -21,20 +21,63 @@
         <jsp:param name="moderator" value="${loggedUser.moderator}"/>
     </jsp:include>
 </div>
-<div class="search-container">
-    <h1>Musicboxd</h1>
-    <div class="search-tabs">
-        <span class="search-tab active" data-type="music">Music</span>
-        <span class="search-tab" data-type="users">Users</span>
+<div class="v-container">
+    <div class="search-container">
+        <h1>Musicboxd</h1>
+        <div class="search-tabs">
+            <span class="search-tab active" data-type="music">Music</span>
+            <span class="search-tab" data-type="users">Users</span>
+        </div>
+        <div class="search-wrapper">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search Musicboxd...">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            <div id="autocompleteList" class="autocomplete-items"></div>
+        </div>
     </div>
-    <div class="search-wrapper">
-        <input type="text" class="search-input" id="searchInput" placeholder="Search Musicboxd...">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-        </svg>
-        <div id="autocompleteList" class="autocomplete-items"></div>
+
+    <div class="container">
+        <c:if test="${top_artists.size() > 0}">
+            <h4>Popular artists</h4>
+            <div class="carousel-container">
+                <div class="carousel">
+                    <c:forEach var="artist" items="${top_artists}" varStatus="status">
+                        <c:url var="artistUrl" value="/artist/${artist.id}"/>
+                        <div class="item">
+                            <a href="${albumUrl}" class="artist">
+                                <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
+                                <img src="${artistImgUrl}" alt="Artist ${status.index + 1}">
+                                <p><c:out value="${artist.name}"/></p>
+                            </a>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:if>
+    </div>
+
+    <div class="container">
+        <c:if test="${top_albums.size() > 0}">
+            <h4>Popular albums</h4>
+            <div class="carousel-container">
+                <div class="carousel">
+                    <c:forEach var="album" items="${top_albums}" varStatus="status">
+                        <c:url var="albumUrl" value="/album/${album.id}"/>
+                        <div class="item">
+                            <a href="${albumUrl}" class="album">
+                                <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+                                <img src="${albumImgURL}" alt="Album ${status.index + 1}">
+                                <p><c:out value="${album.title}"/></p>
+                            </a>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:if>
     </div>
 </div>
+
 
 <script>
     var imgUrl = "<c:url value='/images/'/>";

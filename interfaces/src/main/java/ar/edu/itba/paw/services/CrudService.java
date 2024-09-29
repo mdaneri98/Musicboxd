@@ -8,6 +8,8 @@ public interface CrudService<T> {
 
     List<T> findAll();
 
+    List<T> findPaginated(int limit, int offset);
+
     long save(T entity);
 
     int update(T entity);
