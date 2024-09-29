@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -76,7 +77,30 @@ public class SongJdbcDao implements SongDao {
     }
 
     @Override
-    public int save(Song song) {
+    public List<Song> findPaginated(FilterType filterType, int limit, int offset) {
+        String sql;
+        if (filterType.equals(FilterType.NEWEST)) {
+            sql = "SELECT id FROM song ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        } else if (filterType.equals(FilterType.OLDEST)) {
+            sql = "SELECT id FROM song ORDER BY created_at ASC LIMIT ? OFFSET ?";
+        } else {
+            sql = "SELECT id FROM song ORDER BY avg_rating LIMIT ? OFFSET ?";
+        }
+
+        List<Integer> ids = jdbcTemplate.queryForList(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, Integer.class);
+
+        // Buscamos los álbumes correspondientes a cada id
+        List<Song> songs = new ArrayList<>();
+        for (Integer id : ids) {
+            Optional<Song> song = this.findById(id);
+            song.ifPresent(songs::add);
+        }
+
+        return songs;
+    }
+
+    @Override
+    public long save(Song song) {
         return jdbcTemplate.update(
                 "INSERT INTO song (title, duration, track_number, album_id) VALUES (?, ?, ?, ?)",
                 song.getTitle(),

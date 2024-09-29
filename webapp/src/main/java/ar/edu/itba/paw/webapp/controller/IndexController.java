@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import org.slf4j.Logger;
@@ -42,7 +39,15 @@ public class IndexController {
 
     @RequestMapping("/search")
     public ModelAndView search(@ModelAttribute("loggedUser") User loggedUser) {
-        return new ModelAndView("search");
+        ModelAndView mav = new ModelAndView("search");
+
+        List<Album> albums = albumService.findPaginated(FilterType.NEWEST,10, 0);
+        List<Artist> artists = artistService.findPaginated(FilterType.RATING,10, 0);
+
+        mav.addObject("top_albums", albums);
+        mav.addObject("top_artists", artists);
+
+        return mav;
     }
 
     @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
@@ -54,7 +59,6 @@ public class IndexController {
         switch (type) {
             case "song":
                 List<Song> songs = songService.findByTitleContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = songs.stream()
                         .map(Song::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -62,7 +66,6 @@ public class IndexController {
 
             case "album":
                 List<Album> albums = albumService.findByTitleContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = albums.stream()
                         .map(Album::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -70,14 +73,12 @@ public class IndexController {
 
             case "artist":
                 List<Artist> artists = artistService.findByNameContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = artists.stream()
                         .map(Artist::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
                 break;
             case "user":
                 List<User> users = userService.findByUsernameContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = users.stream()
                         .map(User::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -86,7 +87,6 @@ public class IndexController {
                 logger.warn("Tipo de búsqueda no reconocido: {}", type);
                 return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
         }
-
         return jsonResult;
     }
 

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.persistence.SongDao;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,11 @@ public class SongServiceImpl implements SongService {
         return songDao.findByTitleContaining(sub);
     }
 
+    @Override
+    public List<Song> findPaginated(FilterType filterType, int limit, int offset) {
+        return songDao.findPaginated(filterType, limit, offset);
+    }
+
     public List<Song> findByArtistId(long id) {
         return songDao.findByArtistId(id);
     }
@@ -43,7 +49,7 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public int save(Song song) {
+    public long save(Song song) {
         return songDao.save(song);
     }
 
