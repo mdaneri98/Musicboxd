@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.FilterType;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +11,7 @@ public interface CrudDao<T> {
 
     List<T> findAll();
 
-    List<T> findPaginated(int limit, int offset);
+    List<T> findPaginated(FilterType filterType, int limit, int offset);
 
     long save(T entity);
 
