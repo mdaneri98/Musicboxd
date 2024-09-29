@@ -1,12 +1,15 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.FilterType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +39,29 @@ public class ArtistJdbcDao implements ArtistDao {
     @Override
     public List<Artist> findAll() {
         return jdbcTemplate.query("SELECT * FROM artist", SimpleRowMappers.ARTIST_ROW_MAPPER);
+    }
+
+    @Override
+    public List<Artist> findPaginated(FilterType filterType, int limit, int offset) {
+        String sql;
+        if (filterType.equals(FilterType.NEWEST)) {
+            sql = "SELECT id FROM artist ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        } else if (filterType.equals(FilterType.OLDEST)) {
+            sql = "SELECT id FROM artist ORDER BY created_at ASC LIMIT ? OFFSET ?";
+        } else {
+            sql = "SELECT id FROM artist ORDER BY avg_rating LIMIT ? OFFSET ?";
+        }
+
+        List<Integer> ids = jdbcTemplate.queryForList(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, Integer.class);
+
+        // Buscamos los álbumes correspondientes a cada id
+        List<Artist> artists = new ArrayList<>();
+        for (Integer id : ids) {
+            Optional<Artist> artist = this.findById(id);
+            artist.ifPresent(artists::add);
+        }
+
+        return artists;
     }
 
     @Override
