@@ -42,7 +42,15 @@ public class IndexController {
 
     @RequestMapping("/search")
     public ModelAndView search(@ModelAttribute("loggedUser") User loggedUser) {
-        return new ModelAndView("search");
+        ModelAndView mav = new ModelAndView("search");
+
+        List<Album> albums = albumService.findPaginated(10, 0);
+        List<Artist> artists = artistService.findPaginated(10, 0);
+
+        mav.addObject("top_albums", albums);
+        mav.addObject("top_artists", artists);
+
+        return mav;
     }
 
     @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)

@@ -26,6 +26,11 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    public List<Artist> findPaginated(int limit, int offset) {
+        return artistDao.findPaginated(limit, offset);
+    }
+
+    @Override
     public List<Artist> findByNameContaining(String sub) {
         return artistDao.findByNameContaining(sub);
     }

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,10 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     public Optional<Album> findById(long id) {
         return albumDao.findById(id);
+    }
+
+    public List<Album> findPaginated(int limit, int offset) {
+        return albumDao.findPaginated(limit, offset);
     }
 
     @Override

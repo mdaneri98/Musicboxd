@@ -39,6 +39,20 @@ public class AlbumJdbcDao implements AlbumDao {
     }
 
     @Override
+    public List<Album> findPaginated(int limit, int offset) {
+        List<Integer> ids = jdbcTemplate.queryForList("SELECT id FROM album ORDER BY avg_rating LIMIT ? OFFSET ?", new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, Integer.class);
+
+        // Buscamos los álbumes correspondientes a cada id
+        List<Album> albums = new ArrayList<>();
+        for (Integer id : ids) {
+            Optional<Album> album = this.findById(id);
+            album.ifPresent(albums::add);
+        }
+
+        return albums;
+    }
+
+    @Override
     public List<Album> findByTitleContaining(String sub) {
         // SQL para seleccionar todos los ids que coinciden con el título
         String sql = "SELECT id FROM album WHERE title ILIKE ?";
@@ -65,7 +79,7 @@ public class AlbumJdbcDao implements AlbumDao {
     }
 
     @Override
-    public int save(Album album) {
+    public long save(Album album) {
         return jdbcTemplate.update(
                 "INSERT INTO album (title, genre, release_date , img_id, artist_id) VALUES (?, ?, ?, ?, ?)",
                 album.getTitle(),
