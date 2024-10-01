@@ -343,6 +343,11 @@ label {
 }
 
 /* ------------ Song list ------------ */
+.song-list {
+    list-style-type: none;
+    padding: 0;
+}
+
 .song-list li {
     padding: 8px;
     border-radius: 8px;
@@ -351,6 +356,43 @@ label {
 
 .song-list li:hover {
     background-color: #2b2d30;
+}
+
+.song-item {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.song-number {
+    color: var(--text-subdued);
+    margin-right: 16px;
+    font-variant-numeric: tabular-nums;
+    min-width: 16px;
+    text-align: right;
+}
+
+.song-title {
+    flex-grow: 1;
+    font-size: 16px;
+    color: var(--text-base);
+    margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-rating {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-left: auto;
+    margin-right: 50px;
+    color: var(--text-base);
 }
 
 /* ------------ Buttons ------------ */
