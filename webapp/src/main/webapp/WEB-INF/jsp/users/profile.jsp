@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 
-    <spring:message var="pageTitle" text="User Page"/>
+    <spring:message var="pageTitle" code="page.userpage.title"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -35,13 +35,12 @@
         </jsp:include>
     </header>
     <c:url var="editProfileUrl" value="/user/edit"></c:url>
-    <a href="${editProfileUrl}"><button>Edit profile</button></a>
+    <a href="${editProfileUrl}"><button><spring:message code="label.edit.profile"/></button></a>
 
-
-    <h2>Favorite Albums</h2>
+    <h2><spring:message code="label.favorite.albums"/></h2>
     <c:if test="${albums.size() == 0}">
         <div class="artist">
-            <p>Add up to 5 favorite albums!</p>
+            <p><spring:message code="label.up.to.five.albums"/></p>
         </div>
     </c:if>
     <div class="carousel-container">
@@ -62,7 +61,7 @@
     <h2>Favorite artists</h2>
     <c:if test="${artists.size() == 0}">
         <div class="artist">
-            <p>Add up to 5 favorite artists!</p>
+            <p><spring:message code="label.up.to.five.artist"/></p>
         </div>
     </c:if>
     <div class="carousel-container">
@@ -83,7 +82,7 @@
     <h2>Favorite Songs</h2>
     <c:if test="${songs.size() == 0}">
         <div class="artist">
-            <p>Add up to 5 favorite songs!</p>
+            <p><spring:message code="label.up.to.five.songs"/></p>
         </div>
     </c:if>
     <ul class="song-list">
@@ -127,8 +126,8 @@
     <div class="pages">
         <c:url value="/user/profile/${pageNum + 1}" var="nextPage" />
         <c:url value="/user/profile/${pageNum -1}" var="prevPage" />
-        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-        <c:if test="${5*(pageNum-1)+reviews.size() != loggedUser.reviewAmount && reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><p><spring:message code="button.previous.page"/></p></button></a></c:if>
+        <c:if test="${5*(pageNum-1)+reviews.size() != loggedUser.reviewAmount && reviews.size() == 5}"><a href="${nextPage}"><button><p><spring:message code="button.next.page"/></p></button></a></c:if>
     </div>
     </c:if>
 </div>

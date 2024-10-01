@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 
-  <spring:message var="pageTitle" text="User Page"/>
+  <spring:message var="pageTitle" code="page.userpage.title"/>
   <jsp:include page="/WEB-INF/jsp/components/head.jsp">
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
@@ -21,7 +21,6 @@
   </jsp:include>
 </div>
 <div class="container">
-
   <header>
     <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
       <jsp:param name="imgId" value="${user.imgId}" />
@@ -40,19 +39,19 @@
     <c:choose>
       <c:when test="${!isFollowing}">
         <form action="${follow_user_url}" method="post">
-          <button type="submit">Follow</button>
+          <button type="submit"><spring:message code="label.follow"/></button>
         </form>
       </c:when>
       <c:otherwise>
         <form action="${unfollow_user_url}" method="post">
-          <button type="submit">Unfollow</button>
+          <button type="submit"><spring:message code="label.unfollow"/></button>
         </form>
       </c:otherwise>
     </c:choose>
   </div>
 
   <c:if test="${artists.size() > 0}">
-    <h2>Favorite artists</h2>
+    <h2><spring:message code="label.favorite.artists"/></h2>
     <div class="carousel-container">
       <div class="carousel">
         <c:forEach var="artist" items="${artists}" varStatus="status">
@@ -70,7 +69,7 @@
   </c:if>
 
   <c:if test="${albums.size() > 0}">
-    <h2>Favorite Albums</h2>
+    <spring:message code="label.favorite.albums"/>
     <div class="carousel-container">
       <div class="carousel">
         <c:forEach var="album" items="${albums}" varStatus="status">
@@ -88,50 +87,53 @@
   </c:if>
 
   <c:if test="${songs.size() > 0}">
-  <h2>Favorite Songs</h2>
+  <h2><spring:message code="label.favorite.songs"/></h2>
   <ul class="song-list">
     <c:forEach var="song" items="${songs}" varStatus="status">
       <c:url var="songUrl" value="/song/${song.id}"/>
-      <a href="${songUrl}">
-        <li>
-          <span class="song-number">${status.index + 1}     </span>
-          <span class="song-title"><c:out value="${song.title}"/></span>
-        </li>
-      </a>
+      <li>
+        <a href="${songUrl}">
+            <span class="song-number">${status.index + 1}     </span>
+            <span class="song-title"><c:out value="${song.title}"/></span>
+        </a>
+      </li>
     </c:forEach>
   </ul>
   </c:if>
 
   <c:if test="${reviews.size() > 0}">
-  <h2>Reviews</h2>
-  <div class="cards-container">
-    <c:forEach var="review" items="${reviews}">
-      <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
-        <jsp:param name="item_img_id" value="${review.itemImgId}"/>
-        <jsp:param name="item_name" value="${review.itemName}"/>
-        <jsp:param name="item_url" value="/${review.itemLink}"/>
-        <jsp:param name="item_type" value="${review.itemType}"/>
-        <jsp:param name="title" value="${review.title}"/>
-        <jsp:param name="rating" value="${review.rating}"/>
-        <jsp:param name="review_content" value="${review.description}"/>
-        <jsp:param name="user_name" value="@${review.user.username}"/>
-        <jsp:param name="user_img_id" value="${review.user.imgId}"/>
-        <jsp:param name="verified" value="${review.user.verified}"/>
-        <jsp:param name="moderator" value="${loggedUser.moderator}"/>
-        <jsp:param name="userModerator" value="${review.user.moderator}"/>
-        <jsp:param name="blocked" value="${review.isBlocked()}"/>
-        <jsp:param name="likes" value="${review.likes}"/>
-        <jsp:param name="user_id" value="${review.user.id}"/>
-        <jsp:param name="review_id" value="${review.id}"/>
-        <jsp:param name="isLiked" value="${review.liked}"/>
-      </jsp:include>
-    </c:forEach>
-  </div>
-  <c:url value="/user/${user.id}/${pageNum + 1}" var="nextPage" />
-  <c:url value="/user/${user.id}/${pageNum -1}" var="prevPage" />
-  <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-    <c:if test="${5*(pageNum-1)+reviews.size() != user.reviewAmount && reviews.size() == 5}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+    <h2><spring:message code="label.reviews"/></h2>
+    <div class="cards-container">
+      <c:forEach var="review" items="${reviews}">
+        <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
+          <jsp:param name="item_img_id" value="${review.itemImgId}"/>
+          <jsp:param name="item_name" value="${review.itemName}"/>
+          <jsp:param name="item_url" value="/${review.itemLink}"/>
+          <jsp:param name="item_type" value="${review.itemType}"/>
+          <jsp:param name="title" value="${review.title}"/>
+          <jsp:param name="rating" value="${review.rating}"/>
+          <jsp:param name="review_content" value="${review.description}"/>
+          <jsp:param name="user_name" value="@${review.user.username}"/>
+          <jsp:param name="user_img_id" value="${review.user.imgId}"/>
+          <jsp:param name="verified" value="${review.user.verified}"/>
+          <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+          <jsp:param name="userModerator" value="${review.user.moderator}"/>
+          <jsp:param name="blocked" value="${review.isBlocked()}"/>
+          <jsp:param name="likes" value="${review.likes}"/>
+          <jsp:param name="user_id" value="${review.user.id}"/>
+          <jsp:param name="review_id" value="${review.id}"/>
+          <jsp:param name="isLiked" value="${review.liked}"/>
+        </jsp:include>
+      </c:forEach>
+    </div>
+    <div>
+    <c:url value="/user/${user.id}/${pageNum + 1}" var="nextPage" />
+    <c:url value="/user/${user.id}/${pageNum -1}" var="prevPage" />
+    <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
+      <c:if test="${5*(pageNum-1)+reviews.size() != user.reviewAmount && reviews.size() == 5}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
+    </div>
   </c:if>
+
 </div>
 </body>
 </html>
