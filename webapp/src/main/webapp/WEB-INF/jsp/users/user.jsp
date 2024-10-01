@@ -107,9 +107,14 @@
     <c:forEach var="song" items="${songs}" varStatus="status">
       <c:url var="songUrl" value="/song/${song.id}"/>
       <li>
-        <a href="${songUrl}">
-            <span class="song-number">${status.index + 1}     </span>
-            <span class="song-title"><c:out value="${song.title}"/></span>
+        <a href="${songUrl}" class="song-item">
+          <span class="song-number">${status.index + 1}</span>
+          <span class="song-title"><c:out value="${song.title}"/></span>
+          <span class="song-rating">
+            <fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+            <span class="rating">${formattedRating}</span>
+            <span class="star">&#9733;</span>
+          </span>
         </a>
       </li>
     </c:forEach>

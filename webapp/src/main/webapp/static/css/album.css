@@ -17,19 +17,5 @@
     background-color: var(--background-tinted-highlight);
 }
 
-.song-number {
-    color: var(--text-subdued);
-    margin-right: 16px;
-    font-variant-numeric: tabular-nums;
-    min-width: 16px;
-    text-align: right;
-}
 
-.song-title {
-    flex-grow: 1;
-    font-size: 16px;
-    color: var(--text-base);
-    text-decoration: none;
-    margin-left: 10px;
-}
 
