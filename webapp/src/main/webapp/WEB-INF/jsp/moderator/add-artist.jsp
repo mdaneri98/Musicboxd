@@ -5,7 +5,7 @@
 <html>
 <head>
 
-    <spring:message var="pageTitle" text="Submit Artist"/>
+    <spring:message var="pageTitle" code="submit.artist.title"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -22,30 +22,30 @@
     </jsp:include>
 </div>
 <div class="container">
-    <h1>Submit an Artist</h1>
+    <h1><spring:message code="submit.artist.heading"/></h1>
 
     <c:url var="postUrl" value="/mod/add/artist" />
     <form:form modelAttribute="modArtistForm" action="${postUrl}" method="post" enctype="multipart/form-data">
         <div>
-            <label>Name:
+            <label><spring:message code="submit.artist.name.label"/>
                 <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="name" type="text" />
             </label>
         </div>
         <div>
-            <label>Bio:
+            <label><spring:message code="submit.artist.desc.label"/>
                 <form:errors path="bio" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="bio" type="text" />
             </label>
         </div>
         <div>
-            <label>Image:
+            <label><spring:message code="submit.artist.image.label"/>
                 <form:errors path="file" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="file" type="file" accept=".jpg,.jpeg,.png" />
             </label>
         </div>
         <div>
-            <button type="submit">Submit Artist</button>
+            <button type="submit"><spring:message code="submit.artist.button"/></button>
         </div>
     </form:form>
 </div>

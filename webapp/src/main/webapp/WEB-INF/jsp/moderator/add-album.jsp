@@ -4,15 +4,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-
-    <spring:message var="pageTitle" text="Submit an Album"/>
+    <spring:message code="submit.album.title" var="pageTitle"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
 
     <c:url var="css" value="/static/css/artist_review.css" />
     <link rel="stylesheet" href="${css}">
-
 </head>
 <body>
 <div>
@@ -22,39 +20,30 @@
     </jsp:include>
 </div>
 <div class="container">
-    <h1>Submit an Album</h1>
+    <h1><spring:message code="submit.album.heading"/></h1>
 
     <c:url var="postUrl" value="/mod/add/artist/${artistId}/album" />
     <form:form modelAttribute="modAlbumFrom" action="${postUrl}" method="post" enctype="multipart/form-data">
         <div>
-            <label>Title:
+            <label><spring:message code="submit.album.title.label"/>:
                 <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="title" type="text" />
             </label>
         </div>
         <div>
-            <label>Genre:
+            <label><spring:message code="submit.album.genre.label"/>:
                 <form:errors path="genre" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="genre" type="text" />
             </label>
-
         </div>
-        <!--
         <div>
-            <label>Release Date:
-                <input name="releaseDate" type="datetime-local" />
-                form:errors path="releaseDate" cssClass="error" />
-            </label>
-        </div>
-        -->
-        <div>
-            <label>Image:
+            <label><spring:message code="submit.album.image.label"/>:
                 <form:errors path="file" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="file" type="file" accept=".jpg,.jpeg,.png" />
             </label>
         </div>
         <div>
-            <button type="submit">Submit Album</button>
+            <button type="submit"><spring:message code="submit.album.button"/></button>
         </div>
     </form:form>
 </div>
