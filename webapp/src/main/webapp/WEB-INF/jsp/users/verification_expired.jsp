@@ -1,8 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>Verification</title>
+    <spring:message var="pageTitle" code="page.verification.title"/>
+    <jsp:include page="/WEB-INF/jsp/components/head.jsp">
+        <jsp:param name="title" value="${pageTitle}"/>
+    </jsp:include>
 </head>
 <body>
 <div>
@@ -12,9 +16,9 @@
     </jsp:include>
 </div>
 
-    <h1>Your verification expired!</h1>
+    <h1><spring:message code="label.verification.expired" /></h1>
     <c:url var="homeuRL" value="/" />
-    <a href="${homeuRL}">Return</a>
+    <a href="${homeuRL}"><spring:message code="label.return" /></a>
 
 </body>
 </html>
