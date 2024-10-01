@@ -38,7 +38,7 @@ public class IndexController {
     }
 
     @RequestMapping(value = "/home/{pageNum:\\d+}")
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam( required = false) Integer pageNum) {
+    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam(name = "pageNum", required = false) Integer pageNum) {
         int pageSize = 10;
         if (loggedUser == null) {
             final ModelAndView mav = new ModelAndView("anonymous/home");
