@@ -51,7 +51,7 @@
         <span id="followingButton" class="tab-button"><spring:message code="home.following"/></span>
     </div>
     <div id="forYouTab">
-        <h2>Popular Reviews</h2>
+        <h2><spring:message code="label.popular.reviews" /></h2>
         <div class="cards-container">
             <c:forEach var="review" items="${popularReviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
