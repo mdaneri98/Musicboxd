@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <spring:message var="pageTitle" text="Home"/>
+        <spring:message var="pageTitle" code="page.title.home"/>
         <jsp:include page="/WEB-INF/jsp/components/head.jsp">
             <jsp:param name="title" value="${pageTitle}"/>
         </jsp:include>
@@ -47,8 +47,8 @@
 </div>
 <div class="container">
     <div>
-        <span id="forYouButton" class="tab-button active">For You</span>
-        <span id="followingButton" class="tab-button">Following</span>
+        <span id="forYouButton" class="tab-button active"><spring:message code="home.for.you"/></span>
+        <span id="followingButton" class="tab-button"><spring:message code="home.following"/></span>
     </div>
     <div id="forYouTab">
         <h2>Popular Reviews</h2>
@@ -77,17 +77,18 @@
         <div class="pages">
         <c:url value="/home/${pageNum + 1}" var="nextPage" />
         <c:url value="/home/${pageNum -1}" var="prevPage" />
-        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-        <c:if test="${popularReviews.size() == 10}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
+        <c:if test="${popularReviews.size() == 10}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
         </div>
     </div>
 
     <div id="followingTab">
-        <h2>Reviews from Users You Follow</h2>
+        <h2><spring:message code="label.following.reviews"/></h2>
         <c:if test="${followingReviews.size() == 0}">
             <div class="page-empty">
                 <h3>This page is empty</h3>
-                <h4>Try following more users or going to the previous page</h4>
+                <h3><spring:message code="home.page.empty"/></h3>
+                <h4><spring:message code="home.try.following"/></h4>
             </div>
         </c:if>
         <div class="cards-container">
@@ -115,8 +116,8 @@
         <div class="pages">
         <c:url value="/home/${pageNum + 1}" var="nextPage" />
         <c:url value="/home/${pageNum -1}" var="prevPage" />
-        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-        <c:if test="${followingReviews.size() == 10}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
+        <c:if test="${followingReviews.size() == 10}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
         </div>
     </div>
 
