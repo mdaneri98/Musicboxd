@@ -8,7 +8,7 @@
     <a href="${userUrl}">
     <img src="${userImgURL}" alt="User Name" class="primary-image"></a>
     <div class="data-container">
-        <p class="type">User</p>
+        <p class="type"><spring:message code="label.user" /></p>
         <a href="${userUrl}"><h1>@<c:out value="${param.username}"/></h1></a>
         <a href="${userUrl}"><h3><c:out value="${param.name}"/></h3></a>
         <p class="artist-bio"><c:out value="${param.bio}"/></p>
@@ -16,11 +16,11 @@
             <c:url var="followInfoUrl" value="/user/${param.id}/follow-info"/>
             <a href="${followInfoUrl}">
                 <span class="stat-item">
-                    <strong><c:out value="${param.reviewAmount}"/></strong> Reviews</span>
+                    <strong><c:out value="${param.reviewAmount}"/></strong> <spring:message code="label.reviews" /></span>
                 <span class="stat-item">
-                    <strong><c:out value="${param.followersAmount}"/></strong> Followers</span>
+                    <strong><c:out value="${param.followersAmount}"/></strong> <spring:message code="label.followers" /></span>
                 <span class="stat-item">
-                    <strong><c:out value="${param.followingAmount}"/></strong> Following</span>
+                    <strong><c:out value="${param.followingAmount}"/></strong> <spring:message code="label.following" /></span>
             </a>
         </div>
     </div>

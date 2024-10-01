@@ -3,10 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <spring:message var="pageTitle" text="Moderator"/>
-    <title>${pageTitle}</title>
+    <spring:message var="pageTitle" code="page.title.moderator"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -22,27 +19,27 @@
     </jsp:include>
 </div>
 <div class="search-container">
-    <h1>Moderator</h1>
+    <spring:message code="label.moderator" />
     <div class="search-tabs">
         <div class="search-tab active" data-type="artists">
-            <span>Artist</span>
+            <span><spring:message code="label.artist" /></span>
         </div>
         <div class="search-tab" data-type="albums">
-            <span>Album</span>
+            <span><spring:message code="label.album" /></span>
         </div>
         <div class="search-tab" data-type="songs">
-            <span>Song</span>
+            <span><spring:message code="label.song" /></span>
         </div>
     </div>
     <div class="search-wrapper">
-        <input type="text" style="display: none" class="search-input" id="searchInput" placeholder="Search Musicboxd...">
+        <input type="text" style="display: none" class="search-input" id="searchInput" placeholder="<spring:message code="search.placeholder" />">
         <svg class="search-icon" id="searchIcon" style="display: none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
         <div id="autocompleteList" class="autocomplete-items"></div>
     </div>
     <div>
-        <button id="redirectButton" onclick="redirect()">Complete</button>
+        <button id="redirectButton" onclick="redirect()"><spring:message code="button.complete" /></button>
     </div>
 </div>
 

@@ -61,7 +61,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         ms.setCacheSeconds(5);  //Solo para desarollo.
         ms.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
-        ms.setBasename("i18n/messages"); //Nombre base, luego se concatena locale
+        ms.setBasename("i18n/messages");
 
         return ms;
     }

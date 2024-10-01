@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <div class="review-container">
     <c:if test="${!param.blocked}">
@@ -39,13 +40,13 @@
                     <div class="user-name"><c:out value="${param.user_name}"/></div>
                     <div class="user-card-badges">
                         <c:if test="${param.verified}">
-                            <span class="user-card-badge user-card-badge-verified">Verified</span>
+                            <span class="user-card-badge user-card-badge-verified"><spring:message code="label.verified" /></span>
                         </c:if>
                         <c:if test="${!param.verified}">
-                            <span class="user-card-badge user-card-badge-unverified">Unverified</span>
+                            <span class="user-card-badge user-card-badge-unverified"><spring:message code="label.unverified" /></span>
                         </c:if>
                         <c:if test="${param.userModerator}">
-                            <span class="user-card-badge user-card-badge-moderator">Moderator</span>
+                            <span class="user-card-badge user-card-badge-moderator"><spring:message code="label.moderator" /></span>
                         </c:if>
                     </div>
                 </div>
@@ -72,19 +73,19 @@
                         <a href="${removeLikeReviewLink}" style="color: red; font-size: 25px;">&#9829; </a>
                     </c:otherwise>
                 </c:choose>
-                <a href="${shareReviewLink}">&#10150; Share</a>
+                <a href="${shareReviewLink}">&#10150; <spring:message code="label.share" /></a>
             </div>
     </c:if>
             <c:if test="${param.blocked}">
                 <div class="review-content">
-                    <div class="review-title">This review was blocked by a moderator </div>
-                    <p class="review-content">Try making another one</p>
+                    <div class="review-title"><spring:message code="label.this.review.was.blocked.by.moderator" /></div>
+                    <p class="review-content"><spring:message code="label.try.making.another.one" /></p>
                 </div>
                 <c:if test="${param.moderator}">
                     <div class="review-block-btn">
                         <c:url value="/mod/unblock/${param.review_id}" var="unblockReviewUrl"/>
                         <a href="${unblockReviewUrl}" class="btn-icon">
-                            <span>Unblock  <i class="fa-solid fa-ban"></i></span>
+                            <span><spring:message code="label.unblock" />  <i class="fa-solid fa-ban"></i></span>
                         </a>
                     </div>
                 </c:if>

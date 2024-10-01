@@ -22,16 +22,16 @@
 </div>
 <div class="v-container">
     <div class="call-to-action-container">
-        <h1>Musicboxd</h1>
-        <h6>Descubre Nueva Música</h6>
-        <p>Únete a una comunidad apasionada por la música y comparte tus opiniones sobre artistas, álbumes y canciones.</p>
+        <h1><spring:message code="webpage.name" /></h1>
+        <h6><spring:message code="label.discover.new.music" /></h6>
+        <p><spring:message code="label.webpage.description" /></p>
     </div>
     <div>
 
     </div>
     <div class="max-width">
         <c:if test="${popularAlbums.size() > 0}">
-            <h2>Popular albums</h2>
+            <h2><spring:message code="label.popular.albums" /></h2>
             <div class="carousel-container">
                 <div class="carousel">
                     <c:forEach var="album" items="${popularAlbums}" varStatus="status">
@@ -49,7 +49,7 @@
         </c:if>
     </div>
     <div class="max-width">
-        <h2>Popular Reviews</h2>
+        <h2><spring:message code="label.popular.reviews" /></h2>
         <div class="cards-container">
             <c:forEach var="review" items="${popularReviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
@@ -75,8 +75,8 @@
         <div class="pages">
             <c:url value="/home/${pageNum + 1}" var="nextPage" />
             <c:url value="/home/${pageNum -1}" var="prevPage" />
-            <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-            <c:if test="${popularReviews.size() == 10}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+            <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
+            <c:if test="${popularReviews.size() == 10}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
         </div>
     </div>
 
