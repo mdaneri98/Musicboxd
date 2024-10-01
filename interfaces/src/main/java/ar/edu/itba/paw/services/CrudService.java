@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.reviews.Review;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +11,7 @@ public interface CrudService<T> {
 
     List<T> findAll();
 
-    List<T> findPaginated(FilterType filterType, int limit, int offset);
+    List<T> findPaginated(FilterType filterType, int page, int pageSize);
 
     long save(T entity);
 

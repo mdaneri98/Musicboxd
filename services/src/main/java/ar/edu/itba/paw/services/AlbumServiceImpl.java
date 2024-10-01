@@ -28,8 +28,8 @@ public class AlbumServiceImpl implements AlbumService {
         return albumDao.findById(id);
     }
 
-    public List<Album> findPaginated(FilterType filterType, int limit, int offset) {
-        return albumDao.findPaginated(filterType, limit, offset);
+    public List<Album> findPaginated(FilterType filterType, int page, int pageSize) {
+        return albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
     }
 
     @Override

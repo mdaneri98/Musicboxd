@@ -242,9 +242,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getPopularReviewsNDaysPaginated(int days, int page, int pageSize, long loggedUserId) {
-        LocalDate nDaysAgo = LocalDate.now().minusDays(days);
-        List<Review> list = reviewDao.getPopularReviewsSincePaginated(nDaysAgo,page, pageSize);
+    public List<Review> getPopularReviewsPaginated(int page, int pageSize, long loggedUserId) {
+        List<Review> list = reviewDao.getPopularReviewsPaginated(page, pageSize);
         setIsLiked(list, loggedUserId);
         return list;
     }

@@ -43,25 +43,11 @@ public class ArtistJdbcDao implements ArtistDao {
 
     @Override
     public List<Artist> findPaginated(FilterType filterType, int limit, int offset) {
-        String sql;
-        if (filterType.equals(FilterType.NEWEST)) {
-            sql = "SELECT id FROM artist ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        } else if (filterType.equals(FilterType.OLDEST)) {
-            sql = "SELECT id FROM artist ORDER BY created_at ASC LIMIT ? OFFSET ?";
-        } else {
-            sql = "SELECT id FROM artist ORDER BY avg_rating LIMIT ? OFFSET ?";
-        }
+        String sql = "SELECT * FROM artist" +
+                filterType.getFilter() +
+                "LIMIT ? OFFSET ?";
 
-        List<Integer> ids = jdbcTemplate.queryForList(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, Integer.class);
-
-        // Buscamos los álbumes correspondientes a cada id
-        List<Artist> artists = new ArrayList<>();
-        for (Integer id : ids) {
-            Optional<Artist> artist = this.findById(id);
-            artist.ifPresent(artists::add);
-        }
-
-        return artists;
+        return jdbcTemplate.query(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, SimpleRowMappers.ARTIST_ROW_MAPPER);
     }
 
     @Override
@@ -74,7 +60,7 @@ public class ArtistJdbcDao implements ArtistDao {
 
     @Override
     public List<Artist> findByNameContaining(String sub) {
-        String sql = "SELECT * FROM artist WHERE name ILIKE ?";
+        String sql = "SELECT * FROM artist WHERE name ILIKE ? LIMIT 10";
         return jdbcTemplate.query(sql, new Object[]{"%" + sub + "%"}, SimpleRowMappers.ARTIST_ROW_MAPPER);
     }
 

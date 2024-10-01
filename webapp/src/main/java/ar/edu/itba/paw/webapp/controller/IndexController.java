@@ -33,14 +33,22 @@ public class IndexController {
     }
 
     @RequestMapping(value = {"/home", "/"})
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam(name = "pageNum", defaultValue = "1") Integer pageNum) {
-        if (loggedUser == null) {
-            final ModelAndView mav = new ModelAndView("anonymus/home");
+    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser) {
+        return home(loggedUser, 1);
+    }
 
-            List<Album> popularAlbums = albumService.findPaginated(FilterType.RATING, 5, 0);
-            List<Review> popularReviews = reviewService.getPopularReviewsNDaysPaginated(30,pageNum, 10, 0);
+    @RequestMapping(value = "/home/{pageNum:\\d+}")
+    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam( required = false) Integer pageNum) {
+        int pageSize = 10;
+        if (loggedUser == null) {
+            final ModelAndView mav = new ModelAndView("anonymous/home");
+
+            List<Album> popularAlbums = albumService.findPaginated(FilterType.RATING, pageNum, 5);
+            List<Artist> popularArtists = artistService.findPaginated(FilterType.RATING, pageNum, 5);
+            List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, 0);
 
             mav.addObject("popularAlbums", popularAlbums);
+            mav.addObject("popularArtists", popularArtists);
             mav.addObject("popularReviews", popularReviews);
             mav.addObject("pageNum", pageNum);
 
@@ -49,13 +57,14 @@ public class IndexController {
 
         final ModelAndView mav = new ModelAndView("home");
 
-        List<Review> popularReviews = reviewService.getPopularReviewsNDaysPaginated(30,pageNum, 10, loggedUser.getId());
-        List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUser.getId(), pageNum, 10, loggedUser.getId());
+        List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, loggedUser.getId());
+        List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUser.getId(), pageNum, pageSize, loggedUser.getId());
         if (pageNum > 1 && popularReviews.isEmpty() && followingReviews.isEmpty()) return home(loggedUser, 1);
 
         mav.addObject("popularReviews", popularReviews);
         mav.addObject("followingReviews", followingReviews);
         mav.addObject("pageNum", pageNum);
+        mav.addObject("pageSize", pageSize-1);
 
         return mav;
     }

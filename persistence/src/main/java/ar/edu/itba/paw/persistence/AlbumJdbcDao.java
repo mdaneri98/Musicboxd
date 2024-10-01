@@ -41,43 +41,22 @@ public class AlbumJdbcDao implements AlbumDao {
 
     @Override
     public List<Album> findPaginated(FilterType filterType, int limit, int offset) {
-       String sql;
-       if (filterType.equals(FilterType.NEWEST)) {
-           sql = "SELECT id FROM album ORDER BY created_at DESC LIMIT ? OFFSET ?";
-       } else if (filterType.equals(FilterType.OLDEST)) {
-           sql = "SELECT id FROM album ORDER BY created_at ASC LIMIT ? OFFSET ?";
-       } else {
-           sql = "SELECT id FROM album ORDER BY avg_rating DESC LIMIT ? OFFSET ?";
-       }
+       String sql = "SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, album.avg_rating AS avg_rating, album.rating_amount AS rating_amount, artist.id AS artist_id, name, artist.img_id AS artist_img_id "+
+               "FROM album JOIN artist ON album.artist_id = artist.id " +
+               filterType.getFilter() +
+               "LIMIT ? OFFSET ?";
 
-       List<Integer> ids = jdbcTemplate.queryForList(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, Integer.class);
-
-        // Buscamos los álbumes correspondientes a cada id
-        List<Album> albums = new ArrayList<>();
-        for (Integer id : ids) {
-            Optional<Album> album = this.findById(id);
-            album.ifPresent(albums::add);
-        }
-
-        return albums;
+       return jdbcTemplate.query(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, SimpleRowMappers.ALBUM_ROW_MAPPER);
     }
 
     @Override
     public List<Album> findByTitleContaining(String sub) {
         // SQL para seleccionar todos los ids que coinciden con el título
-        String sql = "SELECT id FROM album WHERE title ILIKE ?";
+        String sql = "SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, album.avg_rating AS avg_rating, album.rating_amount AS rating_amount, artist.id AS artist_id, name, artist.img_id AS artist_img_id "+
+                "FROM album JOIN artist ON album.artist_id = artist.id " +
+                "WHERE title ILIKE ? LIMIT 10";
 
-        // Obtenemos la lista de ids
-        List<Integer> ids = jdbcTemplate.queryForList(sql, new Object[]{"%" + sub + "%"}, Integer.class);
-
-        // Buscamos los álbumes correspondientes a cada id
-        List<Album> albums = new ArrayList<>();
-        for (Integer id : ids) {
-            Optional<Album> album = this.findById(id);
-            album.ifPresent(albums::add);
-        }
-
-        return albums;
+        return jdbcTemplate.query(sql, new Object[]{"%" + sub + "%"}, SimpleRowMappers.ALBUM_ROW_MAPPER);
     }
 
     @Override

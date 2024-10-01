@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,9 +59,16 @@
           <c:url var="artistUrl" value="/artist/${artist.id}"/>
           <div class="item">
             <a href="${artistUrl}" class="artist">
-              <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
-              <img src="${artistImgURL}" alt="Album ${status.index + 1}">
-              <p><c:out value="${artist.name}"/></p>
+              <div class="album-image-container">
+                <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
+                <img src="${artistImgURL}" alt="Artist ${status.index + 1}">
+                <div class="album-rating">
+                  <fmt:formatNumber value="${artist.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                  <span class="rating">${formattedRating}</span>
+                  <span class="star">&#9733;</span>
+                </div>
+              </div>
+              <p class="album-title"><c:out value="${artist.name}"/></p>
             </a>
           </div>
         </c:forEach>
@@ -69,16 +77,23 @@
   </c:if>
 
   <c:if test="${albums.size() > 0}">
-    <spring:message code="label.favorite.albums"/>
+    <h2><spring:message code="label.favorite.albums"/></h2>
     <div class="carousel-container">
       <div class="carousel">
         <c:forEach var="album" items="${albums}" varStatus="status">
           <c:url var="albumUrl" value="/album/${album.id}"/>
           <div class="item">
             <a href="${albumUrl}" class="album">
-              <c:url var="albumImgURL" value="/images/${album.imgId}"/>
-              <img src="${albumImgURL}" alt="Album ${status.index + 1}">
-              <p><c:out value="${album.title}"/></p>
+              <div class="album-image-container">
+                <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+                <img src="${albumImgURL}" alt="Album ${status.index + 1}">
+                <div class="album-rating">
+                  <fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                  <span class="rating">${formattedRating}</span>
+                  <span class="star">&#9733;</span>
+                </div>
+              </div>
+              <p class="album-title"><c:out value="${album.title}"/></p>
             </a>
           </div>
         </c:forEach>

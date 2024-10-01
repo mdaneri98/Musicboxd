@@ -78,7 +78,7 @@
         <c:url value="/home/${pageNum + 1}" var="nextPage" />
         <c:url value="/home/${pageNum -1}" var="prevPage" />
         <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
-        <c:if test="${popularReviews.size() == 10}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
+        <c:if test="${popularReviews.size() == pageSize}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
         </div>
     </div>
 
@@ -117,7 +117,7 @@
         <c:url value="/home/${pageNum + 1}" var="nextPage" />
         <c:url value="/home/${pageNum -1}" var="prevPage" />
         <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
-        <c:if test="${followingReviews.size() == 10}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
+        <c:if test="${followingReviews.size() == pageSize}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
         </div>
     </div>
 

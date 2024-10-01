@@ -545,7 +545,7 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public List<Review> getPopularReviewsSincePaginated(LocalDate date, int page, int pageSize) {
+    public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
         String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
                 "FROM review r "+
                 "LEFT JOIN cuser u ON r.user_id = u.id "+
@@ -556,12 +556,12 @@ public class ReviewJdbcDao implements ReviewDao {
                 "LEFT JOIN artist_review arr ON r.id = arr.review_id "+
                 "LEFT JOIN artist ar ON arr.artist_id = ar.id OR a.artist_id = ar.id "+
                 "LEFT JOIN artist aa ON a.artist_id = aa.id " +
-                "WHERE r.created_at >= ? AND r.isblocked = false " +
+                "WHERE r.isblocked = false " +
                 "ORDER BY r.likes DESC " +
                 "LIMIT ? OFFSET ?";
 
         int offset = (page - 1) * pageSize;
-        return jdbcTemplate.query(sql, new Object[]{date, pageSize, offset}, reviewRowMapper::mapRows);
+        return jdbcTemplate.query(sql, new Object[]{pageSize, offset}, reviewRowMapper::mapRows);
     }
 
     @Override
