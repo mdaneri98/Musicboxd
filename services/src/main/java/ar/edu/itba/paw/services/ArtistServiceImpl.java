@@ -28,8 +28,8 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public List<Artist> findPaginated(FilterType filterType, int limit, int offset) {
-        return artistDao.findPaginated(filterType, limit, offset);
+    public List<Artist> findPaginated(FilterType filterType, int page, int pageSize) {
+        return artistDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
     }
 
     @Override

@@ -1,20 +1,22 @@
 package ar.edu.itba.paw.models;
 
 public enum FilterType {
-    RATING("avg_rating"),
-    //LIKES("likes"),
-    NEWEST("created_at"),
-    OLDEST("created_at");
+    RATING("avg_rating", "DESC"),
+    LIKES("likes", "DESC"),
+    NEWEST("created_at", "DESC"),
+    OLDEST("created_at", "ASC");
 
-    private final String displayName;
+    private final String criteria;
+    private final String order;
 
     // Constructor para inicializar el String asociado
-    FilterType(String displayName) {
-        this.displayName = displayName;
+    FilterType(String criteria, String order) {
+        this.criteria = criteria;
+        this.order = order;
     }
 
     // Método para obtener el String asociado
-    public String getDisplayName() {
-        return displayName;
+    public String getFilter() {
+        return " ORDER BY " + criteria + " " + order + " ";
     }
 }

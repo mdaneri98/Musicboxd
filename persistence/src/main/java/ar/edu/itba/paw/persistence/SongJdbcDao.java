@@ -36,7 +36,6 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findByArtistId(long id) {
-        // TODO: change to order by rating
         return jdbcTemplate.query("SELECT DISTINCT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, song.avg_rating AS avg_rating, song.rating_amount AS rating_amount, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id, album.release_date AS album_release_date, album.genre,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id LEFT JOIN song_artist ON song.id = song_artist.song_id WHERE song_artist.artist_id = ? ORDER BY song_created_at LIMIT 10",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
@@ -55,20 +54,10 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findByTitleContaining(String sub) {
-        // SQL para seleccionar todos los ids que coinciden con el título
-        String sql = "SELECT id FROM song WHERE title ILIKE ?";
+        String sql = "SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, song.avg_rating AS avg_rating, song.rating_amount AS rating_amount, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id, album.release_date AS album_release_date, album.genre,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id" +
+                 "WHERE title ILIKE ? LIMIT 10";
 
-        // Obtenemos la lista de ids
-        List<Integer> ids = jdbcTemplate.queryForList(sql, new Object[]{"%" + sub + "%"}, Integer.class);
-
-        // Buscamos los álbumes correspondientes a cada id
-        List<Song> songs = new ArrayList<>();
-        for (Integer id : ids) {
-            Optional<Song> song = this.findById(id);
-            song.ifPresent(songs::add);
-        }
-
-        return songs;
+        return jdbcTemplate.query(sql, new Object[]{"%" + sub + "%"}, SimpleRowMappers.SONG_ROW_MAPPER);
     }
 
     @Override
@@ -78,25 +67,11 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findPaginated(FilterType filterType, int limit, int offset) {
-        String sql;
-        if (filterType.equals(FilterType.NEWEST)) {
-            sql = "SELECT id FROM song ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        } else if (filterType.equals(FilterType.OLDEST)) {
-            sql = "SELECT id FROM song ORDER BY created_at ASC LIMIT ? OFFSET ?";
-        } else {
-            sql = "SELECT id FROM song ORDER BY avg_rating LIMIT ? OFFSET ?";
-        }
+        String sql = "SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, song.avg_rating AS avg_rating, song.rating_amount AS rating_amount, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id, album.release_date AS album_release_date, album.genre,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id" +
+                filterType.getFilter() +
+                "LIMIT ? OFFSET ?";
 
-        List<Integer> ids = jdbcTemplate.queryForList(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, Integer.class);
-
-        // Buscamos los álbumes correspondientes a cada id
-        List<Song> songs = new ArrayList<>();
-        for (Integer id : ids) {
-            Optional<Song> song = this.findById(id);
-            song.ifPresent(songs::add);
-        }
-
-        return songs;
+        return jdbcTemplate.query(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, SimpleRowMappers.SONG_ROW_MAPPER);
     }
 
     @Override

@@ -46,7 +46,7 @@ public interface ReviewDao {
     List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize);
     List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize);
 
-    List<Review> getPopularReviewsSincePaginated(LocalDate date, int page, int pageSize);
+    List<Review> getPopularReviewsPaginated(int page, int pageSize);
     List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize);
     List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize);
 

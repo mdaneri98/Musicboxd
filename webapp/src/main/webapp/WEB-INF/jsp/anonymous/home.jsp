@@ -1,5 +1,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -26,21 +27,52 @@
         <h6><spring:message code="label.discover.new.music" /></h6>
         <p><spring:message code="label.webpage.description" /></p>
     </div>
-    <div>
 
+<div class="max-width">
+<c:if test="${popularAlbums.size() > 0}">
+    <h2><spring:message code="label.top-rated.artists"/></h2>
+    <div class="carousel-container">
+        <div class="carousel">
+            <c:forEach var="artist" items="${popularArtists}" varStatus="status">
+                <c:url var="artistUrl" value="/artist/${artist.id}"/>
+                <div class="item">
+                    <a href="${artistUrl}" class="artist">
+                        <div class="album-image-container">
+                            <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
+                            <img src="${artistImgURL}" alt="Artist ${status.index + 1}">
+                            <div class="album-rating">
+                                <fmt:formatNumber value="${artist.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                                <span class="rating">${formattedRating}</span>
+                                <span class="star">&#9733;</span>
+                            </div>
+                        </div>
+                        <p class="album-title"><c:out value="${artist.name}"/></p>
+                    </a>
+                </div>
+            </c:forEach>
+        </div>
     </div>
+</c:if>
+</div>
     <div class="max-width">
         <c:if test="${popularAlbums.size() > 0}">
-            <h2><spring:message code="label.popular.albums" /></h2>
+            <h2><spring:message code="label.top-rated.albums" /></h2>
             <div class="carousel-container">
                 <div class="carousel">
                     <c:forEach var="album" items="${popularAlbums}" varStatus="status">
                         <c:url var="albumUrl" value="/album/${album.id}"/>
                         <div class="item">
                             <a href="${albumUrl}" class="album">
-                                <c:url var="albumImgURL" value="/images/${album.imgId}"/>
-                                <img src="${albumImgURL}" alt="Album ${status.index + 1}">
-                                <p><c:out value="${album.title}"/></p>
+                                <div class="album-image-container">
+                                    <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+                                    <img src="${albumImgURL}" alt="Album ${status.index + 1}">
+                                    <div class="album-rating">
+                                        <fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                                        <span class="rating">${formattedRating}</span>
+                                        <span class="star">&#9733;</span>
+                                    </div>
+                                </div>
+                                <p class="album-title"><c:out value="${album.title}"/></p>
                             </a>
                         </div>
                     </c:forEach>

@@ -36,8 +36,8 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public List<Song> findPaginated(FilterType filterType, int limit, int offset) {
-        return songDao.findPaginated(filterType, limit, offset);
+    public List<Song> findPaginated(FilterType filterType, int page, int pageSize) {
+        return songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
     }
 
     public List<Song> findByArtistId(long id) {

@@ -75,9 +75,9 @@
     </div>
 
     <div class="song-description">
-      <p><spring:message code="label.duration"/><c:out value="${song.duration}"/></p>
-      <p><spring:message code="label.genre"/><c:out value="${song.album.genre}"/></p>
-      <p><spring:message code="label.release.date"/><c:out value="${song.album.releaseDate}"/></p>
+      <p><spring:message code="label.duration"/>: <c:out value="${song.duration}"/></p>
+      <p><spring:message code="label.genre"/>: <c:out value="${song.album.genre}"/></p>
+      <p><spring:message code="label.release.date"/>: <c:out value="${song.album.releaseDate}"/></p>
     </div>
 
     <c:if test="${reviews.size() > 0}">

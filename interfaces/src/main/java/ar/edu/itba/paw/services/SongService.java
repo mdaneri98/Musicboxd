@@ -8,7 +8,6 @@ import java.util.Optional;
 
 public interface SongService extends CrudService<Song> {
 
-    List<Song> findPaginated(FilterType filterType, int limit, int offset);
     List<Song> findByArtistId(long id);
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
