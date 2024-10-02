@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
@@ -43,20 +44,45 @@ public class UserController {
         this.reviewService = reviewService;
     }
 
-    @RequestMapping("/profile/{pageNum:\\d+}")
-    public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "pageNum", required = false) Integer pageNum ) {
-        final ModelAndView mav = new ModelAndView("users/profile");
-        LOGGER.info("Logged username: {}", loggedUser.getUsername());
-        if (pageNum == null || pageNum <= 0) pageNum = 1;
+    @RequestMapping("/profile")
+    public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser,
+                                @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null || pageNum <= 0) {
+            pageNum = 1;
+        }
 
-        mav.addObject("followingUsers", userService.getFollowingData(loggedUser.getId(), 20, (pageNum-1)*20).getFollowing());
-        mav.addObject("albums", userService.getFavoriteAlbums(loggedUser.getId()));
-        mav.addObject("artists", userService.getFavoriteArtists(loggedUser.getId()));
-        mav.addObject("songs", userService.getFavoriteSongs(loggedUser.getId()));
-        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(loggedUser.getId(), pageNum,5, loggedUser.getId()));
+        int pageSize = 5;
+        int followingPageSize = 20;
+
+        final ModelAndView mav = new ModelAndView("users/profile");
+        LOGGER.info("[/profile]Logged username: {}", loggedUser.getUsername());
+
+        // Obtener las listas paginadas
+        List<User> followingUsers = userService.getFollowingData(loggedUser.getId(), followingPageSize, (pageNum - 1) * followingPageSize).getFollowing();
+        List<Album> favoriteAlbums = userService.getFavoriteAlbums(loggedUser.getId());
+        List<Artist> favoriteArtists = userService.getFavoriteArtists(loggedUser.getId());
+        List<Song> favoriteSongs = userService.getFavoriteSongs(loggedUser.getId());
+        List<Review> reviews = reviewService.findReviewsByUserPaginated(loggedUser.getId(), pageNum, pageSize, loggedUser.getId());
+
+        // Lógica para determinar si se deben mostrar los botones "Next" y "Previous"
+        boolean showNext = reviews.size() == pageSize;  // Si hay tantas reseñas como el tamaño de página, hay más para mostrar
+        boolean showPrevious = pageNum > 1;  // Mostrar "Previous" si no estamos en la primera página
+
+        // Agregar los objetos al modelo
+        mav.addObject("followingUsers", followingUsers);
+        mav.addObject("albums", favoriteAlbums);
+        mav.addObject("artists", favoriteArtists);
+        mav.addObject("songs", favoriteSongs);
+        mav.addObject("reviews", reviews);
         mav.addObject("pageNum", pageNum);
+
+        // Agregar flags para mostrar los botones "Next" y "Previous"
+        mav.addObject("showNext", showNext);
+        mav.addObject("showPrevious", showPrevious);
+
         return mav;
     }
+
 
     @RequestMapping(path = "/edit", method = RequestMethod.GET)
     public ModelAndView editProfile(@ModelAttribute("userProfileForm") final UserProfileForm userProfileForm,
@@ -108,37 +134,48 @@ public class UserController {
         return new ModelAndView("redirect:/");
     }
 
-    @RequestMapping("/profile")
-    public ModelAndView profile (@ModelAttribute("loggedUser") User loggedUser){
-        return profile(loggedUser,1);
-    }
-
-
     @RequestMapping("/{userId:\\d+}")
-    public ModelAndView user (@ModelAttribute("loggedUser") User loggedUser,
-                              @PathVariable(name = "userId") long userId){
-        return user(loggedUser,userId,1);
-    }
-
-    @RequestMapping("/{userId:\\d+}/{pageNum:\\d+}")
     public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser,
-                             @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum ) {
-        if (userId == loggedUser.getId()) return new ModelAndView("redirect:/user/profile/").addObject("user", loggedUser);
-        if (pageNum == null || pageNum <= 0) pageNum = 1;
+                             @PathVariable(name = "userId") long userId,
+                             @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+        int pageSize = 5;  // Tamaño de página para las reseñas
 
+        // Si pageNum es nulo o menor que 1, se inicializa en 1
+        if (pageNum == null || pageNum <= 0) {
+            pageNum = 1;
+        }
+
+        // Si el ID del usuario es el mismo que el del loggedUser, redirige a su perfil
+        if (userId == loggedUser.getId()) {
+            return new ModelAndView("redirect:/user/profile?pageNum=" + pageNum);
+        }
+
+        // Obtener los datos del usuario a mostrar
         final ModelAndView mav = new ModelAndView("/users/user");
+        User user = userService.findById(userId).orElseThrow();
 
-        User user = userService.findById(userId).get();
+        List<Review> reviews = reviewService.findReviewsByUserPaginated(userId, pageNum, pageSize, loggedUser.getId());
+
+        // Determinar si se deben mostrar los botones "Next" y "Previous"
+        boolean showNext = reviews.size() == pageSize;
+        boolean showPrevious = pageNum > 1;
+
+        // Añadir objetos al modelo
         mav.addObject("user", user);
         mav.addObject("isFollowing", userService.isFollowing(loggedUser.getId(), userId));
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
         mav.addObject("artists", userService.getFavoriteArtists(userId));
         mav.addObject("songs", userService.getFavoriteSongs(userId));
-        mav.addObject("reviews", reviewService.findReviewsByUserPaginated(userId, pageNum, 5, loggedUser.getId()));
+        mav.addObject("reviews", reviews);
         mav.addObject("pageNum", pageNum);
+
+        // Añadir flags para mostrar los botones de navegación
+        mav.addObject("showNext", showNext);
+        mav.addObject("showPrevious", showPrevious);
 
         return mav;
     }
+
 
     @RequestMapping("/{userId:\\d+}/follow-info")
     public ModelAndView followInfo(@ModelAttribute("loggedUser") User loggedUser,

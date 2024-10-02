@@ -120,7 +120,6 @@
     </c:forEach>
   </ul>
   </c:if>
-
   <c:if test="${reviews.size() > 0}">
     <h2><spring:message code="label.reviews"/></h2>
     <div class="cards-container">
@@ -146,13 +145,13 @@
         </jsp:include>
       </c:forEach>
     </div>
-    <div>
-    <c:url value="/user/${user.id}/${pageNum + 1}" var="nextPage" />
-    <c:url value="/user/${user.id}/${pageNum -1}" var="prevPage" />
-    <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
-      <c:if test="${5*(pageNum-1)+reviews.size() != user.reviewAmount && reviews.size() == 5}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
-    </div>
   </c:if>
+  <div>
+    <c:url value="/user/${user.id}?pageNum=${pageNum + 1}" var="nextPage" />
+    <c:url value="/user/${user.id}?pageNum=${pageNum -1}" var="prevPage" />
+    <c:if test="${showPrevious}"><a href="${showPrevious}"><button><spring:message code="button.previous.page" /></button></a></c:if>
+    <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
+  </div>
 
 </div>
 </body>
