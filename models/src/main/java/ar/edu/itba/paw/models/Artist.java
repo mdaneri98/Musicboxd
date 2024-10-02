@@ -3,6 +3,7 @@ package ar.edu.itba.paw.models;
 
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Artist {
     private Long id;
@@ -99,6 +100,17 @@ public class Artist {
         json.append("\"imgId\":").append(imgId);
         json.append("}");
         return json.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Artist artist = (Artist) o;
+        if (!Objects.equals(id, artist.id)) return false;
+        if (!Objects.equals(name, artist.name)) return false;
+        if (!Objects.equals(bio, artist.bio)) return false;
+        return Objects.equals(imgId, artist.imgId);
     }
 
 }

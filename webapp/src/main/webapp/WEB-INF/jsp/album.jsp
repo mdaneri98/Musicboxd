@@ -23,7 +23,12 @@
         <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
         <img src="${albumImgUrl}" alt="${album.title}" class="album">
           <div class="data-container">
-          <p class="type">Album</p>
+          <p class="type">Album
+            <c:url var="editAlbumUrl" value="/mod/edit/album/${album.id}"/>
+            <a href="${editAlbumUrl}">
+              <i class="fas fa-pencil-alt"></i>
+            </a>
+          </p>
           <h1><c:out value="${album.title}"/></h1>
           <div class="button-group">
             <c:url var="artistUrl" value="/artist/${artist.id}" />

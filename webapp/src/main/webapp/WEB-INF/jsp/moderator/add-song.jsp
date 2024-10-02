@@ -24,8 +24,8 @@
 <div class="container">
     <h1>Submit a Song</h1>
 
-    <c:url var="postUrl" value="/mod/add/album/${albumId}/song" />
-    <form:form modelAttribute="modSongForm" action="${postUrl}" method="post">
+    <c:url var="postURL" value="${postUrl}" />
+    <form:form modelAttribute="modSongForm" action="${postURL}" method="post">
         <div>
             <label>Title:
                 <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
@@ -44,8 +44,20 @@
                 <form:input path="trackNumber" type="number" />
             </label>
         </div>
-        <div>
-            <button type="submit">Submit Song</button>
+        <div style="display: flex">
+            <!-- Cancel Button -->
+            <c:if test="${songId == null}">
+                <c:url value="/mod" var="cancel_url" />
+            </c:if>
+            <c:if test="${songId != null}">
+                <c:url value="/song/${songId}" var="cancel_url" />
+            </c:if>
+            <a href="${cancel_url}">
+                <button type="button">Cancel</button>
+            </a>
+
+            <!-- Confirm Button -->
+            <button type="submit" style="margin-left: auto">Submit Song</button>
         </div>
     </form:form>
 </div>

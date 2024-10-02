@@ -26,7 +26,12 @@
         <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
         <img src="${artistImgURL}" alt="Artist Name" class="primary-image">
         <div class="data-container">
-            <p class="type">Artist</p>
+            <p class="type">Artist
+                <c:url var="editArtistUrl" value="/mod/edit/artist/${artist.id}"/>
+                <a href="${editArtistUrl}">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+            </p>
             <div>
                 <h1><c:out value="${artist.name}"/></h1>
                 <p class="artist-bio"><c:out value="${artist.bio}"/></p>

@@ -28,7 +28,12 @@
         <img src="${songImgUrl}" alt="${song.title}" class="album">
       </div>
       <div class="data-container">
-        <p class="type">SONG</p>
+        <p class="type">SONG
+          <c:url var="editSongUrl" value="/mod/edit/song/${song.id}"/>
+          <a href="${editSongUrl}">
+            <i class="fas fa-pencil-alt"></i>
+          </a>
+        </p>
         <h1><c:out value="${song.title}"/></h1>
         <div class="artist-album-container">
           <c:forEach var="artist" items="${artists}">

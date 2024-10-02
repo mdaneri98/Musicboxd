@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import java.time.LocalDate;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Album {
     private Long id;
@@ -127,6 +128,17 @@ public class Album {
 
         json.append("}");
         return json.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Album album = (Album) o;
+        if (!Objects.equals(title, album.title)) return false;
+        if (!Objects.equals(genre, album.genre)) return false;
+        if (!Objects.equals(releaseDate, album.releaseDate)) return false;
+        return Objects.equals(imgId, album.imgId);
     }
 
 }

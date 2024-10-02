@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 
 import java.util.List;
@@ -14,7 +15,8 @@ public interface SongDao {
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
 
-    int save(Song song);
+    long save(Song song);
+    int saveSongArtist(Song song, Artist artist);
     int update(Song song);
     int deleteById(long id);
 }

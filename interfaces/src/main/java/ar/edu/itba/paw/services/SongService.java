@@ -11,7 +11,8 @@ public interface SongService {
     List<Song> findByArtistId(long id);
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
-    int save(Song song);
+    long save(Song song);
     int update(Song song);
+    int update(Song song, Song updatedSong);
     int deleteById(long id);
 }

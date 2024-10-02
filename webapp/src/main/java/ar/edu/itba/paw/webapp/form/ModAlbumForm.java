@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ModAlbumForm {
 
+    private long id;
     @Size(min = 1, max = 255)
     private String title;
     @Size(min = 1, max = 50)
@@ -16,13 +17,25 @@ public class ModAlbumForm {
 
     private List<ModSongForm> songs = new ArrayList<>();
 
+    private boolean deleted = false;
+
     public ModAlbumForm() {}
 
-    public ModAlbumForm(String title, String genre, MultipartFile albumImage, List<ModSongForm> songs) {
+    public ModAlbumForm(long id, String title, String genre, MultipartFile albumImage, List<ModSongForm> songs, boolean deleted) {
+        this.id = id;
         this.title = title;
         this.genre = genre;
         this.albumImage = albumImage;
         this.songs = songs;
+        this.deleted = deleted;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -55,5 +68,13 @@ public class ModAlbumForm {
 
     public void setSongs(List<ModSongForm> songs) {
         this.songs = songs;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

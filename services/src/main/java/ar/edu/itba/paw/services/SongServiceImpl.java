@@ -43,13 +43,26 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public int save(Song song) {
-        return songDao.save(song);
+    public long save(Song song) {
+        song.setId(songDao.save(song));
+        return songDao.saveSongArtist(song, song.getAlbum().getArtist());
     }
 
     @Override
     public int update(Song song) {
         return songDao.update(song);
+    }
+
+    @Override
+    public int update(Song song, Song updatedSong) {
+        if(updatedSong.getId() == null) {updatedSong.setId(song.getId());}
+        if (!song.equals(updatedSong)) {
+            song.setTitle(updatedSong.getTitle());
+            song.setDuration(updatedSong.getDuration());
+            song.setTrackNumber(updatedSong.getTrackNumber());
+            return songDao.update(song);
+        }
+        return 0;
     }
 
     @Override
