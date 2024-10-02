@@ -105,10 +105,10 @@
             </c:forEach>
         </div>
         <div class="pages">
-            <c:url value="/home/${pageNum + 1}" var="nextPage" />
-            <c:url value="/home/${pageNum -1}" var="prevPage" />
-            <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
-            <c:if test="${popularReviews.size() == 10}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
+            <c:url value="/home?pageNum=${pageNum + 1}" var="nextPage" />
+            <c:url value="/home?pageNum=${pageNum -1}" var="prevPage" />
+            <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
+            <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
         </div>
     </div>
 
