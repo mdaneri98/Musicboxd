@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.services.ReviewService;
@@ -143,25 +140,39 @@ public class UserController {
         return mav;
     }
 
-    @RequestMapping("/{userId:\\d+}/follow-info/{pageNum:\\d+}")
-    public ModelAndView followInfo (@ModelAttribute("loggedUser") User loggedUser,
-                              @PathVariable(name = "userId") long userId, @PathVariable(name = "pageNum", required = false) Integer pageNum){
-        if (pageNum == null || pageNum <= 0) pageNum = 1;
+    @RequestMapping("/{userId:\\d+}/follow-info")
+    public ModelAndView followInfo(@ModelAttribute("loggedUser") User loggedUser,
+                                   @PathVariable(name = "userId") long userId,
+                                   @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null || pageNum <= 0) {
+            pageNum = 1;
+        }
+
         ModelAndView mav = new ModelAndView("/users/follow_info");
+        int pageSize = 100;
+
+        // Obtener la información de seguidores y seguidos de manera paginada
+        UserFollowingData followingData = userService.getFollowingData(userId, pageSize, (pageNum - 1) * pageSize);
+        List<User> followingList = followingData.getFollowing();
+        List<User> followersList = followingData.getFollowers();
+
+        // Determinar si mostrar botones "Next" y "Previous"
+        boolean showNext = followingList.size() == pageSize || followersList.size() == pageSize;
+        boolean showPrevious = pageNum > 1;
+
+        // Añadir objetos al modelo
         mav.addObject("user", userService.findById(userId).get());
-        mav.addObject("followingList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowing());
-        mav.addObject("followersList", userService.getFollowingData(userId, 100, (pageNum - 1)*100).getFollowers());
+        mav.addObject("followingList", followingList);
+        mav.addObject("followersList", followersList);
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("pageNum", pageNum);
         mav.addObject("title", "Following");
 
-        return mav;
-    }
+        // Añadir flags para mostrar los botones de navegación
+        mav.addObject("showNext", showNext);
+        mav.addObject("showPrevious", showPrevious);
 
-    @RequestMapping("/{userId:\\d+}/follow-info")
-    public ModelAndView followInfo (@ModelAttribute("loggedUser") User loggedUser,
-                                   @PathVariable(name = "userId") long userId){
-        return followInfo(loggedUser,userId,1);
+        return mav;
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)
