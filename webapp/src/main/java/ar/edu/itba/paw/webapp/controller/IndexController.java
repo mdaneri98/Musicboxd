@@ -33,38 +33,59 @@ public class IndexController {
     }
 
     @RequestMapping(value = {"/home", "/"})
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser) {
-        return home(loggedUser, 1);
-    }
-
-    @RequestMapping(value = "/home/{pageNum:\\d+}")
     public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null || pageNum < 1) {
+            pageNum = 1;
+        }
+
         int pageSize = 10;
+
         if (loggedUser == null) {
             final ModelAndView mav = new ModelAndView("anonymous/home");
 
-            List<Album> popularAlbums = albumService.findPaginated(FilterType.RATING, pageNum, 5);
-            List<Artist> popularArtists = artistService.findPaginated(FilterType.RATING, pageNum, 5);
+            // Elementos paginados
+            List<Album> popularAlbums = albumService.findPaginated(FilterType.RATING, pageNum, pageSize);
+            List<Artist> popularArtists = artistService.findPaginated(FilterType.RATING, pageNum, pageSize);
             List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, 0);
 
+            // Determinar si hay más páginas de álbumes, artistas o reseñas
+            boolean hasNextAlbums = popularAlbums.size() == pageSize;
+            boolean hasNextArtists = popularArtists.size() == pageSize;
+            boolean hasNextReviews = popularReviews.size() == pageSize;
+
+            // Añadir objetos necesarios al modelo
             mav.addObject("popularAlbums", popularAlbums);
             mav.addObject("popularArtists", popularArtists);
             mav.addObject("popularReviews", popularReviews);
             mav.addObject("pageNum", pageNum);
+            mav.addObject("pageSize", pageSize);
+
+            // Lógica para mostrar botones Next y Previous
+            mav.addObject("showNext", hasNextAlbums || hasNextArtists || hasNextReviews);
+            mav.addObject("showPrevious", pageNum > 1);
 
             return mav;
         }
 
         final ModelAndView mav = new ModelAndView("home");
 
+        // Obtener los elementos paginados
         List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, loggedUser.getId());
         List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUser.getId(), pageNum, pageSize, loggedUser.getId());
-        if (pageNum > 1 && popularReviews.isEmpty() && followingReviews.isEmpty()) return home(loggedUser, 1);
 
+        // Determinar si hay más reseñas para la siguiente página
+        boolean hasNextPopular = popularReviews.size() == pageSize;
+        boolean hasNextFollowing = followingReviews.size() == pageSize;
+
+        // Añadir los objetos al modelo
         mav.addObject("popularReviews", popularReviews);
         mav.addObject("followingReviews", followingReviews);
         mav.addObject("pageNum", pageNum);
-        mav.addObject("pageSize", pageSize-1);
+        mav.addObject("pageSize", pageSize);
+
+        // Lógica para mostrar botones Next y Previous
+        mav.addObject("showNext", hasNextPopular || hasNextFollowing);
+        mav.addObject("showPrevious", pageNum > 1);
 
         return mav;
     }
