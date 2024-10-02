@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 
 public class Song {
@@ -115,6 +116,16 @@ public class Song {
 
         json.append("}");
         return json.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Song song = (Song) o;
+        if (!Objects.equals(title, song.title)) return false;
+        if (!Objects.equals(duration, song.duration)) return false;
+        return Objects.equals(trackNumber, song.trackNumber);
     }
 
 }

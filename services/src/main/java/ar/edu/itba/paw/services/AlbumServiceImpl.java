@@ -5,6 +5,7 @@ import ar.edu.itba.paw.persistence.AlbumDao;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,11 @@ public class AlbumServiceImpl implements AlbumService {
         FIXME: Add required `business logic`
      */
     private final AlbumDao albumDao;
+    private final ImageService imageService;
 
-    public AlbumServiceImpl(AlbumDao albumDao) {
+    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService) {
         this.albumDao = albumDao;
+        this.imageService = imageService;
     }
 
     @Override
@@ -39,7 +42,14 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public int save(Album album) {
+    public long save(Album album) {
+        album.setImgId(imageService.save((byte[]) null, false));
+        return albumDao.save(album);
+    }
+
+    @Override
+    public long save(Album album, MultipartFile imageFile) {
+        album.setImgId(imageService.save(imageFile, false));
         return albumDao.save(album);
     }
 
@@ -49,7 +59,23 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public int deleteById(long id) {
-        return albumDao.deleteById(id);
+    public int update(Album album, Album updatedAlbum, MultipartFile imageFile) {
+        long imgId = imageService.update(album.getImgId(), imageFile);
+        updatedAlbum.setImgId(imgId);
+        if(updatedAlbum.getId() == null) {updatedAlbum.setId(imgId);}
+        if( !album.equals(updatedAlbum) ) {
+            album.setTitle(updatedAlbum.getTitle());
+            album.setGenre(updatedAlbum.getGenre());
+            album.setReleaseDate(updatedAlbum.getReleaseDate());
+            album.setImgId(imgId);
+            return albumDao.update(album);
+        }
+        return 0;
+    }
+
+    @Override
+    public int delete(Album album) {
+        imageService.delete(album.getImgId());
+        return albumDao.deleteById(album.getId());
     }
 }

@@ -1,17 +1,23 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -75,13 +81,32 @@ public class SongJdbcDao implements SongDao {
     }
 
     @Override
-    public int save(Song song) {
+    public long save(Song song) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int result = jdbcTemplate.update(connection -> {
+                    PreparedStatement ps = connection.prepareStatement(
+                            "INSERT INTO song (title, duration, track_number, album_id) VALUES (?, ?, ?, ?)",
+                            Statement.RETURN_GENERATED_KEYS
+                    );
+                    ps.setString(1, song.getTitle());
+                    ps.setString(2, song.getDuration());
+                    ps.setInt(3, song.getTrackNumber());
+                    ps.setLong(4,song.getAlbum().getId());
+                    return ps;
+                }, keyHolder);
+        Map<String, Object> keys = keyHolder.getKeys();
+        if (keys != null && keys.containsKey("id")) {
+            return ((Number) keys.get("id")).longValue();
+        } else {
+            throw new IllegalStateException("Failed to insert album or generate key.");
+        }
+    }
+
+    public int saveSongArtist(Song song, Artist artist) {
         return jdbcTemplate.update(
-                "INSERT INTO song (title, duration, track_number, album_id) VALUES (?, ?, ?, ?)",
-                song.getTitle(),
-                song.getDuration(),
-                song.getTrackNumber(),
-                song.getAlbum().getId()
+                    "INSERT INTO song_artist (song_id, artist_id) VALUES (?, ?)",
+                song.getId(),
+                artist.getId()
         );
     }
 

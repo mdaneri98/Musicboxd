@@ -12,7 +12,6 @@
 
     <c:url var="css" value="/static/css/moderator.css" />
     <link rel="stylesheet" href="${css}">
-
 </head>
 <body>
 <div>
@@ -21,106 +20,166 @@
         <jsp:param name="moderator" value="${loggedUser.moderator}"/>
     </jsp:include>
 </div>
-<div class="container">
-    <h1>Submit an Album</h1>
+<div class="container form-container">
+    <h1>Submit Album</h1>
 
-    <c:url var="postUrl" value="/mod/add/artist/${artistId}/album" />
-    <form:form modelAttribute="modAlbumForm" action="${postUrl}" method="post" enctype="multipart/form-data">
+    <c:url var="postURL" value="${postUrl}" />
+    <form:form id="albumForm" modelAttribute="modAlbumForm" action="${postURL}" method="post" enctype="multipart/form-data">
         <!-- Album Information -->
-        <div>
-            <label>Title:
-                <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="title" type="text" required="true"/>
-            </label>
-        </div>
-        <div>
-            <label>Genre:
-                <form:errors path="genre" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="genre" type="text" required="true"/>
-            </label>
-        </div>
-        <!--
-        <div>
-            <label>Release Date:
-                <input name="releaseDate" type="datetime-local" />
-                form:errors path="releaseDate" cssClass="error" />
-            </label>
-        </div>
-        -->
-        <div>
-            <label>Image:
-                <form:errors path="albumImage" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="albumImage" type="file" accept=".jpg,.jpeg,.png" required="true" onchange="previewImage(event)"/>
-                <img id="imagePreview" class="element-image-preview" style="display:none;"/>
-            </label>
+        <div class="container">
+            <div class="info-container">
+                <!-- Image Preview -->
+                <c:if test="${albumId == null}">
+                    <c:url var="albumImgURL" value="/images/1"/>
+                </c:if>
+                <c:if test="${albumId != null}">
+                    <c:url var="albumImgURL" value="/images/${albumImgId}"/>
+                </c:if>
+                <form:input path="albumImage" id="albumImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event)"/>
+                <img id="imagePreview" src="${albumImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('albumImageInput').click();"/>
+
+                <div class="data-container element-details-container">
+                    <div>
+                        <label>Title:
+                        <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
+                        <form:input path="title" type="text" required="true"/>
+                        </label>
+                    </div>
+                    <div>
+                        <label>Genre:
+                            <form:errors path="genre" cssClass="error" element="p" cssStyle="color:red;"/>
+                            <form:input path="genre" type="text" required="true"/>
+                        </label>
+                    </div>
+                    <!--
+                    <div>
+                        <label>Release Date:
+                            form:errors path="releaseDate" cssClass="error" />
+                            <input name="releaseDate" type="datetime-local" />
+                        </label>
+                    </div>
+                    -->
+                </div>
+            </div>
+            <input name="deleted" id="deletedAlbum" type="hidden" value="false"/>
+            <c:if test="${artistId != null}">
+                <button type="button" class="remove-button" style="margin-left: auto" onclick="deleteAlbum()">Delete Album</button>
+            </c:if>
         </div>
 
         <!-- Song List Section -->
         <h2>Songs</h2>
-        <div id="SongContainer" class="element-table">
+        <div id="SongContainer">
             <c:forEach items="${modAlbumForm.songs}" var="song" varStatus="status">
-                <div id="song-${status.index}" class="element-row">
-                    <form:input path="songs[${status.index}].title" type="text" placeholder="Title" required="true" class="element-field"/>
-                    <form:input path="songs[${status.index}].duration" type="text" placeholder="Duration in MM:SS" required="true" class="element-field"/>
-                    <form:input path="songs[${status.index}].trackNumber" type="number" placeholder="Track Number" required="true" class="element-field"/>
+                <input name="songs[${status.index}].id" type="hidden" value="${song.id}">
+                <div id="song-${status.index}" class="info-container sub-element-container">
+                    <div class="data-container element-details-container song-details-container">
+                        <label>Title:
+                            <form:input path="songs[${status.index}].title" type="text" required="true" class="element-field"/>
+                        </label>
+                        <label>Duration:
+                            <form:input path="songs[${status.index}].duration" type="text" required="true" class="element-field"/>
+                        </label>
+                        <label>Track Number:
+                            <form:input path="songs[${status.index}].trackNumber" type="number" required="true" class="element-field"/>
+                        </label>
+                    </div>
                     <!-- Remove button for existing songs -->
-                    <button type="button" class="remove-button" onclick="removeSong(${status.index})">Remove Song</button>
+                    <button type="button" class="remove-button" onclick="removeSong(document.getElementById('song-' + ${status.index}))">Remove Song</button>
                 </div>
+                <!-- Flag deleted songs -->
+                <input name="songs[${status.index}].deleted" id="deletedSong-${status.index}" type="hidden" value="false"/>
+
             </c:forEach>
         </div>
+
+        <!-- Add Song Button -->
         <div>
+            <c:url var="defaultImgURL" value="/images/1"/>
             <button type="button" id="addSongButton" onclick="addSong()">+ Add Song</button>
         </div>
 
-        <!-- Submit Button -->
         <br><br>
-        <div>
-            <button type="submit">Submit Album</button>
+        <div style="display: flex">
+            <!-- Cancel Button -->
+            <c:if test="${albumId == null}">
+                <c:url value="/mod" var="cancel_url" />
+            </c:if>
+            <c:if test="${albumId != null}">
+                <c:url value="/album/${albumId}" var="cancel_url" />
+            </c:if>
+            <a href="${cancel_url}">
+                <button type="button">Cancel</button>
+            </a>
+
+            <!-- Confirm Button -->
+            <button type="submit" style="margin-left: auto">Submit Artist</button>
         </div>
     </form:form>
 
     <script>
-        var songIndex = 0;
-        var songCount = 0;
-        var maxSongs = 3;
+        var songIndex = ${modAlbumForm.songs.size()};
+        var songCount = ${modAlbumForm.songs.size()};
+        var maxSongs = 15;
         function addSong() {
             var container = document.getElementById("SongContainer");
-            container.setAttribute("class", "element-table");
 
             var newSongDiv = document.createElement("div");
-            newSongDiv.setAttribute("class", "element-row");
+            newSongDiv.setAttribute("id", "song-" + songIndex);
+            newSongDiv.setAttribute("class", "info-container sub-element-container");
+
+            var newAlbumDataDiv = document.createElement("div");
+            newAlbumDataDiv.setAttribute("class", "data-container element-details-container");
+
+            var titleLabel = document.createElement("label");
+            titleLabel.textContent = "Title: ";
+
+            var durationLabel = document.createElement("label");
+            durationLabel.textContent = "Duration: ";
+
+            var trackNumberLabel = document.createElement("label");
+            trackNumberLabel.textContent = "Track Number: ";
 
             var titleInput = document.createElement("input");
             titleInput.setAttribute("type", "text");
             titleInput.setAttribute("name", "songs[" + songIndex + "].title");
-            titleInput.setAttribute("placeholder", "Title");
             titleInput.setAttribute("required", "true");
-            titleInput.setAttribute("class", "element-field");
-            newSongDiv.appendChild(titleInput);
 
             var durationInput = document.createElement("input");
             durationInput.setAttribute("type", "text");
             durationInput.setAttribute("name", "songs[" + songIndex + "].duration");
-            durationInput.setAttribute("placeholder", "Duration in MM:SS");
             durationInput.setAttribute("required", "true");
-            durationInput.setAttribute("class", "element-field");
-            newSongDiv.appendChild(durationInput);
 
             var trackNumberInput = document.createElement("input");
             trackNumberInput.setAttribute("type", "number");
             trackNumberInput.setAttribute("name", "songs[" + songIndex + "].trackNumber");
             trackNumberInput.setAttribute("required", "true");
-            trackNumberInput.setAttribute("class", "element-field");
-            newSongDiv.appendChild(trackNumberInput);
+
+            titleLabel.appendChild(titleInput);
+            durationLabel.appendChild(durationInput);
+            trackNumberLabel.appendChild(trackNumberInput);
+
+            newAlbumDataDiv.appendChild(titleLabel);
+            newAlbumDataDiv.appendChild(durationLabel);
+            newAlbumDataDiv.appendChild(trackNumberLabel);
+
+            newSongDiv.appendChild(newAlbumDataDiv);
 
             var removeButton = document.createElement("button");
             removeButton.textContent = "Remove Song";
             removeButton.setAttribute("type", "button");
             removeButton.setAttribute("class", "remove-button");
             removeButton.onclick = function () {
-                container.removeChild(newSongDiv);
+                removeSong(newSongDiv);
             };
             newSongDiv.appendChild(removeButton);
+
+            var deletedInput = document.createElement("input");
+            deletedInput.setAttribute("id", "deletedSong-" + songIndex);
+            deletedInput.setAttribute("name", "songs[" + songIndex + "].deleted")
+            deletedInput.setAttribute("type", "hidden");
+            deletedInput.setAttribute("value", "false");
+            container.appendChild(deletedInput);
 
             container.appendChild(newSongDiv);
 
@@ -128,34 +187,83 @@
             songCount++;
 
             // Update the button's enabled/disabled state
-            //toggleAddButton(albumCount);
+            toggleAddButton(songCount);
         }
 
-        function removeSong(index) {
-            var container = document.getElementById("SongContainer");
-            var songDiv = document.getElementById("song-" + index);
+        function deleteArtist() {
+            // Get the modal and buttons
+            var modal = document.getElementById("confirmationModal");
+            var yesButton = document.getElementById("modalYes");
+            var noButton = document.getElementById("modalNo");
 
-            if (songDiv) {
-                container.removeChild(songDiv);
-                songCount--;  // Decrease the count when an album is removed
+            // Show the modal
+            modal.style.display = "block";
+
+            // Handle the Yes button click
+            yesButton.onclick = function() {
+                var deletedInput = document.getElementById("deletedAlbum");
+                deletedInput.setAttribute("value", "true");
+
+                // Hide modal
+                modal.style.display = "none";
+
+                // Submit Form
+                document.getElementById("albumForm").submit();
             }
 
-            // Update the button's enabled/disabled state
-            //toggleAddButton(albumCount);
+            // Handle the No button click (just close the modal)
+            noButton.onclick = function() {
+                // Hide the modal without taking any action
+                modal.style.display = "none";
+            };
         }
 
-        /* Disables but does not enable the button
+        function removeSong(songDiv) {
+            // Get the modal and buttons
+            var modal = document.getElementById("confirmationModal");
+            var yesButton = document.getElementById("modalYes");
+            var noButton = document.getElementById("modalNo");
 
-        function toggleAddButton(count) {
+            // Show the modal
+            modal.style.display = "block";
+
+            // Handle the Yes button click
+            yesButton.onclick = function() {
+                // Proceed with song removal if the user pressed 'Yes'
+                var container = document.getElementById("SongContainer");
+
+                if (songDiv) {
+                    var id = songDiv.getAttribute("id");
+                    var removedSongIndex = id.split('-')[1];
+
+                    // Add a hidden input field to send this info to the server
+                    var deletedInput = document.getElementById("deletedSong-" + removedSongIndex);
+                    deletedInput.setAttribute("value", "true");
+
+                    container.removeChild(songDiv);
+
+                    // Decrease the count when an album is removed
+                    songCount--;
+                }
+
+                // Hide the modal after removing the album
+                modal.style.display = "none";
+
+                // Update the button's enabled/disabled state
+                toggleAddButton();
+            }
+
+            // Handle the No button click (just close the modal)
+            noButton.onclick = function() {
+                modal.style.display = "none"; // Hide the modal without taking any action
+            };
+        }
+
+        function toggleAddButton() {
             var addSongButton = document.getElementById("addSongButton");
-
-            if (count >= maxSongs) {
-                addSongButton.disabled = true;  // Disable the button when the max is reached
-            } else {
-                addSongButton.disabled = false; // Re-enable the button if the count is below the max
-            }
+            //Disables button if max albums has been reached
+            addSongButton.disabled = songCount >= maxSongs;
         }
-        */
 
         // Previews Image inserted
         function previewImage(event) {
@@ -166,15 +274,18 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
-                    preview.style.display = 'block'; // Show the image element
+                    // Show the image element
+                    preview.style.display = 'block';
                 }
-                reader.readAsDataURL(file); // Read the file and convert it to a data URL
-            } else {
-                preview.style.display = 'none'; // Hide the preview if no image is selected
+                // Read the file and convert it to a data URL
+                reader.readAsDataURL(file);
             }
         }
 
     </script>
 </div>
+<jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
+    <jsp:param name="message" value="Are you sure you want to delete this?"/>
+</jsp:include>
 </body>
 </html>

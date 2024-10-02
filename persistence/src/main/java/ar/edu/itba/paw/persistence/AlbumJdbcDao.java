@@ -3,12 +3,17 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -65,21 +70,32 @@ public class AlbumJdbcDao implements AlbumDao {
     }
 
     @Override
-    public int save(Album album) {
-        return jdbcTemplate.update(
-                "INSERT INTO album (title, genre, release_date , img_id, artist_id) VALUES (?, ?, ?, ?, ?)",
-                album.getTitle(),
-                album.getGenre(),
-                album.getReleaseDate(),
-                album.getImgId(),
-                album.getArtist().getId()
-        );
+    public long save(Album album) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int result = jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO album (title, genre, release_date , img_id, artist_id) VALUES (?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, album.getTitle());
+            ps.setString(2, album.getGenre());
+            ps.setObject(3, album.getReleaseDate());
+            ps.setLong(4, album.getImgId());
+            ps.setLong(5, album.getArtist().getId());
+            return ps;
+        }, keyHolder);
+        Map<String, Object> keys = keyHolder.getKeys();
+        if (keys != null && keys.containsKey("id")) {
+            return ((Number) keys.get("id")).longValue();
+        } else {
+            throw new IllegalStateException("Failed to insert album or generate key.");
+        }
     }
 
     @Override
     public int update(Album album) {
         return jdbcTemplate.update(
-                "UPDATE album SET title = ?, genre = ?, release_date = ?, created_at = ?, updated_at = ?, img_src = ?, artist_id = ? WHERE id = ?",
+                "UPDATE album SET title = ?, genre = ?, release_date = ?, created_at = ?, updated_at = ?, img_id = ?, artist_id = ? WHERE id = ?",
                 album.getTitle(),
                 album.getGenre(),
                 album.getReleaseDate(),

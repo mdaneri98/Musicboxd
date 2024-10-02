@@ -1,46 +1,32 @@
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 40px 24px;
+.form-container {
+    margin-right: 40px;
 }
 
-.element-table {
+.element-details-container {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 15px;
 }
 
-.element-row {
-    display: flex;
-    margin-bottom: 10px;
-
+.song-details-container {
+    flex-direction: row;
 }
 
-.element-row input[type="text"] {
+.sub-element-container {
+    background-color: #242424;
     width: auto;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.element-row:hover {
-    background-color: var(--background-highlight-pressed);
-}
-
-.element-field {
-    text-align: left;
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-right: 10px;
-}
-
-.element-image-preview {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 4px;
+.sub-element-container:hover {
+    background-color: #2a2a2a;
+    transform: scale(1.03);
 }
 
 .sub-element-image-preview {
-    width: 38px;
-    height: 38px;
+    width: 160px;
+    height: 160px;
     object-fit: cover;
     border-radius: 4px;
     margin-right: 10px;
@@ -59,9 +45,10 @@
     margin-left: auto;
 }
 
-.element-row .remove-button:hover {
+.remove-button:hover:not(:disabled) {
     background-color: #ff1c1c;
 }
+
 
 .remove-button:disabled {
     background-color: #6c6c6c;

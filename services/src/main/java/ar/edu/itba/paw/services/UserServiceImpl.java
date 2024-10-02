@@ -13,6 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
@@ -20,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,12 +34,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final EmailService emailService;
+    private final ImageService imageService;
 
-    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, EmailService emailService, ImageService imageService) {
         this.userDao = userDao;
         this.userVerificationDao = userVerificationDao;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.imageService = imageService;
     }
 
     @Override
@@ -170,6 +174,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public int update(Long userId, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount) {
         return userDao.update(userId, username, email, password, name, bio, updated_at, verified, moderator, imgId, followers_amount, following_amount, review_amount);
+    }
+
+    @Override
+    public int update(User user, User updatedUser, MultipartFile imageFile) {
+        long imgId = imageService.update(user.getImgId(), imageFile);
+        updatedUser.setImgId(imgId);
+        if ( !user.getUsername().equals(updatedUser.getUsername()) || !user.getName().equals(updatedUser.getName()) || !user.getBio().equals(updatedUser.getBio()) || !user.getImgId().equals(updatedUser.getImgId()) ) {
+            return userDao.update(user.getId(), updatedUser.getName(), user.getEmail(), user.getPassword(), updatedUser.getUsername(), updatedUser.getBio(), user.getUpdatedAt(), user.isVerified(), user.isModerator(), updatedUser.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());
+        }
+        return 0;
     }
 
     @Override

@@ -12,7 +12,7 @@ public interface AlbumDao {
     List<Album> findAll();
     List<Album> findByTitleContaining(String sub);
 
-    int save(Album album);
+    long save(Album album);
 
     int update(Album album);
 

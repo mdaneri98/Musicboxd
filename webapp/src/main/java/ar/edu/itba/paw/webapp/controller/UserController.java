@@ -83,21 +83,9 @@ public class UserController {
         if (errors.hasErrors()) {
             return editProfile(upf, loggedUser);
         }
-        if(upf.getProfilePicture() != null && !upf.getProfilePicture().isEmpty()) {
-            try {
-                long imageId = imageService.save(upf.getProfilePicture().getBytes());
-                loggedUser.setImgId(imageId);
-            } catch (IOException e) {
-                LOGGER.debug("Error en '/user/edit' al leer los bytes del profile {}", e.getMessage());
-                return new ModelAndView("redirect:/error");
-            }
-        }
 
-        loggedUser.setUsername(upf.getUsername());
-        loggedUser.setName(upf.getName());
-        loggedUser.setBio(upf.getBio());
-        
-        userService.update(loggedUser.getId(), upf.getUsername(), loggedUser.getEmail(), loggedUser.getPassword(), upf.getName(), upf.getBio(), LocalDateTime.now(), loggedUser.isVerified(), loggedUser.isModerator(), loggedUser.getImgId(), loggedUser.getFollowersAmount(), loggedUser.getFollowingAmount(), loggedUser.getReviewAmount());
+        User updatedUser = new User(upf.getUsername(), upf.getName(), upf.getBio());
+        userService.update(loggedUser, updatedUser, upf.getProfilePicture());
         return new ModelAndView("redirect:/user/profile");
     }
 
