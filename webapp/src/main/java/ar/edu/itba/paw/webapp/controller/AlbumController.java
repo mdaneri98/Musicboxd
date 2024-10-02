@@ -9,10 +9,7 @@ import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
@@ -43,24 +40,30 @@ public class AlbumController {
     }
 
     @RequestMapping("/{albumId:\\d+}")
-    public ModelAndView album (@ModelAttribute("loggedUser") User loggedUser,
-                                 @PathVariable(name = "albumId") long albumId){
-        return album(albumId, 1, loggedUser);
-    }
+    public ModelAndView album(@PathVariable(name = "albumId") long albumId,
+                              @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                              @ModelAttribute("loggedUser") User loggedUser) {
+        if (pageNum == null || pageNum <= 0) {
+            pageNum = 1;
+        }
 
-
-    @RequestMapping("/{albumId:\\d+}/{pageNum:\\d+}")
-    public ModelAndView album(@PathVariable(name = "albumId") long albumId, @PathVariable(name = "pageNum", required = false) Integer pageNum , @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("album");
-
-        if (pageNum == null || pageNum <= 0) pageNum = 1;
+        int pageSize = 5;
 
         Album album = albumService.findById(albumId).orElseThrow();
         List<Song> songs = songService.findByAlbumId(albumId);
-        List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId,pageNum,5, loggedUser.getId());
-        boolean isReviewed = reviewService.hasUserReviewedAlbum(loggedUser.getId(), albumId);
-        Integer loggedUserRating = isReviewed? reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get().getRating(): 0;
 
+        List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId, pageNum, pageSize, loggedUser.getId());
+
+        // Determinar si el usuario ya reseñó el álbum
+        boolean isReviewed = reviewService.hasUserReviewedAlbum(loggedUser.getId(), albumId);
+        Integer loggedUserRating = isReviewed ? reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get().getRating() : 0;
+
+        // Determinar si mostrar botones "Next" y "Previous"
+        boolean showNext = reviews.size() == pageSize;  // Mostrar "Next" si hay más reseñas
+        boolean showPrevious = pageNum > 1;  // Mostrar "Previous" si no estamos en la primera página
+
+        // Añadir los objetos al modelo
         mav.addObject("album", album);
         mav.addObject("songs", songs);
         mav.addObject("artist", album.getArtist());
@@ -69,6 +72,11 @@ public class AlbumController {
         mav.addObject("isReviewed", isReviewed);
         mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
+
+        // Añadir los flags para mostrar los botones de navegación
+        mav.addObject("showNext", showNext);
+        mav.addObject("showPrevious", showPrevious);
+
         return mav;
     }
 
