@@ -6,7 +6,7 @@
 <html>
 <head>
 
-    <spring:message var="pageTitle" text="Album Review"/>
+    <spring:message var="pageTitle" code="page.album.review.title"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -23,7 +23,7 @@
     </jsp:include>
 </div>
 <div class="main-content container">
-    <h1>Make a review</h1>
+    <h1><spring:message code="label.make.a.review" /></h1>
 
     <c:url value="/album/${album.id}" var="albumUrl" />
     <a href="${albumUrl}" class="artist-box">

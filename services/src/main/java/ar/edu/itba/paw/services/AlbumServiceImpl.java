@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Filter;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -26,6 +29,10 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     public Optional<Album> findById(long id) {
         return albumDao.findById(id);
+    }
+
+    public List<Album> findPaginated(FilterType filterType, int page, int pageSize) {
+        return albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
     }
 
     @Override
@@ -71,6 +78,11 @@ public class AlbumServiceImpl implements AlbumService {
             return albumDao.update(album);
         }
         return 0;
+    }
+
+    @Override
+    public int deleteById(long id) {
+        return albumDao.deleteById(id);
     }
 
     @Override

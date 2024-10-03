@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import org.slf4j.Logger;
@@ -35,14 +32,75 @@ public class IndexController {
         this.albumService = albumService;
     }
 
-    @RequestMapping("/")
-    public ModelAndView index(@ModelAttribute("loggedUser") User loggedUser) {
-        return home(loggedUser);
+    @RequestMapping(value = {"/home", "/"})
+    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null || pageNum < 1) {
+            pageNum = 1;
+        }
+
+        int pageSize = 10;
+
+        if (loggedUser == null) {
+            final ModelAndView mav = new ModelAndView("anonymous/home");
+
+            // Elementos paginados
+            List<Album> popularAlbums = albumService.findPaginated(FilterType.RATING, pageNum, pageSize);
+            List<Artist> popularArtists = artistService.findPaginated(FilterType.RATING, pageNum, pageSize);
+            List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, 0);
+
+            // Determinar si hay más páginas de álbumes, artistas o reseñas
+            boolean hasNextAlbums = popularAlbums.size() == pageSize;
+            boolean hasNextArtists = popularArtists.size() == pageSize;
+            boolean hasNextReviews = popularReviews.size() == pageSize;
+
+            // Añadir objetos necesarios al modelo
+            mav.addObject("popularAlbums", popularAlbums);
+            mav.addObject("popularArtists", popularArtists);
+            mav.addObject("popularReviews", popularReviews);
+            mav.addObject("pageNum", pageNum);
+            mav.addObject("pageSize", pageSize);
+
+            // Lógica para mostrar botones Next y Previous
+            mav.addObject("showNext", hasNextAlbums || hasNextArtists || hasNextReviews);
+            mav.addObject("showPrevious", pageNum > 1);
+
+            return mav;
+        }
+
+        final ModelAndView mav = new ModelAndView("home");
+
+        // Obtener los elementos paginados
+        List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, loggedUser.getId());
+        List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUser.getId(), pageNum, pageSize, loggedUser.getId());
+
+        // Determinar si hay más reseñas para la siguiente página
+        boolean hasNextPopular = popularReviews.size() == pageSize;
+        boolean hasNextFollowing = followingReviews.size() == pageSize;
+
+        // Añadir los objetos al modelo
+        mav.addObject("popularReviews", popularReviews);
+        mav.addObject("followingReviews", followingReviews);
+        mav.addObject("pageNum", pageNum);
+        mav.addObject("pageSize", pageSize);
+
+        // Lógica para mostrar botones Next y Previous
+        mav.addObject("showNext", hasNextPopular || hasNextFollowing);
+        mav.addObject("showPrevious", pageNum > 1);
+
+        return mav;
     }
 
     @RequestMapping("/search")
     public ModelAndView search(@ModelAttribute("loggedUser") User loggedUser) {
-        return new ModelAndView("search");
+        ModelAndView mav = new ModelAndView("search");
+
+        List<Album> albums = albumService.findPaginated(FilterType.NEWEST,10, 0);
+        List<Artist> artists = artistService.findPaginated(FilterType.RATING,10, 0);
+
+        mav.addObject("top_albums", albums);
+        mav.addObject("top_artists", artists);
+
+        return mav;
     }
 
     @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
@@ -54,7 +112,6 @@ public class IndexController {
         switch (type) {
             case "song":
                 List<Song> songs = songService.findByTitleContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = songs.stream()
                         .map(Song::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -62,7 +119,6 @@ public class IndexController {
 
             case "album":
                 List<Album> albums = albumService.findByTitleContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = albums.stream()
                         .map(Album::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -70,14 +126,12 @@ public class IndexController {
 
             case "artist":
                 List<Artist> artists = artistService.findByNameContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = artists.stream()
                         .map(Artist::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
                 break;
             case "user":
                 List<User> users = userService.findByUsernameContaining(substringSearch);
-                // Convertimos la lista a un string JSON
                 jsonResult = users.stream()
                         .map(User::toJson)
                         .collect(Collectors.joining(",", "[", "]"));
@@ -86,28 +140,7 @@ public class IndexController {
                 logger.warn("Tipo de búsqueda no reconocido: {}", type);
                 return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
         }
-
         return jsonResult;
     }
 
-
-    @RequestMapping("/home")
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser) {
-        return home(loggedUser, 1);
-    }
-
-    @RequestMapping("/home/{pageNum:\\d+}")
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "pageNum", required = false) Integer pageNum) {
-        final ModelAndView mav = new ModelAndView("home");
-
-        List<Review> popularReviews = reviewService.getPopularReviewsNDaysPaginated(30,pageNum, 10, loggedUser.getId());
-        List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUser.getId(), pageNum, 10, loggedUser.getId());
-        if (popularReviews.isEmpty() && followingReviews.isEmpty()) return home(loggedUser);
-
-        mav.addObject("popularReviews", popularReviews);
-        mav.addObject("followingReviews", followingReviews);
-        mav.addObject("pageNum", pageNum);
-
-        return mav;
-    }
 }

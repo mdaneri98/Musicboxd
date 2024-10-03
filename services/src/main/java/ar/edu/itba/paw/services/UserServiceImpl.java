@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         int rowsChanged = userDao.create(username, email, hashedPassword);
         if (rowsChanged > 0) {
             User createdUser = userDao.findByEmail(email).get();
-            //this.createVerification(createdUser);
+            this.createVerification(createdUser);
         }
         return rowsChanged;
     }

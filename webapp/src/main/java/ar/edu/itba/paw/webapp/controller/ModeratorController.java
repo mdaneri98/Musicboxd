@@ -25,22 +25,16 @@ public class ModeratorController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModeratorController.class);
 
-    private final ImageService imageService;
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final SongService songService;
     private final ReviewService reviewService;
 
-    private final long DEFAULT_IMAGE_ID = 1;
-    private final Image defaultImage;
-
-    public ModeratorController(ImageService imageService, ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService) {
-        this.imageService = imageService;
+    public ModeratorController(ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService) {
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
         this.reviewService = reviewService;
-        defaultImage = imageService.findById(DEFAULT_IMAGE_ID).get();
     }
 
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
@@ -66,7 +60,7 @@ public class ModeratorController {
         return new ModelAndView("redirect:/");
     }
 
-    @RequestMapping(path = "add/artist", method = RequestMethod.GET)
+    @RequestMapping(path = "/add/artist", method = RequestMethod.GET)
     public ModelAndView addArtistForm(@ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
                                       @ModelAttribute("loggedUser") User loggedUser) {
         ModelAndView modelAndView = new ModelAndView("moderator/add-artist");
@@ -74,7 +68,7 @@ public class ModeratorController {
         return modelAndView;
     }
 
-    @RequestMapping(path = "add/artist", method = RequestMethod.POST)
+    @RequestMapping(path = "/add/artist", method = RequestMethod.POST)
     public ModelAndView submitArtistForm(@Valid @ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
                                          @ModelAttribute("loggedUser") User loggedUser,
                                          final BindingResult errors) {
@@ -87,6 +81,9 @@ public class ModeratorController {
         // Save new Artist
         Artist artist = convert(modArtistForm);
         artist.setId(artistService.save(artist, modArtistForm.getArtistImage()));
+
+        // TODO: hacer lo asi
+        //artist = artistService.save(artist, modArtistForm.getArtistImage());
 
         // Save new Albums
         for (ModAlbumForm albumForm : modArtistForm.getAlbums()) {
@@ -393,6 +390,12 @@ public class ModeratorController {
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + songId);
         modelAndView.addObject("song", song.get());
         return modelAndView;
+    }
+
+    @RequestMapping(path = "/update-ratings", method = RequestMethod.GET)
+    public ModelAndView updateAvgRatingForAll(@ModelAttribute("loggedUser") User loggedUser) {
+        reviewService.updateAvgRatingForAll();
+        return new ModelAndView("redirect:/");
     }
 
     private Artist convert(ModArtistForm modArtistForm) {

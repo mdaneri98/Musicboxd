@@ -1,12 +1,15 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.FilterType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +42,15 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
+    public List<Artist> findPaginated(FilterType filterType, int limit, int offset) {
+        String sql = "SELECT * FROM artist" +
+                filterType.getFilter() +
+                "LIMIT ? OFFSET ?";
+
+        return jdbcTemplate.query(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, SimpleRowMappers.ARTIST_ROW_MAPPER);
+    }
+
+    @Override
     public List<Artist> findBySongId(long id) {
         return jdbcTemplate.query("SELECT DISTINCT a.* FROM artist a JOIN song_artist sa ON a.id = sa.artist_id WHERE sa.song_id = ?",
                 new Object[]{id},
@@ -48,7 +60,7 @@ public class ArtistJdbcDao implements ArtistDao {
 
     @Override
     public List<Artist> findByNameContaining(String sub) {
-        String sql = "SELECT * FROM artist WHERE name ILIKE ?";
+        String sql = "SELECT * FROM artist WHERE name ILIKE ? LIMIT 10";
         return jdbcTemplate.query(sql, new Object[]{"%" + sub + "%"}, SimpleRowMappers.ARTIST_ROW_MAPPER);
     }
 
@@ -71,6 +83,19 @@ public class ArtistJdbcDao implements ArtistDao {
                 artist.getImgId(),
                 artist.getId()
         );
+    }
+
+    @Override
+    public void updateRating(long artistId, float newRating, int newRatingAmount) {
+        final String sql = "UPDATE artist SET avg_rating = ?, rating_amount = ? WHERE id = ?";
+        jdbcTemplate.update(sql, newRating, newRatingAmount, artistId);
+    }
+
+    @Override
+    public boolean hasUserReviewed(long userId, long artistId) {
+        final String sql = "SELECT COUNT(*) FROM artist_review ar JOIN review r ON ar.review_id = r.id WHERE r.user_id = ? AND ar.artist_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, artistId);
+        return count > 0;
     }
 
     @Override

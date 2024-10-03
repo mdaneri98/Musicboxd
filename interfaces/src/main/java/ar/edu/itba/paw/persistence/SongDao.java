@@ -7,17 +7,15 @@ import ar.edu.itba.paw.models.Song;
 import java.util.List;
 import java.util.Optional;
 
-public interface SongDao {
+public interface SongDao extends CrudDao<Song> {
 
-    Optional<Song> findById(long id);
-    List<Song> findAll();
     List<Song> findByArtistId(long id);
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
 
-    long save(Song song);
     int saveSongArtist(Song song, Artist artist);
-    int update(Song song);
-    int deleteById(long id);
+    void updateRating(long songId, float newRating, int newRatingAmount);
+    boolean hasUserReviewed(long userId, long songId);
+
 }
 

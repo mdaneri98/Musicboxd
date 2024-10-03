@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page isErrorPage="true" contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,9 +9,10 @@
 </head>
 <body>
 <div class="error-container">
-    <h1>404 - User Not Found</h1>
-    <p>Sorry, the page you are looking for does not exist.</p>
-    <p>Please check the URL or go back to the <a href="${pageContext.request.contextPath}/">home page</a>.</p>
+    <h1><spring:message code="error.user.not.found" /></h1>
+    <p><spring:message code="error.user.not.found.message" /></p>
+    <p><spring:message code="error.back.to.home" /> <a href="${pageContext.request.contextPath}/"><spring:message code="error.back.to.home" /></a>.</p>
 </div>
+
 </body>
 </html>
