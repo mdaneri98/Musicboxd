@@ -18,16 +18,19 @@ public interface ReviewDao {
     // Métodos específicos para ArtistReview
     Optional<ArtistReview> findArtistReviewById(long id);
     List<ArtistReview> findReviewsByArtistId(long artistId);
+    Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId);
     int saveArtistReview(ArtistReview review);
 
     // Métodos específicos para AlbumReview
     Optional<AlbumReview> findAlbumReviewById(long id);
     List<AlbumReview> findReviewsByAlbumId(long albumId);
+    Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId);
     int saveAlbumReview(AlbumReview review);
 
     // Métodos específicos para SongReview
     Optional<SongReview> findSongReviewById(long id);
     List<SongReview> findReviewsBySongId(long songId);
+    Optional<SongReview> findSongReviewByUserId(long userId, long songId);
     int saveSongReview(SongReview review);
 
 
@@ -43,7 +46,7 @@ public interface ReviewDao {
     List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize);
     List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize);
 
-    List<Review> getPopularReviewsSincePaginated(LocalDate date, int page, int pageSize);
+    List<Review> getPopularReviewsPaginated(int page, int pageSize);
     List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize);
     List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize);
 

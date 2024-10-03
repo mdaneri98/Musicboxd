@@ -6,13 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
-public interface AlbumService {
-
-    Optional<Album> findById(long id);
+public interface AlbumService extends CrudService<Album> {
 
     List<Album> findByArtistId(long id);
-
-    List<Album> findAll();
 
     List<Album> findByTitleContaining(String sub);
 

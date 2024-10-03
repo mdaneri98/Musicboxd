@@ -10,10 +10,7 @@ import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
@@ -44,30 +41,48 @@ public class SongController {
         return new ModelAndView("redirect:/");
     }
 
-    @RequestMapping("/{songId:\\d+}")
-    public ModelAndView song (@ModelAttribute("loggedUser") User loggedUser,
-                               @PathVariable(name = "songId") long songId){
-        return song(songId, 1, loggedUser);
-    }
+    @RequestMapping("/{songId}")
+    public ModelAndView song(@PathVariable(name = "songId") long songId,
+                             @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                             @ModelAttribute("loggedUser") User loggedUser) {
+        if (pageNum == null || pageNum <= 0) {
+            pageNum = 1;
+        }
 
-    @RequestMapping("/{songId:\\d+}/{pageNum:\\d+}")
-    public ModelAndView song(@PathVariable(name = "songId") long songId, @PathVariable(name = "pageNum", required = false) Integer pageNum , @ModelAttribute("loggedUser") User loggedUser) {
         final ModelAndView mav = new ModelAndView("song");
-
-        if (pageNum == null || pageNum <= 0) pageNum = 1;
+        int pageSize = 5;  // Tamaño de la página para las reseñas
 
         Song song = songService.findById(songId).get();
         List<Artist> artists = artistService.findBySongId(songId);
-        List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId,pageNum,5, loggedUser.getId());
 
+        // Obtener las reseñas de la canción de manera paginada
+        List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId, pageNum, pageSize, loggedUser.getId());
+
+        // Determinar si el usuario ya reseñó la canción
+        boolean isReviewed = reviewService.hasUserReviewedSong(loggedUser.getId(), songId);
+        Integer loggedUserRating = isReviewed ? reviewService.findSongReviewByUserId(loggedUser.getId(), songId).get().getRating() : 0;
+
+        // Determinar si mostrar botones "Next" y "Previous"
+        boolean showNext = reviews.size() == pageSize;  // Mostrar "Next" si hay más reseñas
+        boolean showPrevious = pageNum > 1;  // Mostrar "Previous" si no estamos en la primera página
+
+        // Añadir los objetos al modelo
         mav.addObject("album", song.getAlbum());
         mav.addObject("artists", artists);
         mav.addObject("song", song);
         mav.addObject("reviews", reviews);
         mav.addObject("isFavorite", userService.isSongFavorite(loggedUser.getId(), songId));
+        mav.addObject("isReviewed", isReviewed);
+        mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
+
+        // Añadir los flags para mostrar los botones de navegación
+        mav.addObject("showNext", showNext);
+        mav.addObject("showPrevious", showPrevious);
+
         return mav;
     }
+
 
     @RequestMapping(value = "/{songId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long songId) {

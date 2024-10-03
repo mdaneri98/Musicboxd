@@ -12,8 +12,10 @@ public class Song {
     private LocalDate createdAt;
     private LocalDate updatedAt;
     private Album album;
+    private Integer ratingCount;
+    private Float avgRating;
 
-    public Song(Long id, String title, String duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Album album) {
+    public Song(Long id, String title, String duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Album album, Integer ratingCount, Float avgRating) {
         this.id = id;
         this.title = title;
         this.duration = duration;
@@ -21,6 +23,8 @@ public class Song {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.album = album;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
     }
 
     public Song(Long id, String title, String duration, Album album) {
@@ -92,6 +96,22 @@ public class Song {
 
     public Album getAlbum() {
         return album;
+    }
+
+    public Float getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(Float avgRating) {
+        this.avgRating = avgRating;
+    }
+
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
     }
 
     public void setAlbum(Album albumId) {

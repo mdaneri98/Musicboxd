@@ -12,14 +12,18 @@ public class Artist {
     private LocalDate createdAt;
     private LocalDate updatedAt;
     private Long imgId;
+    private Integer ratingCount;
+    private Float avgRating;
 
-    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Long imgId) {
+    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Long imgId, Integer ratingCount, Float avgRating) {
         this.id = id;
         this.name = name;
         this.bio = bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.imgId = imgId;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
     }
 
     public Artist(Long id, String name, Long imgId) {
@@ -85,6 +89,22 @@ public class Artist {
 
     public void setImgId(Long imgId) {
         this.imgId = imgId;
+    }
+
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
+    public Float getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(Float avgRating) {
+        this.avgRating = avgRating;
     }
 
     // Método para convertir a JSON

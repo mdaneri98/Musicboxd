@@ -2,6 +2,8 @@ package ar.edu.itba.paw.services.email;
 
 import ar.edu.itba.paw.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -16,6 +18,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,10 +64,10 @@ public class EmailServiceImpl implements EmailService {
     public void sendVerification(String email, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
+        String baseUrl = environment.getProperty("app.url.base");
+        String verificationURL = baseUrl + "/user/verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
 
-//        URLEncoder encoder = URLEncoder.encode("www.localhost:8080/webapp_war/user/verification?code=", );
-
-        //params.put("verificationURL", encoder.);
+        params.put("verificationURL", verificationURL);
         this.sendMessageUsingThymeleafTemplate(
                 "user_verification",
                 email,

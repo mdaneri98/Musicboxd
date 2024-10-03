@@ -241,7 +241,7 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public List<Album> getFavoriteAlbums(long userId) {
-        final String sql = "SELECT a.id AS album_id, title, genre, release_date, a.created_at, a.updated_at, a.img_id AS album_img_id, ar.id AS artist_id, name, ar.img_id AS artist_img_id FROM album a " +
+        final String sql = "SELECT a.id AS album_id, title, genre, release_date, a.created_at, a.updated_at, a.img_id AS album_img_id, a.avg_rating AS avg_rating, a.rating_amount AS rating_amount, ar.id AS artist_id, name, ar.img_id AS artist_img_id FROM album a " +
                 "JOIN favorite_album fa ON a.id = fa.album_id JOIN artist ar ON a.artist_id = ar.id " +
                 "WHERE fa.user_id = ?";
         return jdbcTemplate.query(sql, new Object[]{userId}, SimpleRowMappers.ALBUM_ROW_MAPPER);
@@ -278,7 +278,7 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public List<Song> getFavoriteSongs(long userId) {
-        final String sql = "SELECT s.id AS song_id, s.title AS song_title, duration, track_number, s.created_at AS song_created_at, s.updated_at AS song_updated_at, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.genre, ar.id AS artist_id, name, ar.img_id AS artist_img_id, al.release_date AS album_release_date FROM song s " +
+        final String sql = "SELECT s.id AS song_id, s.title AS song_title, duration, track_number, s.created_at AS song_created_at, s.updated_at AS song_updated_at, s.avg_rating AS avg_rating, s.rating_amount AS rating_amount, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.genre, ar.id AS artist_id, name, ar.img_id AS artist_img_id, al.release_date AS album_release_date FROM song s " +
                 "JOIN favorite_song fs ON s.id = fs.song_id JOIN album al ON s.album_id = al.id JOIN artist ar ON al.artist_id = ar.id " +
                 "WHERE fs.user_id = ?";
         return jdbcTemplate.query(sql, new Object[]{userId}, SimpleRowMappers.SONG_ROW_MAPPER);
