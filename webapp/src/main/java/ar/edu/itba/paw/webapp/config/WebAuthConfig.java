@@ -42,9 +42,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.sessionManagement()
-                .invalidSessionUrl("/user/login")
+                .invalidSessionUrl("/")
                 .and().authorizeRequests()
-                .antMatchers("/user/verification", "/", "/images/**").permitAll()
+                .antMatchers("/user/verification", "/", "/images/**", "/music").permitAll()
                 .antMatchers("/user/register", "/user/login").anonymous()
                 .antMatchers("/profile").hasRole("USER")
                 .antMatchers("/mod/**").hasRole("MODERATOR")
