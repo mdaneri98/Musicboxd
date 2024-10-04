@@ -1,8 +1,11 @@
 package ar.edu.itba.paw.services;
 
 
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.persistence.SongDao;
 import org.springframework.stereotype.Service;
 
@@ -51,8 +54,7 @@ public class SongServiceImpl implements SongService {
     @Override
     public Song create(Song song) {
         Song createdSong = songDao.create(song);
-        int result = songDao.saveSongArtist(createdSong, song.getAlbum().getArtist());
-        //FIXME: ¿Chequear que se haya agregado correctamente?
+        songDao.saveSongArtist(createdSong, song.getAlbum().getArtist());
         return createdSong;
     }
 
@@ -64,5 +66,48 @@ public class SongServiceImpl implements SongService {
     @Override
     public boolean delete(long id) {
         return songDao.delete(id);
+    }
+
+    @Override
+    public Song create(SongDTO songDTO, Album album) {
+        Song song = new Song(0L, songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        song = songDao.create(song);
+        songDao.saveSongArtist(song, song.getAlbum().getArtist());
+        return song;
+    }
+
+    @Override
+    public boolean createAll(List<SongDTO> songsDTO, Album album) {
+        for (SongDTO songDTO : songsDTO) {
+            if (!songDTO.isDeleted()) {
+                create(songDTO, album);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Song update(SongDTO songDTO, Album album) {
+        Song song = new Song(songDTO.getId(), songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        song = songDao.update(song);
+        return song;
+    }
+
+    @Override
+    public boolean updateAll(List<SongDTO> songsDTO, Album album) {
+        for (SongDTO songDTO : songsDTO) {
+            if (songDTO.getId() != 0) {
+                if (songDTO.isDeleted()) {
+                    delete(songDTO.getId());
+                } else {
+                    update(songDTO, album);
+                }
+            } else {
+                if (!songDTO.isDeleted()) {
+                    create(songDTO, album);
+                }
+            }
+        }
+        return true;
     }
 }

@@ -1,19 +1,22 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
-import org.springframework.web.multipart.MultipartFile;
-
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import java.util.List;
-import java.util.Optional;
 
 public interface AlbumService extends CrudService<Album> {
+
+    boolean delete(Album album);
 
     List<Album> findByArtistId(long id);
 
     List<Album> findByTitleContaining(String sub);
 
-    Album save(Album album, MultipartFile imageFile);
+    Album create(AlbumDTO albumDTO, long artistId);
+    boolean createAll(List<AlbumDTO> albumsDTO, long artistId);
 
-    Album update(Album album, Album updatedAlbum, MultipartFile imageFile);
+    Album update(AlbumDTO albumDTO);
+    boolean updateAll(List<AlbumDTO> albumsDTO, long artistId);
 
 }

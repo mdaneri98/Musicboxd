@@ -33,11 +33,14 @@
                     <c:url var="albumImgURL" value="/images/1"/>
                 </c:if>
                 <c:if test="${albumId != null}">
-                    <c:url var="albumImgURL" value="/images/${albumImgId}"/>
+                    <c:url var="albumImgURL" value="/images/${modAlbumForm.albumImageId}"/>
                 </c:if>
                 <form:input path="albumImage" id="albumImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event)"/>
                 <img id="imagePreview" src="${albumImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('albumImageInput').click();"/>
 
+                <input name="id" type="hidden" value="${modAlbumForm.id}"/>
+                <input name="artistId" type="hidden" value="${modAlbumForm.artistId}"/>
+                <input name="albumImageId" type="hidden" value="${modAlbumForm.albumImageId}"/>
                 <div class="data-container element-details-container">
                     <div>
                         <label>Title:
@@ -62,8 +65,11 @@
                 </div>
             </div>
             <input name="deleted" id="deletedAlbum" type="hidden" value="false"/>
-            <c:if test="${artistId != null}">
-                <button type="button" class="remove-button" style="margin-left: auto" onclick="deleteAlbum()">Delete Album</button>
+            <c:if test="${albumId != null}">
+                <c:url var="deleteUrl" value="/mod/delete/album/${albumId}"/>
+                <a href="${deleteUrl}" style="margin-left: auto">
+                    <button type="button" class="remove-button">Delete Album</button>
+                </a>
             </c:if>
         </div>
 
@@ -72,6 +78,7 @@
         <div id="SongContainer">
             <c:forEach items="${modAlbumForm.songs}" var="song" varStatus="status">
                 <input name="songs[${status.index}].id" type="hidden" value="${song.id}">
+                <input name="songs[${status.index}].albumId" type="hidden" value="${song.albumId}"/>
                 <div id="song-${status.index}" class="info-container sub-element-container">
                     <div class="data-container element-details-container song-details-container">
                         <label>Title:
@@ -89,7 +96,6 @@
                 </div>
                 <!-- Flag deleted songs -->
                 <input name="songs[${status.index}].deleted" id="deletedSong-${status.index}" type="hidden" value="false"/>
-
             </c:forEach>
         </div>
 
@@ -188,34 +194,6 @@
 
             // Update the button's enabled/disabled state
             toggleAddButton(songCount);
-        }
-
-        function deleteArtist() {
-            // Get the modal and buttons
-            var modal = document.getElementById("confirmationModal");
-            var yesButton = document.getElementById("modalYes");
-            var noButton = document.getElementById("modalNo");
-
-            // Show the modal
-            modal.style.display = "block";
-
-            // Handle the Yes button click
-            yesButton.onclick = function() {
-                var deletedInput = document.getElementById("deletedAlbum");
-                deletedInput.setAttribute("value", "true");
-
-                // Hide modal
-                modal.style.display = "none";
-
-                // Submit Form
-                document.getElementById("albumForm").submit();
-            }
-
-            // Handle the No button click (just close the modal)
-            noButton.onclick = function() {
-                // Hide the modal without taking any action
-                modal.style.display = "none";
-            };
         }
 
         function removeSong(songDiv) {

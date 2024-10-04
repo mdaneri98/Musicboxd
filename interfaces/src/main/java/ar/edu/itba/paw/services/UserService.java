@@ -28,7 +28,7 @@ public interface UserService {
 
     int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
 
-    int update(User user, User updatedUser, MultipartFile imageFile);
+    int update(User user, byte[] bytes);
 
     int deleteById(long id);
 

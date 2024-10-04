@@ -1,12 +1,9 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,8 +12,6 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -96,12 +91,10 @@ public class SongJdbcDao implements SongDao {
                 }, keyHolder);
 
         Map<String, Object> keys = keyHolder.getKeys();
-        if (keys != null && keys.containsKey("id"))
-            song.setId(((Number) keys.get("id")).longValue());
-        else
+        if (keys == null || !keys.containsKey("id"))
             throw new IllegalStateException("Failed to insert album or generate key.");
 
-        return song;
+        return this.find(((Number) keys.get("id")).longValue()).get();
     }
 
     public int saveSongArtist(Song song, Artist artist) {
@@ -115,20 +108,18 @@ public class SongJdbcDao implements SongDao {
     @Override
     public Song update(Song song) {
         int result = jdbcTemplate.update(
-                "UPDATE song SET title = ?, duration = ?, track_number = ?, created_at = ?, updated_at = ?, album_id = ? WHERE id = ?",
+                "UPDATE song SET title = ?, duration = ?, track_number = ?, updated_at = NOW(), album_id = ? WHERE id = ?",
                 song.getTitle(),
                 song.getDuration(),
                 song.getTrackNumber(),
-                song.getCreatedAt(),
-                song.getUpdatedAt(),
                 song.getAlbum().getId(),
                 song.getId()
         );
 
-        if (result == 1)
-            return song;
-        else
+        if (result != 1)
             throw new IllegalStateException("Failed to update album");
+
+        return this.find(song.getId()).get();
     }
 
     @Override
@@ -148,4 +139,5 @@ public class SongJdbcDao implements SongDao {
     public boolean delete(long id) {
         return jdbcTemplate.update("DELETE FROM song WHERE id = ?", id) == 1;
     }
+
 }
