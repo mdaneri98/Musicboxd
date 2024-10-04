@@ -53,7 +53,8 @@ public class UserVerificationJdbcDao implements UserVerificationDao {
 
             User user = userDao.findById(userVerification.getUser_id()).orElseThrow();
             if (userVerification.getExpireDate().after(Timestamp.valueOf(LocalDateTime.now()))) {
-                return userDao.update(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getName(), user.getBio(), user.getUpdatedAt(), true, user.isModerator(), user.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount()) == 1;
+                user.setVerified(true);
+                return userDao.update(user) == 1;
             }
         }
         return false;

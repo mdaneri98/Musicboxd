@@ -35,11 +35,13 @@
                     <c:url var="artistImgURL" value="/images/1"/>
                 </c:if>
                 <c:if test="${artistId != null}">
-                    <c:url var="artistImgURL" value="/images/${artistImgId}"/>
+                    <c:url var="artistImgURL" value="/images/${modArtistForm.artistImgId}"/>
                 </c:if>
                 <form:input path="artistImage" id="artistImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event,0)"/>
                 <img id="imagePreview-0" src="${artistImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('artistImageInput').click();"/>
 
+                <input name="id" type="hidden" value="${modArtistForm.id}"/>
+                <input name="artistImgId" type="hidden" value="${modArtistForm.artistImgId}"/>
                 <div class="data-container element-details-container">
                     <div>
                         <label>Name:
@@ -57,7 +59,10 @@
             </div>
             <input name="deleted" id="deletedArtist" type="hidden" value="false"/>
             <c:if test="${artistId != null}">
-                <button type="button" class="remove-button" style="margin-left: auto" onclick="deleteArtist()">Delete Artist</button>
+                <c:url var="deleteUrl" value="/mod/delete/artist/${artistId}"/>
+                <a href="${deleteUrl}" style="margin-left: auto">
+                    <button type="button" class="remove-button">Delete Artist</button>
+                </a>
             </c:if>
         </div>
 
@@ -65,14 +70,16 @@
         <h2>Albums</h2>
         <div id="AlbumContainer">
             <c:forEach items="${modArtistForm.albums}" var="album" varStatus="status">
-                <input name="albums[${status.index}].id" type="hidden" value="${album.id}">
+                <input name="albums[${status.index}].id" id="" type="hidden" value="${album.id}"/>
+                <input name="albums[${status.index}].artistId" type="hidden" value="${album.artistId}"/>
+                <input name="albums[${status.index}].albumImageId" type="hidden" value="${album.albumImageId}"/>
                 <div id="album-${status.index}" class="info-container sub-element-container">
                     <!-- Image -->
                     <c:if test="${album.id == null}">
                         <c:url var="albumImgURL" value="/images/1"/>
                     </c:if>
                     <c:if test="${album.id != null}">
-                        <c:url var="albumImgURL" value="/images/${albumImgId[status.index].longValue()}" />
+                        <c:url var="albumImgURL" value="/images/${album.albumImageId}" />
                     </c:if>
                     <img id="imagePreview-${status.index+1}" src="${albumImgURL}" class="sub-element-image-preview" style="cursor: pointer;" onclick="document.getElementById('albumImageInput${status.index}').click();"/>
                     <form:input path="albums[${status.index}].albumImage" id="albumImageInput${status.index}" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event,${status.index+1})"/>
@@ -196,34 +203,6 @@
 
             // Update the button's enabled/disabled state
             toggleAddButton();
-        }
-
-        function deleteArtist() {
-            // Get the modal and buttons
-            var modal = document.getElementById("confirmationModal");
-            var yesButton = document.getElementById("modalYes");
-            var noButton = document.getElementById("modalNo");
-
-            // Show the modal
-            modal.style.display = "block";
-
-            // Handle the Yes button click
-            yesButton.onclick = function() {
-                var deletedInput = document.getElementById("deletedArtist");
-                deletedInput.setAttribute("value", "true");
-
-                // Hide modal
-                modal.style.display = "none";
-
-                // Submit Form
-                document.getElementById("artistForm").submit();
-            }
-
-            // Handle the No button click (just close the modal)
-            noButton.onclick = function() {
-                // Hide the modal without taking any action
-                modal.style.display = "none";
-            };
         }
 
         function removeAlbum(albumDiv) {

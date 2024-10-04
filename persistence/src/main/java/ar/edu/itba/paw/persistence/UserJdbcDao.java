@@ -47,8 +47,7 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public int create(String username, String email, String password) {
-        int imgId = 1;
+    public int create(String username, String email, String password, long imgId) {
 
         String checkImageSql = "SELECT COUNT(*) FROM image WHERE id = ?";
         int count = jdbcTemplate.queryForObject(checkImageSql, Integer.class, imgId);
@@ -158,22 +157,21 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public int update(Long userId, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount) {
+    public int update(User user) {
         return jdbcTemplate.update(
-                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
-                username,
-                email,
-                password,
-                name,
-                bio,
-                updated_at,
-                verified,
-                moderator,
-                imgId,
-                followers_amount,
-                following_amount,
-                review_amount,
-                userId
+                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = NOW(), verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getName(),
+                user.getBio(),
+                user.isVerified(),
+                user.isModerator(),
+                user.getImgId(),
+                user.getFollowersAmount(),
+                user.getFollowingAmount(),
+                user.getReviewAmount(),
+                user.getId()
         );
     }
 

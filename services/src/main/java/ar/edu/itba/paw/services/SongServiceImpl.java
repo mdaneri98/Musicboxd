@@ -1,8 +1,11 @@
 package ar.edu.itba.paw.services;
 
 
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.persistence.SongDao;
 import org.springframework.stereotype.Service;
 
@@ -60,19 +63,52 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public int update(Song song, Song updatedSong) {
-        if(updatedSong.getId() == null) {updatedSong.setId(song.getId());}
-        if (!song.equals(updatedSong)) {
-            song.setTitle(updatedSong.getTitle());
-            song.setDuration(updatedSong.getDuration());
-            song.setTrackNumber(updatedSong.getTrackNumber());
-            return songDao.update(song);
-        }
-        return 0;
+    public int deleteById(long id) {
+        return songDao.deleteById(id);
+    }
+
+
+    //****************************************************************************************** Testing
+    @Override
+    public Song save(SongDTO songDTO, Album album) {
+        Song song = new Song(songDTO.getId(), songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        song = songDao.saveX(song);
+        songDao.saveSongArtist(song, song.getAlbum().getArtist());
+        return song;
     }
 
     @Override
-    public int deleteById(long id) {
-        return songDao.deleteById(id);
+    public boolean save(List<SongDTO> songsDTO, Album album) {
+        for (SongDTO songDTO : songsDTO) {
+            if (!songDTO.isDeleted()) {
+                save(songDTO, album);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Song update(SongDTO songDTO, Album album) {
+        Song song = new Song(songDTO.getId(), songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        song = songDao.updateX(song);
+        return song;
+    }
+
+    @Override
+    public boolean update(List<SongDTO> songsDTO, Album album) {
+        for (SongDTO songDTO : songsDTO) {
+            if (songDTO.getId() != 0) {
+                if (songDTO.isDeleted()) {
+                    deleteById(songDTO.getId());
+                } else {
+                    update(songDTO, album);
+                }
+            } else {
+                if (!songDTO.isDeleted()) {
+                    save(songDTO, album);
+                }
+            }
+        }
+        return true;
     }
 }

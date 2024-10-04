@@ -45,6 +45,11 @@ public class Album {
         this.artist = artist;
     }
 
+    public Album(String title, String genre) {
+        this.title = title;
+        this.genre = genre;
+    }
+
     public Album(Long id) {
         this.id = id;
     }

@@ -2,7 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,10 +15,12 @@ import java.util.logging.Filter;
 public class ArtistServiceImpl implements ArtistService {
     private final ArtistDao artistDao;
     private final ImageService imageService;
+    private final AlbumService albumService;
 
-    public ArtistServiceImpl(ArtistDao artistDao, ImageService imageService) {
+    public ArtistServiceImpl(ArtistDao artistDao, ImageService imageService, AlbumService albumService) {
         this.artistDao = artistDao;
         this.imageService = imageService;
+        this.albumService = albumService;
     }
 
     @Override
@@ -51,31 +53,19 @@ public class ArtistServiceImpl implements ArtistService {
         return artistDao.save(artist);
     }
 
-    public long save(Artist artist, MultipartFile imageFile) {
-        artist.setImgId(imageService.save(imageFile, false));
-        return artistDao.save(artist);
-    }
-
     @Override
     public int update(Artist artist) {
         return artistDao.update(artist);
     }
 
-    public int update(Artist artist, Artist updatedArtist, MultipartFile imageFile) {
-        long imgId = imageService.update(artist.getImgId(), imageFile);
-        updatedArtist.setImgId(imgId);
-        if(updatedArtist.getId() == null) {updatedArtist.setId(imgId);}
-        if(!artist.equals(updatedArtist)) {
-            artist.setName(updatedArtist.getName());
-            artist.setBio(updatedArtist.getBio());
-            artist.setImgId(imgId);
-            return artistDao.update(artist);
-        }
-        return 0;
-    }
-
     @Override
     public int deleteById(long id) {
+        Optional<Artist> artist = artistDao.findById(id);
+        if (artist.isEmpty()) {
+            return 0;
+        }
+
+        imageService.delete(artist.get().getImgId());
         return artistDao.deleteById(id);
     }
 
@@ -83,6 +73,34 @@ public class ArtistServiceImpl implements ArtistService {
     public int delete(Artist artist) {
         imageService.delete(artist.getImgId());
         return artistDao.deleteById(artist.getId());
+    }
+
+
+    //********************************************************************** Testing
+    @Override
+    public Artist save(ArtistDTO artistDTO) {
+        long imgId = imageService.save(artistDTO.getImage(), false);
+        Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(),imgId);
+
+        artist = artistDao.saveX(artist);
+
+        if( artistDTO.getAlbums() != null ) {
+            albumService.save(artistDTO.getAlbums(), artist);
+        }
+        return artist;
+    }
+
+    @Override
+    public Artist update(ArtistDTO artistDTO) {
+        long imgId = imageService.update(artistDTO.getImgId(), artistDTO.getImage());
+        Artist artist = new Artist(artistDTO.getId(), artistDTO.getName(), artistDTO.getBio(), imgId);
+
+        artist = artistDao.updateX(artist);
+
+        if (artistDTO.getAlbums() != null) {
+            albumService.update(artistDTO.getAlbums(), artist);
+        }
+        return artist;
     }
 }
 

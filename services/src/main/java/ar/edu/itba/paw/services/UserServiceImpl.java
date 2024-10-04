@@ -67,13 +67,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public int incrementReviewAmount(User user) {
         user.incrementReviewAmount();
-        return userDao.update(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getName(), user.getBio(), user.getUpdatedAt(), user.isVerified(), user.isModerator(), user.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());
+        return userDao.update(user);
     }
 
     @Override
     public int decrementReviewAmount(User user) {
         user.decrementReviewAmount();
-        return userDao.update(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getName(), user.getBio(), user.getUpdatedAt(), user.isVerified(), user.isModerator(), user.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());
+        return userDao.update(user);
     }
 
     @Override
@@ -92,14 +92,17 @@ public class UserServiceImpl implements UserService {
         if (emailOptUser.isPresent()) {
             if (emailOptUser.get().getUsername() == null){
                 User user = emailOptUser.get();
-                userDao.update(user.getId(), username,email,password, user.getName(),  user.getBio(), LocalDateTime.now(), user.isVerified(), user.isModerator(), user.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());
+                user.setUsername(username);
+                user.setPassword(password);
+                user.setEmail(email);
+                userDao.update(user);
             }else throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
         }
         if (usernameOptUser.isPresent()) {
             throw new UserAlreadyExistsException("El usuario " + username + " ya está en uso.");
         }
-
-        int rowsChanged = userDao.create(username, email, hashedPassword);
+        long imgId = imageService.save(null, true);
+        int rowsChanged = userDao.create(username, email, hashedPassword, imgId);
         if (rowsChanged > 0) {
             User createdUser = userDao.findByEmail(email).get();
             this.createVerification(createdUser);
@@ -173,17 +176,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int update(Long userId, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount) {
-        return userDao.update(userId, username, email, password, name, bio, updated_at, verified, moderator, imgId, followers_amount, following_amount, review_amount);
+        return userDao.update(new User(userId, username, email, password, name, bio, null, updated_at, verified, imgId, moderator, followers_amount, following_amount, review_amount));
     }
 
     @Override
-    public int update(User user, User updatedUser, MultipartFile imageFile) {
-        long imgId = imageService.update(user.getImgId(), imageFile);
-        updatedUser.setImgId(imgId);
-        if ( !user.getUsername().equals(updatedUser.getUsername()) || !user.getName().equals(updatedUser.getName()) || !user.getBio().equals(updatedUser.getBio()) || !user.getImgId().equals(updatedUser.getImgId()) ) {
-            return userDao.update(user.getId(), updatedUser.getName(), user.getEmail(), user.getPassword(), updatedUser.getUsername(), updatedUser.getBio(), user.getUpdatedAt(), user.isVerified(), user.isModerator(), updatedUser.getImgId(), user.getFollowersAmount(), user.getFollowingAmount(), user.getReviewAmount());
-        }
-        return 0;
+    public int update(User user, byte[] bytes) {
+        long imgId = imageService.update(user.getImgId(), bytes);
+        user.setImgId(imgId);
+        return userDao.update(user);
     }
 
     @Override
