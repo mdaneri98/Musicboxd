@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Filter;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -24,8 +23,8 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public Optional<Artist> findById(long id) {
-        return artistDao.findById(id);
+    public Optional<Artist> find(long id) {
+        return artistDao.find(id);
     }
 
     @Override
@@ -49,43 +48,43 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public long save(Artist artist) {
-        return artistDao.save(artist);
+    public Artist create(Artist artist) {
+        return artistDao.create(artist);
     }
 
     @Override
-    public int update(Artist artist) {
+    public Artist update(Artist artist) {
         return artistDao.update(artist);
     }
 
     @Override
-    public int deleteById(long id) {
-        Optional<Artist> artist = artistDao.findById(id);
-        if (artist.isEmpty()) {
-            return 0;
-        }
+    public boolean delete(long id) {
+        Optional<Artist> artist = artistDao.find(id);
+        if (artist.isEmpty())
+            return false;
 
         imageService.delete(artist.get().getImgId());
-        return artistDao.deleteById(id);
+        return artistDao.delete(id);
     }
 
     @Override
-    public int delete(Artist artist) {
+    public boolean delete(Artist artist) {
+        if (artist.getId() == null || artist.getImgId() == null || artist.getId() < 1 || artist.getImgId() < 1)
+            return false;
+
         imageService.delete(artist.getImgId());
-        return artistDao.deleteById(artist.getId());
+        return artistDao.delete(artist.getId());
     }
 
-
-    //********************************************************************** Testing
     @Override
-    public Artist save(ArtistDTO artistDTO) {
+    public Artist create(ArtistDTO artistDTO) {
         long imgId = imageService.save(artistDTO.getImage(), false);
         Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(),imgId);
 
-        artist = artistDao.saveX(artist);
+        artist = artistDao.create(artist);
 
         if( artistDTO.getAlbums() != null ) {
-            albumService.save(artistDTO.getAlbums(), artist);
+            albumService.createAll(artistDTO.getAlbums(), artist.getId());
         }
         return artist;
     }
@@ -93,12 +92,16 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     public Artist update(ArtistDTO artistDTO) {
         long imgId = imageService.update(artistDTO.getImgId(), artistDTO.getImage());
-        Artist artist = new Artist(artistDTO.getId(), artistDTO.getName(), artistDTO.getBio(), imgId);
 
-        artist = artistDao.updateX(artist);
+        Artist artist = artistDao.find(artistDTO.getId()).get();
+        artist.setName(artistDTO.getName());
+        artist.setBio(artistDTO.getBio());
+        artist.setImgId(imgId);
+
+        artist = artistDao.update(artist);
 
         if (artistDTO.getAlbums() != null) {
-            albumService.update(artistDTO.getAlbums(), artist);
+            albumService.updateAll(artistDTO.getAlbums(), artist.getId());
         }
         return artist;
     }

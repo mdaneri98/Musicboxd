@@ -36,7 +36,7 @@ public class ImageServiceImpl implements ImageService {
                 return DEFAULT_IMAGE_ID;
             }
         }
-        return imageDao.save(bytes);
+        return imageDao.create(bytes);
     }
 
     public long update(long imageId, byte[] bytes) {

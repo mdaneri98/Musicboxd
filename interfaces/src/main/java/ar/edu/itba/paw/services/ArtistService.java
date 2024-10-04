@@ -10,17 +10,13 @@ import java.util.Optional;
 
 public interface ArtistService extends CrudService<Artist> {
 
+    boolean delete(Artist artist);
+
     List<Artist> findBySongId(long id);
 
     List<Artist> findByNameContaining(String sub);
 
-    long save(Artist artist);
-
-    int update(Artist artist);
-
-    int delete(Artist artist);
-
-    Artist save(ArtistDTO artistDTO);
+    Artist create(ArtistDTO artistDTO);
     Artist update(ArtistDTO artistDTO);
 
 }

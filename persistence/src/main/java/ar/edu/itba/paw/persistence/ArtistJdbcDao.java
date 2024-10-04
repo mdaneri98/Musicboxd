@@ -7,9 +7,13 @@ import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.*;
@@ -28,7 +32,7 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
-    public Optional<Artist> findById(long id) {
+    public Optional<Artist> find(long id) {
         return jdbcTemplate.query("SELECT * FROM artist WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
@@ -65,24 +69,37 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
-    public long save(Artist artist) {
-        Map<String, Object> imageData = Map.of("name", artist.getName(),
-                "bio", artist.getBio(), "img_id", artist.getImgId());
-        return jdbcInsert.executeAndReturnKey(imageData).longValue();
+    public Artist create(Artist artist) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO artist (name, bio, img_id) VALUES (?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, artist.getName());
+            ps.setString(2, artist.getBio());
+            ps.setObject(3, artist.getImgId());
+            return ps;
+        }, keyHolder);
+        Map<String, Object> keys = keyHolder.getKeys();
+        if (keys == null || !keys.containsKey("id"))
+            throw new IllegalStateException("Failed to insert artist or generate key.");
+
+        return this.find(((Number) keys.get("id")).longValue()).get();
     }
 
-
     @Override
-    public int update(Artist artist) {
-        return jdbcTemplate.update(
-                "UPDATE artist SET name = ?, bio = ?, created_at = ?, updated_at = ?, img_id = ? WHERE id = ?",
+    public Artist update(Artist artist) {
+        jdbcTemplate.update(
+                "UPDATE artist SET name = ?, bio = ?, updated_at = NOW(), img_id = ?, avg_rating = ?, rating_amount = ? WHERE id = ?",
                 artist.getName(),
                 artist.getBio(),
-                artist.getCreatedAt(),
-                artist.getUpdatedAt(),
                 artist.getImgId(),
+                artist.getAvgRating(),
+                artist.getRatingCount(),
                 artist.getId()
         );
+        return this.find(artist.getId()).get();
     }
 
     @Override
@@ -99,33 +116,9 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
-    public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM artist WHERE id = ?", id);
+    public boolean delete(long id) {
+        return jdbcTemplate.update("DELETE FROM artist WHERE id = ?", id) == 1;
     }
 
-
-    //************************************************************************* Testing
-    @Override
-    public Artist saveX(Artist artist) {
-        jdbcTemplate.update(
-                "INSERT INTO artist (name, bio, img_id) VALUES (?, ?, ?)",
-                artist.getName(),
-                artist.getBio(),
-                artist.getImgId()
-        );
-        return findById(artist.getId()).get();
-    }
-
-    @Override
-    public Artist updateX(Artist artist) {
-        jdbcTemplate.update(
-                "UPDATE artist SET name = ?, bio = ?, updated_at = NOW(), img_id = ? WHERE id = ?",
-                        artist.getName(),
-                        artist.getBio(),
-                        artist.getImgId(),
-                        artist.getId()
-        );
-        return findById(artist.getId()).get();
-    }
 }
 

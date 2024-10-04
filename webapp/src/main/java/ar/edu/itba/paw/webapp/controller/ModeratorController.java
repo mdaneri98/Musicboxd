@@ -6,7 +6,6 @@ import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.services.*;
-
 import ar.edu.itba.paw.webapp.form.ModAlbumForm;
 import ar.edu.itba.paw.webapp.form.ModArtistForm;
 import ar.edu.itba.paw.webapp.form.ModSongForm;
@@ -17,9 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.validation.Valid;
-
 import java.io.IOException;
 import java.util.Optional;
 import java.util.List;
@@ -85,7 +82,7 @@ public class ModeratorController {
             return addArtistForm(modArtistForm, loggedUser);
         }
 
-        Artist artist = artistService.save(transformArtistToDTO(modArtistForm));
+        Artist artist = artistService.create(transformArtistToDTO(modArtistForm));
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artist.getId());
         modelAndView.addObject("artist", artist);
@@ -100,7 +97,7 @@ public class ModeratorController {
         ModelAndView modelAndView = new ModelAndView("moderator/add-artist");
         modelAndView.addObject("postUrl", "/mod/edit/artist/" + artistId);
 
-        Optional<Artist> artist = artistService.findById(artistId);
+        Optional<Artist> artist = artistService.find(artistId);
         if (artist.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/edit/artist' no artist with id {}", artistId);
             return new ModelAndView("redirect:/error");
@@ -142,7 +139,7 @@ public class ModeratorController {
         if (errors.hasErrors()) {
             return editArtistForm(modArtistForm, loggedUser, artistId);
         }
-        
+
         Artist artist = artistService.update(transformArtistToDTO(modArtistForm));
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
@@ -155,7 +152,7 @@ public class ModeratorController {
                                      @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
                                      @ModelAttribute("loggedUser") User loggedUser) {
 
-        Optional<Artist> artist = artistService.findById(artistId);
+        Optional<Artist> artist = artistService.find(artistId);
 
         if(artist.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/add/artist/{}/album'. No artist with id {}", artistId, artistId);
@@ -176,7 +173,7 @@ public class ModeratorController {
             return addAlbumForm(artistId, modAlbumForm, loggedUser);
         }
 
-        Album album = albumService.save(transformAlbumToDTO(modAlbumForm), new Artist(artistId));
+        Album album = albumService.create(transformAlbumToDTO(modAlbumForm), artistId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + album.getId());
         modelAndView.addObject("album", album);
@@ -191,7 +188,7 @@ public class ModeratorController {
         ModelAndView modelAndView = new ModelAndView("moderator/add-album");
         modelAndView.addObject("postUrl", "/mod/edit/album/" + albumId);
 
-        Optional<Album> album = albumService.findById(albumId);
+        Optional<Album> album = albumService.find(albumId);
         if (album.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/edit/album' no album with id {}", albumId);
             return new ModelAndView("redirect:/error");
@@ -236,7 +233,7 @@ public class ModeratorController {
             return editAlbumForm(albumId, modAlbumForm, loggedUser);
         }
 
-        Album newAlbum = albumService.update(transformAlbumToDTO(modAlbumForm), new Artist(modAlbumForm.getArtistId()));
+        Album newAlbum = albumService.update(transformAlbumToDTO(modAlbumForm));
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + albumId);
         modelAndView.addObject("album", newAlbum);
@@ -248,7 +245,7 @@ public class ModeratorController {
                                     @ModelAttribute("modSongForm") final ModSongForm modSongForm,
                                     @ModelAttribute("loggedUser") User loggedUser) {
 
-        Optional<Album> album = albumService.findById(albumId);
+        Optional<Album> album = albumService.find(albumId);
 
         if(album.isEmpty()) {
             LOGGER.debug("Error in *GET* 'mod/add/album/{}/song'. No album with id {}", albumId, albumId);
@@ -268,7 +265,7 @@ public class ModeratorController {
             return addSongForm(albumId, modSongForm, loggedUser);
         }
 
-        Song song = songService.save(transformSongToDTO(modSongForm), new Album(albumId));
+        Song song = songService.create(transformSongToDTO(modSongForm), new Album(albumId));
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + song.getId());
         modelAndView.addObject("song", song);
@@ -283,7 +280,7 @@ public class ModeratorController {
         ModelAndView modelAndView = new ModelAndView("moderator/add-song");
         modelAndView.addObject("postUrl", "/mod/edit/song/" + songId);
 
-        Optional<Song> song = songService.findById(songId);
+        Optional<Song> song = songService.find(songId);
         if (song.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/edit/song' no song with id {}", songId);
             return new ModelAndView("redirect:/error");
@@ -317,13 +314,13 @@ public class ModeratorController {
 
     @RequestMapping(path = "/delete/artist/{artistId:\\d+}")
     public ModelAndView deleteArtist(@PathVariable(name = "artistId") final long artistId) {
-        artistService.deleteById(artistId);
+        artistService.delete(artistId);
         return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(path = "delete/album/{albumId:\\d+}")
     public ModelAndView deleteAlbum(@PathVariable(name = "albumId") final long albumId) {
-        Optional<Album> album = albumService.findById(albumId);
+        Optional<Album> album = albumService.find(albumId);
         albumService.delete(album.get());
         return new ModelAndView("redirect:/artist/" + album.get().getArtist().getId());
     }
