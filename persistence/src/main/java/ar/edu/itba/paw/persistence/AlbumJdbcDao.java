@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -98,12 +99,10 @@ public class AlbumJdbcDao implements AlbumDao {
     @Override
     public int update(Album album) {
         return jdbcTemplate.update(
-                "UPDATE album SET title = ?, genre = ?, release_date = ?, created_at = ?, updated_at = ?, img_id = ?, artist_id = ? WHERE id = ?",
+                "UPDATE album SET title = ?, genre = ?, release_date = ?, updated_at = NOW(), img_id = ?, artist_id = ? WHERE id = ?",
                 album.getTitle(),
                 album.getGenre(),
                 album.getReleaseDate(),
-                album.getCreatedAt(),
-                album.getUpdatedAt(),
                 album.getImgId(),
                 album.getArtist().getId(),
                 album.getId()
@@ -128,4 +127,42 @@ public class AlbumJdbcDao implements AlbumDao {
         return jdbcTemplate.update("DELETE FROM album WHERE id = ?", id);
     }
 
+
+    //************************************************************************************ Testing
+    @Override
+    public Album saveX(Album album) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int result = jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO album (title, genre, release_date , img_id, artist_id) VALUES (?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, album.getTitle());
+            ps.setString(2, album.getGenre());
+            ps.setObject(3, album.getReleaseDate());
+            ps.setLong(4, album.getImgId());
+            ps.setLong(5, album.getArtist().getId());
+            return ps;
+        }, keyHolder);
+        Map<String, Object> keys = keyHolder.getKeys();
+        if (keys != null && keys.containsKey("id")) {
+            return findById( ((Number) keys.get("id")).longValue() ).get();
+        } else {
+            throw new IllegalStateException("Failed to insert album or generate key.");
+        }
+    }
+
+    @Override
+    public Album updateX(Album album) {
+        jdbcTemplate.update(
+                "UPDATE album SET title = ?, genre = ?, release_date = ?, updated_at = NOW(), img_id = ?, artist_id = ? WHERE id = ?",
+                album.getTitle(),
+                album.getGenre(),
+                album.getReleaseDate(),
+                album.getImgId(),
+                album.getArtist().getId(),
+                album.getId()
+        );
+        return findById(album.getId()).get();
+    }
 }

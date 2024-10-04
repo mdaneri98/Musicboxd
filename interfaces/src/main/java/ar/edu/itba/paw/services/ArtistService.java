@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,12 +16,11 @@ public interface ArtistService extends CrudService<Artist> {
 
     long save(Artist artist);
 
-    long save(Artist artist, MultipartFile imageFile);
-
     int update(Artist artist);
 
-    int update(Artist artist, Artist updatedArtist, MultipartFile imageFile);
-
     int delete(Artist artist);
+
+    Artist save(ArtistDTO artistDTO);
+    Artist update(ArtistDTO artistDTO);
 
 }

@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -107,8 +108,10 @@ public class UserController {
             return editProfile(upf, loggedUser);
         }
 
-        User updatedUser = new User(upf.getUsername(), upf.getName(), upf.getBio());
-        userService.update(loggedUser, updatedUser, upf.getProfilePicture());
+        loggedUser.setUsername(upf.getUsername());
+        loggedUser.setName(upf.getName());
+        loggedUser.setBio(upf.getBio());
+        userService.update(loggedUser, getBytes(upf.getProfilePicture()));
         return new ModelAndView("redirect:/user/profile");
     }
 
@@ -241,5 +244,15 @@ public class UserController {
         return new ModelAndView("redirect:/user/" + userId);
     }
 
-
+    private byte[] getBytes(MultipartFile imageFile) {
+        if (imageFile == null) { return null; }
+        byte[] bytes;
+        try {
+            bytes = imageFile.getBytes();
+        } catch (IOException e) {
+            LOGGER.debug("Error when reading input image: {}.", e.getMessage());
+            bytes = null;
+        }
+        return bytes;
+    }
 }

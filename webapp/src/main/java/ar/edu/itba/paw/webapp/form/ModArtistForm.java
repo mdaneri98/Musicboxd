@@ -13,6 +13,8 @@ public class ModArtistForm {
     private String name;
     @Size(min = 2, max = 2048)
     private String bio;
+
+    private long artistImgId;
     private MultipartFile artistImage;
 
     private List<ModAlbumForm> albums = new ArrayList<>();
@@ -22,10 +24,11 @@ public class ModArtistForm {
 
     }
 
-    public ModArtistForm(long id, String name, String bio, MultipartFile artistImage, List<ModAlbumForm> albums, boolean deleted) {
+    public ModArtistForm(long id, String name, String bio, long artistImgId, MultipartFile artistImage, List<ModAlbumForm> albums, boolean deleted) {
         this.id = id;
         this.name = name;
         this.bio = bio;
+        this.artistImgId = artistImgId;
         this.artistImage = artistImage;
         this.albums = albums;
         this.deleted = deleted;
@@ -57,6 +60,14 @@ public class ModArtistForm {
 
     public MultipartFile getArtistImage() {
         return artistImage;
+    }
+
+    public long getArtistImgId() {
+        return artistImgId;
+    }
+
+    public void setArtistImgId(long artistImgId) {
+        this.artistImgId = artistImgId;
     }
 
     public void setArtistImage(MultipartFile artistImage) {

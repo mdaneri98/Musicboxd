@@ -15,5 +15,8 @@ public interface ArtistDao extends CrudDao<Artist> {
     void updateRating(long artistId, float newRating, int newRatingAmount);
     boolean hasUserReviewed(long userId, long artistId);
 
+    Artist saveX(Artist artist);
+    Artist updateX(Artist artist);
+
 }
 

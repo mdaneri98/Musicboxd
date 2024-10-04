@@ -26,6 +26,8 @@
 
     <c:url var="postURL" value="${postUrl}" />
     <form:form modelAttribute="modSongForm" action="${postURL}" method="post">
+        <input name="id" type="hidden" value="${modSongForm.id}"/>
+        <input name="albumId" type="hidden" value="${modSongForm.albumId}"/>
         <div>
             <label><spring:message code="submit.song.title.label" />
                 <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>

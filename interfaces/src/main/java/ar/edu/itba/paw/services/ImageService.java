@@ -11,11 +11,7 @@ public interface ImageService {
 
     long save(byte[] bytes, boolean isProfile);
 
-    long save(MultipartFile imageFile, boolean isProfile);
-
     long update(long imageId, byte[] bytes);
-
-    long update(long imageId, MultipartFile imageFile);
 
     boolean delete(long imageId);
 

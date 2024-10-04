@@ -27,6 +27,14 @@ public class Song {
         this.avgRating = avgRating;
     }
 
+    public Song(Long id, String title, String duration, Integer trackNumber, Album album) {
+        this.id = id;
+        this.title = title;
+        this.duration = duration;
+        this.trackNumber = trackNumber;
+        this.album = album;
+    }
+
     public Song(Long id, String title, String duration, Album album) {
         this.id = id;
         this.title = title;

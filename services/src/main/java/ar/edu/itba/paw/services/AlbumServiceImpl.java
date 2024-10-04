@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,12 @@ public class AlbumServiceImpl implements AlbumService {
      */
     private final AlbumDao albumDao;
     private final ImageService imageService;
+    private final SongService songService;
 
-    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService) {
+    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService) {
         this.albumDao = albumDao;
         this.imageService = imageService;
+        this.songService = songService;
     }
 
     @Override
@@ -55,33 +58,18 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public long save(Album album, MultipartFile imageFile) {
-        album.setImgId(imageService.save(imageFile, false));
-        return albumDao.save(album);
-    }
-
-    @Override
     public int update(Album album) {
         return albumDao.update(album);
     }
 
     @Override
-    public int update(Album album, Album updatedAlbum, MultipartFile imageFile) {
-        long imgId = imageService.update(album.getImgId(), imageFile);
-        updatedAlbum.setImgId(imgId);
-        if(updatedAlbum.getId() == null) {updatedAlbum.setId(imgId);}
-        if( !album.equals(updatedAlbum) ) {
-            album.setTitle(updatedAlbum.getTitle());
-            album.setGenre(updatedAlbum.getGenre());
-            album.setReleaseDate(updatedAlbum.getReleaseDate());
-            album.setImgId(imgId);
-            return albumDao.update(album);
-        }
-        return 0;
-    }
-
-    @Override
     public int deleteById(long id) {
+        Optional<Album> album = albumDao.findById(id);
+        if (album.isEmpty()) {
+            return 0;
+        }
+
+        imageService.delete(album.get().getImgId());
         return albumDao.deleteById(id);
     }
 
@@ -90,4 +78,61 @@ public class AlbumServiceImpl implements AlbumService {
         imageService.delete(album.getImgId());
         return albumDao.deleteById(album.getId());
     }
+
+
+    //************************************************************************** Testing
+    @Override
+    public Album save(AlbumDTO albumDTO, Artist artist) {
+        long imgId = imageService.save(albumDTO.getImage(), false);
+        Album album = new Album(albumDTO.getId(), albumDTO.getTitle(), imgId, albumDTO.getGenre(), artist, albumDTO.getReleaseDate());
+
+        album = albumDao.saveX(album);
+
+        if (albumDTO.getSongs() != null) {
+            songService.save(albumDTO.getSongs(), album);
+        }
+        return album;
+    }
+
+    @Override
+    public boolean save(List<AlbumDTO> albumsDTO, Artist artist) {
+        for (AlbumDTO albumDTO : albumsDTO) {
+            if (!albumDTO.isDeleted()) {
+                save(albumDTO, artist);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Album update(AlbumDTO albumDTO, Artist artist) {
+        long imgId = imageService.update(albumDTO.getImgId(), albumDTO.getImage());
+        Album album = new Album(albumDTO.getId(), albumDTO.getTitle(), imgId, albumDTO.getGenre(), artist, albumDTO.getReleaseDate());
+
+        album = albumDao.updateX(album);
+
+        if (albumDTO.getSongs() != null) {
+            songService.update(albumDTO.getSongs(), album);
+        }
+        return album;
+    }
+
+    @Override
+    public boolean update(List<AlbumDTO> albumsDTO, Artist artist) {
+        for (AlbumDTO albumDTO : albumsDTO) {
+            if (albumDTO.getId() != 0) {
+                if (albumDTO.isDeleted()) {
+                    delete(new Album(albumDTO.getId(), albumDTO.getTitle(), albumDTO.getImgId(), albumDTO.getGenre(), artist, albumDTO.getReleaseDate()));
+                } else {
+                    update(albumDTO, artist);
+                }
+            } else {
+                if (!albumDTO.isDeleted()) {
+                    save(albumDTO, artist);
+                }
+            }
+        }
+        return true;
+    }
+
 }

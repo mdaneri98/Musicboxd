@@ -29,6 +29,7 @@ public class ImageServiceImpl implements ImageService {
 
     public long save(byte[] bytes, boolean isProfile) {
         if (bytes == null || bytes.length == 0) {
+            LOGGER.debug("No image input. Default image used instead");
             if (isProfile) {
                 return DEFAULT_PROFILE_IMAGE_ID;
             } else {
@@ -36,10 +37,6 @@ public class ImageServiceImpl implements ImageService {
             }
         }
         return imageDao.save(bytes);
-    }
-
-    public long save(MultipartFile imageFile, boolean isProfile) {
-        return save(getBytes(imageFile), isProfile);
     }
 
     public long update(long imageId, byte[] bytes) {
@@ -61,10 +58,6 @@ public class ImageServiceImpl implements ImageService {
         return imageId;
     }
 
-    public long update(long imageId, MultipartFile imageFile) {
-        return update(imageId, getBytes(imageFile));
-    }
-
     public boolean delete(long imageId) {
         if(imageId == DEFAULT_IMAGE_ID || imageId == DEFAULT_PROFILE_IMAGE_ID) {
             LOGGER.debug("Image {} not deleted. Image is default", imageId);
@@ -75,17 +68,5 @@ public class ImageServiceImpl implements ImageService {
 
     public boolean exists(long imageId) {
         return imageDao.exists(imageId);
-    }
-
-    private byte[] getBytes(MultipartFile imageFile) {
-        if (imageFile == null || imageFile.isEmpty()) {
-            return null;
-        }
-        try {
-            return imageFile.getBytes();
-        } catch (IOException e) {
-            LOGGER.debug("Error when reading input image: {}. Default Image is used instead", e.getMessage());
-            return null;
-        }
     }
 }
