@@ -57,7 +57,7 @@ public class ArtistController {
 
         if (pageNum == null || pageNum <= 0) pageNum = 1;
 
-        Artist artist = artistService.findById(artistId).get();
+        Artist artist = artistService.find(artistId).get();
         List<Album> albums = albumService.findByArtistId(artistId);
         List<Song> songs = songService.findByArtistId(artistId);
         List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(artistId,pageNum,5, loggedUser.getId());
@@ -77,7 +77,7 @@ public class ArtistController {
 
     @RequestMapping(value = "/{artistId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long artistId) {
-        Optional<Artist> artistOptional = artistService.findById(artistId);
+        Optional<Artist> artistOptional = artistService.find(artistId);
         if (artistOptional.isEmpty())
             return null;
 

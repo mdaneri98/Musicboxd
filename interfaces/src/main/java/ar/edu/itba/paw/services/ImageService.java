@@ -19,6 +19,4 @@ public interface ImageService {
 
     boolean delete(long imageId);
 
-    boolean exists(long imageId);
-
 }

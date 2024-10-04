@@ -79,8 +79,7 @@ public class ModeratorController {
         }
 
         // Save new Artist
-        Artist artist = convert(modArtistForm);
-        artist.setId(artistService.save(artist, modArtistForm.getArtistImage()));
+        Artist artist = artistService.save(convert(modArtistForm), modArtistForm.getArtistImage());
 
         // TODO: hacer lo asi
         //artist = artistService.save(artist, modArtistForm.getArtistImage());
@@ -105,7 +104,7 @@ public class ModeratorController {
         ModelAndView modelAndView = new ModelAndView("moderator/add-artist");
         modelAndView.addObject("postUrl", "/mod/edit/artist/" + artistId);
 
-        Optional<Artist> artist = artistService.findById(artistId);
+        Optional<Artist> artist = artistService.find(artistId);
         if (artist.isPresent()) {
             // Fill data
             modArtistForm.setId(artistId);
@@ -154,7 +153,7 @@ public class ModeratorController {
             return editArtistForm(modArtistForm, loggedUser, artistId);
         }
 
-        Optional<Artist> artist = artistService.findById(artistId);
+        Optional<Artist> artist = artistService.find(artistId);
 
         if(artist.isEmpty()) {
             LOGGER.debug("Error in *POST* '/mod/edit/artist' no artist with id {}", artistId);
@@ -162,7 +161,7 @@ public class ModeratorController {
         }
 
         if (modArtistForm.isDeleted()) {
-            artistService.delete(artist.get());
+            artistService.delete(artist.get().getId());
             return new ModelAndView("redirect:/home");
         }
 
@@ -171,12 +170,12 @@ public class ModeratorController {
 
         // Update Artist Albums
         for (ModAlbumForm albumForm : modArtistForm.getAlbums()) {
-            Optional<Album> album = albumService.findById(albumForm.getId());
+            Optional<Album> album = albumService.find(albumForm.getId());
 
             if (album.isPresent()) {
                 if (albumForm.isDeleted()) {
                     // Delete Album and its Songs
-                    albumService.delete(album.get());
+                    albumService.delete(album.get().getId());
                 } else {
                     // Update Album
                     albumService.update(album.get(), convert(albumForm, artist.get()), albumForm.getAlbumImage());
@@ -210,19 +209,18 @@ public class ModeratorController {
             return addAlbumForm(artistId, modAlbumForm, loggedUser);
         }
 
-        Optional<Artist> artist = artistService.findById(artistId);
+        Optional<Artist> artist = artistService.find(artistId);
         if(artist.isEmpty()) {
             LOGGER.debug("Error in *POST* '/mod/add/artist'. No artist with id {}", artistId);
             return new ModelAndView("redirect:/error");
         }
 
-        Album album = convert(modAlbumForm, artist.get());
-        album.setId(albumService.save(album, modAlbumForm.getAlbumImage()));
+        Album album = albumService.save(convert(modAlbumForm, artist.get()), modAlbumForm.getAlbumImage());
 
         //  List of songs
         for (ModSongForm songForm : modAlbumForm.getSongs()) {
             if (!songForm.isDeleted()) {
-                songService.save(convert(songForm, album));
+                songService.create(convert(songForm, album));
             }
         }
 
@@ -239,7 +237,7 @@ public class ModeratorController {
         ModelAndView modelAndView = new ModelAndView("moderator/add-album");
         modelAndView.addObject("postUrl", "/mod/edit/album/" + albumId);
 
-        Optional<Album> album = albumService.findById(albumId);
+        Optional<Album> album = albumService.find(albumId);
         if (album.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/edit/album' no album with id {}", albumId);
             return new ModelAndView("redirect:/error");
@@ -281,7 +279,7 @@ public class ModeratorController {
             return editAlbumForm(albumId, modAlbumForm, loggedUser);
         }
 
-        Optional<Album> album = albumService.findById(albumId);
+        Optional<Album> album = albumService.find(albumId);
 
         if(album.isEmpty()) {
             LOGGER.debug("Error in *POST* '/mod/edit/album' no album with id {}", albumId);
@@ -293,19 +291,16 @@ public class ModeratorController {
 
         //Update Albums Songs
         for (ModSongForm songForm : modAlbumForm.getSongs()) {
-            Optional<Song> song = songService.findById(songForm.getId());
+            Optional<Song> song = songService.find(songForm.getId());
 
             if (song.isPresent()) {
                 if (songForm.isDeleted()) {
-                    // Delete Song
-                    songService.deleteById(songForm.getId());
+                    songService.delete(songForm.getId());
                 } else {
-                    // Update Song
-                    songService.update(song.get(), convert(songForm, album.get()));
+                    songService.update(convert(songForm, album.get()));
                 }
             } else if ( !songForm.isDeleted()) {
-                // Save new Song
-                songService.save(convert(songForm, album.get()));
+                songService.update(convert(songForm, album.get()));
             }
         }
 
@@ -331,15 +326,14 @@ public class ModeratorController {
             return addSongForm(albumId, modSongForm, loggedUser);
         }
 
-        Optional<Album> album = albumService.findById(albumId);
+        Optional<Album> album = albumService.find(albumId);
 
         if(album.isEmpty()) {
             LOGGER.debug("Error in *POST* '/add/album' no album with id {}", albumId);
             return new ModelAndView("redirect:/error");
         }
 
-        Song song = convert(modSongForm, album.get());
-        songService.save(song);
+        songService.create(convert(modSongForm, album.get()));
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + albumId);
         modelAndView.addObject("album", album.get());
@@ -354,7 +348,7 @@ public class ModeratorController {
         ModelAndView modelAndView = new ModelAndView("moderator/add-song");
         modelAndView.addObject("postUrl", "/mod/edit/song/" + songId);
 
-        Optional<Song> song = songService.findById(songId);
+        Optional<Song> song = songService.find(songId);
         if (song.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/edit/song' no song with id {}", songId);
             return new ModelAndView("redirect:/error");
@@ -378,14 +372,14 @@ public class ModeratorController {
             return editSongForm(songId, modSongForm, loggedUser);
         }
 
-        Optional<Song> song = songService.findById(songId);
+        Optional<Song> song = songService.find(songId);
 
         if (song.isEmpty()) {
             LOGGER.debug("Error in *POST* '/edit/song' no song with id {}", songId);
             return new ModelAndView("redirect:/error");
         }
 
-        songService.update(song.get(), convert(modSongForm, song.get().getAlbum()));
+        songService.update(convert(modSongForm, song.get().getAlbum()));
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + songId);
         modelAndView.addObject("song", song.get());

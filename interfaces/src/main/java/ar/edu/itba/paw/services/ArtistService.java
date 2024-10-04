@@ -13,14 +13,8 @@ public interface ArtistService extends CrudService<Artist> {
 
     List<Artist> findByNameContaining(String sub);
 
-    long save(Artist artist);
+    Artist save(Artist artist, MultipartFile imageFile);
 
-    long save(Artist artist, MultipartFile imageFile);
-
-    int update(Artist artist);
-
-    int update(Artist artist, Artist updatedArtist, MultipartFile imageFile);
-
-    int delete(Artist artist);
+    Artist update(Artist artist, Artist updatedArtist, MultipartFile imageFile);
 
 }

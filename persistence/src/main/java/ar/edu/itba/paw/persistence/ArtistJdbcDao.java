@@ -5,9 +5,13 @@ import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +32,7 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
-    public Optional<Artist> findById(long id) {
+    public Optional<Artist> find(long id) {
         return jdbcTemplate.query("SELECT * FROM artist WHERE id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
@@ -65,16 +69,34 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
-    public long save(Artist artist) {
-        Map<String, Object> imageData = Map.of("name", artist.getName(),
-                "bio", artist.getBio(), "img_id", artist.getImgId());
-        return jdbcInsert.executeAndReturnKey(imageData).longValue();
+    public Artist create(Artist artist) {
+        String sql = "INSERT INTO artist (name, bio, created_at, updated_at, img_id, avg_rating, rating_amount) VALUES (?,?,?,?,?,?,?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, artist.getName());
+            ps.setString(2, artist.getBio());
+            ps.setObject(3, artist.getCreatedAt());
+            ps.setObject(4, artist.getUpdatedAt());
+            ps.setLong(5, artist.getImgId());
+            ps.setDouble(6, artist.getAvgRating());
+            ps.setInt(7, artist.getRatingCount());
+            return ps;
+        }, keyHolder);
+
+        Number generatedId = keyHolder.getKey();
+        if (generatedId != null)
+            artist.setId(generatedId.longValue());
+        else
+            throw new IllegalStateException("Failed to retrieve generated ID on artist insertion.");
+
+        return artist;
     }
 
-
     @Override
-    public int update(Artist artist) {
-        return jdbcTemplate.update(
+    public Artist update(Artist artist) {
+        int result = jdbcTemplate.update(
                 "UPDATE artist SET name = ?, bio = ?, created_at = ?, updated_at = ?, img_id = ? WHERE id = ?",
                 artist.getName(),
                 artist.getBio(),
@@ -83,6 +105,10 @@ public class ArtistJdbcDao implements ArtistDao {
                 artist.getImgId(),
                 artist.getId()
         );
+        if (result == 1)
+            return artist;
+        else
+            throw new IllegalStateException("Failed to update artist");
     }
 
     @Override
@@ -99,8 +125,8 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
-    public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM artist WHERE id = ?", id);
+    public boolean delete(long id) {
+        return jdbcTemplate.update("DELETE FROM artist WHERE id = ?", id) == 1;
     }
 }
 

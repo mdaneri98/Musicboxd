@@ -1,14 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -113,7 +109,7 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getBoolean("isBlocked")
     );
 
-    public class ReviewRowMapper implements RowMapper<Review> {
+    public static class ReviewRowMapper implements RowMapper<Review> {
 
         @Override
         public Review mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -198,10 +194,29 @@ public class ReviewJdbcDao implements ReviewDao {
         this.jdbcTemplate = new JdbcTemplate(ds);
     }
 
+    @Override
+    public Optional<Review> find(long id) {
+        return Optional.empty();
+    }
 
     @Override
-    public int update(Review review) {
-        return jdbcTemplate.update(
+    public List<Review> findAll() {
+        return null;
+    }
+
+    @Override
+    public List<Review> findPaginated(FilterType filterType, int limit, int offset) {
+        return null;
+    }
+
+    @Override
+    public Review create(Review entity) {
+        return null;
+    }
+
+    @Override
+    public Review update(Review review) {
+        int result = jdbcTemplate.update(
                 "UPDATE review SET title = ?, description = ?, rating = ?, likes = ?, blocked = ? WHERE id = ?",
                 review.getTitle(),
                 review.getDescription(),
@@ -210,11 +225,15 @@ public class ReviewJdbcDao implements ReviewDao {
                 review.getId(),
                 review.isBlocked()
         );
+        if (result == 1)
+            return review;
+        else
+            throw new IllegalStateException("Failed to update review");
     }
 
     @Override
-    public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM review WHERE id = ?", id);
+    public boolean delete(long id) {
+        return jdbcTemplate.update("DELETE FROM review WHERE id = ?", id) == 1;
     }
 
 
@@ -264,14 +283,13 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public int saveArtistReview(ArtistReview review) {
-        int result = 0;
+    public ArtistReview saveArtistReview(ArtistReview review) {
         KeyHolder keyHolder = saveReviewWithNoId(review);
         if (keyHolder != null ) {
             Map<String, Object> keys = keyHolder.getKeys();
             if (keys != null && keys.containsKey("id")) {
                 long reviewId = ((Number) keys.get("id")).longValue();
-                result = jdbcTemplate.update(
+                jdbcTemplate.update(
                         "INSERT INTO artist_review (review_id, artist_id) VALUES (?, ?)",
                         reviewId,
                         review.getArtist().getId()
@@ -281,8 +299,10 @@ public class ReviewJdbcDao implements ReviewDao {
                 throw new RuntimeException("Failed to retrieve the generated review ID");
             }
         }
-        return result;
+        return review;
     }
+
+
 
     @Override
     public Optional<AlbumReview> findAlbumReviewById(long id) {
@@ -330,14 +350,13 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public int saveAlbumReview(AlbumReview review) {
-        int result = 0;
+    public AlbumReview saveAlbumReview(AlbumReview review) {
         KeyHolder keyHolder = saveReviewWithNoId(review);
         if (keyHolder != null ) {
             Map<String, Object> keys = keyHolder.getKeys();
             if (keys != null && keys.containsKey("id")) {
                 long reviewId = ((Number) keys.get("id")).longValue();
-                result = jdbcTemplate.update(
+                jdbcTemplate.update(
                         "INSERT INTO album_review (review_id, album_id) VALUES (?, ?)",
                         reviewId,
                         review.getAlbum().getId()
@@ -347,7 +366,7 @@ public class ReviewJdbcDao implements ReviewDao {
                 throw new RuntimeException("Failed to retrieve the generated review ID");
             }
         }
-        return result;
+        return review;
     }
 
 
@@ -406,14 +425,13 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public int saveSongReview(SongReview review) {
-        int result = 0;
+    public SongReview saveSongReview(SongReview review) {
         KeyHolder keyHolder = saveReviewWithNoId(review);
         if (keyHolder != null ) {
             Map<String, Object> keys = keyHolder.getKeys();
             if (keys != null && keys.containsKey("id")) {
                 long reviewId = ((Number) keys.get("id")).longValue();
-                result = jdbcTemplate.update(
+                jdbcTemplate.update(
                         "INSERT INTO song_review (review_id, song_id) VALUES (?, ?)",
                         reviewId,
                         review.getSong().getId()
@@ -423,7 +441,7 @@ public class ReviewJdbcDao implements ReviewDao {
                 throw new RuntimeException("Failed to retrieve the generated review ID");
             }
         }
-        return result;
+        return review;
     }
 
     @Override
@@ -446,23 +464,23 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public int createLike(long userId, long reviewId) {
-        return jdbcTemplate.update("INSERT INTO review_like (user_id, review_id) VALUES (?, ?)", userId, reviewId);
+    public void createLike(long userId, long reviewId) {
+        jdbcTemplate.update("INSERT INTO review_like (user_id, review_id) VALUES (?, ?)", userId, reviewId);
     }
 
     @Override
-    public int deleteLike(long userId, long reviewId) {
-        return jdbcTemplate.update("DELETE FROM review_like WHERE user_id = ? AND review_id = ?", userId, reviewId);
+    public void deleteLike(long userId, long reviewId) {
+        jdbcTemplate.update("DELETE FROM review_like WHERE user_id = ? AND review_id = ?", userId, reviewId);
     }
 
     @Override
-    public int incrementLikes(long reviewId) {
-        return jdbcTemplate.update("UPDATE review SET likes = likes + 1 WHERE id = ?", reviewId);
+    public void incrementLikes(long reviewId) {
+        jdbcTemplate.update("UPDATE review SET likes = likes + 1 WHERE id = ?", reviewId);
     }
 
     @Override
-    public int decrementLikes(long reviewId) {
-        return jdbcTemplate.update("UPDATE review SET likes = likes - 1 WHERE id = ?", reviewId);
+    public void decrementLikes(long reviewId) {
+        jdbcTemplate.update("UPDATE review SET likes = likes - 1 WHERE id = ?", reviewId);
     }
 
     @Override
@@ -606,15 +624,13 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public boolean block(Long reviewId) {
-        final String sql = "UPDATE review SET isBlocked = true WHERE id = ?";
-        return jdbcTemplate.update(sql, reviewId) == 1;
+    public void block(Long reviewId) {
+        jdbcTemplate.update("UPDATE review SET isBlocked = true WHERE id = ?", reviewId);
     }
 
     @Override
-    public boolean unblock(Long reviewId) {
-        final String sql = "UPDATE review SET isBlocked = false WHERE id = ?";
-        return jdbcTemplate.update(sql, reviewId) == 1;
+    public void unblock(Long reviewId) {
+        jdbcTemplate.update("UPDATE review SET isBlocked = false WHERE id = ?", reviewId);
     }
 
 }

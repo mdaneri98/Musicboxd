@@ -11,6 +11,5 @@ public interface SongService extends CrudService<Song> {
     List<Song> findByArtistId(long id);
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
-    int update(Song song, Song updatedSong);
 
 }

@@ -52,7 +52,7 @@ public class SongController {
         final ModelAndView mav = new ModelAndView("song");
         int pageSize = 5;  // Tamaño de la página para las reseñas
 
-        Song song = songService.findById(songId).get();
+        Song song = songService.find(songId).get();
         List<Artist> artists = artistService.findBySongId(songId);
 
         // Obtener las reseñas de la canción de manera paginada
@@ -87,7 +87,7 @@ public class SongController {
     @RequestMapping(value = "/{songId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long songId) {
         final ModelAndView mav = new ModelAndView("reviews/song_review");
-        Song song = songService.findById(songId).get();
+        Song song = songService.find(songId).get();
         mav.addObject("song", song);
         mav.addObject("album", song.getAlbum());
         return mav;

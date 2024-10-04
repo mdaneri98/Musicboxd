@@ -21,8 +21,8 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public Optional<Song> findById(long id) {
-        return songDao.findById(id);
+    public Optional<Song> find(long id) {
+        return songDao.find(id);
     }
 
     @Override
@@ -49,30 +49,20 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public long save(Song song) {
-        song.setId(songDao.save(song));
-        return songDao.saveSongArtist(song, song.getAlbum().getArtist());
+    public Song create(Song song) {
+        Song createdSong = songDao.create(song);
+        int result = songDao.saveSongArtist(createdSong, song.getAlbum().getArtist());
+        //FIXME: ¿Chequear que se haya agregado correctamente?
+        return createdSong;
     }
 
     @Override
-    public int update(Song song) {
+    public Song update(Song song) {
         return songDao.update(song);
     }
 
     @Override
-    public int update(Song song, Song updatedSong) {
-        if(updatedSong.getId() == null) {updatedSong.setId(song.getId());}
-        if (!song.equals(updatedSong)) {
-            song.setTitle(updatedSong.getTitle());
-            song.setDuration(updatedSong.getDuration());
-            song.setTrackNumber(updatedSong.getTrackNumber());
-            return songDao.update(song);
-        }
-        return 0;
-    }
-
-    @Override
-    public int deleteById(long id) {
-        return songDao.deleteById(id);
+    public boolean delete(long id) {
+        return songDao.delete(id);
     }
 }

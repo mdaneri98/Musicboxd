@@ -30,7 +30,7 @@ public class AlbumJdbcDao implements AlbumDao {
    }
 
     @Override
-    public Optional<Album> findById(long id) {
+    public Optional<Album> find(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
         return jdbcTemplate.query("SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, album.avg_rating AS avg_rating, album.rating_amount AS rating_amount, artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM album JOIN artist ON album.artist_id = artist.id WHERE album.id = ?",
                 new Object[]{id},
@@ -73,7 +73,7 @@ public class AlbumJdbcDao implements AlbumDao {
     }
 
     @Override
-    public long save(Album album) {
+    public Album create(Album album) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int result = jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
@@ -89,15 +89,16 @@ public class AlbumJdbcDao implements AlbumDao {
         }, keyHolder);
         Map<String, Object> keys = keyHolder.getKeys();
         if (keys != null && keys.containsKey("id")) {
-            return ((Number) keys.get("id")).longValue();
+            album.setId(((Number) keys.get("id")).longValue());
+            return album;
         } else {
             throw new IllegalStateException("Failed to insert album or generate key.");
         }
     }
 
     @Override
-    public int update(Album album) {
-        return jdbcTemplate.update(
+    public Album update(Album album) {
+        int result = jdbcTemplate.update(
                 "UPDATE album SET title = ?, genre = ?, release_date = ?, created_at = ?, updated_at = ?, img_id = ?, artist_id = ? WHERE id = ?",
                 album.getTitle(),
                 album.getGenre(),
@@ -108,6 +109,10 @@ public class AlbumJdbcDao implements AlbumDao {
                 album.getArtist().getId(),
                 album.getId()
         );
+        if (result == 1)
+            return album;
+        else
+            throw new IllegalStateException("Failed to update album");
     }
 
     @Override
@@ -124,8 +129,9 @@ public class AlbumJdbcDao implements AlbumDao {
     }
 
     @Override
-    public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM album WHERE id = ?", id);
+    public boolean delete(long id) {
+        return jdbcTemplate.update("DELETE FROM album WHERE id = ?", id) == 1;
     }
+
 
 }
