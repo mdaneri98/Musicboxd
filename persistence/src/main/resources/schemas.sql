@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS song (
     avg_rating FLOAT DEFAULT 0,
     rating_amount INT NOT NULL DEFAULT 0,
 
-    FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE SET NULL
+    FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS song_artist (

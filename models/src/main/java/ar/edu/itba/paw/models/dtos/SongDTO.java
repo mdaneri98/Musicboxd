@@ -1,29 +1,20 @@
-package ar.edu.itba.paw.webapp.form;
+package ar.edu.itba.paw.models.dtos;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
-
-public class ModSongForm {
+public class SongDTO {
 
     private long id;
-    @Size(min = 1, max = 255)
     private String title;
-    @Pattern(regexp = "^([0-5]?[0-9]):([0-5][0-9])$", message = "Duration must be in the format MM:SS - Example: 10:24 or 3:15")
     private String duration;
-    @Positive
     private Integer trackNumber;
-    private long albumId;
     private boolean deleted = false;
 
-    public ModSongForm() {}
+    public SongDTO() {}
 
-    public ModSongForm(long id, String title, String duration, Integer trackNumber, long albumId, boolean deleted) {
+    public SongDTO(long id, String title, String duration, Integer trackNumber, boolean deleted) {
         this.id = id;
         this.title = title;
         this.duration = duration;
         this.trackNumber = trackNumber;
-        this.albumId = albumId;
         this.deleted = deleted;
     }
 
@@ -54,10 +45,6 @@ public class ModSongForm {
     public void setTrackNumber(Integer trackNumber) {
         this.trackNumber = trackNumber;
     }
-
-    public long getAlbumId() { return albumId; }
-
-    public void setAlbumId(long albumId) { this.albumId = albumId; }
 
     public boolean isDeleted() {return deleted;}
 

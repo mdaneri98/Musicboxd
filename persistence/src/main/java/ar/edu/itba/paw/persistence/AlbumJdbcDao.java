@@ -1,18 +1,15 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -88,31 +85,26 @@ public class AlbumJdbcDao implements AlbumDao {
             return ps;
         }, keyHolder);
         Map<String, Object> keys = keyHolder.getKeys();
-        if (keys != null && keys.containsKey("id")) {
-            album.setId(((Number) keys.get("id")).longValue());
-            return album;
-        } else {
+        if (keys == null || !keys.containsKey("id"))
             throw new IllegalStateException("Failed to insert album or generate key.");
-        }
+
+        return this.find(((Number) keys.get("id")).longValue()).get();
     }
 
     @Override
     public Album update(Album album) {
         int result = jdbcTemplate.update(
-                "UPDATE album SET title = ?, genre = ?, release_date = ?, created_at = ?, updated_at = ?, img_id = ?, artist_id = ? WHERE id = ?",
+                "UPDATE album SET title = ?, genre = ?, release_date = ?, updated_at = NOW(), img_id = ?, artist_id = ? WHERE id = ?",
                 album.getTitle(),
                 album.getGenre(),
                 album.getReleaseDate(),
-                album.getCreatedAt(),
-                album.getUpdatedAt(),
                 album.getImgId(),
                 album.getArtist().getId(),
                 album.getId()
         );
-        if (result == 1)
-            return album;
-        else
+        if (result != 1)
             throw new IllegalStateException("Failed to update album");
+        return album;
     }
 
     @Override
@@ -132,6 +124,5 @@ public class AlbumJdbcDao implements AlbumDao {
     public boolean delete(long id) {
         return jdbcTemplate.update("DELETE FROM album WHERE id = ?", id) == 1;
     }
-
 
 }

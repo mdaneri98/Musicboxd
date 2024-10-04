@@ -12,7 +12,7 @@ public interface UserDao {
     List<User> findAll();
     List<User> findByUsernameContaining(String sub);
 
-    int create(String username, String email, String password);
+    int create(String username, String email, String password, long imgId);
 
     int createFollowing(User loggedUser, User following);
 
@@ -23,7 +23,7 @@ public interface UserDao {
     List<User> getFollowers(Long userId, int limit, int offset);
     List<User> getFollowing(Long userId, int limit, int offset);
 
-    int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
+    int update(User user);
 
     int deleteById(long id);
 
