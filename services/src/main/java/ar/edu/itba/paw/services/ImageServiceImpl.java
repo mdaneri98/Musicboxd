@@ -35,7 +35,7 @@ public class ImageServiceImpl implements ImageService {
                 return DEFAULT_IMAGE_ID;
             }
         }
-        return imageDao.save(bytes);
+        return imageDao.create(bytes);
     }
 
     public long save(MultipartFile imageFile, boolean isProfile) {

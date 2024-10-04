@@ -12,14 +12,8 @@ public interface AlbumService extends CrudService<Album> {
 
     List<Album> findByTitleContaining(String sub);
 
-    long save(Album album);
+    Album save(Album album, MultipartFile imageFile);
 
-    long save(Album album, MultipartFile imageFile);
-
-    int update(Album album);
-
-    int update(Album album, Album updatedAlbum, MultipartFile imageFile);
-
-    int delete(Album album);
+    Album update(Album album, Album updatedAlbum, MultipartFile imageFile);
 
 }

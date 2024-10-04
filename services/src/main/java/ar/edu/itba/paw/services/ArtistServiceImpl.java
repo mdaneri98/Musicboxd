@@ -2,14 +2,12 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Filter;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -22,8 +20,8 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public Optional<Artist> findById(long id) {
-        return artistDao.findById(id);
+    public Optional<Artist> find(long id) {
+        return artistDao.find(id);
     }
 
     @Override
@@ -47,21 +45,21 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public long save(Artist artist) {
-        return artistDao.save(artist);
+    public Artist create(Artist artist) {
+        return artistDao.create(artist);
     }
 
-    public long save(Artist artist, MultipartFile imageFile) {
+    public Artist save(Artist artist, MultipartFile imageFile) {
         artist.setImgId(imageService.save(imageFile, false));
-        return artistDao.save(artist);
+        return artistDao.create(artist);
     }
 
     @Override
-    public int update(Artist artist) {
+    public Artist update(Artist artist) {
         return artistDao.update(artist);
     }
 
-    public int update(Artist artist, Artist updatedArtist, MultipartFile imageFile) {
+    public Artist update(Artist artist, Artist updatedArtist, MultipartFile imageFile) {
         long imgId = imageService.update(artist.getImgId(), imageFile);
         updatedArtist.setImgId(imgId);
         if(updatedArtist.getId() == null) {updatedArtist.setId(imgId);}
@@ -69,20 +67,14 @@ public class ArtistServiceImpl implements ArtistService {
             artist.setName(updatedArtist.getName());
             artist.setBio(updatedArtist.getBio());
             artist.setImgId(imgId);
-            return artistDao.update(artist);
         }
-        return 0;
+        return artistDao.update(artist);
     }
 
     @Override
-    public int deleteById(long id) {
-        return artistDao.deleteById(id);
+    public boolean delete(long id) {
+        return artistDao.delete(id);
     }
 
-    @Override
-    public int delete(Artist artist) {
-        imageService.delete(artist.getImgId());
-        return artistDao.deleteById(artist.getId());
-    }
 }
 

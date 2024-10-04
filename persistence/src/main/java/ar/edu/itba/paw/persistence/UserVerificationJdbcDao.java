@@ -3,17 +3,13 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.UserVerification;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class UserVerificationJdbcDao implements UserVerificationDao {
@@ -29,11 +25,11 @@ public class UserVerificationJdbcDao implements UserVerificationDao {
     }
 
     @Override
-    public int startVerification(User user, String code) {
+    public void startVerification(User user, String code) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expireDateTime = now.plusHours(6);
 
-        return jdbcTemplate.update(
+        jdbcTemplate.update(
                 "INSERT INTO verify_user (user_id, code, expire_date) VALUES (?, ?, ?)",
                 user.getId(),
                 code,
