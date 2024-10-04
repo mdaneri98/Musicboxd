@@ -110,7 +110,7 @@ nav {
     margin-bottom: 30px;
     padding: 25px;
     background: linear-gradient(to top, var(--background-highlight), var(--background-extra-tinted-highlight));
-    border-radius: 10%;
+    border-radius: 20px;
 }
 
 .feature img {
