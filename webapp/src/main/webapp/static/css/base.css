@@ -233,17 +233,20 @@ label {
     width: 100%;
     overflow-x: auto;
     padding: 20px 0;
-    text-align: center;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .carousel {
     display: flex;
     flex-direction: row;
     gap: 15px;
+    padding: 0 3%;
     width: max-content;
 }
 
 .item {
+    flex: 0 0 auto;
     background-color: #242424;
     width: 200px;
     flex-shrink: 0;
@@ -636,7 +639,32 @@ button:hover:not(:disabled) {
 
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     gap: 12px;
+
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* --- Toggle button --- */
+
+.toggle{
+    margin-top: 40px;
+}
+
+.tab-button {
+    cursor: pointer;
+    padding: 6px;
+    font-weight: bold
+}
+
+.active {
+    color: #1DB954;
+}
+
+.container h2 {
+    margin-left: 30px;
 }

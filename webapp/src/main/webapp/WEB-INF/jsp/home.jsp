@@ -3,16 +3,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <spring:message var="pageTitle" code="page.title.home"/>
-        <jsp:include page="/WEB-INF/jsp/components/head.jsp">
-            <jsp:param name="title" value="${pageTitle}"/>
-        </jsp:include>
+    <spring:message var="pageTitle" code="page.title.home"/>
+    <jsp:include page="/WEB-INF/jsp/components/head.jsp">
+        <jsp:param name="title" value="${pageTitle}"/>
+    </jsp:include>
 
-        <c:url var="css" value="/static/css/home.css" />
-        <link rel="stylesheet" href="${css}">
+    <c:url var="css" value="/static/css/home.css" />
+    <link rel="stylesheet" href="${css}">
 
-        <c:url var="review_card" value="/static/css/review_card.css" />
-        <link rel="stylesheet" href="${review_card}">
+    <c:url var="review_card" value="/static/css/review_card.css" />
+    <link rel="stylesheet" href="${review_card}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -33,10 +33,6 @@
             });
         });
     </script>
-    <style>
-        .tab-button { cursor: pointer; padding: 10px; }
-        .active { background-color: #ddd; }
-    </style>
 </head>
 <body>
 <div>
@@ -46,12 +42,19 @@
     </jsp:include>
 </div>
 <div class="container">
-    <div>
+    <div class="toggle">
         <span id="forYouButton" class="tab-button active"><spring:message code="home.for.you"/></span>
+        <span>/</span>
         <span id="followingButton" class="tab-button"><spring:message code="home.following"/></span>
     </div>
     <div id="forYouTab">
         <h2><spring:message code="label.popular.reviews" /></h2>
+        <c:if test="${popularReviews.size() == 0}">
+            <div class="page-empty">
+                <h3><spring:message code="home.page.empty"/></h3>
+                <h4><spring:message code="home.try.previous"/></h4>
+            </div>
+        </c:if>
         <div class="cards-container">
             <c:forEach var="review" items="${popularReviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
@@ -74,12 +77,18 @@
                 </jsp:include>
             </c:forEach>
         </div>
+        <div class="pages">
+            <c:url value="/home/${pageNum + 1}" var="nextPage" />
+            <c:url value="/home/${pageNum -1}" var="prevPage" />
+            <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
+            <c:if test="${popularReviews.size() == pageSize}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
+        </div>
     </div>
+
     <div id="followingTab">
         <h2><spring:message code="label.following.reviews"/></h2>
         <c:if test="${followingReviews.size() == 0}">
             <div class="page-empty">
-                <h3>This page is empty</h3>
                 <h3><spring:message code="home.page.empty"/></h3>
                 <h4><spring:message code="home.try.following"/></h4>
             </div>
@@ -106,13 +115,15 @@
                 </jsp:include>
             </c:forEach>
         </div>
+        <div class="pages">
+            <c:url value="/home?pageNum=${pageNum + 1}" var="nextPage" />
+            <c:url value="/home?pageNum=${pageNum - 1}" var="prevPage" />
+            <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
+            <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
+        </div>
     </div>
-    <div class="pages">
-        <c:url value="/home?pageNum=${pageNum + 1}" var="nextPage" />
-        <c:url value="/home?pageNum=${pageNum -1}" var="prevPage" />
-        <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
-        <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
-    </div>
+
+
 </div>
 </body>
 </html>

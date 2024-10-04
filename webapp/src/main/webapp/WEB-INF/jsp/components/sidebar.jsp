@@ -16,34 +16,41 @@
       </a>
     </li>
     <c:if test="${not empty param.loggedUserImgId}">
+    <li>
+      <c:url var="musicUrl" value="/music"/>
+      <a href="${musicUrl}" class="sidebar-icon profile-icon">
+        <c:url var="profileImageUrl" value="/images/${param.loggedUserImgId}"/>
+        <i class="fas fa-music"></i>
+      </a>
+    </li>
+    <li>
+      <c:url var="musicSearchUrl" value="/search"/>
+      <a href="${musicSearchUrl}" class="sidebar-icon">
+        <i class="fas fa-search"></i>
+      </a>
+    </li>
+    <c:if test="${param.moderator}">
       <li>
-        <c:url var="musicSearchUrl" value="/search"/>
-        <a href="${musicSearchUrl}" class="sidebar-icon">
-          <i class="fas fa-search"></i>
+        <c:url var="moderatorUrl" value="/mod"/>
+        <a href="${moderatorUrl}" class="sidebar-icon">
+          <i class="fas fa-plus-square"></i>
         </a>
       </li>
-      <li>
-        <c:url var="profileUrl" value="/user/profile"/>
-        <a href="${profileUrl}" class="sidebar-icon profile-icon">
-          <c:url var="profileImageUrl" value="/images/${param.loggedUserImgId}"/>
-          <img src="${profileImageUrl}" alt="Profile">
-        </a>
-      </li>
-      <c:if test="${param.moderator}">
-        <li>
-          <c:url var="moderatorUrl" value="/mod"/>
-          <a href="${moderatorUrl}" class="sidebar-icon">
-            <i class="fas fa-plus-square"></i>
-          </a>
-        </li>
-      </c:if>
-      <li>
-        <c:url var="logoutUrl" value="/user/logout"/>
-        <a href="${logoutUrl}" class="sidebar-icon">
-          <i class="fas fa-sign-out-alt"></i>
-        </a>
-      </li>
-    </ul>
+    </c:if>
+    <li>
+      <c:url var="profileUrl" value="/user/profile"/>
+      <a href="${profileUrl}" class="sidebar-icon profile-icon">
+        <c:url var="profileImageUrl" value="/images/${param.loggedUserImgId}"/>
+        <img src="${profileImageUrl}" alt="Profile">
+      </a>
+    </li>
+    <li>
+      <c:url var="logoutUrl" value="/user/logout"/>
+      <a href="${logoutUrl}" class="sidebar-icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </a>
+    </li>
+  </ul>
   </c:if>
   <c:if test="${empty param.loggedUserImgId}">
     <li>
