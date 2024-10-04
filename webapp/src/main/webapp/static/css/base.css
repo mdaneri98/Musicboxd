@@ -290,10 +290,10 @@ label {
     display: flex;
     align-items: center;
 
-    position: absolute !important;
-    top: 8px !important;
-    right: 8px !important;
-    z-index: 9999 !important;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
 }
 
 .star {

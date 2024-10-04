@@ -33,12 +33,8 @@ public class IndexController {
     }
 
     @RequestMapping(value = {"/home", "/"})
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser) {
-        return home(loggedUser, 1);
-    }
-
-    @RequestMapping(value = "/home/{pageNum:\\d+}")
     public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null || pageNum < 1) pageNum = 1;
         int pageSize = 10;
         long loggedUserId;
         ModelAndView mav;
@@ -54,7 +50,6 @@ public class IndexController {
 
         List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, loggedUserId);
         List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUserId, pageNum, pageSize, loggedUserId);
-        if (pageNum > 1 && popularReviews.isEmpty() && followingReviews.isEmpty()) return home(loggedUser, 1);
         boolean hasNextPopular = popularReviews.size() >= pageSize-1;
         boolean hasNextFollowing = followingReviews.size() >= pageSize-1;
 
