@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <spring:message var="pageTitle" code="page.title.home"/>
+    <spring:message var="pageTitle" code="page.title.discovery"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>

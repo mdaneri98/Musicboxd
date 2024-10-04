@@ -94,9 +94,6 @@ public class ArtistController {
         if (errors.hasErrors()) {
             return createForm(reviewForm, artistId);
         }
-
-
-        userService.incrementReviewAmount(loggedUser);
         ArtistReview artistReview = new ArtistReview(
                 loggedUser,
                 new Artist(artistId),

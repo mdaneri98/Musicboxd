@@ -6,6 +6,8 @@
 <html>
 <head>
     <title>Musicboxd</title>
+    <c:url var="logoUrl" value="/static/assets/logo.png"/>
+    <link rel="icon" type="image/x-icon" href="${logoUrl}">
 
     <c:url var="css" value="/static/css/home.css" />
     <link rel="stylesheet" href="${css}">
