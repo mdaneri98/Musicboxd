@@ -24,8 +24,8 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public Optional<Song> findById(long id) {
-        return songDao.findById(id);
+    public Optional<Song> find(long id) {
+        return songDao.find(id);
     }
 
     @Override
@@ -52,36 +52,35 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public long save(Song song) {
-        song.setId(songDao.save(song));
-        return songDao.saveSongArtist(song, song.getAlbum().getArtist());
+    public Song create(Song song) {
+        Song createdSong = songDao.create(song);
+        songDao.saveSongArtist(createdSong, song.getAlbum().getArtist());
+        return createdSong;
     }
 
     @Override
-    public int update(Song song) {
+    public Song update(Song song) {
         return songDao.update(song);
     }
 
     @Override
-    public int deleteById(long id) {
-        return songDao.deleteById(id);
+    public boolean delete(long id) {
+        return songDao.delete(id);
     }
 
-
-    //****************************************************************************************** Testing
     @Override
-    public Song save(SongDTO songDTO, Album album) {
-        Song song = new Song(songDTO.getId(), songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
-        song = songDao.saveX(song);
+    public Song create(SongDTO songDTO, Album album) {
+        Song song = new Song(0L, songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        song = songDao.create(song);
         songDao.saveSongArtist(song, song.getAlbum().getArtist());
         return song;
     }
 
     @Override
-    public boolean save(List<SongDTO> songsDTO, Album album) {
+    public boolean createAll(List<SongDTO> songsDTO, Album album) {
         for (SongDTO songDTO : songsDTO) {
             if (!songDTO.isDeleted()) {
-                save(songDTO, album);
+                create(songDTO, album);
             }
         }
         return true;
@@ -90,22 +89,22 @@ public class SongServiceImpl implements SongService {
     @Override
     public Song update(SongDTO songDTO, Album album) {
         Song song = new Song(songDTO.getId(), songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
-        song = songDao.updateX(song);
+        song = songDao.update(song);
         return song;
     }
 
     @Override
-    public boolean update(List<SongDTO> songsDTO, Album album) {
+    public boolean updateAll(List<SongDTO> songsDTO, Album album) {
         for (SongDTO songDTO : songsDTO) {
             if (songDTO.getId() != 0) {
                 if (songDTO.isDeleted()) {
-                    deleteById(songDTO.getId());
+                    delete(songDTO.getId());
                 } else {
                     update(songDTO, album);
                 }
             } else {
                 if (!songDTO.isDeleted()) {
-                    save(songDTO, album);
+                    create(songDTO, album);
                 }
             }
         }

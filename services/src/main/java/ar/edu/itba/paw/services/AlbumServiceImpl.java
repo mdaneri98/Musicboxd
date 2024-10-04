@@ -5,20 +5,14 @@ import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.persistence.AlbumDao;
-import ar.edu.itba.paw.persistence.ArtistDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Filter;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
-    /*
-        FIXME: Add required `business logic`
-     */
     private final AlbumDao albumDao;
     private final ImageService imageService;
     private final SongService songService;
@@ -30,8 +24,8 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public Optional<Album> findById(long id) {
-        return albumDao.findById(id);
+    public Optional<Album> find(long id) {
+        return albumDao.find(id);
     }
 
     public List<Album> findPaginated(FilterType filterType, int page, int pageSize) {
@@ -52,83 +46,86 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public long save(Album album) {
+    public Album create(Album album) {
         album.setImgId(imageService.save((byte[]) null, false));
-        return albumDao.save(album);
+        return albumDao.create(album);
     }
 
     @Override
-    public int update(Album album) {
+    public Album update(Album album) {
         return albumDao.update(album);
     }
 
-    @Override
-    public int deleteById(long id) {
-        Optional<Album> album = albumDao.findById(id);
+    public boolean delete(long id) {
+        Optional<Album> album = albumDao.find(id);
         if (album.isEmpty()) {
-            return 0;
+            return false;
         }
 
         imageService.delete(album.get().getImgId());
-        return albumDao.deleteById(id);
+        return albumDao.delete(id);
     }
 
     @Override
-    public int delete(Album album) {
+    public boolean delete(Album album) {
+        if (album.getId() == null || album.getImgId() == null)
+            return false;
         imageService.delete(album.getImgId());
-        return albumDao.deleteById(album.getId());
+        return albumDao.delete(album.getId());
     }
 
-
-    //************************************************************************** Testing
     @Override
-    public Album save(AlbumDTO albumDTO, Artist artist) {
+    public Album create(AlbumDTO albumDTO, long artistId) {
         long imgId = imageService.save(albumDTO.getImage(), false);
-        Album album = new Album(albumDTO.getId(), albumDTO.getTitle(), imgId, albumDTO.getGenre(), artist, albumDTO.getReleaseDate());
+        Album album = new Album(0L, albumDTO.getTitle(), imgId, albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate());
 
-        album = albumDao.saveX(album);
+        album = albumDao.create(album);
 
         if (albumDTO.getSongs() != null) {
-            songService.save(albumDTO.getSongs(), album);
+            songService.createAll(albumDTO.getSongs(), album);
         }
         return album;
     }
 
     @Override
-    public boolean save(List<AlbumDTO> albumsDTO, Artist artist) {
+    public boolean createAll(List<AlbumDTO> albumsDTO, long artistId) {
         for (AlbumDTO albumDTO : albumsDTO) {
             if (!albumDTO.isDeleted()) {
-                save(albumDTO, artist);
+                create(albumDTO, artistId);
             }
         }
         return true;
     }
 
     @Override
-    public Album update(AlbumDTO albumDTO, Artist artist) {
+    public Album update(AlbumDTO albumDTO) {
         long imgId = imageService.update(albumDTO.getImgId(), albumDTO.getImage());
-        Album album = new Album(albumDTO.getId(), albumDTO.getTitle(), imgId, albumDTO.getGenre(), artist, albumDTO.getReleaseDate());
 
-        album = albumDao.updateX(album);
+        Album album = albumDao.find(albumDTO.getId()).get();//new Album(albumDTO.getId(), albumDTO.getTitle(), imgId, albumDTO.getGenre(), artist, albumDTO.getReleaseDate());
+        album.setTitle(albumDTO.getTitle());
+        album.setImgId(imgId);
+        album.setGenre(albumDTO.getGenre());
+
+        album = albumDao.update(album);
 
         if (albumDTO.getSongs() != null) {
-            songService.update(albumDTO.getSongs(), album);
+            songService.updateAll(albumDTO.getSongs(), album);
         }
         return album;
     }
 
     @Override
-    public boolean update(List<AlbumDTO> albumsDTO, Artist artist) {
+    public boolean updateAll(List<AlbumDTO> albumsDTO, long artistId) {
         for (AlbumDTO albumDTO : albumsDTO) {
             if (albumDTO.getId() != 0) {
                 if (albumDTO.isDeleted()) {
-                    delete(new Album(albumDTO.getId(), albumDTO.getTitle(), albumDTO.getImgId(), albumDTO.getGenre(), artist, albumDTO.getReleaseDate()));
+                    delete(new Album(albumDTO.getId(), albumDTO.getTitle(), albumDTO.getImgId(), albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate()));
                 } else {
-                    update(albumDTO, artist);
+                    update(albumDTO);
                 }
             } else {
                 if (!albumDTO.isDeleted()) {
-                    save(albumDTO, artist);
+                    create(albumDTO, artistId);
                 }
             }
         }

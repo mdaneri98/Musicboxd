@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
@@ -14,8 +15,6 @@ import ar.edu.itba.paw.persistence.SongDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,23 +52,43 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public int update(Review review) {
+    public Optional<Review> find(long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Review> findAll() {
+        return null;
+    }
+
+    @Override
+    public List<Review> findPaginated(FilterType filterType, int page, int pageSize) {
+        return null;
+    }
+
+    @Override
+    public Review create(Review entity) {
+        return null;
+    }
+
+    @Override
+    public Review update(Review review) {
         return reviewDao.update(review);
     }
 
     @Override
-    public int deleteById(long id) {
-        int res = 0;
+    public boolean delete(long id) {
+        boolean res = false;
         if (isArtistReview(id)) {
-            res = reviewDao.deleteById(id);
+            res = reviewDao.delete(id);
             updateArtistRating(id);
         }
         if (isAlbumReview(id)) {
-            res = reviewDao.deleteById(id);
+            res = reviewDao.delete(id);
             updateAlbumRating(id);
         }
         if (isSongReview(id)) {
-            res = reviewDao.deleteById(id);
+            res = reviewDao.delete(id);
             updateSongRating(id);
         }
         return res;
@@ -81,11 +100,9 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public int saveArtistReview(ArtistReview review) {
-        int result = reviewDao.saveArtistReview(review);
-        if (result > 0) {
-            updateArtistRating(review.getArtist().getId());
-        }
+    public ArtistReview saveArtistReview(ArtistReview review) {
+        ArtistReview result = reviewDao.saveArtistReview(review);
+        updateArtistRating(review.getArtist().getId());
         return result;
     }
 
@@ -123,11 +140,9 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public int saveAlbumReview(AlbumReview review) {
-        int result = reviewDao.saveAlbumReview(review);
-        if (result > 0) {
-            updateAlbumRating(review.getAlbum().getId());
-        }
+    public AlbumReview saveAlbumReview(AlbumReview review) {
+        AlbumReview result = reviewDao.saveAlbumReview(review);
+        updateAlbumRating(review.getAlbum().getId());
         return result;
     }
 
@@ -151,11 +166,9 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Override
-    public int saveSongReview(SongReview review) {
-        int result = reviewDao.saveSongReview(review);
-        if (result > 0) {
-            updateSongRating(review.getSong().getId());
-        }
+    public SongReview saveSongReview(SongReview review) {
+        SongReview result = reviewDao.saveSongReview(review);
+        updateSongRating(review.getSong().getId());
         return result;
     }
 
@@ -173,15 +186,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public int createLike(long userId, long reviewId) {
+    public void createLike(long userId, long reviewId) {
         reviewDao.createLike(userId, reviewId);
-        return reviewDao.incrementLikes(reviewId);
+        reviewDao.incrementLikes(reviewId);
     }
 
     @Override
-    public int removeLike(long userId, long reviewId) {
+    public void removeLike(long userId, long reviewId) {
         reviewDao.deleteLike(userId, reviewId);
-        return reviewDao.decrementLikes(reviewId);
+        reviewDao.decrementLikes(reviewId);
     }
 
     @Override
@@ -256,13 +269,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public boolean block(Long reviewId) {
-        return reviewDao.block(reviewId);
+    public void block(Long reviewId) {
+        reviewDao.block(reviewId);
     }
 
     @Override
-    public boolean unblock(Long reviewId) {
-        return reviewDao.unblock(reviewId);
+    public void unblock(Long reviewId) {
+        reviewDao.unblock(reviewId);
     }
 
 }

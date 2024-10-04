@@ -27,7 +27,7 @@ public class SongJdbcDao implements SongDao {
     }
 
     @Override
-    public Optional<Song> findById(long id) {
+    public Optional<Song> find(long id) {
         return jdbcTemplate.query("SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, song.avg_rating AS avg_rating, song.rating_amount AS rating_amount, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id, album.release_date AS album_release_date, album.genre,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id WHERE song.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
@@ -76,9 +76,9 @@ public class SongJdbcDao implements SongDao {
     }
 
     @Override
-    public long save(Song song) {
+    public Song create(Song song) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int result = jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
                     PreparedStatement ps = connection.prepareStatement(
                             "INSERT INTO song (title, duration, track_number, album_id) VALUES (?, ?, ?, ?)",
                             Statement.RETURN_GENERATED_KEYS
@@ -89,12 +89,12 @@ public class SongJdbcDao implements SongDao {
                     ps.setLong(4,song.getAlbum().getId());
                     return ps;
                 }, keyHolder);
+
         Map<String, Object> keys = keyHolder.getKeys();
-        if (keys != null && keys.containsKey("id")) {
-            return ((Number) keys.get("id")).longValue();
-        } else {
+        if (keys == null || !keys.containsKey("id"))
             throw new IllegalStateException("Failed to insert album or generate key.");
-        }
+
+        return this.find(((Number) keys.get("id")).longValue()).get();
     }
 
     public int saveSongArtist(Song song, Artist artist) {
@@ -106,8 +106,8 @@ public class SongJdbcDao implements SongDao {
     }
 
     @Override
-    public int update(Song song) {
-        return jdbcTemplate.update(
+    public Song update(Song song) {
+        int result = jdbcTemplate.update(
                 "UPDATE song SET title = ?, duration = ?, track_number = ?, updated_at = NOW(), album_id = ? WHERE id = ?",
                 song.getTitle(),
                 song.getDuration(),
@@ -115,6 +115,11 @@ public class SongJdbcDao implements SongDao {
                 song.getAlbum().getId(),
                 song.getId()
         );
+
+        if (result != 1)
+            throw new IllegalStateException("Failed to update album");
+
+        return this.find(song.getId()).get();
     }
 
     @Override
@@ -131,44 +136,8 @@ public class SongJdbcDao implements SongDao {
     }
 
     @Override
-    public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM song WHERE id = ?", id);
+    public boolean delete(long id) {
+        return jdbcTemplate.update("DELETE FROM song WHERE id = ?", id) == 1;
     }
 
-
-    //************************************************************************ Testing
-    @Override
-    public Song saveX(Song song) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int result = jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO song (title, duration, track_number, album_id) VALUES (?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS
-            );
-            ps.setString(1, song.getTitle());
-            ps.setString(2, song.getDuration());
-            ps.setInt(3, song.getTrackNumber());
-            ps.setLong(4,song.getAlbum().getId());
-            return ps;
-        }, keyHolder);
-        Map<String, Object> keys = keyHolder.getKeys();
-        if (keys != null && keys.containsKey("id")) {
-            return findById( ((Number) keys.get("id")).longValue() ).get();
-        } else {
-            throw new IllegalStateException("Failed to insert album or generate key.");
-        }
-    }
-
-    @Override
-    public Song updateX(Song song) {
-        jdbcTemplate.update(
-                "UPDATE song SET title = ?, duration = ?, track_number = ?, updated_at = NOW(), album_id = ? WHERE id = ?",
-                song.getTitle(),
-                song.getDuration(),
-                song.getTrackNumber(),
-                song.getAlbum().getId(),
-                song.getId()
-        );
-        return findById(song.getId()).get();
-    }
 }

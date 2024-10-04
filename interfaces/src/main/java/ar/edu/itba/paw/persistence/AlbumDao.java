@@ -13,7 +13,4 @@ public interface AlbumDao extends CrudDao<Album> {
     void updateRating(long albumId, float newRating, int newRatingAmount);
     boolean hasUserReviewed(long userId, long albumId);
 
-    Album saveX(Album album);
-    Album updateX(Album album);
-
 }

@@ -50,7 +50,7 @@ public class AlbumController {
         final ModelAndView mav = new ModelAndView("album");
         int pageSize = 5;
 
-        Album album = albumService.findById(albumId).orElseThrow();
+        Album album = albumService.find(albumId).orElseThrow();
         List<Song> songs = songService.findByAlbumId(albumId);
 
         List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId, pageNum, pageSize, loggedUser.getId());
@@ -82,7 +82,7 @@ public class AlbumController {
 
     @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
-        Album album = albumService.findById(albumId).orElseThrow();
+        Album album = albumService.find(albumId).orElseThrow();
 
 
         ModelAndView modelAndView = new ModelAndView("reviews/album_review");

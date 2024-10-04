@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CrudService<T> {
-    Optional<T> findById(long id);
+    Optional<T> find(long id);
 
     List<T> findAll();
 
     List<T> findPaginated(FilterType filterType, int page, int pageSize);
 
-    long save(T entity);
+    T create(T entity);
 
-    int update(T entity);
+    T update(T entity);
 
-    int deleteById(long id);
+    boolean delete(long id);
 }

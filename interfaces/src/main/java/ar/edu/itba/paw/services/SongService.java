@@ -14,8 +14,8 @@ public interface SongService extends CrudService<Song> {
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
 
-    Song save(SongDTO songDTO, Album album);
-    boolean save(List<SongDTO> songsDTO, Album album);
+    Song create(SongDTO songDTO, Album album);
+    boolean createAll(List<SongDTO> songsDTO, Album album);
     Song update(SongDTO songDTO, Album album);
-    boolean update(List<SongDTO> songsDTO, Album album);
+    boolean updateAll(List<SongDTO> songsDTO, Album album);
 }
