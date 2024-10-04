@@ -103,9 +103,9 @@ public class ArtistJdbcDao implements ArtistDao {
     }
 
     @Override
-    public void updateRating(long artistId, float newRating, int newRatingAmount) {
+    public boolean updateRating(long artistId, float newRating, int newRatingAmount) {
         final String sql = "UPDATE artist SET avg_rating = ?, rating_amount = ? WHERE id = ?";
-        jdbcTemplate.update(sql, newRating, newRatingAmount, artistId);
+        return jdbcTemplate.update(sql, newRating, newRatingAmount, artistId) == 1;
     }
 
     @Override

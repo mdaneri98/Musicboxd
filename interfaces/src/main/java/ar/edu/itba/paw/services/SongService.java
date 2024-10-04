@@ -18,4 +18,6 @@ public interface SongService extends CrudService<Song> {
     boolean createAll(List<SongDTO> songsDTO, Album album);
     Song update(SongDTO songDTO, Album album);
     boolean updateAll(List<SongDTO> songsDTO, Album album);
+    boolean updateRating(long songId, float newRating, int newRatingAmount);
+    boolean hasUserReviewed(long userId, long songId);
 }

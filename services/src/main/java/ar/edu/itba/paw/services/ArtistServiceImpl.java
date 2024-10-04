@@ -105,5 +105,15 @@ public class ArtistServiceImpl implements ArtistService {
         }
         return artist;
     }
+
+    @Override
+    public boolean updateRating(Long artistId, Float roundedAvgRating, Integer ratingAmount) {
+        return artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
+    }
+
+    @Override
+    public boolean hasUserReviewed(long userId, long artistId) {
+        return artistDao.hasUserReviewed(userId, artistId);
+    }
 }
 

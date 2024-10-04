@@ -36,8 +36,7 @@ public interface UserService {
 
     Optional<User> findByUsername(String email);
 
-    int incrementReviewAmount(User user);
-    int decrementReviewAmount(User user);
+    void updateUserReviewAmount(Long userId);
     void createVerification(User user);
     boolean verify(String code);
 
