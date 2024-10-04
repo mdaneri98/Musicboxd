@@ -20,6 +20,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <spring:message var="pageTitle" code="page.title.home"/>
   <jsp:include page="/WEB-INF/jsp/components/head.jsp">
     <jsp:param name="title" value="${pageTitle}"/>
@@ -28,8 +29,10 @@
   <c:url var="css" value="/static/css/home.css" />
   <link rel="stylesheet" href="${css}">
 
-  <c:url var="review_card" value="/static/css/review_card.css" />
-  <link rel="stylesheet" href="${review_card}">
+  <c:url var="css2" value="/static/css/landing.css" />
+  <link rel="stylesheet" href="${css2}">
+
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
@@ -82,24 +85,25 @@
   </script>
 </head>
 <body>
-<c:url var="home" value="/"/>
-<c:url var="music" value="/music"/>
-<c:url var="login" value="/user/login"/>
-<c:url var="register" value="/user/register"/>
-<header>
-  <div class="container">
-    <nav>
-      <div class="logo"><spring:message code="webpage.name"/></div>
-      <div class="nav-links">
-        <a href="${home}"><spring:message code="page.title.home"/></a>
-        <a href="${music}"><spring:message code="page.title.discovery"/></a>
-        <a href="${login}"><spring:message code="label.login"/></a>
-        <a href="${register}"><spring:message code="label.register"/></a>
-      </div>
-    </nav>
-  </div>
-</header>
 <div class="container">
+
+  <header>
+  <c:url var="home" value="/"/>
+  <c:url var="music" value="/music"/>
+  <c:url var="login" value="/user/login"/>
+  <c:url var="register" value="/user/register"/>
+    <div class="container">
+      <nav>
+        <div class="logo"><spring:message code="webpage.name"/></div>
+        <div class="nav-links">
+          <a href="${home}"><spring:message code="page.title.home"/></a>
+          <a href="${music}"><spring:message code="page.title.discovery"/></a>
+          <a href="${login}"><spring:message code="label.login"/></a>
+          <a href="${register}"><spring:message code="label.register"/></a>
+        </div>
+      </nav>
+    </div>
+  </header>
 
   <div class="call-to-action-container">
     <h1><spring:message code="discovery" /></h1>

@@ -68,8 +68,8 @@
 </main>
 
 <div class="max-width">
+    <h2><spring:message code="label.popular.reviews" /></h2>
     <div class="cards-container">
-        <h2><spring:message code="label.popular.reviews" /></h2>
         <c:forEach var="review" items="${popularReviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
                 <jsp:param name="item_img_id" value="${review.itemImgId}"/>
@@ -104,14 +104,4 @@
         <p>&copy; 2024 Musicboxd. <spring:message code="label.rights.reserved"/></p>
     </div>
 </footer>
-</body>
-</html>
-<c:url value="/home?pageNum=${pageNum -1}" var="prevPage" />
-            <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
-            <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
-        </div>
-    </div>
-
-</div>
-</body>
 </html>

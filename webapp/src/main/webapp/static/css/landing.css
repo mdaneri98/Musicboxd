@@ -226,7 +226,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #ffffff;
 }
 
-.cards-container h2 {
+.max-width > h2 {
     padding-left: 40px;
     font-size: 2rem;
 }
