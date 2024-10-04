@@ -70,45 +70,36 @@ public class ArtistJdbcDao implements ArtistDao {
 
     @Override
     public Artist create(Artist artist) {
-        String sql = "INSERT INTO artist (name, bio, created_at, updated_at, img_id, avg_rating, rating_amount) VALUES (?,?,?,?,?,?,?)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO artist (name, bio, img_id) VALUES (?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
             ps.setString(1, artist.getName());
             ps.setString(2, artist.getBio());
-            ps.setObject(3, artist.getCreatedAt());
-            ps.setObject(4, artist.getUpdatedAt());
-            ps.setLong(5, artist.getImgId());
-            ps.setDouble(6, artist.getAvgRating());
-            ps.setInt(7, artist.getRatingCount());
+            ps.setObject(3, artist.getImgId());
             return ps;
         }, keyHolder);
+        Map<String, Object> keys = keyHolder.getKeys();
+        if (keys == null || !keys.containsKey("id"))
+            throw new IllegalStateException("Failed to insert artist or generate key.");
 
-        Number generatedId = keyHolder.getKey();
-        if (generatedId != null)
-            artist.setId(generatedId.longValue());
-        else
-            throw new IllegalStateException("Failed to retrieve generated ID on artist insertion.");
-
-        return artist;
+        return this.find(((Number) keys.get("id")).longValue()).get();
     }
 
     @Override
     public Artist update(Artist artist) {
-        int result = jdbcTemplate.update(
-                "UPDATE artist SET name = ?, bio = ?, created_at = ?, updated_at = ?, img_id = ? WHERE id = ?",
+        jdbcTemplate.update(
+                "UPDATE artist SET name = ?, bio = ?, updated_at = NOW(), img_id = ?, avg_rating = ?, rating_amount = ? WHERE id = ?",
                 artist.getName(),
                 artist.getBio(),
-                artist.getCreatedAt(),
-                artist.getUpdatedAt(),
                 artist.getImgId(),
+                artist.getAvgRating(),
+                artist.getRatingCount(),
                 artist.getId()
         );
-        if (result == 1)
-            return artist;
-        else
-            throw new IllegalStateException("Failed to update artist");
+        return this.find(artist.getId()).get();
     }
 
     @Override
@@ -129,29 +120,5 @@ public class ArtistJdbcDao implements ArtistDao {
         return jdbcTemplate.update("DELETE FROM artist WHERE id = ?", id) == 1;
     }
 
-
-    //************************************************************************* Testing
-    @Override
-    public Artist saveX(Artist artist) {
-        jdbcTemplate.update(
-                "INSERT INTO artist (name, bio, img_id) VALUES (?, ?, ?)",
-                artist.getName(),
-                artist.getBio(),
-                artist.getImgId()
-        );
-        return findById(artist.getId()).get();
-    }
-
-    @Override
-    public Artist updateX(Artist artist) {
-        jdbcTemplate.update(
-                "UPDATE artist SET name = ?, bio = ?, updated_at = NOW(), img_id = ? WHERE id = ?",
-                        artist.getName(),
-                        artist.getBio(),
-                        artist.getImgId(),
-                        artist.getId()
-        );
-        return findById(artist.getId()).get();
-    }
 }
 
