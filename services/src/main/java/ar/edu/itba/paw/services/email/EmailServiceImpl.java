@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services.email;
 
+import ar.edu.itba.paw.models.VerificationType;
 import ar.edu.itba.paw.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,15 +62,26 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Async
-    public void sendVerification(String email, String code) throws MessagingException {
+    public void sendVerification(VerificationType type, String email, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
         String baseUrl = environment.getProperty("app.url.base");
-        String verificationURL = baseUrl + "/user/verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+        String verificationURL = "";
+        String template = "";
+        switch (type) {
+            case VERIFY_EMAIL -> {
+                verificationURL = baseUrl + "/user/email-verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                template = "user_verification";
+            }
+            case VERIFY_FORGOT_PASSWORD -> {
+                verificationURL = baseUrl + "/user/create-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                template = "create_password";
+            }
+        }
 
         params.put("verificationURL", verificationURL);
         this.sendMessageUsingThymeleafTemplate(
-                "user_verification",
+                template,
                 email,
                 "MusicBoxd - Verification",
                 params

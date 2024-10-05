@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
         int rowsChanged = userDao.create(username, email, hashedPassword, imgId);
         if (rowsChanged > 0) {
             User createdUser = userDao.findByEmail(email).get();
-            this.createVerification(createdUser);
+            this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
         }
         return rowsChanged;
     }
@@ -147,15 +147,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createVerification(User user) {
+    public void createVerification(VerificationType type, User user) {
         try {
             String verificationCode = UUID.randomUUID().toString();
 
             // Codifica el código de verificación para asegurarte de que sea seguro para la URL
             String encodedVerificationCode = URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
 
-            userVerificationDao.startVerification(user, encodedVerificationCode);
-            emailService.sendVerification(user.getEmail(), encodedVerificationCode);
+            userVerificationDao.startVerification(type, user, encodedVerificationCode);
+
+            emailService.sendVerification(type, user.getEmail(), encodedVerificationCode);
+
         } catch (MessagingException e) {
             logger.error("Error al enviar el correo de verificación al usuario: {}", user.getEmail(), e);
             throw new VerificationEmailException("No se pudo enviar la verificación del email al usuario " + user.getEmail(), e);
@@ -163,13 +165,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean verify(String code) {
-        return userVerificationDao.verify(code);
+    public Long verify(VerificationType type, String code) {
+        return userVerificationDao.verify(type, code);
     }
 
     @Override
-    public int update(Long userId, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount) {
-        return userDao.update(new User(userId, username, email, password, name, bio, null, updated_at, verified, imgId, moderator, followers_amount, following_amount, review_amount));
+    public int update(User user) {
+        return userDao.update(user);
+    }
+
+    @Override
+    public boolean changePassword(Long userId, String newPassword) {
+        return userDao.changePassword(userId, passwordEncoder.encode(newPassword));
     }
 
     @Override

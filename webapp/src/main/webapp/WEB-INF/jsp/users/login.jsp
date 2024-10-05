@@ -15,6 +15,7 @@
 <body>
 <div class="container">
     <h1><spring:message code="webpage.name"/></h1>
+
     <c:url var="loginUrl" value="/user/login" />
     <form action="${loginUrl}" method="post">
         <div class="form-group">
@@ -36,6 +37,8 @@
     <div class="register-link">
         <c:url var="registerUrl" value="/user/register" />
         <a href="${registerUrl}"><spring:message code="label.dont.you.have.an.account.yet"/></a>
+        <c:url var="changepasswordUrl" value="/user/forgot-password" />
+        <a href="${changepasswordUrl}"><spring:message code="label.change.password"/></a>
     </div>
 </div>
 </body>

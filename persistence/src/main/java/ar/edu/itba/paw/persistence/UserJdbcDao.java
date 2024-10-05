@@ -159,10 +159,9 @@ public class UserJdbcDao implements UserDao {
     @Override
     public int update(User user) {
         return jdbcTemplate.update(
-                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = NOW(), verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
+                "UPDATE cuser SET username = ?, email = ?, name = ?, bio = ?, updated_at = NOW(), verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
                 user.getUsername(),
                 user.getEmail(),
-                user.getPassword(),
                 user.getName(),
                 user.getBio(),
                 user.isVerified(),
@@ -173,6 +172,15 @@ public class UserJdbcDao implements UserDao {
                 user.getReviewAmount(),
                 user.getId()
         );
+    }
+
+    @Override
+    public boolean changePassword(Long userId, String newPassword) {
+        return jdbcTemplate.update(
+                "UPDATE cuser SET password = ?, updated_at = NOW() WHERE id = ?",
+                newPassword,
+                userId
+        ) == 1;
     }
 
     @Override
