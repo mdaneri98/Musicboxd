@@ -25,7 +25,7 @@
         <img src="${albumImgUrl}" alt="${album.title}" class="album">
           <div class="data-container">
           <p class="type"><spring:message code="label.album"/>
-            <c:if test="${loggedUser.moderator}"></c:if>
+            <c:if test="${loggedUser.moderator}">
             <c:url var="editAlbumUrl" value="/mod/edit/album/${album.id}"/>
             <a href="${editAlbumUrl}">
               <i class="fas fa-pencil-alt"></i>
