@@ -10,11 +10,11 @@ import java.util.Optional;
 public interface UserService {
 
 
-    Optional<User> findById(long id);
+    Optional<User> find(long id);
     List<User> findAll();
     List<User> findByUsernameContaining(String sub);
 
-    int create(String username, String email, String password);
+    Optional<User> create(String username, String email, String password);
 
     int createFollowing(User loggedUser, long followingUserId);
 
@@ -26,7 +26,8 @@ public interface UserService {
     boolean isSongFavorite(Long userId, Long albumId);
     UserFollowingData getFollowingData(Long userId, int limit, int offset);
 
-    int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
+    int update(User user);
+    boolean changePassword(Long userId, String newPassword);
 
     int update(User user, byte[] bytes);
 
@@ -37,8 +38,9 @@ public interface UserService {
     Optional<User> findByUsername(String email);
 
     void updateUserReviewAmount(Long userId);
-    void createVerification(User user);
-    boolean verify(String code);
+
+    void createVerification(VerificationType type, User user);
+    Long verify(VerificationType type, String code);
 
     // Artistas favoritos
     List<Artist> getFavoriteArtists(long userId);

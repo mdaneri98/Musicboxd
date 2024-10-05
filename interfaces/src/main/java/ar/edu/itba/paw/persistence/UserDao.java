@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface UserDao {
 
-    Optional<User> findById(long id);
+    Optional<User> find(long id);
     List<User> findAll();
     List<User> findByUsernameContaining(String sub);
 
-    int create(String username, String email, String password, long imgId);
+    Optional<User> create(String username, String email, String password, long imgId);
 
     int createFollowing(User loggedUser, User following);
 
@@ -23,6 +23,7 @@ public interface UserDao {
     List<User> getFollowing(Long userId, int limit, int offset);
 
     int update(User user);
+    boolean changePassword(Long userId, String newPassword);
 
     int deleteById(long id);
 

@@ -1,31 +1,31 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.advice.UserControllerAdvice;
-import ar.edu.itba.paw.webapp.auth.AuthCUserDetails;
+import ar.edu.itba.paw.webapp.form.CreatePasswordForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/user")
 @Controller
@@ -34,13 +34,11 @@ public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
-    private final ImageService imageService;
     private final AuthenticationManager authenticationManager;
     private final ReviewService reviewService;
 
-    public UserController(UserService userService, ImageService imageService, AuthenticationManager authenticationManager, ReviewService reviewService) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, ReviewService reviewService) {
         this.userService = userService;
-        this.imageService = imageService;
         this.authenticationManager = authenticationManager;
         this.reviewService = reviewService;
     }
@@ -69,7 +67,7 @@ public class UserController {
         boolean showPrevious = pageNum > 1;  // Mostrar "Previous" si no estamos en la primera página
 
         // Agregar los objetos al modelo
-        mav.addObject("user", userService.findById(loggedUser.getId()).get());
+        mav.addObject("user", userService.find(loggedUser.getId()).get());
         mav.addObject("albums", favoriteAlbums);
         mav.addObject("artists", favoriteArtists);
         mav.addObject("songs", favoriteSongs);
@@ -103,9 +101,8 @@ public class UserController {
                                       @ModelAttribute("loggedUser") User loggedUser) {
 
         // Check if there are any validation errors
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return editProfile(upf, loggedUser);
-        }
 
         loggedUser.setUsername(upf.getUsername());
         loggedUser.setName(upf.getName());
@@ -114,13 +111,13 @@ public class UserController {
         return new ModelAndView("redirect:/user/profile");
     }
 
-    @RequestMapping("/verification")
+    @RequestMapping("/email-verification")
     public ModelAndView verify(@RequestParam(name = "code", defaultValue = "0") String verificationCode,
                                @ModelAttribute("loggedUser") User loggedUser){
-        boolean ok = userService.verify(verificationCode);
-        if (!ok) {
+        Long userId = userService.verify(VerificationType.VERIFY_EMAIL, verificationCode);
+        if (userId < 1)
             return new ModelAndView("users/verification_expired");
-        }
+
         return new ModelAndView("redirect:/");
     }
 
@@ -142,7 +139,7 @@ public class UserController {
 
         // Obtener los datos del usuario a mostrar
         final ModelAndView mav = new ModelAndView("/users/user");
-        User user = userService.findById(userId).orElseThrow();
+        User user = userService.find(userId).orElseThrow();
 
         List<Review> reviews = reviewService.findReviewsByUserPaginated(userId, pageNum, pageSize, loggedUser.getId());
 
@@ -188,7 +185,7 @@ public class UserController {
         boolean showPrevious = pageNum > 1;
 
         // Añadir objetos al modelo
-        mav.addObject("user", userService.findById(userId).get());
+        mav.addObject("user", userService.find(userId).get());
         mav.addObject("followingList", followingList);
         mav.addObject("followersList", followersList);
         mav.addObject("loggedUser", loggedUser);
@@ -220,13 +217,58 @@ public class UserController {
             return createForm(userForm);
         }
 
+        //TODO: Chequear que se haya creado bien. El método lanza excepcion o Optionals!
+        final Optional<User> userOpt = userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
 
-        final int done = userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
         // "Generar una sesión" (así no redirije a /login)
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
         SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authenticationToken));
 
         return new ModelAndView("redirect:/");
+    }
+
+    @RequestMapping(value = "/forgot-password", method = RequestMethod.GET)
+    public ModelAndView forgotPassword() {
+        return new ModelAndView("users/password/forgot_password");
+    }
+
+    @RequestMapping(value = "/forgot-password", method = RequestMethod.POST)
+    public ModelAndView forgotPassword(@RequestParam("email") String email) {
+        // Buscar al usuario por correo electrónico
+        Optional<User> userOptional = userService.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            return new ModelAndView("redirect:/user/forgot-password");
+        }
+
+        User user = userOptional.get();
+        userService.createVerification(VerificationType.VERIFY_FORGOT_PASSWORD, user);
+
+        return new ModelAndView("redirect:/user/login");
+    }
+
+    @RequestMapping(value = "/create-password", method = RequestMethod.GET)
+    public ModelAndView createPassword(@ModelAttribute(name="createPasswordForm") CreatePasswordForm createPasswordForm, @RequestParam("code") String code) {
+        createPasswordForm.setCode(code);
+        return new ModelAndView("users/password/create_password");
+    }
+
+    @RequestMapping(value = "/create-password", method = RequestMethod.POST)
+    public String createPassword(@Valid @ModelAttribute("createPasswordForm") CreatePasswordForm createPasswordForm,
+                                 BindingResult errors) {
+        if (errors.hasErrors()) {
+            return "redirect:/user/create-password?code=" + createPasswordForm.getCode();
+        }
+
+        Long userId = userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, createPasswordForm.getCode());
+        if (userId == null || userId < 1) {
+            return "redirect:/user/login";
+        }
+
+        User user = userService.find(userId).get();
+        userService.changePassword(user.getId(), createPasswordForm.getPassword());
+
+        return "redirect:/user/login";
     }
 
     @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)
