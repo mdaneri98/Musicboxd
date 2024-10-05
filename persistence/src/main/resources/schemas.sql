@@ -116,11 +116,12 @@ CREATE TABLE IF NOT EXISTS song_review (
    PRIMARY KEY (review_id, song_id)
 );
 
-CREATE TABLE IF NOT EXISTS verify_user (
+CREATE TABLE IF NOT EXISTS verification (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     code VARCHAR(255) NOT NULL,
     expire_date TIMESTAMP NOT NULL,
+    vtype VARCHAR(255) NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
 );

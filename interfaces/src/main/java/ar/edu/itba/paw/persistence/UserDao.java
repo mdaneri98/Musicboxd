@@ -24,6 +24,7 @@ public interface UserDao {
     List<User> getFollowing(Long userId, int limit, int offset);
 
     int update(User user);
+    boolean changePassword(Long userId, String newPassword);
 
     int deleteById(long id);
 
