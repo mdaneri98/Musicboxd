@@ -38,8 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(long id) {
-        return userDao.findById(id);
+    public Optional<User> find(long id) {
+        return userDao.find(id);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int create(String username, String email, String password) {
+    public Optional<User> create(String username, String email, String password) {
         String hashedPassword = passwordEncoder.encode(password);
 
         /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
@@ -82,22 +82,24 @@ public class UserServiceImpl implements UserService {
                 user.setPassword(password);
                 user.setEmail(email);
                 userDao.update(user);
-            }else throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
+            } else {
+                throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
+            }
         }
         if (usernameOptUser.isPresent()) {
             throw new UserAlreadyExistsException("El usuario " + username + " ya está en uso.");
         }
         long imgId = imageService.save(null, true);
-        int rowsChanged = userDao.create(username, email, hashedPassword, imgId);
-        if (rowsChanged > 0) {
-            User createdUser = userDao.findByEmail(email).get();
+        Optional<User> userOpt = userDao.create(username, email, hashedPassword, imgId);
+        if (userOpt.isPresent()) {
+            User createdUser = userOpt.get();
             this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
         }
-        return rowsChanged;
+        return userOpt;
     }
 
     public UserFollowingData getFollowingData(Long userId, int limit, int offset) {
-        if (userId == null || userDao.findById(userId).isEmpty()) {
+        if (userId == null || userDao.find(userId).isEmpty()) {
             throw new IllegalArgumentException("Doesn't exists a user id with value %d".formatted(userId));
         }
         List<User> followers = userDao.getFollowers(userId, limit, offset);
@@ -131,12 +133,12 @@ public class UserServiceImpl implements UserService {
         if (this.isFollowing(userId.getId(), followingId)) {
             return 0;
         }
-        return userDao.createFollowing(userId, findById(followingId).get());
+        return userDao.createFollowing(userId, find(followingId).get());
     }
 
     @Override
     public int undoFollowing(User userId, long followingId) {
-        return userDao.undoFollowing(userId, findById(followingId).get());
+        return userDao.undoFollowing(userId, find(followingId).get());
     }
 
     @Override
@@ -150,9 +152,8 @@ public class UserServiceImpl implements UserService {
             userVerificationDao.startVerification(type, user, encodedVerificationCode);
 
             emailService.sendVerification(type, user.getEmail(), encodedVerificationCode);
-
         } catch (MessagingException e) {
-            logger.error("Error al enviar el correo de verificación al usuario: {}", user.getEmail(), e);
+            //logger.error("Error al enviar el correo de verificación al usuario: {}", user.getEmail(), e);
             throw new VerificationEmailException("No se pudo enviar la verificación del email al usuario " + user.getEmail(), e);
         }
     }

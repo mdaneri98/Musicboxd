@@ -10,11 +10,11 @@ import java.util.Optional;
 public interface UserService {
 
 
-    Optional<User> findById(long id);
+    Optional<User> find(long id);
     List<User> findAll();
     List<User> findByUsernameContaining(String sub);
 
-    int create(String username, String email, String password);
+    Optional<User> create(String username, String email, String password);
 
     int createFollowing(User loggedUser, long followingUserId);
 

@@ -66,7 +66,7 @@ public class UserController {
         boolean showPrevious = pageNum > 1;  // Mostrar "Previous" si no estamos en la primera página
 
         // Agregar los objetos al modelo
-        mav.addObject("user", userService.findById(loggedUser.getId()).get());
+        mav.addObject("user", userService.find(loggedUser.getId()).get());
         mav.addObject("albums", favoriteAlbums);
         mav.addObject("artists", favoriteArtists);
         mav.addObject("songs", favoriteSongs);
@@ -136,7 +136,7 @@ public class UserController {
 
         // Obtener los datos del usuario a mostrar
         final ModelAndView mav = new ModelAndView("/users/user");
-        User user = userService.findById(userId).orElseThrow();
+        User user = userService.find(userId).orElseThrow();
 
         List<Review> reviews = reviewService.findReviewsByUserPaginated(userId, pageNum, pageSize, loggedUser.getId());
 
@@ -182,7 +182,7 @@ public class UserController {
         boolean showPrevious = pageNum > 1;
 
         // Añadir objetos al modelo
-        mav.addObject("user", userService.findById(userId).get());
+        mav.addObject("user", userService.find(userId).get());
         mav.addObject("followingList", followingList);
         mav.addObject("followersList", followersList);
         mav.addObject("loggedUser", loggedUser);
@@ -214,7 +214,9 @@ public class UserController {
             return createForm(userForm);
         }
 
-        final int done = userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
+        //TODO: Chequear que se haya creado bien. El método lanza excepcion o Optionals!
+        final Optional<User> userOpt = userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
+
         // "Generar una sesión" (así no redirije a /login)
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
         SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authenticationToken));
@@ -260,7 +262,7 @@ public class UserController {
             return "redirect:/user/login";
         }
 
-        User user = userService.findById(userId).get();
+        User user = userService.find(userId).get();
         userService.changePassword(user.getId(), createPasswordForm.getPassword());
 
         return "redirect:/user/login";
