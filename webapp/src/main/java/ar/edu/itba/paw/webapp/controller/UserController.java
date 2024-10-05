@@ -233,13 +233,13 @@ public class UserController {
         Optional<User> userOptional = userService.findByEmail(email);
 
         if (userOptional.isEmpty()) {
-            return new ModelAndView("redirect:/users/forgot-password");
+            return new ModelAndView("redirect:/user/forgot-password");
         }
 
         User user = userOptional.get();
         userService.createVerification(VerificationType.VERIFY_FORGOT_PASSWORD, user);
 
-        return new ModelAndView("redirect:/users/login");
+        return new ModelAndView("redirect:/user/login");
     }
 
     @RequestMapping(value = "/create-password", method = RequestMethod.GET)
@@ -257,13 +257,13 @@ public class UserController {
 
         Long userId = userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, createPasswordForm.getCode());
         if (userId == null || userId < 1) {
-            return "redirect:/users/login";
+            return "redirect:/user/login";
         }
 
         User user = userService.findById(userId).get();
         userService.changePassword(user.getId(), createPasswordForm.getPassword());
 
-        return "redirect:/users/login";
+        return "redirect:/user/login";
     }
 
     @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)
