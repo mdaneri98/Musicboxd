@@ -62,7 +62,7 @@
             </c:when>
             <c:otherwise>
               <a href="${remove_favorite_url}">
-                <a href="${add_favorite_url}"><button><spring:message code="button.remove.favorites"/></button></a>
+                <button><spring:message code="button.remove.favorites"/></button>
               </a>
             </c:otherwise>
           </c:choose>
