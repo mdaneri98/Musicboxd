@@ -14,11 +14,26 @@
     <form:errors path="description" cssClass="error" />
   </div>
   <div class="form-group">
-    <label for="rating"><spring:message code="label.rating" /></label>
-    <form:input path="rating" id="rating" type="text" />
+    <label><spring:message code="label.rating" /></label>
+    <div class="star-rating-container">
+      <div class="star-rating">
+        <c:forEach var="i" begin="1" end="5">
+          <input type="radio" id="star${i}" name="rating" value="${i}" />
+          <label for="star${i}">&#9733;</label>
+        </c:forEach>
+      </div>
+    </div>
     <form:errors path="rating" cssClass="error" />
   </div>
   <div class="form-group">
-    <button type="submit" ><spring:message code="label.submit.review" /></button>
+    <button type="submit"><spring:message code="label.submit.review" /></button>
   </div>
 </form:form>
+
+<script>
+  document.querySelectorAll('.star-rating input[type="radio"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      document.getElementById('rating').value = this.value;
+    });
+  });
+</script>
