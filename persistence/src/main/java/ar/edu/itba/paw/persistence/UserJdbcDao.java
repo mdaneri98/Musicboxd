@@ -3,9 +3,12 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,7 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public Optional<User> findById(long id) {
+    public Optional<User> find(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
         return jdbcTemplate.query("SELECT * FROM cuser WHERE id = ?",
                 new Object[]{id},
@@ -46,19 +49,28 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public int create(String username, String email, String password, long imgId) {
-
+    public Optional<User> create(String username, String email, String password, long imgId) {
         String checkImageSql = "SELECT COUNT(*) FROM image WHERE id = ?";
         int count = jdbcTemplate.queryForObject(checkImageSql, Integer.class, imgId);
 
-        if (count == 0) {
-            // Image doesn't exist, throw an exception.
+        if (count == 0)
             throw new IllegalArgumentException("Image with id " + imgId + " does not exist");
-        }
 
-        // If we get here, the image exists, so we can proceed with user creation
+        // Insert the new user and return the generated ID
         String insertUserSql = "INSERT INTO cuser (username, email, password, img_id) VALUES (?, ?, ?, ?)";
-        return jdbcTemplate.update(insertUserSql, username, email, password, imgId);
+        KeyHolder keyHolder = new GeneratedKeyHolder(); // This will hold the generated key (user ID)
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(insertUserSql, new String[] { "id" });
+            ps.setString(1, username);
+            ps.setString(2, email);
+            ps.setString(3, password);
+            ps.setLong(4, imgId);
+            return ps;
+        }, keyHolder);
+
+        long userId = keyHolder.getKey().longValue();
+        return find(userId);
     }
 
     @Override
@@ -103,7 +115,7 @@ public class UserJdbcDao implements UserDao {
 
         List<User> followers = new ArrayList<>();
         for (Long followerId : followerIds) {
-            Optional<User> follower = this.findById(followerId);
+            Optional<User> follower = this.find(followerId);
             follower.ifPresent(followers::add);
         }
         return followers;
@@ -116,7 +128,7 @@ public class UserJdbcDao implements UserDao {
 
         List<User> following = new ArrayList<>();
         for (Long followingId : followingIds) {
-            Optional<User> follower = this.findById(followingId);
+            Optional<User> follower = this.find(followingId);
             follower.ifPresent(following::add);
         }
         return following;
@@ -165,10 +177,9 @@ public class UserJdbcDao implements UserDao {
     @Override
     public int update(User user) {
         return jdbcTemplate.update(
-                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = NOW(), verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
+                "UPDATE cuser SET username = ?, email = ?, name = ?, bio = ?, updated_at = NOW(), verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
                 user.getUsername(),
                 user.getEmail(),
-                user.getPassword(),
                 user.getName(),
                 user.getBio(),
                 user.isVerified(),
@@ -179,6 +190,15 @@ public class UserJdbcDao implements UserDao {
                 user.getReviewAmount(),
                 user.getId()
         );
+    }
+
+    @Override
+    public boolean changePassword(Long userId, String newPassword) {
+        return jdbcTemplate.update(
+                "UPDATE cuser SET password = ?, updated_at = NOW() WHERE id = ?",
+                newPassword,
+                userId
+        ) == 1;
     }
 
     @Override

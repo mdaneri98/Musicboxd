@@ -40,8 +40,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> findById(long id) {
-        return userDao.findById(id);
+    public Optional<User> find(long id) {
+        return userDao.find(id);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public int create(String username, String email, String password) {
+    public Optional<User> create(String username, String email, String password) {
         String hashedPassword = passwordEncoder.encode(password);
 
         /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
@@ -90,23 +90,26 @@ public class UserServiceImpl implements UserService {
                 user.setPassword(password);
                 user.setEmail(email);
                 userDao.update(user);
-            }else throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
+            } else {
+                throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
+            }
         }
         if (usernameOptUser.isPresent()) {
             throw new UserAlreadyExistsException("El usuario " + username + " ya está en uso.");
         }
         long imgId = imageService.save(null, true);
-        int rowsChanged = userDao.create(username, email, hashedPassword, imgId);
-        if (rowsChanged > 0) {
-            User createdUser = userDao.findByEmail(email).get();
-            this.createVerification(createdUser);
+        Optional<User> userOpt = userDao.create(username, email, hashedPassword, imgId);
+        if (userOpt.isPresent()) {
+            User createdUser = userOpt.get();
+            this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
         }
-        return rowsChanged;
+        return userOpt;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public UserFollowingData getFollowingData(Long userId, int limit, int offset) {
-        if (userId == null || userDao.findById(userId).isEmpty()) {
+        if (userId == null || userDao.find(userId).isEmpty()) {
             throw new IllegalArgumentException("Doesn't exists a user id with value %d".formatted(userId));
         }
         List<User> followers = userDao.getFollowers(userId, limit, offset);
@@ -141,46 +144,52 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public int createFollowing(User userId, long followingId) {
-        //FIXME: Corregir que sea tipo 'Long userId'
         if (this.isFollowing(userId.getId(), followingId)) {
             return 0;
         }
-        return userDao.createFollowing(userId, findById(followingId).get());
+        return userDao.createFollowing(userId, find(followingId).get());
     }
 
     @Override
     @Transactional
     public int undoFollowing(User userId, long followingId) {
-        return userDao.undoFollowing(userId, findById(followingId).get());
+        return userDao.undoFollowing(userId, find(followingId).get());
     }
 
     @Override
     @Transactional
-    public void createVerification(User user) {
+    public void createVerification(VerificationType type, User user) {
         try {
             String verificationCode = UUID.randomUUID().toString();
 
             // Codifica el código de verificación para asegurarte de que sea seguro para la URL
             String encodedVerificationCode = URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
 
-            userVerificationDao.startVerification(user, encodedVerificationCode);
-            emailService.sendVerification(user.getEmail(), encodedVerificationCode);
+            userVerificationDao.startVerification(type, user, encodedVerificationCode);
+
+            emailService.sendVerification(type, user.getEmail(), encodedVerificationCode);
         } catch (MessagingException e) {
-            logger.error("Error al enviar el correo de verificación al usuario: {}", user.getEmail(), e);
+            //logger.error("Error al enviar el correo de verificación al usuario: {}", user.getEmail(), e);
             throw new VerificationEmailException("No se pudo enviar la verificación del email al usuario " + user.getEmail(), e);
         }
     }
 
     @Override
     @Transactional
-    public boolean verify(String code) {
-        return userVerificationDao.verify(code);
+    public Long verify(VerificationType type, String code) {
+        return userVerificationDao.verify(type, code);
     }
 
     @Override
     @Transactional
-    public int update(Long userId, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount) {
-        return userDao.update(new User(userId, username, email, password, name, bio, null, updated_at, verified, imgId, moderator, followers_amount, following_amount, review_amount));
+    public int update(User user) {
+        return userDao.update(user);
+    }
+
+    @Override
+    @Transactional
+    public boolean changePassword(Long userId, String newPassword) {
+        return userDao.changePassword(userId, passwordEncoder.encode(newPassword));
     }
 
     @Override
