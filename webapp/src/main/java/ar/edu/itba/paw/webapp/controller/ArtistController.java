@@ -90,7 +90,7 @@ public class ArtistController {
     }
 
     @RequestMapping(value = "/{artistId:\\d+}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, @ModelAttribute("loggedUser") User loggedUser, final BindingResult errors, @PathVariable Long artistId) throws MessagingException {
+    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
         if (errors.hasErrors()) {
             return createForm(reviewForm, artistId);
         }

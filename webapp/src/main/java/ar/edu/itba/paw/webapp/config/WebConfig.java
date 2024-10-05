@@ -11,11 +11,14 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -45,6 +48,7 @@ import java.util.concurrent.TimeUnit;
         "ar.edu.itba.paw.persistence"
 })
 @PropertySource("classpath:application.properties")
+@EnableTransactionManagement
 //@EnableScheduling
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -113,6 +117,11 @@ public class WebConfig implements WebMvcConfigurer {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
         multipartResolver.setMaxUploadSize(10485760); // 10MB
         return multipartResolver;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(final DataSource ds){
+        return new DataSourceTransactionManager(ds);
     }
 
 }

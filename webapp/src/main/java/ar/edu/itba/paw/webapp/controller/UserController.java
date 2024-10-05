@@ -99,8 +99,8 @@ public class UserController {
 
     @RequestMapping(path = "/edit", method = RequestMethod.POST)
     public ModelAndView submitProfile(@Valid @ModelAttribute("userProfileForm") final UserProfileForm upf,
-                                      @ModelAttribute("loggedUser") User loggedUser,
-                                      final BindingResult errors) {
+                                      final BindingResult errors,
+                                      @ModelAttribute("loggedUser") User loggedUser) {
 
         // Check if there are any validation errors
         if (errors.hasErrors()) {
