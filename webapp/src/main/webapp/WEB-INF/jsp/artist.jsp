@@ -25,10 +25,12 @@
         <img src="${artistImgURL}" alt="Artist Name" class="primary-image">
         <div class="data-container">
             <p class="type"><spring:message code="label.artist"/>
+                <c:if test="${loggedUser.moderator}">
                 <c:url var="editArtistUrl" value="/mod/edit/artist/${artist.id}"/>
                 <a href="${editArtistUrl}">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
+            </c:if>
             </p>
             <div>
                 <h1><c:out value="${artist.name}"/></h1>

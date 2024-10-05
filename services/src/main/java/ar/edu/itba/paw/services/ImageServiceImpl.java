@@ -5,6 +5,7 @@ import ar.edu.itba.paw.persistence.ImageDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -23,10 +24,12 @@ public class ImageServiceImpl implements ImageService {
         this.imageDao = imageDao;
     }
 
+    @Transactional(readOnly = true)
     public Optional<Image> findById(long id) {
         return imageDao.findById(id);
     }
 
+    @Transactional
     public long save(byte[] bytes, boolean isProfile) {
         if (bytes == null || bytes.length == 0) {
             LOGGER.debug("No image input. Default image used instead");
@@ -39,6 +42,7 @@ public class ImageServiceImpl implements ImageService {
         return imageDao.create(bytes);
     }
 
+    @Transactional
     public long update(long imageId, byte[] bytes) {
         if(bytes == null || bytes.length == 0) {
             LOGGER.debug("Image {} not updated. File empty", imageId);
@@ -58,6 +62,7 @@ public class ImageServiceImpl implements ImageService {
         return imageId;
     }
 
+    @Transactional
     public boolean delete(long imageId) {
         if(imageId == DEFAULT_IMAGE_ID || imageId == DEFAULT_PROFILE_IMAGE_ID) {
             LOGGER.debug("Image {} not deleted. Image is default", imageId);
@@ -66,6 +71,7 @@ public class ImageServiceImpl implements ImageService {
         return imageDao.delete(imageId);
     }
 
+    @Transactional(readOnly = true)
     public boolean exists(long imageId) {
         return imageDao.exists(imageId);
     }

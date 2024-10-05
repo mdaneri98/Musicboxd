@@ -25,13 +25,15 @@
         <img src="${albumImgUrl}" alt="${album.title}" class="album">
           <div class="data-container">
           <p class="type"><spring:message code="label.album"/>
+            <c:if test="${loggedUser.moderator}"></c:if>
             <c:url var="editAlbumUrl" value="/mod/edit/album/${album.id}"/>
             <a href="${editAlbumUrl}">
               <i class="fas fa-pencil-alt"></i>
-            </a>
-          </p>
-          <h1><c:out value="${album.title}"/></h1>
-          <div class="button-group">
+                </a>
+              </c:if>
+              </p>
+            <h1><c:out value="${album.title}"/></h1>
+            <div class="button-group">
             <c:url var="artistUrl" value="/artist/${artist.id}" />
             <a href="${artistUrl}" class="button artist-button">
               <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
