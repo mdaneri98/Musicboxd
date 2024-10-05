@@ -14,9 +14,6 @@ import java.util.Optional;
 
 @Service
 public class SongServiceImpl implements SongService {
-    /*
-        FIXME: Add required `business logic`
-     */
     private final SongDao songDao;
 
     public SongServiceImpl(SongDao songDao) {
@@ -109,5 +106,15 @@ public class SongServiceImpl implements SongService {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean updateRating(long songId, float newRating, int newRatingAmount) {
+        return songDao.updateRating(songId, newRating, newRatingAmount);
+    }
+
+    @Override
+    public boolean hasUserReviewed(long userId, long songId) {
+        return songDao.hasUserReviewed(userId, songId);
     }
 }

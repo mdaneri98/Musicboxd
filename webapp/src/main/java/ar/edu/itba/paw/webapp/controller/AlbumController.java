@@ -97,7 +97,6 @@ public class AlbumController {
             return createForm(reviewForm, albumId);
         }
 
-        userService.incrementReviewAmount(loggedUser);
         AlbumReview albumReview = new AlbumReview(
                 loggedUser,
                 new Album(albumId),

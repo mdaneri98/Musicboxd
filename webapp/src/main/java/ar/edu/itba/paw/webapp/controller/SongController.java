@@ -100,7 +100,6 @@ public class SongController {
             return createForm(reviewForm, songId);
         }
 
-        userService.incrementReviewAmount(loggedUser);
         SongReview songReview = new SongReview(
                 loggedUser,
                 new Song(songId),

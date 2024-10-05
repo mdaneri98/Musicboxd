@@ -53,20 +53,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUserReviewAmount(Long userId) {
+        userDao.updateUserReviewAmount(userId);
+    }
+
+    @Override
     public List<User> findByUsernameContaining(String sub) {
         return userDao.findByUsernameContaining(sub);
-    }
-
-    @Override
-    public int incrementReviewAmount(User user) {
-        user.incrementReviewAmount();
-        return userDao.update(user);
-    }
-
-    @Override
-    public int decrementReviewAmount(User user) {
-        user.decrementReviewAmount();
-        return userDao.update(user);
     }
 
     @Override

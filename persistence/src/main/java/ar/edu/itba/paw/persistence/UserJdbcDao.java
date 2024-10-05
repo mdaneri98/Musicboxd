@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -88,6 +87,13 @@ public class UserJdbcDao implements UserDao {
         String sql = "SELECT COUNT(*) FROM favorite_song WHERE user_id = ? AND song_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, userId, songId);
         return count > 0;
+    }
+
+    @Override
+    public void updateUserReviewAmount(Long userId) {
+        String sql = "SELECT COUNT(*) FROM review WHERE user_id = ?";
+        int amount = jdbcTemplate.queryForObject(sql, Integer.class, userId);
+        jdbcTemplate.update("UPDATE cuser SET review_amount = ?  WHERE id = ?", amount, userId);
     }
 
     @Override

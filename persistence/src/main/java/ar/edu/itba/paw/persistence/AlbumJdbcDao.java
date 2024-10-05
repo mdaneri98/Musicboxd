@@ -108,9 +108,9 @@ public class AlbumJdbcDao implements AlbumDao {
     }
 
     @Override
-    public void updateRating(long albumId, float newRating, int newRatingAmount) {
+    public boolean updateRating(long albumId, float newRating, int newRatingAmount) {
         final String sql = "UPDATE album SET avg_rating = ?, rating_amount = ? WHERE id = ?";
-        jdbcTemplate.update(sql, newRating, newRatingAmount, albumId);
+        return jdbcTemplate.update(sql, newRating, newRatingAmount, albumId) == 1;
     }
 
     @Override

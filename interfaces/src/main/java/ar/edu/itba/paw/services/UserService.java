@@ -37,12 +37,10 @@ public interface UserService {
 
     Optional<User> findByUsername(String email);
 
-    int incrementReviewAmount(User user);
-    int decrementReviewAmount(User user);
+    void updateUserReviewAmount(Long userId);
 
     void createVerification(VerificationType type, User user);
     Long verify(VerificationType type, String code);
-
 
     // Artistas favoritos
     List<Artist> getFavoriteArtists(long userId);

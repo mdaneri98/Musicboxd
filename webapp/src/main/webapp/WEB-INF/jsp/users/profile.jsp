@@ -25,14 +25,14 @@
 <div class="container">
     <header class="artist-info">
         <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
-            <jsp:param name="imgId" value="${loggedUser.imgId}" />
-            <jsp:param name="username" value="${loggedUser.username}" />
-            <jsp:param name="name" value="${loggedUser.name}" />
-            <jsp:param name="bio" value="${loggedUser.bio}" />
-            <jsp:param name="reviewAmount" value="${loggedUser.reviewAmount}" />
-            <jsp:param name="followersAmount" value="${loggedUser.followersAmount}" />
-            <jsp:param name="followingAmount" value="${loggedUser.followingAmount}" />
-            <jsp:param name="id" value="${loggedUser.id}" />
+            <jsp:param name="imgId" value="${user.imgId}" />
+            <jsp:param name="username" value="${user.username}" />
+            <jsp:param name="name" value="${user.name}" />
+            <jsp:param name="bio" value="${user.bio}" />
+            <jsp:param name="reviewAmount" value="${user.reviewAmount}" />
+            <jsp:param name="followersAmount" value="${user.followersAmount}" />
+            <jsp:param name="followingAmount" value="${user.followingAmount}" />
+            <jsp:param name="id" value="${user.id}" />
         </jsp:include>
     </header>
     <c:url var="editProfileUrl" value="/user/edit"/>

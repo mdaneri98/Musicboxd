@@ -56,7 +56,6 @@ public class UserController {
         LOGGER.info("[/profile]Logged username: {}", loggedUser.getUsername());
 
         // Obtener las listas paginadas
-        List<User> followingUsers = userService.getFollowingData(loggedUser.getId(), followingPageSize, (pageNum - 1) * followingPageSize).getFollowing();
         List<Album> favoriteAlbums = userService.getFavoriteAlbums(loggedUser.getId());
         List<Artist> favoriteArtists = userService.getFavoriteArtists(loggedUser.getId());
         List<Song> favoriteSongs = userService.getFavoriteSongs(loggedUser.getId());
@@ -67,7 +66,7 @@ public class UserController {
         boolean showPrevious = pageNum > 1;  // Mostrar "Previous" si no estamos en la primera página
 
         // Agregar los objetos al modelo
-        mav.addObject("followingUsers", followingUsers);
+        mav.addObject("user", userService.findById(loggedUser.getId()).get());
         mav.addObject("albums", favoriteAlbums);
         mav.addObject("artists", favoriteArtists);
         mav.addObject("songs", favoriteSongs);

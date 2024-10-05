@@ -123,9 +123,9 @@ public class SongJdbcDao implements SongDao {
     }
 
     @Override
-    public void updateRating(long songId, float newRating, int newRatingAmount) {
+    public boolean updateRating(long songId, float newRating, int newRatingAmount) {
         final String sql = "UPDATE song SET avg_rating = ?, rating_amount = ? WHERE id = ?";
-        jdbcTemplate.update(sql, newRating, newRatingAmount, songId);
+        return jdbcTemplate.update(sql, newRating, newRatingAmount, songId) == 1;
     }
 
     @Override
