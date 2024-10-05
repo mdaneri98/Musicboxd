@@ -2,7 +2,6 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +51,6 @@ public interface UserDao {
     int getFavoriteSongsCount(long userId);
     boolean isSongFavorite(Long userId, Long songId);
 
-
+    void updateUserReviewAmount(Long userId);
 
 }

@@ -19,4 +19,6 @@ public interface AlbumService extends CrudService<Album> {
     Album update(AlbumDTO albumDTO);
     boolean updateAll(List<AlbumDTO> albumsDTO, long artistId);
 
+    boolean updateRating(long albumId, float newRating, int newRatingAmount);
+    boolean hasUserReviewed(long userId, long albumId);
 }

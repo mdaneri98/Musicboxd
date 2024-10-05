@@ -145,14 +145,13 @@
         </jsp:include>
       </c:forEach>
     </div>
+    <div>
+      <c:url value="/user/${user.id}?pageNum=${pageNum + 1}" var="nextPage" />
+      <c:url value="/user/${user.id}?pageNum=${pageNum -1}" var="prevPage" />
+      <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
+      <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
+    </div>
   </c:if>
-  <div>
-    <c:url value="/user/${user.id}?pageNum=${pageNum + 1}" var="nextPage" />
-    <c:url value="/user/${user.id}?pageNum=${pageNum -1}" var="prevPage" />
-    <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
-    <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
-  </div>
-
 </div>
 </body>
 </html>

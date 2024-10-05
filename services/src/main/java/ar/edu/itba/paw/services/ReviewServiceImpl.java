@@ -8,10 +8,7 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.persistence.AlbumDao;
-import ar.edu.itba.paw.persistence.ArtistDao;
-import ar.edu.itba.paw.persistence.ReviewDao;
-import ar.edu.itba.paw.persistence.SongDao;
+import ar.edu.itba.paw.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,23 +19,25 @@ import java.util.Optional;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewDao reviewDao;
-    private final SongDao songDao;
-    private final ArtistDao artistDao;
-    private final AlbumDao albumDao;
+    private final SongService songService;
+    private final ArtistService artistService;
+    private final AlbumService albumService;
+    private final UserService userService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, SongDao songDao, ArtistDao artistDao, AlbumDao albumDao) {
+    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService) {
         this.reviewDao = reviewDao;
-        this.songDao = songDao;
-        this.artistDao = artistDao;
-        this.albumDao = albumDao;
+        this.songService = songService;
+        this.artistService = artistService;
+        this.albumService = albumService;
+        this.userService = userService;
     }
 
     @Override
     public int updateAvgRatingForAll(){
-        List<Song> songs = songDao.findAll();
-        List<Album> albums = albumDao.findAll();
-        List<Artist> artists = artistDao.findAll();
+        List<Song> songs = songService.findAll();
+        List<Album> albums = albumService.findAll();
+        List<Artist> artists = artistService.findAll();
         for (Song song : songs) {
             updateSongRating(song.getId());
         }
@@ -102,6 +101,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ArtistReview saveArtistReview(ArtistReview review) {
         ArtistReview result = reviewDao.saveArtistReview(review);
+        updateUserReviewAmount(review.getUser().getId());
         updateArtistRating(review.getArtist().getId());
         return result;
     }
@@ -111,12 +111,12 @@ public class ReviewServiceImpl implements ReviewService {
         float avgRating = (float) reviews.stream().mapToInt(ArtistReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;
         int ratingAmount = reviews.size();
-        artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
+        artistService.updateRating(artistId, roundedAvgRating, ratingAmount);
     }
 
     @Override
     public boolean hasUserReviewedArtist(long userId, long artistId) {
-        return artistDao.hasUserReviewed(userId, artistId);
+        return artistService.hasUserReviewed(userId, artistId);
     }
 
     @Override
@@ -142,6 +142,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public AlbumReview saveAlbumReview(AlbumReview review) {
         AlbumReview result = reviewDao.saveAlbumReview(review);
+        updateUserReviewAmount(review.getUser().getId());
         updateAlbumRating(review.getAlbum().getId());
         return result;
     }
@@ -151,12 +152,12 @@ public class ReviewServiceImpl implements ReviewService {
         float avgRating = (float) reviews.stream().mapToInt(AlbumReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;
         int ratingAmount = reviews.size();
-        albumDao.updateRating(albumId, roundedAvgRating, ratingAmount);
+        albumService.updateRating(albumId, roundedAvgRating, ratingAmount);
     }
 
     @Override
     public boolean hasUserReviewedAlbum(long userId, long albumId) {
-        return albumDao.hasUserReviewed(userId, albumId);
+        return albumService.hasUserReviewed(userId, albumId);
     }
 
     @Override
@@ -168,8 +169,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public SongReview saveSongReview(SongReview review) {
         SongReview result = reviewDao.saveSongReview(review);
+        updateUserReviewAmount(review.getUser().getId());
         updateSongRating(review.getSong().getId());
         return result;
+    }
+
+    private void updateUserReviewAmount(long userId) {
+        userService.updateUserReviewAmount(userId);
     }
 
     private void updateSongRating(long songId) {
@@ -177,12 +183,12 @@ public class ReviewServiceImpl implements ReviewService {
         float avgRating = (float) reviews.stream().mapToInt(SongReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;
         int ratingAmount = reviews.size();
-        songDao.updateRating(songId, roundedAvgRating, ratingAmount);
+        songService.updateRating(songId, roundedAvgRating, ratingAmount);
     }
 
     @Override
     public boolean hasUserReviewedSong(long userId, long songId) {
-        return songDao.hasUserReviewed(userId, songId);
+        return songService.hasUserReviewed(userId, songId);
     }
 
     @Override

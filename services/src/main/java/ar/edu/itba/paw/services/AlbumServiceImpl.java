@@ -132,4 +132,14 @@ public class AlbumServiceImpl implements AlbumService {
         return true;
     }
 
+    @Override
+    public boolean updateRating(long albumId, float newRating, int newRatingAmount) {
+        return albumDao.updateRating(albumId, newRating, newRatingAmount);
+    }
+
+    @Override
+    public boolean hasUserReviewed(long userId, long albumId) {
+        return albumDao.hasUserReviewed(userId, albumId);
+    }
+
 }

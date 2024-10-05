@@ -10,7 +10,7 @@ public interface AlbumDao extends CrudDao<Album> {
     List<Album> findByArtistId(long id);
     List<Album> findByTitleContaining(String sub);
 
-    void updateRating(long albumId, float newRating, int newRatingAmount);
+    boolean updateRating(long albumId, float newRating, int newRatingAmount);
     boolean hasUserReviewed(long userId, long albumId);
 
 }
