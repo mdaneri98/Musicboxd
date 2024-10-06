@@ -68,6 +68,6 @@ body {
 
 /* Si tienes un contenedor principal, puedes usar esto en su lugar */
 .main-content {
-    margin-left: 68px;
+    /* margin-left: 68px; */
     width: calc(100% - 68px);
 }
