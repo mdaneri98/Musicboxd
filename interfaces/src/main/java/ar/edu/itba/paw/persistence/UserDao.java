@@ -2,17 +2,16 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserDao {
 
-    Optional<User> findById(long id);
+    Optional<User> find(long id);
     List<User> findAll();
     List<User> findByUsernameContaining(String sub);
 
-    int create(String username, String email, String password);
+    Optional<User> create(String username, String email, String password, long imgId);
 
     int createFollowing(User loggedUser, User following);
 
@@ -23,7 +22,8 @@ public interface UserDao {
     List<User> getFollowers(Long userId, int limit, int offset);
     List<User> getFollowing(Long userId, int limit, int offset);
 
-    int update(Long user, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount);
+    int update(User user);
+    boolean changePassword(Long userId, String newPassword);
 
     int deleteById(long id);
 
@@ -51,6 +51,6 @@ public interface UserDao {
     int getFavoriteSongsCount(long userId);
     boolean isSongFavorite(Long userId, Long songId);
 
-
+    void updateUserReviewAmount(Long userId);
 
 }

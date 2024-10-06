@@ -3,6 +3,7 @@ package ar.edu.itba.paw.models;
 
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Artist {
     private Long id;
@@ -11,13 +12,24 @@ public class Artist {
     private LocalDate createdAt;
     private LocalDate updatedAt;
     private Long imgId;
+    private Integer ratingCount;
+    private Float avgRating;
 
-    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Long imgId) {
+    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Long imgId, Integer ratingCount, Float avgRating) {
         this.id = id;
         this.name = name;
         this.bio = bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.imgId = imgId;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
+    }
+
+    public Artist(Long id, String name, String bio, Long imgId) {
+        this.id = id;
+        this.name = name;
+        this.bio = bio;
         this.imgId = imgId;
     }
 
@@ -86,6 +98,22 @@ public class Artist {
         this.imgId = imgId;
     }
 
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
+    public Float getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(Float avgRating) {
+        this.avgRating = avgRating;
+    }
+
     // Método para convertir a JSON
     public String toJson() {
         StringBuilder json = new StringBuilder();
@@ -99,6 +127,17 @@ public class Artist {
         json.append("\"imgId\":").append(imgId);
         json.append("}");
         return json.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Artist artist = (Artist) o;
+        if (!Objects.equals(id, artist.id)) return false;
+        if (!Objects.equals(name, artist.name)) return false;
+        if (!Objects.equals(bio, artist.bio)) return false;
+        return Objects.equals(imgId, artist.imgId);
     }
 
 }

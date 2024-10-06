@@ -1,17 +1,23 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.dtos.SongDTO;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface SongService {
-    Optional<Song> findById(long id);
-    List<Song> findAll();
+public interface SongService extends CrudService<Song> {
+
     List<Song> findByArtistId(long id);
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
-    int save(Song song);
-    int update(Song song);
-    int deleteById(long id);
+
+    Song create(SongDTO songDTO, Album album);
+    boolean createAll(List<SongDTO> songsDTO, Album album);
+    Song update(SongDTO songDTO, Album album);
+    boolean updateAll(List<SongDTO> songsDTO, Album album);
+    boolean updateRating(long songId, float newRating, int newRatingAmount);
+    boolean hasUserReviewed(long userId, long songId);
 }

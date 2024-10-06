@@ -5,7 +5,7 @@
 <html>
 <head>
 
-    <spring:message var="pageTitle" text="Artist Review"/>
+    <spring:message var="pageTitle" code="page.artist.review.title"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -22,7 +22,7 @@
     </jsp:include>
 </div>
 <div class="main-content container">
-    <h1>Make a review</h1>
+    <h1><spring:message code="label.make.a.review" /></h1>
 
     <c:url value="/artist/${artist.id}" var="artistUrl" />
     <a href="${artistUrl}" class="artist-box">
@@ -34,10 +34,24 @@
         </div>
     </a>
 
-    <c:url var="posturl" value="/artist/${artist.id}/reviews" />
-    <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
-        <jsp:param name="posturl" value="${posturl}"/>
-    </jsp:include>
+    <c:choose>
+        <c:when test="${!edit}">
+            <c:url var="posturl" value="/artist/${artist.id}/reviews" />
+            <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
+                <jsp:param name="posturl" value="${posturl}"/>
+            </jsp:include>
+        </c:when>
+        <c:otherwise>
+            <c:url var="posturl" value="/artist/${artist.id}/edit-review" />
+            <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
+                <jsp:param name="posturl" value="${posturl}"/>
+            </jsp:include>
+            <c:url var="deleteUrl" value="/artist/${artist.id}/delete-review" />
+            <a href="${deleteUrl}" class="delete-button">
+                <spring:message code="label.delete.review" />
+            </a>
+        </c:otherwise>
+    </c:choose>
 </div>
 </body>
 </html>

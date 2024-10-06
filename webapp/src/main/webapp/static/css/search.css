@@ -48,6 +48,7 @@ h1 {
 
 .search-wrapper {
     position: relative;
+    width: 100%;
 }
 
 .search-input {
@@ -59,16 +60,6 @@ h1 {
     font-size: 1.4em;
     border-radius: 10px;
     box-sizing: border-box;
-}
-
-.search-icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 23px;
-    height: 23px;
-    fill: #ffffff;
 }
 
 .autocomplete-items {
@@ -117,4 +108,39 @@ h1 {
 .autocomplete-item-type {
     font-size: 0.8em;
     color: #a7a7a7;
+}
+
+.autocomplete-active {
+    background-color: #3c3c3c;
+}
+
+.autocomplete-active .autocomplete-item-name {
+    color: #1DB954;
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    width: 20px;
+    height: 20px;
+    fill: #ffffff;
+}
+
+.autocomplete-error {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #2c2c2c;
+    color: #ffffff;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
 }

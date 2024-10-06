@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <spring:message var="pageTitle" text="Home"/>
+  <spring:message var="pageTitle" code="page.following.info"/>
   <jsp:include page="/WEB-INF/jsp/components/head.jsp">
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
@@ -30,10 +30,6 @@
       });
     });
   </script>
-  <style>
-    .tab-button { cursor: pointer; padding: 10px; }
-    .active { background-color: #ddd; }
-  </style>
 </head>
 <body>
 <div>
@@ -60,46 +56,47 @@
     </jsp:include>
   </header>
   <div>
-    <span id="followersButton" class="tab-button active"><c:out value="${user.followersAmount}"/> Followers</span>
-    <span id="followingButton" class="tab-button"><c:out value="${user.followingAmount}"/> Following</span>
+    <span id="followersButton" class="tab-button active"><c:out value="${user.followersAmount}"/> <spring:message code="label.followers"/></span>
+    <span>/</span>
+    <span id="followingButton" class="tab-button"><c:out value="${user.followingAmount}"/> <spring:message code="label.following"/></span>
   </div>
 
   <div id="followersTab">
-      <c:forEach var="user_item" items="${followersList}">
-        <jsp:include page="/WEB-INF/jsp/components/user_card.jsp">
-          <jsp:param name="imgId" value="${user_item.imgId}"/>
-          <jsp:param name="username" value="@${user_item.username}"/>
-          <jsp:param name="name" value="${user_item.name}"/>
-          <jsp:param name="bio" value="${user_item.bio}"/>
-          <jsp:param name="followersAmount" value="${user_item.followersAmount}"/>
-          <jsp:param name="followingAmount" value="${user_item.followingAmount}"/>
-          <jsp:param name="reviewAmount" value="${user_item.reviewAmount}"/>
-          <jsp:param name="verified" value="${user_item.verified}"/>
-          <jsp:param name="moderator" value="${user_item.moderator}"/>
-          <jsp:param name="id" value="${user_item.id}"/>
-        </jsp:include>
-      </c:forEach>
-    <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-    <c:if test="${100*(pageNum-1)+followersList.size() != user.followersAmount && followersList.size() == 100}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+    <c:forEach var="user_item" items="${followersList}">
+      <jsp:include page="/WEB-INF/jsp/components/user_card.jsp">
+        <jsp:param name="imgId" value="${user_item.imgId}"/>
+        <jsp:param name="username" value="@${user_item.username}"/>
+        <jsp:param name="name" value="${user_item.name}"/>
+        <jsp:param name="bio" value="${user_item.bio}"/>
+        <jsp:param name="followersAmount" value="${user_item.followersAmount}"/>
+        <jsp:param name="followingAmount" value="${user_item.followingAmount}"/>
+        <jsp:param name="reviewAmount" value="${user_item.reviewAmount}"/>
+        <jsp:param name="verified" value="${user_item.verified}"/>
+        <jsp:param name="moderator" value="${user_item.moderator}"/>
+        <jsp:param name="id" value="${user_item.id}"/>
+      </jsp:include>
+    </c:forEach>
+    <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
+    <c:if test="${100*(pageNum-1)+followersList.size() != user.followersAmount && followersList.size() == 100}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
   </div>
 
   <div id="followingTab">
-      <c:forEach var="user_item" items="${followingList}">
-        <jsp:include page="/WEB-INF/jsp/components/user_card.jsp">
-          <jsp:param name="imgId" value="${user_item.imgId}"/>
-          <jsp:param name="username" value="@${user_item.username}"/>
-          <jsp:param name="name" value="${user_item.name}"/>
-          <jsp:param name="bio" value="${user_item.bio}"/>
-          <jsp:param name="followersAmount" value="${user_item.followersAmount}"/>
-          <jsp:param name="followingAmount" value="${user_item.followingAmount}"/>
-          <jsp:param name="reviewAmount" value="${user_item.reviewAmount}"/>
-          <jsp:param name="verified" value="${user_item.verified}"/>
-          <jsp:param name="moderator" value="${user_item.moderator}"/>
-          <jsp:param name="id" value="${user_item.id}"/>
-        </jsp:include>
-      </c:forEach>
-  <c:if test="${pageNum > 1}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
-  <c:if test="${100*(pageNum-1)+followingList.size() != user.followingAmount && followingList.size() == 100}"><a href="${nextPage}"><button>Next page</button></a></c:if>
+    <c:forEach var="user_item" items="${followingList}">
+      <jsp:include page="/WEB-INF/jsp/components/user_card.jsp">
+        <jsp:param name="imgId" value="${user_item.imgId}"/>
+        <jsp:param name="username" value="@${user_item.username}"/>
+        <jsp:param name="name" value="${user_item.name}"/>
+        <jsp:param name="bio" value="${user_item.bio}"/>
+        <jsp:param name="followersAmount" value="${user_item.followersAmount}"/>
+        <jsp:param name="followingAmount" value="${user_item.followingAmount}"/>
+        <jsp:param name="reviewAmount" value="${user_item.reviewAmount}"/>
+        <jsp:param name="verified" value="${user_item.verified}"/>
+        <jsp:param name="moderator" value="${user_item.moderator}"/>
+        <jsp:param name="id" value="${user_item.id}"/>
+      </jsp:include>
+    </c:forEach>
+    <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
+    <c:if test="${100*(pageNum-1)+followingList.size() != user.followingAmount && followingList.size() == 100}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
   </div>
 </div>
 </body>
