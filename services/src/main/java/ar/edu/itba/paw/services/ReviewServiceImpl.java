@@ -102,6 +102,30 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
+    public Review updateArtistReview(ArtistReview review) {
+        Review r = reviewDao.update(review);
+        updateArtistRating(review.getArtist().getId());
+        return r;
+    }
+
+    @Override
+    @Transactional
+    public Review updateAlbumReview(AlbumReview review) {
+        Review r = reviewDao.update(review);
+        updateAlbumRating(review.getAlbum().getId());
+        return r;
+    }
+
+    @Override
+    @Transactional
+    public Review updateSongReview(SongReview review) {
+        Review r = reviewDao.update(review);
+        updateSongRating(review.getSong().getId());
+        return r;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Optional<ArtistReview> findArtistReviewById(long id) {
         return reviewDao.findArtistReviewById(id);
@@ -116,8 +140,9 @@ public class ReviewServiceImpl implements ReviewService {
         return result;
     }
 
+    @Override
     @Transactional
-    private void updateArtistRating(long artistId) {
+    public void updateArtistRating(long artistId) {
         List<ArtistReview> reviews = reviewDao.findReviewsByArtistId(artistId);
         float avgRating = (float) reviews.stream().mapToInt(ArtistReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;
@@ -164,8 +189,9 @@ public class ReviewServiceImpl implements ReviewService {
         return result;
     }
 
+    @Override
     @Transactional
-    private void updateAlbumRating(long albumId) {
+    public void updateAlbumRating(long albumId) {
         List<AlbumReview> reviews = reviewDao.findReviewsByAlbumId(albumId);
         float avgRating = (float) reviews.stream().mapToInt(AlbumReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;
@@ -195,13 +221,15 @@ public class ReviewServiceImpl implements ReviewService {
         return result;
     }
 
+    @Override
     @Transactional
-    private void updateUserReviewAmount(long userId) {
+    public void updateUserReviewAmount(long userId) {
         userService.updateUserReviewAmount(userId);
     }
 
+    @Override
     @Transactional
-    private void updateSongRating(long songId) {
+    public void updateSongRating(long songId) {
         List<SongReview> reviews = reviewDao.findReviewsBySongId(songId);
         float avgRating = (float) reviews.stream().mapToInt(SongReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;

@@ -33,10 +33,20 @@
         </div>
     </a>
 
-    <c:url var="posturl" value="/song/${song.id}/reviews" />
-    <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
-        <jsp:param name="posturl" value="${posturl}"/>
-    </jsp:include>
+    <c:choose>
+        <c:when test="${!edit}">
+            <c:url var="posturl" value="/song/${song.id}/reviews" />
+            <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
+                <jsp:param name="posturl" value="${posturl}"/>
+            </jsp:include>
+        </c:when>
+        <c:otherwise>
+            <c:url var="posturl" value="/song/${song.id}/edit-review" />
+            <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
+                <jsp:param name="posturl" value="${posturl}"/>
+            </jsp:include>
+        </c:otherwise>
+    </c:choose>
 </div>
 </body>
 </html>

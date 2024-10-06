@@ -97,7 +97,7 @@
         </a>
     </c:if>
     <c:if test="${param.reviewed}">
-        <c:url var="editReviewUrl" value="/${param.entityType}/${param.entityId}/edit-reviews"/>
+        <c:url var="editReviewUrl" value="/${param.entityType}/${param.entityId}/edit-review"/>
     <a href="${editReviewUrl}">
         <button class="edit-rating-button" style="background-color: #b99a1d">
             <svg class="edit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
