@@ -2,6 +2,8 @@ package ar.edu.itba.paw.webapp.form;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ public class ModArtistForm {
     private long artistImgId;
     private MultipartFile artistImage;
 
+    @Valid
     private List<ModAlbumForm> albums = new ArrayList<>();
     private boolean deleted;
 

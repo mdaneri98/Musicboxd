@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.form;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class ModAlbumForm {
     private MultipartFile albumImage;
 
     private long artistId;
+
+    @Valid
     private List<ModSongForm> songs = new ArrayList<>();
 
     private boolean deleted = false;

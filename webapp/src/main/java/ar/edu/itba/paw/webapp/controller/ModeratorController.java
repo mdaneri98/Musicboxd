@@ -163,8 +163,8 @@ public class ModeratorController {
     @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.POST)
     public ModelAndView submitAlbumForm(@PathVariable(name = "artistId") final long artistId,
                                         @Valid @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
-                                        @ModelAttribute("loggedUser") User loggedUser,
-                                        final BindingResult errors) {
+                                        final BindingResult errors,
+                                        @ModelAttribute("loggedUser") User loggedUser) {
         if (errors.hasErrors())
             return addAlbumForm(artistId, modAlbumForm, loggedUser);
 
