@@ -5,7 +5,7 @@
 <html>
 <head>
 
-    <spring:message var="pageTitle" text="Edit Profile"/>
+    <spring:message var="pageTitle" code="edit.profile.title"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -22,42 +22,65 @@
     </jsp:include>
 </div>
 <div class="main-content container">
-    <h1>Edit Profile</h1>
+    <h1><spring:message code="label.edit.profile"/></h1>
 
     <c:url var="editProfileUrl" value="/user/edit" />
     <form:form modelAttribute="userProfileForm" action="${editProfileUrl}" method="post" enctype="multipart/form-data">
         <div>
-            <label>Username:
+            <label><spring:message code="label.username" />
                 <form:errors path="username" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="username" type="text" />
             </label>
         </div>
         <div>
-            <label>Name:
+            <label><spring:message code="label.name"/>
                 <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="name" type="text" />
             </label>
         </div>
         <div>
-            <label>Bio:
+            <label><spring:message code="label.desc"/>
                 <form:errors path="bio" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="bio" type="text" />
+                <form:textarea path="bio" type="text" />
             </label>
         </div>
         <div>
-            <label>Profile Picture:
+            <label><spring:message code="label.profile.picture"/>
                 <form:errors path="profilePicture" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="profilePicture" type="file" accept=".jpg,.jpeg,.png" />
+                <form:input path="profilePicture" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(event)"/>
             </label>
+            <img id="imagePreview" style="display:none;"/>
         </div>
         <div style="display: flex; gap: 10px;">
-            <c:url value="/user/" var="discard_changes_url" />
+            <c:url value="/user/profile" var="discard_changes_url" />
             <a href="${discard_changes_url}" style="flex: 1;">
-                <button type="button" style="width: 100%; height: 100%;">Discard Changes</button>
+                <button type="button" style="width: 100%; height: 100%;"><spring:message code="label.discard.changes"/></button>
             </a>
-            <button type="submit" style="flex: 1; width: 100%; height: 100%;">Update</button>
+            <button type="submit" style="flex: 1; width: 100%; height: 100%;"><spring:message code="label.update"/></button>
         </div>
     </form:form>
+
+    <script>
+        // Previews Image inserted
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block'; // Show the image element
+                    preview.style.width = 'auto';
+                    preview.style.height = '150px';
+                    preview.style.marginBottom = '10px';
+                }
+                reader.readAsDataURL(file); // Read the file and convert it to a data URL
+            } else {
+                preview.style.display = 'none'; // Hide the preview if no image is selected
+            }
+        }
+    </script>
 </div>
 </body>
 </html>

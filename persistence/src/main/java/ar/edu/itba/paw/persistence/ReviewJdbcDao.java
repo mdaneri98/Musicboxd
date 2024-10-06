@@ -1,14 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -113,7 +109,7 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getBoolean("isBlocked")
     );
 
-    public class ReviewRowMapper implements RowMapper<Review> {
+    public static class ReviewRowMapper implements RowMapper<Review> {
 
         @Override
         public Review mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -198,23 +194,46 @@ public class ReviewJdbcDao implements ReviewDao {
         this.jdbcTemplate = new JdbcTemplate(ds);
     }
 
+    @Override
+    public Optional<Review> find(long id) {
+        return Optional.empty();
+    }
 
     @Override
-    public int update(Review review) {
-        return jdbcTemplate.update(
-                "UPDATE review SET title = ?, description = ?, rating = ?, likes = ?, blocked = ? WHERE id = ?",
+    public List<Review> findAll() {
+        return null;
+    }
+
+    @Override
+    public List<Review> findPaginated(FilterType filterType, int limit, int offset) {
+        return null;
+    }
+
+    @Override
+    public Review create(Review entity) {
+        return null;
+    }
+
+    @Override
+    public Review update(Review review) {
+        int result = jdbcTemplate.update(
+                "UPDATE review SET title = ?, description = ?, rating = ?, likes = ?, isblocked = ? WHERE id = ?",
                 review.getTitle(),
                 review.getDescription(),
                 review.getRating(),
                 review.getLikes(),
-                review.getId(),
-                review.isBlocked()
+                review.isBlocked(),
+                review.getId()
         );
+        if (result == 1)
+            return review;
+        else
+            throw new IllegalStateException("Failed to update review");
     }
 
     @Override
-    public int deleteById(long id) {
-        return jdbcTemplate.update("DELETE FROM review WHERE id = ?", id);
+    public boolean delete(long id) {
+        return jdbcTemplate.update("DELETE FROM review WHERE id = ?", id) == 1;
     }
 
 
@@ -229,6 +248,21 @@ public class ReviewJdbcDao implements ReviewDao {
                         "WHERE r.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
+                ARTIST_REVIEW_ROW_MAPPER
+        ).stream().findFirst();
+    }
+
+    @Override
+    public Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId) {
+        return jdbcTemplate.query(
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, a.id AS artist_id, a.name AS artist_name, a.img_id AS artist_img_id " +
+                        "FROM review r " +
+                        "JOIN cuser u ON r.user_id = u.id " +
+                        "JOIN artist_review ar ON r.id = ar.review_id " +
+                        "JOIN artist a ON ar.artist_id = a.id " +
+                        "WHERE ar.artist_id = ? AND r.user_id = ?",
+                new Object[]{artistId, userId},
+                new int[]{Types.BIGINT, Types.BIGINT},
                 ARTIST_REVIEW_ROW_MAPPER
         ).stream().findFirst();
     }
@@ -249,8 +283,7 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public int saveArtistReview(ArtistReview review) {
-        int result = 0;
+    public ArtistReview saveArtistReview(ArtistReview review) {
         KeyHolder keyHolder = saveReviewWithNoId(review);
         if (keyHolder != null ) {
             Map<String, Object> keys = keyHolder.getKeys();
@@ -266,8 +299,10 @@ public class ReviewJdbcDao implements ReviewDao {
                 throw new RuntimeException("Failed to retrieve the generated review ID");
             }
         }
-        return result;
+        return review;
     }
+
+
 
     @Override
     public Optional<AlbumReview> findAlbumReviewById(long id) {
@@ -280,6 +315,21 @@ public class ReviewJdbcDao implements ReviewDao {
                         "WHERE r.id = ?",
                 new Object[]{id},
                 new int[]{Types.BIGINT},
+                ALBUM_REVIEW_ROW_MAPPER
+        ).stream().findFirst();
+    }
+
+    @Override
+    public Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId) {
+        return jdbcTemplate.query(
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
+                        "FROM review r " +
+                        "JOIN cuser u ON r.user_id = u.id " +
+                        "JOIN album_review ar ON r.id = ar.review_id " +
+                        "JOIN album al ON ar.album_id = al.id " +
+                        "WHERE ar.album_id = ? AND r.user_id = ?",
+                new Object[]{albumId, userId},
+                new int[]{Types.BIGINT, Types.BIGINT},
                 ALBUM_REVIEW_ROW_MAPPER
         ).stream().findFirst();
     }
@@ -300,8 +350,7 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public int saveAlbumReview(AlbumReview review) {
-        int result = 0;
+    public AlbumReview saveAlbumReview(AlbumReview review) {
         KeyHolder keyHolder = saveReviewWithNoId(review);
         if (keyHolder != null ) {
             Map<String, Object> keys = keyHolder.getKeys();
@@ -317,7 +366,7 @@ public class ReviewJdbcDao implements ReviewDao {
                 throw new RuntimeException("Failed to retrieve the generated review ID");
             }
         }
-        return result;
+        return review;
     }
 
 
@@ -358,8 +407,25 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public int saveSongReview(SongReview review) {
-        int result = 0;
+    public Optional<SongReview> findSongReviewByUserId(long userId, long songId) {
+        return jdbcTemplate.query(
+                "SELECT r.*, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, " +
+                        "s.id AS song_id, s.title AS song_title, s.duration, " +
+                        "al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.artist_id AS album_artist_id, al.release_date AS album_release_date, al.genre " +
+                        "FROM review r " +
+                        "JOIN cuser u ON r.user_id = u.id " +
+                        "JOIN song_review sr ON r.id = sr.review_id " +
+                        "JOIN song s ON sr.song_id = s.id " +
+                        "JOIN album al ON s.album_id = al.id " +
+                        "WHERE sr.song_id = ? AND r.user_id = ?",
+                new Object[]{songId, userId},
+                new int[]{Types.BIGINT, Types.BIGINT},
+                SONG_REVIEW_ROW_MAPPER
+        ).stream().findFirst();
+    }
+
+    @Override
+    public SongReview saveSongReview(SongReview review) {
         KeyHolder keyHolder = saveReviewWithNoId(review);
         if (keyHolder != null ) {
             Map<String, Object> keys = keyHolder.getKeys();
@@ -375,7 +441,7 @@ public class ReviewJdbcDao implements ReviewDao {
                 throw new RuntimeException("Failed to retrieve the generated review ID");
             }
         }
-        return result;
+        return review;
     }
 
     @Override
@@ -398,23 +464,23 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public int createLike(long userId, long reviewId) {
-        return jdbcTemplate.update("INSERT INTO review_like (user_id, review_id) VALUES (?, ?)", userId, reviewId);
+    public void createLike(long userId, long reviewId) {
+        jdbcTemplate.update("INSERT INTO review_like (user_id, review_id) VALUES (?, ?)", userId, reviewId);
     }
 
     @Override
-    public int deleteLike(long userId, long reviewId) {
-        return jdbcTemplate.update("DELETE FROM review_like WHERE user_id = ? AND review_id = ?", userId, reviewId);
+    public void deleteLike(long userId, long reviewId) {
+        jdbcTemplate.update("DELETE FROM review_like WHERE user_id = ? AND review_id = ?", userId, reviewId);
     }
 
     @Override
-    public int incrementLikes(long reviewId) {
-        return jdbcTemplate.update("UPDATE review SET likes = likes + 1 WHERE id = ?", reviewId);
+    public void incrementLikes(long reviewId) {
+        jdbcTemplate.update("UPDATE review SET likes = likes + 1 WHERE id = ?", reviewId);
     }
 
     @Override
-    public int decrementLikes(long reviewId) {
-        return jdbcTemplate.update("UPDATE review SET likes = likes - 1 WHERE id = ?", reviewId);
+    public void decrementLikes(long reviewId) {
+        jdbcTemplate.update("UPDATE review SET likes = likes - 1 WHERE id = ?", reviewId);
     }
 
     @Override
@@ -497,7 +563,7 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public List<Review> getPopularReviewsSincePaginated(LocalDate date, int page, int pageSize) {
+    public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
         String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
                 "FROM review r "+
                 "LEFT JOIN cuser u ON r.user_id = u.id "+
@@ -508,12 +574,12 @@ public class ReviewJdbcDao implements ReviewDao {
                 "LEFT JOIN artist_review arr ON r.id = arr.review_id "+
                 "LEFT JOIN artist ar ON arr.artist_id = ar.id OR a.artist_id = ar.id "+
                 "LEFT JOIN artist aa ON a.artist_id = aa.id " +
-                "WHERE r.created_at >= ? AND r.isblocked = false " +
+                "WHERE r.isblocked = false " +
                 "ORDER BY r.likes DESC " +
                 "LIMIT ? OFFSET ?";
 
         int offset = (page - 1) * pageSize;
-        return jdbcTemplate.query(sql, new Object[]{date, pageSize, offset}, reviewRowMapper::mapRows);
+        return jdbcTemplate.query(sql, new Object[]{pageSize, offset}, reviewRowMapper::mapRows);
     }
 
     @Override
@@ -558,15 +624,13 @@ public class ReviewJdbcDao implements ReviewDao {
     }
 
     @Override
-    public boolean block(Long reviewId) {
-        final String sql = "UPDATE review SET isBlocked = true WHERE id = ?";
-        return jdbcTemplate.update(sql, reviewId) == 1;
+    public void block(Long reviewId) {
+        jdbcTemplate.update("UPDATE review SET isBlocked = true WHERE id = ?", reviewId);
     }
 
     @Override
-    public boolean unblock(Long reviewId) {
-        final String sql = "UPDATE review SET isBlocked = false WHERE id = ?";
-        return jdbcTemplate.update(sql, reviewId) == 1;
+    public void unblock(Long reviewId) {
+        jdbcTemplate.update("UPDATE review SET isBlocked = false WHERE id = ?", reviewId);
     }
 
 }

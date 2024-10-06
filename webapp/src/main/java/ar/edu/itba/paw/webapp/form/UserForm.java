@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
 
+import ar.edu.itba.paw.webapp.form.validation.EmailNotInUse;
 import ar.edu.itba.paw.webapp.form.validation.PasswordMatch;
 
 import javax.validation.constraints.Email;
@@ -13,10 +14,14 @@ public class UserForm {
     @Size(min = 4, max = 50)
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*")
     private String username;
+
+    @EmailNotInUse
     @Email
     private String email;
+
     @Size(min = 8)
     private String password;
+
     @Size(min = 8)
     private String repeatPassword;
 

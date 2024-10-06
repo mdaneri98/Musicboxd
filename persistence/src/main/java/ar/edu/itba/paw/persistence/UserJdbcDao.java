@@ -3,11 +3,13 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
 import java.sql.Types;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +26,7 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public Optional<User> findById(long id) {
+    public Optional<User> find(long id) {
         // Jamás concatener valores en una query("SELECT ... WHERE username = " + id).
         return jdbcTemplate.query("SELECT * FROM cuser WHERE id = ?",
                 new Object[]{id},
@@ -47,20 +49,28 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public int create(String username, String email, String password) {
-        int imgId = 1;
-
+    public Optional<User> create(String username, String email, String password, long imgId) {
         String checkImageSql = "SELECT COUNT(*) FROM image WHERE id = ?";
         int count = jdbcTemplate.queryForObject(checkImageSql, Integer.class, imgId);
 
-        if (count == 0) {
-            // Image doesn't exist, throw an exception.
+        if (count == 0)
             throw new IllegalArgumentException("Image with id " + imgId + " does not exist");
-        }
 
-        // If we get here, the image exists, so we can proceed with user creation
+        // Insert the new user and return the generated ID
         String insertUserSql = "INSERT INTO cuser (username, email, password, img_id) VALUES (?, ?, ?, ?)";
-        return jdbcTemplate.update(insertUserSql, username, email, password, imgId);
+        KeyHolder keyHolder = new GeneratedKeyHolder(); // This will hold the generated key (user ID)
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(insertUserSql, new String[] { "id" });
+            ps.setString(1, username);
+            ps.setString(2, email);
+            ps.setString(3, password);
+            ps.setLong(4, imgId);
+            return ps;
+        }, keyHolder);
+
+        long userId = keyHolder.getKey().longValue();
+        return find(userId);
     }
 
     @Override
@@ -92,13 +102,20 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
+    public void updateUserReviewAmount(Long userId) {
+        String sql = "SELECT COUNT(*) FROM review WHERE user_id = ?";
+        int amount = jdbcTemplate.queryForObject(sql, Integer.class, userId);
+        jdbcTemplate.update("UPDATE cuser SET review_amount = ?  WHERE id = ?", amount, userId);
+    }
+
+    @Override
     public List<User> getFollowers(Long userId, int limit, int offset) {
         String sql = "SELECT user_id FROM follower WHERE following = ? LIMIT ? OFFSET ?";
         List<Long> followerIds = jdbcTemplate.queryForList(sql, new Object[]{userId, limit, offset}, Long.class);
 
         List<User> followers = new ArrayList<>();
         for (Long followerId : followerIds) {
-            Optional<User> follower = this.findById(followerId);
+            Optional<User> follower = this.find(followerId);
             follower.ifPresent(followers::add);
         }
         return followers;
@@ -111,7 +128,7 @@ public class UserJdbcDao implements UserDao {
 
         List<User> following = new ArrayList<>();
         for (Long followingId : followingIds) {
-            Optional<User> follower = this.findById(followingId);
+            Optional<User> follower = this.find(followingId);
             follower.ifPresent(following::add);
         }
         return following;
@@ -158,23 +175,30 @@ public class UserJdbcDao implements UserDao {
     }
 
     @Override
-    public int update(Long userId, String username, String email, String password, String name, String bio, LocalDateTime updated_at, boolean verified, boolean moderator, Long imgId, Integer followers_amount, Integer following_amount, Integer review_amount) {
+    public int update(User user) {
         return jdbcTemplate.update(
-                "UPDATE cuser SET username = ?, email = ?, password = ?, name = ?, bio = ?, updated_at = ?, verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
-                username,
-                email,
-                password,
-                name,
-                bio,
-                updated_at,
-                verified,
-                moderator,
-                imgId,
-                followers_amount,
-                following_amount,
-                review_amount,
-                userId
+                "UPDATE cuser SET username = ?, email = ?, name = ?, bio = ?, updated_at = NOW(), verified = ?, moderator = ?, img_id = ?, followers_amount = ?, following_amount = ?, review_amount = ? WHERE id = ?",
+                user.getUsername(),
+                user.getEmail(),
+                user.getName(),
+                user.getBio(),
+                user.isVerified(),
+                user.isModerator(),
+                user.getImgId(),
+                user.getFollowersAmount(),
+                user.getFollowingAmount(),
+                user.getReviewAmount(),
+                user.getId()
         );
+    }
+
+    @Override
+    public boolean changePassword(Long userId, String newPassword) {
+        return jdbcTemplate.update(
+                "UPDATE cuser SET password = ?, updated_at = NOW() WHERE id = ?",
+                newPassword,
+                userId
+        ) == 1;
     }
 
     @Override
@@ -241,7 +265,7 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public List<Album> getFavoriteAlbums(long userId) {
-        final String sql = "SELECT a.id AS album_id, title, genre, release_date, a.created_at, a.updated_at, a.img_id AS album_img_id, ar.id AS artist_id, name, ar.img_id AS artist_img_id FROM album a " +
+        final String sql = "SELECT a.id AS album_id, title, genre, release_date, a.created_at, a.updated_at, a.img_id AS album_img_id, a.avg_rating AS avg_rating, a.rating_amount AS rating_amount, ar.id AS artist_id, name, ar.img_id AS artist_img_id FROM album a " +
                 "JOIN favorite_album fa ON a.id = fa.album_id JOIN artist ar ON a.artist_id = ar.id " +
                 "WHERE fa.user_id = ?";
         return jdbcTemplate.query(sql, new Object[]{userId}, SimpleRowMappers.ALBUM_ROW_MAPPER);
@@ -278,7 +302,7 @@ public class UserJdbcDao implements UserDao {
 
     @Override
     public List<Song> getFavoriteSongs(long userId) {
-        final String sql = "SELECT s.id AS song_id, s.title AS song_title, duration, track_number, s.created_at AS song_created_at, s.updated_at AS song_updated_at, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.genre, ar.id AS artist_id, name, ar.img_id AS artist_img_id, al.release_date AS album_release_date FROM song s " +
+        final String sql = "SELECT s.id AS song_id, s.title AS song_title, duration, track_number, s.created_at AS song_created_at, s.updated_at AS song_updated_at, s.avg_rating AS avg_rating, s.rating_amount AS rating_amount, al.id AS album_id, al.title AS album_title, al.img_id AS album_img_id, al.genre, ar.id AS artist_id, name, ar.img_id AS artist_img_id, al.release_date AS album_release_date FROM song s " +
                 "JOIN favorite_song fs ON s.id = fs.song_id JOIN album al ON s.album_id = al.id JOIN artist ar ON al.artist_id = ar.id " +
                 "WHERE fs.user_id = ?";
         return jdbcTemplate.query(sql, new Object[]{userId}, SimpleRowMappers.SONG_ROW_MAPPER);

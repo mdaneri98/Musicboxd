@@ -5,7 +5,7 @@
 <html>
 <head>
 
-    <spring:message var="pageTitle" text="Submit a Song"/>
+    <spring:message var="pageTitle" code="submit.song.title"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -22,30 +22,44 @@
     </jsp:include>
 </div>
 <div class="container">
-    <h1>Submit a Song</h1>
+    <h1><spring:message code="submit.song.title" /></h1>
 
-    <c:url var="postUrl" value="/mod/add/album/${albumId}/song" />
-    <form:form modelAttribute="modSongForm" action="${postUrl}" method="post">
+    <c:url var="postURL" value="${postUrl}" />
+    <form:form modelAttribute="modSongForm" action="${postURL}" method="post">
+        <input name="id" type="hidden" value="${modSongForm.id}"/>
+        <input name="albumId" type="hidden" value="${modSongForm.albumId}"/>
         <div>
-            <label>Title:
+            <label><spring:message code="submit.song.title.label" />
                 <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="title" type="text" />
             </label>
         </div>
         <div>
-            <label>Duration:
+            <label><spring:message code="submit.song.duration.label" />
                 <form:errors path="duration" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="duration" type="text" placeholder="MM:SS - Example: 10:24 or 3:15" />
             </label>
         </div>
         <div>
-            <label>Track Number:
+            <label><spring:message code="submit.song.track.number.label" />
                 <form:errors path="trackNumber" cssClass="error" element="p" cssStyle="color:red;"/>
                 <form:input path="trackNumber" type="number" />
             </label>
         </div>
-        <div>
-            <button type="submit">Submit Song</button>
+        <div style="display: flex">
+            <!-- Cancel Button -->
+            <c:if test="${songId == null}">
+                <c:url value="/mod" var="cancel_url" />
+            </c:if>
+            <c:if test="${songId != null}">
+                <c:url value="/song/${songId}" var="cancel_url" />
+            </c:if>
+            <a href="${cancel_url}">
+                <button type="button">Cancel</button>
+            </a>
+
+            <!-- Submit Button -->
+            <button type="submit" style="margin-left: auto"><spring:message code="submit.song.button" /></button>
         </div>
     </form:form>
 </div>

@@ -106,3 +106,24 @@ textarea {
     height: 120px;
     resize: vertical;
 }
+
+.delete-button {
+    background-color: #cf3232;
+    width: 100%;
+    color: #000000;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 16px;
+}
+
+.delete-button:hover {
+    background-color: #b02a2a;
+}

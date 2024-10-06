@@ -62,6 +62,26 @@ public class User {
         this.moderator = moderator;
     }
 
+    public static User createAnonymous() {
+        User anonymousUser = new User();
+        anonymousUser.id = 0L; // ID predeterminado para usuario anónimo
+        anonymousUser.username = "";
+        anonymousUser.email = "";
+        anonymousUser.password = ""; // Sin contraseña
+        anonymousUser.name = "";
+        anonymousUser.bio = "";
+        anonymousUser.createdAt = LocalDateTime.now();
+        anonymousUser.updatedAt = LocalDateTime.now();
+        anonymousUser.verified = false;
+        anonymousUser.moderator = false;
+        anonymousUser.followersAmount = 0;
+        anonymousUser.followingAmount = 0;
+        anonymousUser.reviewAmount = 0;
+        anonymousUser.imgId = null; // Sin imagen
+
+        return anonymousUser;
+    }
+
     // Getters y setters
     public Integer getReviewAmount() {
         return reviewAmount != null ? reviewAmount : 0;

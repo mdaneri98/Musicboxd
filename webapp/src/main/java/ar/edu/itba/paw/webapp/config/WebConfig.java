@@ -8,23 +8,32 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -41,6 +50,7 @@ import java.util.concurrent.TimeUnit;
         "ar.edu.itba.paw.persistence"
 })
 @PropertySource("classpath:application.properties")
+@EnableTransactionManagement
 //@EnableScheduling
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -50,6 +60,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private Environment environment;
+
+    @Bean
+    public MessageSource messageSource() {
+        final ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
+
+        ms.setCacheSeconds((int) TimeUnit.SECONDS.toSeconds(5));
+        ms.setBasename("i18n/messages");
+        ms.setDefaultEncoding(StandardCharsets.UTF_8.name());
+
+        return ms;
+    }
 
     @Bean
     public ViewResolver viewResolver() {
@@ -96,8 +117,13 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(2097152); // 2MB
+        multipartResolver.setMaxUploadSize(10485760); // 10MB
         return multipartResolver;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(final DataSource ds){
+        return new DataSourceTransactionManager(ds);
     }
 
 }

@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.services.email;
 
+import ar.edu.itba.paw.models.VerificationType;
 import ar.edu.itba.paw.services.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -24,6 +27,8 @@ import java.util.Map;
 
 @Service
 public class EmailServiceImpl implements EmailService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     @Autowired
     private Environment environment;
@@ -61,15 +66,29 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Async
-    public void sendVerification(String email, String code) throws MessagingException {
+    public void sendVerification(VerificationType type, String email, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
         String baseUrl = environment.getProperty("app.url.base");
-        String verificationURL = baseUrl + "/user/verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+        String verificationURL = "";
+        String template = "";
+        switch (type) {
+            case VERIFY_EMAIL -> {
+                verificationURL = baseUrl + "/user/email-verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                template = "user_verification";
+            }
+            case VERIFY_FORGOT_PASSWORD -> {
+                verificationURL = baseUrl + "/user/reset-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                template = "create_password";
+            }
+        }
+
+        LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, email);
+        LOGGER.debug("Verification URL: {}", verificationURL);
 
         params.put("verificationURL", verificationURL);
         this.sendMessageUsingThymeleafTemplate(
-                "user_verification",
+                template,
                 email,
                 "MusicBoxd - Verification",
                 params

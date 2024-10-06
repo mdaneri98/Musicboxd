@@ -2,20 +2,51 @@ package ar.edu.itba.paw.webapp.form;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModAlbumForm {
 
+    private long id;
     @Size(min = 1, max = 255)
     private String title;
     @Size(min = 1, max = 50)
     private String genre;
-    private MultipartFile file;
+    private LocalDate releaseDate;
 
-    public ModAlbumForm(String title, String genre, MultipartFile file) {
+    private long albumImageId;
+    private MultipartFile albumImage;
+
+    private long artistId;
+
+    @Valid
+    private List<ModSongForm> songs = new ArrayList<>();
+
+    private boolean deleted = false;
+
+    public ModAlbumForm() {}
+
+    public ModAlbumForm(long id, String title, String genre, LocalDate releaseDate, long albumImageId, MultipartFile albumImage, long artistId, List<ModSongForm> songs, boolean deleted) {
+        this.id = id;
         this.title = title;
         this.genre = genre;
-        this.file = file;
+        this.releaseDate = releaseDate;
+        this.albumImageId = albumImageId;
+        this.albumImage = albumImage;
+        this.artistId = artistId;
+        this.songs = songs;
+        this.deleted = deleted;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -34,11 +65,39 @@ public class ModAlbumForm {
         this.genre = genre;
     }
 
-    public MultipartFile getFile() {
-        return file;
+    public LocalDate getReleaseDate() { return releaseDate; }
+
+    public void setReleaseDate(LocalDate releaseDate) { this.releaseDate = releaseDate; }
+
+    public long getAlbumImageId() { return albumImageId; }
+
+    public void setAlbumImageId(long albumImageId) { this.albumImageId = albumImageId; }
+
+    public MultipartFile getAlbumImage() {
+        return albumImage;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setAlbumImage(MultipartFile albumImage) {
+        this.albumImage = albumImage;
+    }
+
+    public long getArtistId() { return artistId; }
+
+    public void setArtistId(long artistId) { this.artistId = artistId; }
+
+    public List<ModSongForm> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(List<ModSongForm> songs) {
+        this.songs = songs;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

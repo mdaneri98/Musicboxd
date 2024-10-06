@@ -9,7 +9,7 @@ public interface ImageDao {
 
     Optional<Image> findById(long imageId);
 
-    long save(byte[] bytes);
+    long create(byte[] bytes);
 
     boolean update(long imageId, byte[] bytes);
 

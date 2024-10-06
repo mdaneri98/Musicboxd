@@ -119,9 +119,22 @@ label {
     /*min-height: 100vh;*/
     display: flex;
     flex-direction: column;
-    /* justify-content: space; */
     gap: 10px;
     padding: 30px 0;
+}
+
+.v-container {
+    width: 100%;
+    /*min-height: 100vh;*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 30px 0;
+}
+
+.v-container .max-width {
+    width: 100%;
 }
 
 .header-content {
@@ -149,6 +162,11 @@ label {
     flex-direction: column;
     gap: 5px;
     justify-content: center;
+}
+
+.data-container h1 {
+    flex-wrap: wrap;
+    max-width: 400px;
 }
 
 .info-container .album {
@@ -215,16 +233,20 @@ label {
     width: 100%;
     overflow-x: auto;
     padding: 20px 0;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .carousel {
     display: flex;
     flex-direction: row;
     gap: 15px;
+    padding: 0 3%;
     width: max-content;
 }
 
 .item {
+    flex: 0 0 auto;
     background-color: #242424;
     width: 200px;
     flex-shrink: 0;
@@ -238,11 +260,57 @@ label {
     transform: scale(1.03);
 }
 
-.album img {
+.album {
+    text-decoration: none;
+    color: white;
+    display: block;
+}
+
+.album-image-container {
+    position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    object-fit: cover;
+    overflow: hidden;
     border-radius: 4px;
+}
+
+.album img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.album-rating {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+}
+
+.star {
+    color: #ffd700;
+    margin-left: 2px;
+}
+
+.rating {
+    font-weight: bold;
+}
+
+.album-title {
+    margin-top: 8px;
+    font-size: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .artist img {
@@ -278,6 +346,11 @@ label {
 }
 
 /* ------------ Song list ------------ */
+.song-list {
+    list-style-type: none;
+    padding: 0;
+}
+
 .song-list li {
     padding: 8px;
     border-radius: 8px;
@@ -286,6 +359,43 @@ label {
 
 .song-list li:hover {
     background-color: #2b2d30;
+}
+
+.song-item {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.song-number {
+    color: var(--text-subdued);
+    margin-right: 16px;
+    font-variant-numeric: tabular-nums;
+    min-width: 16px;
+    text-align: right;
+}
+
+.song-title {
+    flex-grow: 1;
+    font-size: 16px;
+    color: var(--text-base);
+    margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-rating {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-left: auto;
+    margin-right: 50px;
+    color: var(--text-base);
 }
 
 /* ------------ Buttons ------------ */
@@ -473,6 +583,7 @@ button:hover:not(:disabled) {
     border-radius: 20px;
     padding: 5px 10px;
     transition: background-color 0.3s ease;
+    max-width: 350px;
 }
 
 .artist-button:hover {
@@ -505,4 +616,55 @@ button:hover:not(:disabled) {
     align-items: center;
     gap: 10px;
     margin-top: 10px;
+}
+
+.rating-card-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 80px;
+    display: flex;
+    align-items: center;
+}
+
+/* --- Call to action --- */
+
+.call-to-action-container {
+    width: 100%;
+    max-width: 600px;
+    background-color: #1f1f1f;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* --- Toggle button --- */
+
+.toggle{
+    margin-top: 40px;
+}
+
+.tab-button {
+    cursor: pointer;
+    padding: 6px;
+    font-weight: bold
+}
+
+.active {
+    color: #1DB954;
+}
+
+.container h2 {
+    margin-left: 30px;
 }

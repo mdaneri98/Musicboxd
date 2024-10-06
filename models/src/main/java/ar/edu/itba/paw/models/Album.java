@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import java.time.LocalDate;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Album {
     private Long id;
@@ -12,8 +13,10 @@ public class Album {
     private LocalDate updatedAt;
     private Long imgId;
     private Artist artist;
+    private Integer ratingCount;
+    private Float avgRating;
 
-    public Album(Long id, String title, String genre, LocalDate releaseDate, LocalDate createdAt, LocalDate updatedAt, Long imgId, Artist artist) {
+    public Album(Long id, String title, String genre, LocalDate releaseDate, LocalDate createdAt, LocalDate updatedAt, Long imgId, Artist artist, Integer ratingCount, Float avgRating) {
         this.id = id;
         this.title = title;
         this.genre = genre;
@@ -22,6 +25,8 @@ public class Album {
         this.updatedAt = updatedAt;
         this.imgId = imgId;
         this.artist = artist;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
     }
 
     public Album(Long id, String title, Long imgId, String genre, Artist artist, LocalDate releaseDate) {
@@ -38,6 +43,11 @@ public class Album {
         this.genre = genre;
         this.imgId = imgId;
         this.artist = artist;
+    }
+
+    public Album(String title, String genre) {
+        this.title = title;
+        this.genre = genre;
     }
 
     public Album(Long id) {
@@ -109,6 +119,22 @@ public class Album {
         this.artist = artist;
     }
 
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
+    public Float getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(Float avgRating) {
+        this.avgRating = avgRating;
+    }
+
     // Método para convertir a JSON
     public String toJson() {
         StringBuilder json = new StringBuilder();
@@ -127,6 +153,17 @@ public class Album {
 
         json.append("}");
         return json.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Album album = (Album) o;
+        if (!Objects.equals(title, album.title)) return false;
+        if (!Objects.equals(genre, album.genre)) return false;
+        if (!Objects.equals(releaseDate, album.releaseDate)) return false;
+        return Objects.equals(imgId, album.imgId);
     }
 
 }
