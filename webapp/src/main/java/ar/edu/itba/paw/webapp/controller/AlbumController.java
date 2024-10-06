@@ -5,11 +5,14 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
+import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -94,20 +97,66 @@ public class AlbumController {
     }
 
     @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
+    public ModelAndView createForm(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
+        if (!reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).isEmpty())
+            return new ModelAndView("redirect:/album/" + albumId);
+
         Album album = albumService.find(albumId).orElseThrow();
 
+        ModelAndView mav = new ModelAndView("reviews/album_review");
+        mav.addObject("album", album);
+        mav.addObject("edit", false);
 
-        ModelAndView modelAndView = new ModelAndView("reviews/album_review");
-        modelAndView.addObject("album", album);
 
-        return modelAndView;
+        return mav;
+    }
+
+    @RequestMapping(value = "/{albumId:\\d+}/edit-review", method = RequestMethod.GET)
+    public ModelAndView editAlbumReview(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
+        if (reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).isEmpty())
+            return createForm(loggedUser, reviewForm, albumId);
+
+        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get();
+
+        reviewForm.setTitle(review.getTitle());
+        reviewForm.setDescription(review.getDescription());
+        reviewForm.setRating(review.getRating());
+
+        ModelAndView mav = new ModelAndView("reviews/album_review");
+        mav.addObject("album", review.getAlbum());
+        mav.addObject("reviewForm", reviewForm);
+        mav.addObject("edit", true);
+
+
+        return mav;
+    }
+
+    @RequestMapping(value = "/{albumId:\\d+}/edit-review", method = RequestMethod.POST)
+    public ModelAndView editAlbumReview(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId, Model model) throws MessagingException {
+        if (errors.hasErrors()) {
+            return createForm(loggedUser, reviewForm, albumId);
+        }
+        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get();
+
+        AlbumReview albumReview = new AlbumReview(
+                review.getId(),
+                loggedUser,
+                new Album(albumId),
+                reviewForm.getTitle(),
+                reviewForm.getDescription(),
+                reviewForm.getRating(),
+                LocalDateTime.now(),
+                review.getLikes(),
+                review.isBlocked()
+        );
+        reviewService.updateAlbumReview(albumReview);
+        return new ModelAndView("redirect:/album/" + albumId);
     }
 
     @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.POST)
     public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
         if (errors.hasErrors()) {
-            return createForm(reviewForm, albumId);
+            return createForm(loggedUser, reviewForm, albumId);
         }
 
         AlbumReview albumReview = new AlbumReview(
