@@ -2,6 +2,8 @@ package ar.edu.itba.paw.services.email;
 
 import ar.edu.itba.paw.models.VerificationType;
 import ar.edu.itba.paw.services.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -25,6 +27,8 @@ import java.util.Map;
 
 @Service
 public class EmailServiceImpl implements EmailService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     @Autowired
     private Environment environment;
@@ -74,10 +78,13 @@ public class EmailServiceImpl implements EmailService {
                 template = "user_verification";
             }
             case VERIFY_FORGOT_PASSWORD -> {
-                verificationURL = baseUrl + "/user/create-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                verificationURL = baseUrl + "/user/reset-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
                 template = "create_password";
             }
         }
+
+        LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, email);
+        LOGGER.debug("Verification URL: {}", verificationURL);
 
         params.put("verificationURL", verificationURL);
         this.sendMessageUsingThymeleafTemplate(

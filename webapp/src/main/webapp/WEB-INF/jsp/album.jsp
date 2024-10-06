@@ -25,13 +25,15 @@
         <img src="${albumImgUrl}" alt="${album.title}" class="album">
           <div class="data-container">
           <p class="type"><spring:message code="label.album"/>
+            <c:if test="${loggedUser.moderator}">
             <c:url var="editAlbumUrl" value="/mod/edit/album/${album.id}"/>
             <a href="${editAlbumUrl}">
               <i class="fas fa-pencil-alt"></i>
-            </a>
-          </p>
-          <h1><c:out value="${album.title}"/></h1>
-          <div class="button-group">
+                </a>
+              </c:if>
+              </p>
+            <h1><c:out value="${album.title}"/></h1>
+            <div class="button-group">
             <c:url var="artistUrl" value="/artist/${artist.id}" />
             <a href="${artistUrl}" class="button artist-button">
               <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
@@ -60,7 +62,7 @@
             </c:when>
             <c:otherwise>
               <a href="${remove_favorite_url}">
-                <a href="${add_favorite_url}"><button><spring:message code="button.remove.favorites"/></button></a>
+                <button><spring:message code="button.remove.favorites"/></button>
               </a>
             </c:otherwise>
           </c:choose>

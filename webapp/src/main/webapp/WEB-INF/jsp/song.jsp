@@ -28,10 +28,12 @@
       </div>
       <div class="data-container">
         <p class="type"><spring:message code="label.song"/>
+          <c:if test="${loggedUser.moderator}">
           <c:url var="editSongUrl" value="/mod/edit/song/${song.id}"/>
           <a href="${editSongUrl}">
             <i class="fas fa-pencil-alt"></i>
           </a>
+          </c:if>
         </p>
         <h1><c:out value="${song.title}"/></h1>
         <div class="artist-album-container">

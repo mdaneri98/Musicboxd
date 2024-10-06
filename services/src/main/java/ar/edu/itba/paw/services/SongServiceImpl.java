@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.services;
 
-
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
@@ -8,6 +7,7 @@ import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.persistence.SongDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,34 +21,43 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Song> find(long id) {
         return songDao.find(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Song> findAll() {
         return songDao.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Song> findByTitleContaining(String sub) {
         return songDao.findByTitleContaining(sub);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Song> findPaginated(FilterType filterType, int page, int pageSize) {
         return songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<Song> findByArtistId(long id) {
         return songDao.findByArtistId(id);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<Song> findByAlbumId(long id) {
         return songDao.findByAlbumId(id);
     }
 
     @Override
+    @Transactional
     public Song create(Song song) {
         Song createdSong = songDao.create(song);
         songDao.saveSongArtist(createdSong, song.getAlbum().getArtist());
@@ -56,16 +65,19 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    @Transactional
     public Song update(Song song) {
         return songDao.update(song);
     }
 
     @Override
+    @Transactional
     public boolean delete(long id) {
         return songDao.delete(id);
     }
 
     @Override
+    @Transactional
     public Song create(SongDTO songDTO, Album album) {
         Song song = new Song(0L, songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
         song = songDao.create(song);
@@ -74,6 +86,7 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    @Transactional
     public boolean createAll(List<SongDTO> songsDTO, Album album) {
         for (SongDTO songDTO : songsDTO) {
             if (!songDTO.isDeleted()) {
@@ -84,6 +97,7 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    @Transactional
     public Song update(SongDTO songDTO, Album album) {
         Song song = new Song(songDTO.getId(), songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
         song = songDao.update(song);
@@ -91,6 +105,7 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    @Transactional
     public boolean updateAll(List<SongDTO> songsDTO, Album album) {
         for (SongDTO songDTO : songsDTO) {
             if (songDTO.getId() != 0) {
@@ -109,11 +124,13 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    @Transactional
     public boolean updateRating(long songId, float newRating, int newRatingAmount) {
         return songDao.updateRating(songId, newRating, newRatingAmount);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasUserReviewed(long userId, long songId) {
         return songDao.hasUserReviewed(userId, songId);
     }

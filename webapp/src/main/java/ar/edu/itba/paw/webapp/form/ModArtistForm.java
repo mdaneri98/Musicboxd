@@ -3,7 +3,7 @@ package ar.edu.itba.paw.webapp.form;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,8 @@ public class ModArtistForm {
     private String bio;
     @Nullable
     private MultipartFile artistImage;
+
+    @Valid
     private List<ModAlbumForm> albums = new ArrayList<>();
 
     // Hidden inputs

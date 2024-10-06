@@ -8,8 +8,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class ErrorController {
 
     @RequestMapping("/403")
-    public ModelAndView forbidden() {
-        return new ModelAndView("errors/403");
+    public ModelAndView notFound() {
+        return new ModelAndView("404");
     }
 
 

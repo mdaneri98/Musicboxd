@@ -41,7 +41,7 @@
         <div>
             <label><spring:message code="label.desc"/>
                 <form:errors path="bio" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="bio" type="text" />
+                <form:textarea path="bio" type="text" />
             </label>
         </div>
         <div>

@@ -4,6 +4,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class ModAlbumForm {
     private long id;
     private long albumImageId;
     private long artistId;
+
+    @Valid
     private List<ModSongForm> songs = new ArrayList<>();
     private boolean deleted = false;
 
