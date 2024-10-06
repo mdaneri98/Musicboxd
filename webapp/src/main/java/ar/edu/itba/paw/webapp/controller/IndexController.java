@@ -33,7 +33,7 @@ public class IndexController {
     }
 
     @RequestMapping(value = {"/home", "/"})
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam(name = "pageNum", required = false) Integer pageNum, @RequestParam(name = "error", required = false) String error, @RequestParam(name = "success", required = false) String success) {
         if (pageNum == null || pageNum < 1) pageNum = 1;
         int pageSize = 10;
         long loggedUserId;
@@ -53,6 +53,8 @@ public class IndexController {
         boolean hasNextPopular = popularReviews.size() >= pageSize-1;
         boolean hasNextFollowing = followingReviews.size() >= pageSize-1;
 
+        mav.addObject("success", success);
+        mav.addObject("error", error);
 
         mav.addObject("showNext", hasNextPopular || hasNextFollowing);
         mav.addObject("showPrevious", pageNum > 1);
@@ -80,9 +82,10 @@ public class IndexController {
 
     @RequestMapping("/music")
     public ModelAndView music(@ModelAttribute("loggedUser") User loggedUser) {
-        ModelAndView mav;
-        if (loggedUser == null) mav = new ModelAndView("anonymous/music");
-        else mav = new ModelAndView("music");
+        ModelAndView mav = new ModelAndView("anonymous/music");
+        if (loggedUser != null)
+            mav.setViewName("music");
+
 
         List<Album> topRatedAlbums = albumService.findPaginated(FilterType.RATING,1, 5);
         List<Album> mostPopularAlbums = albumService.findPaginated(FilterType.POPULAR,1, 5);

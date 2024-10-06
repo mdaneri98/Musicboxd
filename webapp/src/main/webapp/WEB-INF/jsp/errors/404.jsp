@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -44,8 +45,8 @@
 
 </head>
 <body>
-    <h2>Oops!</h2>
-    <p>We couldn't find that page for you!</p>
+    <h2><spring:message code="label.error.404.header" /></h2>
+    <p><spring:message code="label.error.404.description"/></p>
 
     <c:url var="homeUrl" value="/" />
     <p>Back to <a href="${homeUrl}">Home</a></p>

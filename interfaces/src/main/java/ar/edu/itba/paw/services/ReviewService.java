@@ -1,5 +1,8 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
@@ -9,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewService extends CrudService<Review> {
+
+    boolean deleteReview(Review review, long userId);
 
     Optional<ArtistReview> findArtistReviewById(long id);
     Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId);
@@ -47,4 +52,11 @@ public interface ReviewService extends CrudService<Review> {
     void block(Long reviewId);
     void unblock(Long reviewId);
 
+    void updateUserReviewAmount(long userId);
+    void updateSongRating(long songId);
+    void updateAlbumRating(long albumId);
+    void updateArtistRating(long artistId);
+    Review updateSongReview(SongReview review);
+    Review updateArtistReview(ArtistReview review);
+    Review updateAlbumReview(AlbumReview review);
 }

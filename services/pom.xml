@@ -37,6 +37,13 @@
       <artifactId>spring-webmvc</artifactId>
     </dependency>
 
+    <!-- AOP -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+
+
     <!-- Mailing dependencies -->
     <dependency>
       <groupId>org.springframework</groupId>

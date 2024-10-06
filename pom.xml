@@ -83,6 +83,13 @@
         <version>${org.hibernate-validator.version}</version>
       </dependency>
 
+      <!-- AOP -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
       <!-- Mailing dependencies -->
       <dependency>
         <groupId>org.springframework</groupId>

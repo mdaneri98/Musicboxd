@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,41 +24,49 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Artist> find(long id) {
         return artistDao.find(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Artist> findAll() {
         return artistDao.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Artist> findPaginated(FilterType filterType, int page, int pageSize) {
         return artistDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Artist> findByNameContaining(String sub) {
         return artistDao.findByNameContaining(sub);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Artist> findBySongId(long id) {
         return artistDao.findBySongId(id);
     }
 
     @Override
+    @Transactional
     public Artist create(Artist artist) {
         return artistDao.create(artist);
     }
 
     @Override
+    @Transactional
     public Artist update(Artist artist) {
         return artistDao.update(artist);
     }
 
     @Override
+    @Transactional
     public boolean delete(long id) {
         Optional<Artist> artist = artistDao.find(id);
         if (artist.isEmpty())
@@ -68,6 +77,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional
     public boolean delete(Artist artist) {
         if (artist.getId() == null || artist.getImgId() == null || artist.getId() < 1 || artist.getImgId() < 1)
             return false;
@@ -77,6 +87,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional
     public Artist create(ArtistDTO artistDTO) {
         long imgId = imageService.save(artistDTO.getImage(), false);
         Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(),imgId);
@@ -90,6 +101,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional
     public Artist update(ArtistDTO artistDTO) {
         long imgId = imageService.update(artistDTO.getImgId(), artistDTO.getImage());
 
@@ -107,13 +119,14 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional
     public boolean updateRating(Long artistId, Float roundedAvgRating, Integer ratingAmount) {
         return artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasUserReviewed(long userId, long artistId) {
         return artistDao.hasUserReviewed(userId, artistId);
     }
 }
-
