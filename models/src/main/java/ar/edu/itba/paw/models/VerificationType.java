@@ -2,7 +2,8 @@ package ar.edu.itba.paw.models;
 
 public enum VerificationType {
     VERIFY_EMAIL("check_email"),
-    VERIFY_FORGOT_PASSWORD("forgot_password");
+    VERIFY_FORGOT_PASSWORD("forgot_password"),
+    VERIFY_GENERAL("general");
 
     private final String value;
 
