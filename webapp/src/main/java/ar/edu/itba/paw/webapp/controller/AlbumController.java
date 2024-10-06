@@ -173,6 +173,13 @@ public class AlbumController {
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
+    @RequestMapping(value = "/{albumId:\\d+}/delete-review", method = RequestMethod.GET)
+    public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
+        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get();
+        reviewService.deleteReview(review, loggedUser.getId());
+        return new ModelAndView("redirect:/album/" + albumId);
+    }
+
     @RequestMapping(value = "/{albumId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
         userService.addFavoriteAlbum(loggedUser.getId(), albumId);

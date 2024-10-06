@@ -47,6 +47,10 @@
             <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
                 <jsp:param name="posturl" value="${posturl}"/>
             </jsp:include>
+            <c:url var="deleteUrl" value="/album/${album.id}/delete-review" />
+            <a href="${deleteUrl}" class="delete-button">
+                <spring:message code="label.delete.review" />
+            </a>
         </c:otherwise>
     </c:choose>
 </div>

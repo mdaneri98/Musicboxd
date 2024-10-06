@@ -98,8 +98,19 @@ public class ReviewServiceImpl implements ReviewService {
             res = reviewDao.delete(id);
             updateSongRating(id);
         }
+
         return res;
     }
+
+    @Override
+    @Transactional
+    public boolean deleteReview(Review review, long userId) {
+        boolean res = delete(review.getId());
+        if (res) updateUserReviewAmount(userId);
+        return res;
+    }
+
+
 
     @Override
     @Transactional
