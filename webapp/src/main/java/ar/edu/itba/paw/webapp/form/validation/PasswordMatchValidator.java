@@ -8,11 +8,15 @@ import javax.validation.ConstraintValidatorContext;
 public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch, UserForm> {
 
     @Override
+    public void initialize(PasswordMatch constraintAnnotation) {}
+
+    @Override
     public boolean isValid(UserForm userForm, ConstraintValidatorContext context) {
         if (userForm.getPassword() == null || userForm.getRepeatPassword() == null) {
             return false;
         }
         return userForm.getPassword().equals(userForm.getRepeatPassword());
     }
+
 }
 

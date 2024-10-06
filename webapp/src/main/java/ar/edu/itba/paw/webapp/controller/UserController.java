@@ -4,7 +4,7 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.form.CreatePasswordForm;
+import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
 import org.slf4j.Logger;
@@ -14,20 +14,16 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,10 +118,14 @@ public class UserController {
     public ModelAndView verify(@RequestParam(name = "code", defaultValue = "0") String verificationCode,
                                @ModelAttribute("loggedUser") User loggedUser){
         Long userId = userService.verify(VerificationType.VERIFY_EMAIL, verificationCode);
-        if (userId < 1)
-            return new ModelAndView("users/verification_expired");
+        if (userId < 1) {
+            //userService.createVerification(VerificationType.VERIFY_EMAIL, loggedUser); //Implica deber estar logueado
+            String errorMessage = messageSource.getMessage("error.user.verification.expired", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
 
-        return new ModelAndView("redirect:/");
+        String successMessage = messageSource.getMessage("success.user.verification", null, LocaleContextHolder.getLocale());
+        return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
     }
 
     @RequestMapping("/{userId:\\d+}")
@@ -238,7 +238,8 @@ public class UserController {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
         SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authenticationToken));
 
-        return new ModelAndView("redirect:/");
+        String errorMessage = messageSource.getMessage("success.user.creation", null, LocaleContextHolder.getLocale());
+        return new ModelAndView("redirect:/?success=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
     }
 
     @RequestMapping(value = "/forgot-password", method = RequestMethod.GET)
@@ -261,21 +262,22 @@ public class UserController {
         return new ModelAndView("redirect:/user/login");
     }
 
-    @RequestMapping(value = "/create-password", method = RequestMethod.GET)
-    public ModelAndView createPassword(@ModelAttribute(name="createPasswordForm") CreatePasswordForm createPasswordForm, @RequestParam("code") String code) {
-        createPasswordForm.setCode(code);
-        return new ModelAndView("users/password/create_password");
+    @RequestMapping(value = "/reset-password", method = RequestMethod.GET)
+    public ModelAndView resetPassword(@ModelAttribute(name="resetPasswordForm") ResetPasswordForm resetPasswordForm, @RequestParam("code") String code) {
+        resetPasswordForm.setCode(code);
+        return new ModelAndView("users/password/reset_password");
     }
 
-    @RequestMapping(value = "/create-password", method = RequestMethod.POST)
-    public ModelAndView createPassword(@Valid @ModelAttribute("createPasswordForm") CreatePasswordForm createPasswordForm,
+    @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
+    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm,
                                  BindingResult errors) {
         if (errors.hasErrors())
-            return new ModelAndView("redirect:/user/create-password?code=" + createPasswordForm.getCode());
+            return resetPassword(resetPasswordForm, resetPasswordForm.getCode());
 
-        Long userId = userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, createPasswordForm.getCode());
+        Long userId = userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, resetPasswordForm.getCode());
         if (userId == null || userId < 1) {
-            return new ModelAndView("redirect:/user/login");
+            String errorMessage = messageSource.getMessage("error.user.verification", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
         Optional<User> userOptional = userService.find(userId);
@@ -283,7 +285,7 @@ public class UserController {
             String errorMessage = messageSource.getMessage("error.user.verification", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
-        userService.changePassword(userOptional.get().getId(), createPasswordForm.getPassword());
+        userService.changePassword(userOptional.get().getId(), resetPasswordForm.getPassword());
 
         String successMessage = messageSource.getMessage("success.user.change.password", null, LocaleContextHolder.getLocale());
         return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));

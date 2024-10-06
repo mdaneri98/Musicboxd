@@ -150,9 +150,7 @@ public class ModeratorController {
     public ModelAndView addAlbumForm(@PathVariable(name = "artistId") final long artistId,
                                      @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
                                      @ModelAttribute("loggedUser") User loggedUser) {
-
         Optional<Artist> artist = artistService.find(artistId);
-
         if(artist.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/add/artist/{}/album'. No artist with id {}", artistId, artistId);
             String errorMessage = messageSource.getMessage("error.artist.find", null, LocaleContextHolder.getLocale());

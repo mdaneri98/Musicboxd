@@ -1,14 +1,13 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.form.validation.PasswordMatch;
+import ar.edu.itba.paw.webapp.form.validation.ResetPasswordMatch;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@PasswordMatch(message = "Las contraseñas deben ser iguales")
-public class CreatePasswordForm {
+@ResetPasswordMatch(message = "Las contraseñas deben ser iguales")
+public class ResetPasswordForm {
 
     @NotNull
     private String code;
@@ -17,7 +16,7 @@ public class CreatePasswordForm {
     @Size(min = 8)
     private String repeatPassword;
 
-    public CreatePasswordForm(String code, String password, String repeatPassword) {
+    public ResetPasswordForm(String code, String password, String repeatPassword) {
         this.password = password;
         this.repeatPassword = repeatPassword;
         this.code = code;

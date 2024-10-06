@@ -131,7 +131,21 @@
         <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
         <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
     </div>
-
 </div>
+
+<script>
+    $(document).ready(function() {
+        // Ocultar el mensaje de error después de 5 segundos
+        setTimeout(function() {
+            $('#errorAlert').alert('close');
+        }, 5000); // 5000ms = 5 segundos
+
+        // Ocultar el mensaje de éxito después de 5 segundos
+        setTimeout(function() {
+            $('#successAlert').alert('close');
+        }, 5000); // 5000ms = 5 segundos
+    });
+</script>
+
 </body>
 </html>
