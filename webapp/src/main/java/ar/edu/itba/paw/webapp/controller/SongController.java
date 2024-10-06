@@ -4,6 +4,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
@@ -85,19 +86,66 @@ public class SongController {
 
 
     @RequestMapping(value = "/{songId:\\d+}/reviews", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long songId) {
+    public ModelAndView createForm(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long songId) {
+        if (!reviewService.findSongReviewByUserId(loggedUser.getId(), songId).isEmpty())
+            return new ModelAndView("redirect:/song/" + songId);
+
         final ModelAndView mav = new ModelAndView("reviews/song_review");
         Song song = songService.find(songId).get();
         mav.addObject("song", song);
         mav.addObject("album", song.getAlbum());
+        mav.addObject("edit", false);
+
         return mav;
+    }
+
+    @RequestMapping(value = "/{songId:\\d+}/edit-review", method = RequestMethod.GET)
+    public ModelAndView editSongReview(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long songId) {
+        if (reviewService.findSongReviewByUserId(loggedUser.getId(), songId).isEmpty())
+            return createForm(loggedUser, reviewForm, songId);
+
+        SongReview review = reviewService.findSongReviewByUserId(loggedUser.getId(), songId).get();
+
+        reviewForm.setTitle(review.getTitle());
+        reviewForm.setDescription(review.getDescription());
+        reviewForm.setRating(review.getRating());
+
+        ModelAndView mav = new ModelAndView("reviews/song_review");
+        mav.addObject("song", review.getSong());
+        mav.addObject("album", review.getSong().getAlbum());
+        mav.addObject("reviewForm", reviewForm);
+        mav.addObject("edit", true);
+
+        return mav;
+    }
+
+    @RequestMapping(value = "/{songId:\\d+}/edit-review", method = RequestMethod.POST)
+    public ModelAndView editSongReview(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
+        if (errors.hasErrors()) {
+            return createForm(loggedUser, reviewForm, songId);
+        }
+        SongReview review = reviewService.findSongReviewByUserId(loggedUser.getId(), songId).get();
+
+        SongReview songReview = new SongReview(
+                review.getId(),
+                loggedUser,
+                new Song(songId),
+                reviewForm.getTitle(),
+                reviewForm.getDescription(),
+                reviewForm.getRating(),
+                LocalDateTime.now(),
+                review.getLikes(),
+                review.isBlocked()
+        );
+        reviewService.updateSongReview(songReview);
+        return new ModelAndView("redirect:/song/" + songId);
     }
 
 
     @RequestMapping(value = "/{songId:\\d+}/reviews", method = RequestMethod.POST)
     public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
         if (errors.hasErrors()) {
-            return createForm(reviewForm, songId);
+            return createForm(loggedUser, reviewForm, songId);
         }
 
         SongReview songReview = new SongReview(
