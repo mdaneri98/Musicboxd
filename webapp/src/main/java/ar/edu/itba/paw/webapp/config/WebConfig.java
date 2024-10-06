@@ -19,6 +19,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -64,8 +65,9 @@ public class WebConfig implements WebMvcConfigurer {
     public MessageSource messageSource() {
         final ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
 
-        ms.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
+        ms.setCacheSeconds((int) TimeUnit.SECONDS.toSeconds(5));
         ms.setBasename("i18n/messages");
+        ms.setDefaultEncoding(StandardCharsets.UTF_8.name());
 
         return ms;
     }

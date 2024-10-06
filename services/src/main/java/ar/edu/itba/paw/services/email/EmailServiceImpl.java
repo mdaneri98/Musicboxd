@@ -78,7 +78,7 @@ public class EmailServiceImpl implements EmailService {
                 template = "user_verification";
             }
             case VERIFY_FORGOT_PASSWORD -> {
-                verificationURL = baseUrl + "/user/create-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                verificationURL = baseUrl + "/user/reset-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
                 template = "create_password";
             }
         }
