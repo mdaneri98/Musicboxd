@@ -30,7 +30,7 @@
     </div>
     <div class="form-group">
       <label> <spring:message code="label.repeat.password"/><form:input path="repeatPassword" type="password"/></label>
-      <form:errors path="repeatPassword" cssStyle="color:error;" element="p"/>
+      <form:errors path="repeatPassword" cssStyle="color:red;" element="p"/>
     </div>
     <!-- Mostrar errores a nivel de la clase para la validación de @PasswordMatch -->
     <div class="form-group">

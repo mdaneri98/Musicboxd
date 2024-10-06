@@ -66,6 +66,14 @@ public class ImageServiceImpl implements ImageService {
         return imageDao.delete(imageId);
     }
 
+    public long getDefaultImgId() {
+        return DEFAULT_IMAGE_ID;
+    }
+
+    public long getDefaultProfileImgId() {
+        return DEFAULT_PROFILE_IMAGE_ID;
+    }
+
     public boolean exists(long imageId) {
         return imageDao.exists(imageId);
     }
