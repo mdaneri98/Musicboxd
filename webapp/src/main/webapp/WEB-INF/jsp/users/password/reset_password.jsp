@@ -15,8 +15,8 @@
 <div class="container">
     <h1><spring:message code="webpage.name"/></h1>
 
-    <form:form modelAttribute="createPasswordForm" action="${url}" method="post">
-        <c:url var="posturl" value="/user/create-password?code=${createPasswordForm.code}" />
+    <form:form modelAttribute="resetPasswordForm" action="${url}" method="post">
+        <c:url var="posturl" value="/user/reset-password?code=${resetPasswordForm.code}" />
         <div class="form-group">
             <label> <spring:message code="label.password"/> <form:input path="password" type="password"/></label>
             <form:errors path="password" element="p" cssStyle="color:red;"/>
