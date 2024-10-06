@@ -13,6 +13,8 @@ import java.util.Optional;
 
 public interface ReviewService extends CrudService<Review> {
 
+    boolean deleteReview(Review review, long userId);
+
     Optional<ArtistReview> findArtistReviewById(long id);
     Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId);
     ArtistReview saveArtistReview(ArtistReview review);
