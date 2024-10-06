@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Size;
@@ -9,19 +11,20 @@ import java.util.List;
 
 public class ModAlbumForm {
 
-    private long id;
-    @Size(min = 1, max = 255)
+    @Size(min = 2, max = 255)
     private String title;
     @Size(min = 1, max = 50)
     private String genre;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
-
-    private long albumImageId;
+    @Nullable
     private MultipartFile albumImage;
 
+    // Hidden inputs
+    private long id;
+    private long albumImageId;
     private long artistId;
     private List<ModSongForm> songs = new ArrayList<>();
-
     private boolean deleted = false;
 
     public ModAlbumForm() {}

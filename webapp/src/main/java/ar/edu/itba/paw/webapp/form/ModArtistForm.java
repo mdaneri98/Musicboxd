@@ -1,23 +1,26 @@
 package ar.edu.itba.paw.webapp.form;
 
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ModArtistForm {
 
-    private long id;
     @Size(min = 2, max = 50)
     private String name;
     @Size(min = 2, max = 2048)
     private String bio;
-
-    private long artistImgId;
+    @Nullable
     private MultipartFile artistImage;
-
     private List<ModAlbumForm> albums = new ArrayList<>();
+
+    // Hidden inputs
+    private long id;
+    private long artistImgId;
     private boolean deleted;
 
     public ModArtistForm() {
