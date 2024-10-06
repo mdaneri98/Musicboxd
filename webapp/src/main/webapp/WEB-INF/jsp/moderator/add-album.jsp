@@ -44,8 +44,8 @@
                 <div class="data-container element-details-container">
                     <div>
                         <label>Title:
-                        <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
-                        <form:input path="title" type="text" required="true"/>
+                            <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
+                            <form:input path="title" type="text" required="true"/>
                         </label>
                     </div>
                     <div>
@@ -83,12 +83,15 @@
                     <div class="data-container element-details-container song-details-container">
                         <label>Title:
                             <form:input path="songs[${status.index}].title" type="text" required="true" class="element-field"/>
+                            <form:errors path="songs[${status.index}].title" cssClass="error" element="p" cssStyle="color:red;"/>
                         </label>
                         <label>Duration:
                             <form:input path="songs[${status.index}].duration" type="text" required="true" class="element-field"/>
+                            <form:errors path="songs[${status.index}].duration" cssClass="error" element="p" cssStyle="color:red;"/>
                         </label>
                         <label>Track Number:
                             <form:input path="songs[${status.index}].trackNumber" type="number" required="true" class="element-field"/>
+                            <form:errors path="songs[${status.index}].trackNumber" cssClass="error" element="p" cssStyle="color:red;"/>
                         </label>
                     </div>
                     <!-- Remove button for existing songs -->
