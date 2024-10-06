@@ -11,6 +11,8 @@ import ar.edu.itba.paw.webapp.form.ModArtistForm;
 import ar.edu.itba.paw.webapp.form.ModSongForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
@@ -33,12 +37,14 @@ public class ModeratorController {
     private final AlbumService albumService;
     private final SongService songService;
     private final ReviewService reviewService;
+    private final MessageSource messageSource;
 
-    public ModeratorController(ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService) {
+    public ModeratorController(ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService, MessageSource messageSource) {
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
         this.reviewService = reviewService;
+        this.messageSource = messageSource;
     }
 
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
@@ -76,8 +82,6 @@ public class ModeratorController {
     public ModelAndView submitArtistForm(@Valid @ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
                                          @ModelAttribute("loggedUser") User loggedUser,
                                          final BindingResult errors) {
-
-        // Check if there are any validation errors
         if (errors.hasErrors()) {
             return addArtistForm(modArtistForm, loggedUser);
         }
@@ -100,7 +104,8 @@ public class ModeratorController {
         Optional<Artist> artist = artistService.find(artistId);
         if (artist.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/edit/artist' no artist with id {}", artistId);
-            return new ModelAndView("redirect:/error");
+            String errorMessage = messageSource.getMessage("error.artist.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
         // Fill data
@@ -113,16 +118,13 @@ public class ModeratorController {
         List<Album> albums = albumService.findByArtistId(artistId);
         List<ModAlbumForm> albumForms = new ArrayList<>();
         for (Album album : albums) {
-            // Create ModAlbumForm
             ModAlbumForm albumForm = new ModAlbumForm();
 
-            // Fill Data
             albumForm.setId(album.getId());
             albumForm.setTitle(album.getTitle());
             albumForm.setGenre(album.getGenre());
             albumForm.setAlbumImageId(album.getImgId());
 
-            // Add ModAlbumForm to List
             albumForms.add(albumForm);
         }
         modArtistForm.setAlbum(albumForms);
@@ -134,11 +136,8 @@ public class ModeratorController {
                                          @ModelAttribute("loggedUser") User loggedUser,
                                          @PathVariable(name = "artistId") long artistId,
                                          final BindingResult errors) {
-
-        // Check if there are any validation errors
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return editArtistForm(modArtistForm, loggedUser, artistId);
-        }
 
         Artist artist = artistService.update(transformArtistToDTO(modArtistForm));
 
@@ -156,7 +155,8 @@ public class ModeratorController {
 
         if(artist.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/add/artist/{}/album'. No artist with id {}", artistId, artistId);
-            return new ModelAndView("redirect:/error");
+            String errorMessage = messageSource.getMessage("error.artist.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
         return new ModelAndView("moderator/add-album").addObject(artistId);
@@ -167,11 +167,8 @@ public class ModeratorController {
                                         @Valid @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
                                         @ModelAttribute("loggedUser") User loggedUser,
                                         final BindingResult errors) {
-
-        // Check if there are any validation errors
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return addAlbumForm(artistId, modAlbumForm, loggedUser);
-        }
 
         Album album = albumService.create(transformAlbumToDTO(modAlbumForm), artistId);
 
@@ -191,7 +188,8 @@ public class ModeratorController {
         Optional<Album> album = albumService.find(albumId);
         if (album.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/edit/album' no album with id {}", albumId);
-            return new ModelAndView("redirect:/error");
+            String errorMessage = messageSource.getMessage("error.album.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
         // Fill data
@@ -206,16 +204,13 @@ public class ModeratorController {
         List<Song> songs = songService.findByAlbumId(albumId);
         List<ModSongForm> songForms = new ArrayList<>();
         for (Song song : songs) {
-            // Create ModSongForm
             ModSongForm songForm = new ModSongForm();
 
-            // Fill Data
             songForm.setId(song.getId());
             songForm.setTitle(song.getTitle());
             songForm.setDuration(song.getDuration());
             songForm.setTrackNumber(song.getTrackNumber());
 
-            // Add ModSongForm to List
             songForms.add(songForm);
         }
         modAlbumForm.setSongs(songForms);
@@ -227,11 +222,8 @@ public class ModeratorController {
                                       @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
                                       @ModelAttribute("loggedUser") User loggedUser,
                                       final BindingResult errors) {
-
-        // Check if there are any validation errors
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return editAlbumForm(albumId, modAlbumForm, loggedUser);
-        }
 
         Album newAlbum = albumService.update(transformAlbumToDTO(modAlbumForm));
 
@@ -249,7 +241,7 @@ public class ModeratorController {
 
         if(album.isEmpty()) {
             LOGGER.debug("Error in *GET* 'mod/add/album/{}/song'. No album with id {}", albumId, albumId);
-            return new ModelAndView("redirect:/error");
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode("The album doesn't exist.", StandardCharsets.UTF_8));
         }
 
         return new ModelAndView("moderator/add-song").addObject(albumId);
@@ -260,10 +252,8 @@ public class ModeratorController {
                                        @Valid @ModelAttribute("modSongForm") final ModSongForm modSongForm,
                                        @ModelAttribute("loggedUser") User loggedUser,
                                        final BindingResult errors) {
-
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return addSongForm(albumId, modSongForm, loggedUser);
-        }
 
         Song song = songService.create(transformSongToDTO(modSongForm), new Album(albumId));
 
@@ -276,16 +266,16 @@ public class ModeratorController {
     public ModelAndView editSongForm(@PathVariable(name = "songId") final long songId,
                                     @ModelAttribute("modSongForm") final ModSongForm modSongForm,
                                     @ModelAttribute("loggedUser") User loggedUser) {
-
         ModelAndView modelAndView = new ModelAndView("moderator/add-song");
         modelAndView.addObject("postUrl", "/mod/edit/song/" + songId);
 
         Optional<Song> song = songService.find(songId);
         if (song.isEmpty()) {
             LOGGER.debug("Error in *GET* '/mod/edit/song' no song with id {}", songId);
-            return new ModelAndView("redirect:/error");
+            String errorMessage = messageSource.getMessage("error.song.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
-        // Fill data
+
         modSongForm.setId(songId);
         modSongForm.setTitle(song.get().getTitle());
         modSongForm.setDuration(song.get().getDuration());
@@ -300,10 +290,8 @@ public class ModeratorController {
                                      @ModelAttribute("modSongForm") final ModSongForm modSongForm,
                                      @ModelAttribute("loggedUser") User loggedUser,
                                      final BindingResult errors) {
-
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return editSongForm(songId, modSongForm, loggedUser);
-        }
 
         Song newSong = songService.update(transformSongToDTO(modSongForm), new Album(modSongForm.getAlbumId()));
 
@@ -320,9 +308,14 @@ public class ModeratorController {
 
     @RequestMapping(path = "delete/album/{albumId:\\d+}")
     public ModelAndView deleteAlbum(@PathVariable(name = "albumId") final long albumId) {
-        Optional<Album> album = albumService.find(albumId);
-        albumService.delete(album.get());
-        return new ModelAndView("redirect:/artist/" + album.get().getArtist().getId());
+        Optional<Album> albumOptional = albumService.find(albumId);
+        if (albumOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.album.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+
+        albumService.delete(albumOptional.get());
+        return new ModelAndView("redirect:/artist/" + albumOptional.get().getArtist().getId());
     }
 
     @RequestMapping(path = "/update-ratings", method = RequestMethod.GET)

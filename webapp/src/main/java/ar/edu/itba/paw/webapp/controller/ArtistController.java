@@ -9,6 +9,8 @@ import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,13 +34,15 @@ public class ArtistController {
     private final AlbumService albumService;
     private final SongService songService;
     private final ReviewService reviewService;
+    private final MessageSource messageSource;
 
-    public ArtistController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService) {
+    public ArtistController(UserService userService, ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService, MessageSource messageSource) {
         this.userService = userService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
         this.reviewService = reviewService;
+        this.messageSource = messageSource;
     }
 
     @RequestMapping("/")
@@ -57,12 +63,18 @@ public class ArtistController {
 
         if (pageNum == null || pageNum <= 0) pageNum = 1;
 
-        Artist artist = artistService.find(artistId).get();
+        Optional<Artist> artistOptional = artistService.find(artistId);
+        if (artistOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.artist.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+
+        Artist artist = artistOptional.get();
         List<Album> albums = albumService.findByArtistId(artistId);
         List<Song> songs = songService.findByArtistId(artistId);
         List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(artistId,pageNum,5, loggedUser.getId());
         boolean isReviewed = reviewService.hasUserReviewedArtist(loggedUser.getId(), artistId);
-        Integer loggedUserRating = isReviewed? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get().getRating(): 0;
+        Integer loggedUserRating = isReviewed ? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get().getRating() : 0;
 
         mav.addObject("artist", artist);
         mav.addObject("albums", albums);
