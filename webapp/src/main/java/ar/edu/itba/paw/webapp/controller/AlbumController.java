@@ -7,6 +7,8 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +16,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @RequestMapping("/album")
@@ -26,12 +31,14 @@ public class AlbumController {
     private final AlbumService albumService;
     private final SongService songService;
     private final ReviewService reviewService;
+    private final MessageSource messageSource;
 
-    public AlbumController(UserService userService, AlbumService albumService, SongService songService, ReviewService reviewService) {
+    public AlbumController(UserService userService, AlbumService albumService, SongService songService, ReviewService reviewService, MessageSource messageSource) {
         this.userService = userService;
         this.albumService = albumService;
         this.songService = songService;
         this.reviewService = reviewService;
+        this.messageSource = messageSource;
     }
 
     @RequestMapping("/")
@@ -50,7 +57,13 @@ public class AlbumController {
         final ModelAndView mav = new ModelAndView("album");
         int pageSize = 5;
 
-        Album album = albumService.find(albumId).orElseThrow();
+        Optional<Album> albumOptional = albumService.find(albumId);
+        if (albumOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.album.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+
+        Album album = albumOptional.get();
         List<Song> songs = songService.findByAlbumId(albumId);
 
         List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId, pageNum, pageSize, loggedUser.getId());

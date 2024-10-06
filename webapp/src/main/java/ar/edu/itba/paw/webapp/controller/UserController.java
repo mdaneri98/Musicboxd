@@ -9,6 +9,8 @@ import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +25,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,11 +40,14 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final ReviewService reviewService;
+    private final MessageSource messageSource;
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager, ReviewService reviewService) {
+
+    public UserController(UserService userService, AuthenticationManager authenticationManager, ReviewService reviewService, MessageSource messageSource) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.reviewService = reviewService;
+        this.messageSource = messageSource;
     }
 
     @RequestMapping("/profile")
@@ -184,8 +191,13 @@ public class UserController {
         boolean showNext = followingList.size() == pageSize || followersList.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
-        // Añadir objetos al modelo
-        mav.addObject("user", userService.find(userId).get());
+        Optional<User> userOptional = userService.find(userId);
+        if (userOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.user.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+
+        mav.addObject("user", userOptional.get());
         mav.addObject("followingList", followingList);
         mav.addObject("followersList", followersList);
         mav.addObject("loggedUser", loggedUser);
@@ -213,12 +225,14 @@ public class UserController {
     @RequestMapping(path = "/register", method = RequestMethod.POST)
     public ModelAndView create(@Valid @ModelAttribute("userForm") final UserForm userForm,
                                final BindingResult errors) {
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return createForm(userForm);
-        }
 
-        //TODO: Chequear que se haya creado bien. El método lanza excepcion o Optionals!
         final Optional<User> userOpt = userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
+        if (userOpt.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.user.creation", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
 
         // "Generar una sesión" (así no redirije a /login)
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
@@ -254,21 +268,25 @@ public class UserController {
     }
 
     @RequestMapping(value = "/create-password", method = RequestMethod.POST)
-    public String createPassword(@Valid @ModelAttribute("createPasswordForm") CreatePasswordForm createPasswordForm,
+    public ModelAndView createPassword(@Valid @ModelAttribute("createPasswordForm") CreatePasswordForm createPasswordForm,
                                  BindingResult errors) {
-        if (errors.hasErrors()) {
-            return "redirect:/user/create-password?code=" + createPasswordForm.getCode();
-        }
+        if (errors.hasErrors())
+            return new ModelAndView("redirect:/user/create-password?code=" + createPasswordForm.getCode());
 
         Long userId = userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, createPasswordForm.getCode());
         if (userId == null || userId < 1) {
-            return "redirect:/user/login";
+            return new ModelAndView("redirect:/user/login");
         }
 
-        User user = userService.find(userId).get();
-        userService.changePassword(user.getId(), createPasswordForm.getPassword());
+        Optional<User> userOptional = userService.find(userId);
+        if (userOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.user.verification", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+        userService.changePassword(userOptional.get().getId(), createPasswordForm.getPassword());
 
-        return "redirect:/user/login";
+        String successMessage = messageSource.getMessage("success.user.change.password", null, LocaleContextHolder.getLocale());
+        return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
     }
 
     @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)

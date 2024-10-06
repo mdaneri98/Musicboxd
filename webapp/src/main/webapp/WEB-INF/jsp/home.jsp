@@ -42,6 +42,20 @@
     </jsp:include>
 </div>
 <div class="container">
+    <div>
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong><spring:message code="message.error"/>:</strong> ${error}
+            </div>
+        </c:if>
+
+        <c:if test="${not empty success}">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong><spring:message code="message.success"/>:</strong> ${success}
+            </div>
+        </c:if>
+    </div>
+
     <div class="toggle">
         <span id="forYouButton" class="tab-button active"><spring:message code="home.for.you"/></span>
         <span>/</span>

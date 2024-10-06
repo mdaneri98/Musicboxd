@@ -64,7 +64,6 @@ public class WebConfig implements WebMvcConfigurer {
     public MessageSource messageSource() {
         final ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
 
-        ms.setCacheSeconds(5);  //Solo para desarollo.
         ms.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
         ms.setBasename("i18n/messages");
 
