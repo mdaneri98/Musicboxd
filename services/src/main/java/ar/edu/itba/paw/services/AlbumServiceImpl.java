@@ -70,7 +70,6 @@ public class AlbumServiceImpl implements AlbumService {
         if (album.isEmpty()) {
             return false;
         }
-
         imageService.delete(album.get().getImgId());
         return albumDao.delete(id);
     }
