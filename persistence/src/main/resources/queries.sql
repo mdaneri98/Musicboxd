@@ -1,6 +1,5 @@
 -- Inserción en la tabla 'image'
 
-
 -- Inserción en la tabla 'cuser'
 INSERT INTO cuser (username, email, password, name, bio, img_id)
 VALUES ('johndoe', 'johndoe@example.com', 'password123', 'John Doe', 'Music enthusiast', 1); -- id = 1
