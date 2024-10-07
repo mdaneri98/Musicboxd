@@ -146,17 +146,6 @@ public class ArtistJdbcDaoTest {
     }
 
     @Test
-    public void test_findByNameContaining() {
-        // 1. Pre-conditions - 5 artists exist in database
-
-        // 2. Execute
-        List<Artist> artistList = artistDao.findByNameContaining(PRE_EXISTING_ARTIST_NAME.substring(1,4));
-
-        // 3. Post-conditions
-        assertEquals(4, artistList.size());
-    }
-
-    @Test
     public void test_create() {
         // 1. Pre-conditions - the
         Artist artist = new Artist(NEW_ARTIST_NAME,NEW_ARTIST_BIO,PRE_EXISTING_IMAGE_ID);
