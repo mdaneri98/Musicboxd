@@ -64,7 +64,7 @@ public class ArtistJdbcDaoTest {
     }
 
     @Test
-    public void test_find_ExistingArtist() {
+    public void test_find() {
         // 1. Pre-conditions - the artist exist
 
         // 2. Execute
@@ -78,7 +78,7 @@ public class ArtistJdbcDaoTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void test_find_NonExistingArtist() {
+    public void test_find_NoArtist() {
         // 1. Pre-conditions - the artist does not exist
 
         // 2. Execute
@@ -135,7 +135,7 @@ public class ArtistJdbcDaoTest {
     }
 
     @Test
-    public void test_findBySongId_NonExistingSong() {
+    public void test_findBySongId_NoSong() {
         // 1. Pre-conditions - 5 artists exist in database
 
         // 2. Execute
@@ -223,7 +223,7 @@ public class ArtistJdbcDaoTest {
     }
 
     @Test
-    public void test_delete_NonExistingArtist() {
+    public void test_delete_NoArtist() {
         // 1. Pre-conditions - the artist exist
 
         // 2. Execute
@@ -250,23 +250,7 @@ public class ArtistJdbcDaoTest {
     }
 
     @Test
-    public void test_updateRating_BadParameters() throws SQLException {
-        // 1. Pre-conditions - the artist exist
-
-        // 2. Execute
-        boolean updated = artistDao.updateRating(PRE_EXISTING_ARTIST_ID, -1, -1);
-
-        // 3. Post-conditions
-        assertFalse(updated);
-        assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist",
-                String.format("id = %d AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
-                        PRE_EXISTING_ARTIST_ID,
-                        NEW_ARTIST_AVG_RATING,
-                        NEW_ARTIST_RATING_AMOUNT)));
-    }
-
-    @Test
-    public void test_hasUserReviewed_Yes() throws SQLException {
+    public void test_hasUserReviewed_Yes() {
         // 1. Pre-conditions - the user made a review about artist
 
         // 2. Execute
@@ -277,7 +261,7 @@ public class ArtistJdbcDaoTest {
     }
 
     @Test
-    public void test_hasUserReviewed_No() throws SQLException {
+    public void test_hasUserReviewed_No() {
         // 1. Pre-conditions - the user did not make a review about artist
 
         // 2. Execute

@@ -821,17 +821,4 @@ public void test_getFavoriteAlbums () {
         assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"favorite_song",
                 String.format("user_id = '%d' AND song_id = '%d'", PRE_EXISTING_USER_ID, NEW_SONG_ID)));
     }
-
-    @Test
-    public void test () {
-        // 1. Pre-conditions -
-
-        // 2. Execute
-
-        // 3. Post-conditions
-
-    }
-
-
-
 }
