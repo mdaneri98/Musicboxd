@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -69,6 +67,16 @@ public class ImageServiceImpl implements ImageService {
             return false;
         }
         return imageDao.delete(imageId);
+    }
+
+    @Transactional
+    public long getDefaultImgId() {
+        return DEFAULT_IMAGE_ID;
+    }
+
+    @Transactional
+    public long getDefaultProfileImgId() {
+        return DEFAULT_PROFILE_IMAGE_ID;
     }
 
     @Transactional(readOnly = true)

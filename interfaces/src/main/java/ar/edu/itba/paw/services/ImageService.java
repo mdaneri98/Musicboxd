@@ -15,4 +15,8 @@ public interface ImageService {
 
     boolean delete(long imageId);
 
+    public long getDefaultImgId();
+
+    public long getDefaultProfileImgId();
+
 }

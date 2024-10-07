@@ -49,6 +49,13 @@ h6 {
 a {
     color: #fbfbfb;
     text-decoration: none;
+    transition: transform 0.5s ease;
+}
+
+a:hover {
+    text-decoration: none;
+    color: white;
+    scale: 1.01;
 }
 
 /* Input Fields */
@@ -320,6 +327,18 @@ label {
     border-radius: 50%;
 }
 
+.add-favorites {
+    margin: 20px auto;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #a7a7a7;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    max-width: 80%;
+}
+
 .item p {
     margin: 8px 0 0;
     font-weight: bold;
@@ -420,6 +439,28 @@ button:disabled {
 button:hover:not(:disabled) {
     background-color: #1fdf64;
     transform: scale(1.03);
+}
+
+.remove-button {
+    background-color: #ff4c4c;
+    color: #fff;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: auto;
+}
+
+.remove-button:hover:not(:disabled) {
+    background-color: #ff1c1c;
+}
+
+
+.remove-button:disabled {
+    background-color: #6c6c6c;
+    cursor: not-allowed;
 }
 
 /* ------------ User ------------ */

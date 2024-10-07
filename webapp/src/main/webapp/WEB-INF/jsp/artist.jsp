@@ -111,7 +111,7 @@
     </c:if>
 
     <c:if test="${reviews.size() > 0}">
-    <h2>Reviews</h2>
+    <h2><spring:message code="label.reviews"/></h2>
     <div class="cards-container">
         <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">

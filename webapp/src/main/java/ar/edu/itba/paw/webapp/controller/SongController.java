@@ -10,6 +10,8 @@ import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,6 +24,8 @@ import java.util.List;
 @RequestMapping("/song")
 @Controller
 public class SongController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SongController.class);
 
     private final UserService userService;
     private final ArtistService artistService;
@@ -138,6 +142,7 @@ public class SongController {
                 review.isBlocked()
         );
         reviewService.updateSongReview(songReview);
+        LOGGER.info("Song review updated for song ID: {} by user ID: {}", songId, loggedUser.getId());
         return new ModelAndView("redirect:/song/" + songId);
     }
 
@@ -159,6 +164,7 @@ public class SongController {
                 false
         );
         reviewService.saveSongReview(songReview);
+        LOGGER.info("New song review created for song ID: {} by user ID: {}", songId, loggedUser.getId());
         return new ModelAndView("redirect:/song/" + songId);
     }
 
@@ -166,18 +172,21 @@ public class SongController {
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
         SongReview review = reviewService.findSongReviewByUserId(loggedUser.getId(), songId).get();
         reviewService.deleteReview(review, loggedUser.getId());
+        LOGGER.info("Song review deleted for song ID: {} by user ID: {}", songId, loggedUser.getId());
         return new ModelAndView("redirect:/song/" + songId);
     }
 
     @RequestMapping(value = "/{songId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
         userService.addFavoriteSong(loggedUser.getId(), songId);
+        LOGGER.info("Song ID: {} added to favorites by user ID: {}", songId, loggedUser.getId());
         return new ModelAndView("redirect:/song/" + songId);
     }
 
     @RequestMapping(value = "/{songId:\\d+}/remove-favorite", method = RequestMethod.GET)
     public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
         userService.removeFavoriteSong(loggedUser.getId(), songId);
+        LOGGER.info("Song ID: {} removed from favorites by user ID: {}", songId, loggedUser.getId());
         return new ModelAndView("redirect:/song/" + songId);
     }
 }

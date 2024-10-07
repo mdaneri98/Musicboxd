@@ -54,7 +54,6 @@ public class UserController {
         }
 
         int pageSize = 5;
-        int followingPageSize = 20;
 
         final ModelAndView mav = new ModelAndView("users/profile");
         LOGGER.info("[/profile]Logged username: {}", loggedUser.getUsername());
@@ -111,6 +110,7 @@ public class UserController {
         loggedUser.setName(upf.getName());
         loggedUser.setBio(upf.getBio());
         userService.update(loggedUser, getBytes(upf.getProfilePicture()));
+        LOGGER.info("User profile updated for user with ID: {}", loggedUser.getId());
         return new ModelAndView("redirect:/user/profile");
     }
 
@@ -124,6 +124,7 @@ public class UserController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
+        LOGGER.info("Email verified for user with ID: {}", userId);
         String successMessage = messageSource.getMessage("success.user.verification", null, LocaleContextHolder.getLocale());
         return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
     }
@@ -218,7 +219,6 @@ public class UserController {
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("userForm") final UserForm userForm) {
-        /* ModelAttribute agrega al `mav`: <K: "userForm",V: userForm > */
         return new ModelAndView("users/register");
     }
 
@@ -234,7 +234,8 @@ public class UserController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
-        // "Generar una sesión" (así no redirije a /login)
+        LOGGER.info("New user created with username: {}", userForm.getUsername());
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
         SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authenticationToken));
 
@@ -249,7 +250,6 @@ public class UserController {
 
     @RequestMapping(value = "/forgot-password", method = RequestMethod.POST)
     public ModelAndView forgotPassword(@RequestParam("email") String email) {
-        // Buscar al usuario por correo electrónico
         Optional<User> userOptional = userService.findByEmail(email);
 
         if (userOptional.isEmpty()) {
@@ -258,6 +258,7 @@ public class UserController {
 
         User user = userOptional.get();
         userService.createVerification(VerificationType.VERIFY_FORGOT_PASSWORD, user);
+        LOGGER.info("Password reset verification created for user with email: {}", email);
 
         return new ModelAndView("redirect:/user/login");
     }
@@ -286,6 +287,7 @@ public class UserController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
         userService.changePassword(userOptional.get().getId(), resetPasswordForm.getPassword());
+        LOGGER.info("Password reset for user with ID: {}", userId);
 
         String successMessage = messageSource.getMessage("success.user.change.password", null, LocaleContextHolder.getLocale());
         return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
@@ -294,14 +296,16 @@ public class UserController {
     @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)
     public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser,
                                @PathVariable(name = "userId") long userId) {
-        final int done = userService.createFollowing(loggedUser, userId);
+        userService.createFollowing(loggedUser, userId);
+        LOGGER.info("User with ID {} started following user with ID {}", loggedUser.getId(), userId);
         return new ModelAndView("redirect:/user/" + userId);
     }
 
     @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.POST)
     public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser,
                                  @PathVariable(name = "userId") long userId) {
-        final int done = userService.undoFollowing(loggedUser, userId);
+        userService.undoFollowing(loggedUser, userId);
+        LOGGER.info("User with ID {} unfollowed user with ID {}", loggedUser.getId(), userId);
         return new ModelAndView("redirect:/user/" + userId);
     }
 

@@ -5,10 +5,10 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
-import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -24,11 +24,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @RequestMapping("/album")
 @Controller
 public class AlbumController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlbumController.class);
 
     private final UserService userService;
     private final AlbumService albumService;
@@ -71,15 +72,12 @@ public class AlbumController {
 
         List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId, pageNum, pageSize, loggedUser.getId());
 
-        // Determinar si el usuario ya reseñó el álbum
         boolean isReviewed = reviewService.hasUserReviewedAlbum(loggedUser.getId(), albumId);
         Integer loggedUserRating = isReviewed ? reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get().getRating() : 0;
 
-        // Determinar si mostrar botones "Next" y "Previous"
-        boolean showNext = reviews.size() == pageSize;  // Mostrar "Next" si hay más reseñas
-        boolean showPrevious = pageNum > 1;  // Mostrar "Previous" si no estamos en la primera página
+        boolean showNext = reviews.size() == pageSize;
+        boolean showPrevious = pageNum > 1;
 
-        // Añadir los objetos al modelo
         mav.addObject("album", album);
         mav.addObject("songs", songs);
         mav.addObject("artist", album.getArtist());
@@ -89,7 +87,6 @@ public class AlbumController {
         mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
 
-        // Añadir los flags para mostrar los botones de navegación
         mav.addObject("showNext", showNext);
         mav.addObject("showPrevious", showPrevious);
 
@@ -150,6 +147,7 @@ public class AlbumController {
                 review.isBlocked()
         );
         reviewService.updateAlbumReview(albumReview);
+        LOGGER.info("Album review updated for album ID {} by user ID {}", albumId, loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
@@ -170,6 +168,7 @@ public class AlbumController {
                 false
         );
         reviewService.saveAlbumReview(albumReview);
+        LOGGER.info("New album review created for album ID {} by user ID {}", albumId, loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
@@ -177,18 +176,21 @@ public class AlbumController {
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
         AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get();
         reviewService.deleteReview(review, loggedUser.getId());
+        LOGGER.info("Album review deleted for album ID {} by user ID {}", albumId, loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
     @RequestMapping(value = "/{albumId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
         userService.addFavoriteAlbum(loggedUser.getId(), albumId);
+        LOGGER.info("Album ID {} added to favorites by user ID {}", albumId, loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
     @RequestMapping(value = "/{albumId:\\d+}/remove-favorite", method = RequestMethod.GET)
     public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
         userService.removeFavoriteAlbum(loggedUser.getId(), albumId);
+        LOGGER.info("Album ID {} removed from favorites by user ID {}", albumId, loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 }
