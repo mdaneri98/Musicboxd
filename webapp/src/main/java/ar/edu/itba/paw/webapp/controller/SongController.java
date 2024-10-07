@@ -8,6 +8,8 @@ import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.slf4j.Logger;
@@ -18,6 +20,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,13 +35,15 @@ public class SongController {
     private final ArtistService artistService;
     private final SongService songService;
     private final ReviewService reviewService;
+    private final MessageSource messageSource;
 
 
-    public SongController(UserService userService, ArtistService artistService, SongService songService, ReviewService reviewService) {
+    public SongController(UserService userService, ArtistService artistService, SongService songService, ReviewService reviewService, MessageSource messageSource) {
         this.userService = userService;
         this.artistService = artistService;
         this.songService = songService;
         this.reviewService = reviewService;
+        this.messageSource = messageSource;
     }
 
     @RequestMapping("/")
@@ -49,7 +55,8 @@ public class SongController {
     @RequestMapping("/{songId}")
     public ModelAndView song(@PathVariable(name = "songId") long songId,
                              @RequestParam(name = "pageNum", required = false) Integer pageNum,
-                             @ModelAttribute("loggedUser") User loggedUser) {
+                             @ModelAttribute("loggedUser") User loggedUser,
+                             @RequestParam(name="error", required = false) String error) {
         if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }
@@ -80,6 +87,7 @@ public class SongController {
         mav.addObject("isReviewed", isReviewed);
         mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
+        mav.addObject("error", error);
 
         // Añadir los flags para mostrar los botones de navegación
         mav.addObject("showNext", showNext);
@@ -178,8 +186,12 @@ public class SongController {
 
     @RequestMapping(value = "/{songId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) throws MessagingException {
-        userService.addFavoriteSong(loggedUser.getId(), songId);
-        LOGGER.info("Song ID: {} added to favorites by user ID: {}", songId, loggedUser.getId());
+        if(userService.addFavoriteSong(loggedUser.getId(), songId))
+            LOGGER.info("Song ID: {} added to favorites by user ID: {}", songId, loggedUser.getId());
+        else {
+            String errorMessage = messageSource.getMessage("error.too.many.favorites.song", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/song/" + songId + "?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
         return new ModelAndView("redirect:/song/" + songId);
     }
 

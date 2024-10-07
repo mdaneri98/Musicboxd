@@ -55,13 +55,10 @@ public class ArtistController {
     }
 
     @RequestMapping("/{artistId:\\d+}")
-    public ModelAndView album (@ModelAttribute("loggedUser") User loggedUser,
-                               @PathVariable(name = "artistId") long artistId){
-        return artist(artistId, 1, loggedUser);
-    }
-
-    @RequestMapping("/{artistId:\\d+}/{pageNum:\\d+}")
-    public ModelAndView artist(@PathVariable(name = "artistId") long artistId, @PathVariable(name = "pageNum", required = false) Integer pageNum , @ModelAttribute("loggedUser") User loggedUser) {
+    public ModelAndView artist(@PathVariable(name = "artistId") long artistId,
+                               @RequestParam(name = "pageNum", required = false) Integer pageNum ,
+                               @ModelAttribute("loggedUser") User loggedUser,
+                               @RequestParam(name = "error", required = false) String error) {
         final ModelAndView mav = new ModelAndView("artist");
 
         if (pageNum == null || pageNum <= 0) pageNum = 1;
@@ -87,6 +84,8 @@ public class ArtistController {
         mav.addObject("isReviewed", isReviewed);
         mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
+        mav.addObject("error", error);
+
         return mav;
     }
 
@@ -182,8 +181,12 @@ public class ArtistController {
 
     @RequestMapping(value = "/{artistId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
-        userService.addFavoriteArtist(loggedUser.getId(), artistId);
-        LOGGER.info("Artist ID {} added to favorites by user ID {}", artistId, loggedUser.getId());
+        if(userService.addFavoriteArtist(loggedUser.getId(), artistId))
+            LOGGER.info("Artist ID {} added to favorites by user ID {}", artistId, loggedUser.getId());
+        else {
+            String errorMessage = messageSource.getMessage("error.too.many.favorites.artist", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/artist/" + artistId + "?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
