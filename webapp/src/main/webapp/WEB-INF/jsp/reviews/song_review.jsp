@@ -38,12 +38,14 @@
             <c:url var="posturl" value="/song/${song.id}/reviews" />
             <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
                 <jsp:param name="posturl" value="${posturl}"/>
+                <jsp:param name="cancelUrl" value="${songUrl}"/>
             </jsp:include>
         </c:when>
         <c:otherwise>
             <c:url var="posturl" value="/song/${song.id}/edit-review" />
             <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
                 <jsp:param name="posturl" value="${posturl}"/>
+                <jsp:param name="cancelUrl" value="${songUrl}"/>
             </jsp:include>
             <c:url var="deleteUrl" value="/song/${song.id}/delete-review" />
             <a onclick="deleteReview()" style="margin-left: auto" class="delete-button">

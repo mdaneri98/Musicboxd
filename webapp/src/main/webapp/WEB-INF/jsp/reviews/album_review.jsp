@@ -40,12 +40,14 @@
             <c:url var="posturl" value="/album/${album.id}/reviews" />
             <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
                 <jsp:param name="posturl" value="${posturl}"/>
+                <jsp:param name="cancelUrl" value="${albumUrl}"/>
             </jsp:include>
         </c:when>
         <c:otherwise>
             <c:url var="posturl" value="/album/${album.id}/edit-review" />
             <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
                 <jsp:param name="posturl" value="${posturl}"/>
+                <jsp:param name="cancelUrl" value="${albumUrl}"/>
             </jsp:include>
             <c:url var="deleteUrl" value="/album/${album.id}/delete-review" />
             <a onclick="deleteReview()" style="margin-left: auto" class="delete-button">
