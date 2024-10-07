@@ -12,7 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <maven-war-plugin.version>2.6</maven-war-plugin.version>
+    <maven-war-plugin.version>3.3.1</maven-war-plugin.version>
 
     <spring.version>5.3.33</spring.version>
     <org.postgresql.version>42.2.5</org.postgresql.version>
@@ -201,19 +201,6 @@
     <module>persistence</module>
     <module>models</module>
   </modules>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>${maven-war-plugin.version}</version>
-        <configuration>
-          <packagingExcludes>**/logback-test.xml</packagingExcludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 
 </project>
