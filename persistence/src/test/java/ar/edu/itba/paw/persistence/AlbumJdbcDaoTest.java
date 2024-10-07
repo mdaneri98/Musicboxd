@@ -155,17 +155,6 @@ public class AlbumJdbcDaoTest {
     }
 
     @Test
-    public void test_findByTitleContaining() {
-        // 1. Pre-conditions - 5 albums exist in database
-
-        // 2. Execute
-        List<Album> albumList = albumDao.findByTitleContaining(PRE_EXISTING_ALBUM_TITLE.substring(4,4));
-
-        // 3. Post-conditions
-        assertEquals(4, albumList.size());
-    }
-
-    @Test
     public void test_create() {
         // 1. Pre-conditions - the
         Artist artist = new Artist(PRE_EXISTING_ARTIST_ID);

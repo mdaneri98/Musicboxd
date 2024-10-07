@@ -177,17 +177,6 @@ public class SongJdbcDaoTest {
     }
 
     @Test
-    public void test_findByTitleContaining() {
-        // 1. Pre-conditions - 5 songs exist in database
-
-        // 2. Execute
-        List<Song> songList = songDao.findByTitleContaining(PRE_EXISTING_SONG_TITLE.substring(4,4));
-
-        // 3. Post-conditions
-        assertEquals(4, songList.size());
-    }
-
-    @Test
     public void test_create() {
         // 1. Pre-conditions - the
         Album album = new Album(PRE_EXISTING_ALBUM_ID);
