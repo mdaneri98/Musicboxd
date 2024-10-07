@@ -6,7 +6,7 @@
   <artifactId>paw-2024b-02</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>TuneTracker</name>
+  <name>Musicbox</name>
   <url>http://pawserver.it.itba.edu.ar/paw-2024b-02</url>
 
   <properties>
