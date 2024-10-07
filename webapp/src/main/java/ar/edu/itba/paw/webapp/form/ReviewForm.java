@@ -20,6 +20,7 @@ public class ReviewForm {
         this.title = title;
         this.description = description;
         this.rating = rating;
+        if (rating == null) this.rating = 0;
     }
 
     public String getTitle() {

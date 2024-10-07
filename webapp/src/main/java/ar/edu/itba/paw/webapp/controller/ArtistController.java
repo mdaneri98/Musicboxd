@@ -59,6 +59,7 @@ public class ArtistController {
                                @RequestParam(name = "pageNum", required = false) Integer pageNum ,
                                @ModelAttribute("loggedUser") User loggedUser,
                                @RequestParam(name = "error", required = false) String error) {
+        int pageSize = 5;
         final ModelAndView mav = new ModelAndView("artist");
 
         if (pageNum == null || pageNum <= 0) pageNum = 1;
@@ -75,6 +76,8 @@ public class ArtistController {
         List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(artistId,pageNum,5, loggedUser.getId());
         boolean isReviewed = reviewService.hasUserReviewedArtist(loggedUser.getId(), artistId);
         Integer loggedUserRating = isReviewed ? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get().getRating() : 0;
+        boolean showNext = reviews.size() == pageSize;
+        boolean showPrevious = pageNum > 1;
 
         mav.addObject("artist", artist);
         mav.addObject("albums", albums);
@@ -85,6 +88,8 @@ public class ArtistController {
         mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
         mav.addObject("error", error);
+        mav.addObject("showNext", showNext);
+        mav.addObject("showPrevious", showPrevious);
 
         return mav;
     }
