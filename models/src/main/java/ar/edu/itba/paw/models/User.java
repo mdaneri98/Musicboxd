@@ -38,6 +38,21 @@ public class User {
         this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
     }
 
+    public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Long imgId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.bio = bio;
+        this.verified = verified;
+        this.imgId = imgId;
+        this.moderator = moderator;
+        this.followersAmount = followersAmount != null ? followersAmount : 0;
+        this.followingAmount = followingAmount != null ? followingAmount : 0;
+        this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
+    }
+
     public User(String username, String password, String email) {
         this.id = 0L;
         this.username = username;
@@ -60,6 +75,13 @@ public class User {
         this.imgId = imgId;
         this.verified = verified;
         this.moderator = moderator;
+    }
+
+    public User(Long id, String username, String email, String password) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
     }
 
     public static User createAnonymous() {
