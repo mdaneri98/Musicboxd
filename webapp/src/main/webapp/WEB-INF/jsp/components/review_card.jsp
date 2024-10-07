@@ -62,7 +62,7 @@
                 </c:if>
                 <c:url var="likeReviewLink" value="/review/like/${param.review_id}" />
                 <c:url var="removeLikeReviewLink" value="/review/remove-like/${param.review_id}" />
-                <c:url var="shareReviewLink" value="/review/share/${param.review_id}" />
+                <c:url var="reviewUrl" value="/review/${param.review_id}" />
                 <c:choose>
                     <c:when test="${!param.isLiked}">
                         <span> <c:out value="${param.likes}"/></span>
@@ -73,7 +73,7 @@
                         <a href="${removeLikeReviewLink}" style="color: red; font-size: 25px;">&#9829; </a>
                     </c:otherwise>
                 </c:choose>
-                <a href="${shareReviewLink}">&#10150; <spring:message code="label.share" /></a>
+                <a href="${reviewUrl}" class="share-button">&#10150; <spring:message code="label.share" /></a>
             </div>
     </c:if>
             <c:if test="${param.blocked}">
@@ -92,3 +92,27 @@
             </c:if>
         </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.share-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevenir la navegación por defecto
+                const relativeUrl = this.getAttribute('href');
+                const absoluteUrl = new URL(relativeUrl, window.location.origin).toString();
+                const shareText = '<spring:message code="label.share.message" />: ' + absoluteUrl;
+
+                navigator.clipboard.writeText(shareText).then(() => {
+                    // Provide visual feedback
+                    const originalText = this.textContent;
+                    this.textContent = '<spring:message code="label.copied" />';
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            });
+        });
+    });
+</script>

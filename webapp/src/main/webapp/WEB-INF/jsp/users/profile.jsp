@@ -118,9 +118,8 @@
     </ul>
 
     <!-- Cards Container -->
+    <c:if test="${reviews.size() > 0}">
     <h2><spring:message code="label.reviews" /></h2>
-    <c:choose>
-        <c:when test="${reviews.size() > 0}">
             <div class="cards-container">
                 <c:forEach var="review" items="${reviews}">
                     <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
@@ -150,11 +149,7 @@
                 <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
                 <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
             </div>
-        </c:when>
-        <c:otherwise>
-            <p>Make a review!</p>
-        </c:otherwise>
-    </c:choose>
+    </c:if>
 </div>
 </body>
 </html>
