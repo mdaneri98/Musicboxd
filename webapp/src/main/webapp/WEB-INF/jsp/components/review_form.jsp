@@ -55,8 +55,11 @@
     </div>
     <form:errors path="rating" cssClass="error" />
   </div>
-  <div class="form-group">
-    <button type="submit"><spring:message code="label.submit.review" /></button>
+  <div style="display: flex">
+    <a href="${param.cancelUrl}">
+      <button type="button"><spring:message code="button.cancel"/></button>
+    </a>
+    <button style="margin-left: auto" type="submit"><spring:message code="label.submit.review" /></button>
   </div>
 </form:form>
 
