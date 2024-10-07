@@ -8,7 +8,7 @@ public class ModSongForm {
 
     @Size(min = 1, max = 255)
     private String title;
-    @Pattern(regexp = "^([0-5]?[0-9]):([0-5][0-9])$", message = "Duration must be in the format MM:SS - Example: 10:24 or 3:15")
+    @Pattern(regexp = "^(?:(?:([0-9]{1,2}):)?([0-5]?[0-9]):)?([0-5][0-9])$", message = "Duration must be in the format MM:SS - Example: 10:24 or 3:15")
     private String duration;
     @Positive
     private Integer trackNumber;
