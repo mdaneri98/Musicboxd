@@ -38,7 +38,7 @@
         <c:url var="registerUrl" value="/user/register" />
         <a href="${registerUrl}"><spring:message code="label.dont.you.have.an.account.yet"/></a>
         <c:url var="changepasswordUrl" value="/user/forgot-password" />
-        <a href="${changepasswordUrl}"><spring:message code="label.change.password"/></a>
+        <a href="${changepasswordUrl}" class="change-password"><spring:message code="label.change.password"/></a>
     </div>
 </div>
 </body>

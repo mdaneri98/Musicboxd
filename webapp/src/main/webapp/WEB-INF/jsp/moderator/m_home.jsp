@@ -43,6 +43,10 @@
     </div>
 </div>
 
+<c:url var="addArtistUrl" value="/mod/add/artist"/>
+<c:url var="addAlbumUrlBase" value="/mod/add/artist/"/>
+<c:url var="addSongUrlBase" value="/mod/add/album/"/>
+
 <script>
     var selected_item;
     var imgUrl = "<c:url value='/images/'/>";
@@ -51,9 +55,6 @@
     let isErrorMessageShown = false;
 
     function redirect() {
-        <c:url var="addArtistUrl" value="/mod/add/artist"/>
-        <c:url var="addAlbumUrlBase" value="/mod/add/artist/"/>
-        <c:url var="addSongUrlBase" value="/mod/add/album/"/>
 
         var addArtistUrl = "${addArtistUrl}";
         var addAlbumUrlBase = "${addAlbumUrlBase}";

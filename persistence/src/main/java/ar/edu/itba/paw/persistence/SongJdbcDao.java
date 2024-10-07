@@ -55,8 +55,8 @@ public class SongJdbcDao implements SongDao {
 
     @Override
     public List<Song> findByTitleContaining(String sub) {
-        String sql = "SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, song.avg_rating AS avg_rating, song.rating_amount AS rating_amount, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id, album.release_date AS album_release_date, album.genre,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id" +
-                 "WHERE title ILIKE ? LIMIT 10";
+        String sql = "SELECT song.id AS song_id, song.title AS song_title, duration, track_number, song.created_at AS song_created_at, song.updated_at AS song_updated_at, song.avg_rating AS avg_rating, song.rating_amount AS rating_amount, album.id AS album_id, album.title AS album_title, album.img_id AS album_img_id, album.release_date AS album_release_date, album.genre,artist.id AS artist_id, name, artist.img_id AS artist_img_id FROM song JOIN album ON song.album_id = album.id JOIN artist ON album.artist_id = artist.id " +
+                 "WHERE song.title ILIKE ? LIMIT 10";
 
         return jdbcTemplate.query(sql, new Object[]{"%" + sub + "%"}, SimpleRowMappers.SONG_ROW_MAPPER);
     }
