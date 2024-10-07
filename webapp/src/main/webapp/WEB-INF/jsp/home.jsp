@@ -45,13 +45,15 @@
     <div>
         <c:if test="${not empty error}">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong><spring:message code="message.error"/>:</strong> ${error}
+                <strong><spring:message code="message.error"/>:</strong>
+                <c:out value="${error}"/>
             </div>
         </c:if>
 
         <c:if test="${not empty success}">
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong><spring:message code="message.success"/>:</strong> ${success}
+                <strong><spring:message code="message.success"/>:</strong>
+                <c:out value="${success}"/>
             </div>
         </c:if>
     </div>

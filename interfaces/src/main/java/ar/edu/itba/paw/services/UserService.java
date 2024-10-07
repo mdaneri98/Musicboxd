@@ -33,6 +33,7 @@ public interface UserService {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByUsername(String email);
+    boolean usernameExists(String username);
 
     void updateUserReviewAmount(Long userId);
 

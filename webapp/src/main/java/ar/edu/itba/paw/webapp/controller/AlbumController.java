@@ -53,10 +53,10 @@ public class AlbumController {
     @RequestMapping("/{albumId:\\d+}")
     public ModelAndView album(@PathVariable(name = "albumId") long albumId,
                               @RequestParam(name = "pageNum", required = false) Integer pageNum,
-                              @ModelAttribute("loggedUser") User loggedUser) {
-        if (pageNum == null || pageNum <= 0) {
-            pageNum = 1;
-        }
+                              @ModelAttribute("loggedUser") User loggedUser,
+                              @RequestParam(name = "error", required = false) String error) {
+
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
 
         final ModelAndView mav = new ModelAndView("album");
         int pageSize = 5;
@@ -86,6 +86,7 @@ public class AlbumController {
         mav.addObject("isReviewed", isReviewed);
         mav.addObject("loggedUserRating", loggedUserRating);
         mav.addObject("pageNum", pageNum);
+        mav.addObject("error", error);
 
         mav.addObject("showNext", showNext);
         mav.addObject("showPrevious", showPrevious);
@@ -182,8 +183,12 @@ public class AlbumController {
 
     @RequestMapping(value = "/{albumId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
-        userService.addFavoriteAlbum(loggedUser.getId(), albumId);
-        LOGGER.info("Album ID {} added to favorites by user ID {}", albumId, loggedUser.getId());
+        if (userService.addFavoriteAlbum(loggedUser.getId(), albumId))
+            LOGGER.info("Album ID {} added to favorites by user ID {}", albumId, loggedUser.getId());
+        else {
+            String errorMessage = messageSource.getMessage("error.too.many.favorites.album", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/album/" + albumId + "?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
