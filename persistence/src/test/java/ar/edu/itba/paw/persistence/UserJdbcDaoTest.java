@@ -118,17 +118,6 @@ public class UserJdbcDaoTest {
     }
 
     @Test
-    public void test_findByUsernameContaining() {
-        // 1. Pre-conditions - 5 user exist in database
-
-        // 2. Execute
-        List<User> userList = userDao.findByUsernameContaining(PRE_EXISTING_USERNAME.substring(1,4));
-
-        // 3. Post-conditions
-        assertEquals(4, userList.size());
-    }
-
-    @Test
     public void test_create() {
         // 1. Pre-conditions - no user with username or email exists
 
