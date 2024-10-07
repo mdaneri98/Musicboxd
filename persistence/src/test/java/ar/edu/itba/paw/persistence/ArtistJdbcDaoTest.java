@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.Artist;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.config.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -29,12 +31,23 @@ import static org.junit.Assert.assertEquals;
 @Sql(scripts = "classpath:artist_setUp.sql")
 public class ArtistJdbcDaoTest {
 
-    private static final long PRE_EXISTING_ARTISTID = 500;
-    private static final String PRE_EXISTING_ARTISTNAME = "Dummy";
-    private static final long PRE_EXISTING_IMAGEID = 1;
+    private static final long PRE_EXISTING_IMAGE_ID = 100;
+    private static final long PRE_EXISTING_USER_ID = 200;
+    private static final long PRE_EXISTING_ARTIST_ID = 300;
+    private static final long PRE_EXISTING_ARTIST_2_ID = 301;
+    private static final long PRE_EXISTING_REVIEW_ID = 400;
+    private static final long PRE_EXISTING_ALBUM_ID = 500;
+    private static final long PRE_EXISTING_SONG_ID = 600;
 
-    private static final long NEW_ARTISTID = 1000;
-    private static final String NEW_ARTISTNAME = "DummyX";
+    private static final long NEW_ARTIST_ID = 1000;
+    private static final long NEW_SONG_ID = 1000;
+
+    private static final String PRE_EXISTING_ARTIST_NAME = "Dummy";
+    private static final String NEW_ARTIST_NAME = "DummyX";
+    private static final String NEW_ARTIST_BIO = "This is a description of DummyX";
+    private static final float NEW_ARTIST_AVG_RATING = 3.4F;
+    private static final int NEW_ARTIST_RATING_AMOUNT = 15;
+
 
 
     @Autowired
@@ -51,102 +64,228 @@ public class ArtistJdbcDaoTest {
     }
 
     @Test
-    public void testFindById_ExistingArtist() throws SQLException {
-        // 1. Pre-condiciones - existe un artista con id PRE_EXISTING_ARTISTID
+    public void test_find_ExistingArtist() {
+        // 1. Pre-conditions - the artist exist
 
-        // 2. Ejercitar
-        Optional<Artist> maybeArtist = artistDao.findById(PRE_EXISTING_ARTISTID);
+        // 2. Execute
+        Optional<Artist> maybeArtist = artistDao.find(PRE_EXISTING_ARTIST_ID);
 
-        // 3. Post-condiciones
+        // 3. Post-conditions
         assertTrue(maybeArtist.isPresent());
-        assertEquals(PRE_EXISTING_ARTISTID, maybeArtist.get().getId().longValue());
+        assertEquals(PRE_EXISTING_ARTIST_ID, maybeArtist.get().getId().longValue());
+        assertEquals(PRE_EXISTING_ARTIST_NAME, maybeArtist.get().getName());
+        assertEquals(PRE_EXISTING_IMAGE_ID, maybeArtist.get().getImgId().longValue());
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void testFindById_NonExistingArtist() throws SQLException {
-        // 1. Pre-condiciones - no existe el artista
+    public void test_find_NonExistingArtist() {
+        // 1. Pre-conditions - the artist does not exist
 
-        // 2. Ejercitar
-        Optional<Artist> maybeArtist = artistDao.findById(NEW_ARTISTID);
+        // 2. Execute
+        Optional<Artist> maybeArtist = artistDao.find(NEW_ARTIST_ID);
 
-        // 3. Post-condiciones
+        // 3. Post-conditions
         assertFalse(maybeArtist.isPresent());
-        assertEquals(NEW_ARTISTID, maybeArtist.get().getId().longValue());
+        assertEquals(NEW_ARTIST_ID, maybeArtist.get().getId().longValue());
     }
 
     @Test
-    public void testFindAll() throws SQLException {
-        // 1. Pre-condiciones - existen varios artistas
+    public void test_findAll() {
+        // 1. Pre-conditions - Only 5 artists exist in database
 
-        // 2. Ejercitar
-        artistDao.findAll();
+        // 2. Execute
+        List<Artist> artistList = artistDao.findAll();
 
-        // 3. Post-condiciones
-        assertEquals(5, JdbcTestUtils.countRowsInTable(jdbcTemplate,"artist"));
+        // 3. Post-conditions
+        assertEquals(5, artistList.size());
     }
 
     @Test
-    public void testSave() throws SQLException {
-        // 1. Pre-condiciones - no existe el artist
-        Artist artist = new Artist(null,NEW_ARTISTNAME,null,null,null,PRE_EXISTING_IMAGEID);
+    public void test_findPaginated() {
+        // 1. Pre-conditions - 5 artists exist in database
 
-        // 2. Ejercitar
-        int rowsAffected = artistDao.save(artist);
+        // 2. Execute
+        List<Artist> artistList = artistDao.findPaginated(FilterType.RATING, 3,1);
 
-        // 3. Post-condiciones
-        assertEquals(1, rowsAffected);
-        assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist", String.format("name = '%s'", NEW_ARTISTNAME)));
+        // 3. Post-conditions
+        assertEquals(3, artistList.size()); //Correct limit
+        assertEquals(PRE_EXISTING_ARTIST_2_ID, artistList.getFirst().getId().longValue());  //Correct offset
     }
 
     @Test
-    public void testUpdate_ExistingArtist() throws SQLException {
-        // 1. Pre-condiciones - existe el artist
-        Artist artist = new Artist(PRE_EXISTING_ARTISTID, NEW_ARTISTNAME,null,null,null,PRE_EXISTING_IMAGEID);
+    public void test_findPaginated_endPage() {
+        // 1. Pre-conditions - 5 artists exist in database
 
-        // 2. Ejercitar
-        int rowsAffected = artistDao.update(artist);
+        // 2. Execute
+        List<Artist> artistList = artistDao.findPaginated(FilterType.RATING, 3,3);
 
-        // 3. Post-condiciones
-        assertEquals(1, rowsAffected);
+        // 3. Post-conditions
+        assertEquals(2, artistList.size());
+    }
+
+    @Test
+    public void test_findBySongId() {
+        // 1. Pre-conditions - 5 artists exist in database
+
+        // 2. Execute
+        List<Artist> artistList = artistDao.findBySongId(PRE_EXISTING_SONG_ID);
+
+        // 3. Post-conditions
+        assertEquals(2, artistList.size());
+    }
+
+    @Test
+    public void test_findBySongId_NonExistingSong() {
+        // 1. Pre-conditions - 5 artists exist in database
+
+        // 2. Execute
+        List<Artist> artistList = artistDao.findBySongId(NEW_SONG_ID);
+
+        // 3. Post-conditions
+        assertEquals(0, artistList.size());
+    }
+
+    @Test
+    public void test_findByNameContaining() {
+        // 1. Pre-conditions - 5 artists exist in database
+
+        // 2. Execute
+        List<Artist> artistList = artistDao.findByNameContaining(PRE_EXISTING_ARTIST_NAME.substring(1,4));
+
+        // 3. Post-conditions
+        assertEquals(4, artistList.size());
+    }
+
+    @Test
+    public void test_create() {
+        // 1. Pre-conditions - the
+        Artist artist = new Artist(NEW_ARTIST_NAME,NEW_ARTIST_BIO,PRE_EXISTING_IMAGE_ID);
+
+        // 2. Execute
+        Artist artistCreated = artistDao.create(artist);
+
+        // 3. Post-conditions
+
+        // Check if returned artist has expected value
+        assertEquals(artist.getName(), artistCreated.getName());
+        assertEquals(artist.getBio(), artistCreated.getBio());
+        assertEquals(artist.getImgId(), artistCreated.getImgId());
+        assertEquals(0, artistCreated.getAvgRating(),0);
+        assertEquals(0, artistCreated.getRatingCount().intValue());
+
+        // check if artist is saved correctly in database
         assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist",
-                String.format("id = %d AND name = '%s'", PRE_EXISTING_ARTISTID, NEW_ARTISTNAME)));
+                String.format("name = '%s' AND bio = '%s' AND img_id = '%d' AND avg_rating = 0 and rating_amount = 0",
+                        NEW_ARTIST_NAME,
+                        NEW_ARTIST_BIO,
+                        PRE_EXISTING_IMAGE_ID)));
     }
 
     @Test
-    public void testUpdate_NonExistingArtist() throws SQLException {
-        // 1. Pre-condiciones - existe el artist
-        Artist artist = new Artist(null, NEW_ARTISTNAME,null,null,null,PRE_EXISTING_IMAGEID);
+    public void test_update() {
+        // 1. Pre-conditions - the artist exist
+        Artist artist = new Artist(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_NAME, NEW_ARTIST_BIO, PRE_EXISTING_IMAGE_ID, NEW_ARTIST_RATING_AMOUNT, NEW_ARTIST_AVG_RATING);
 
-        // 2. Ejercitar
-        int rowsAffected = artistDao.update(artist);
+        // 2. Execute
+        Artist artistUpdated = artistDao.update(artist);
 
-        // 3. Post-condiciones
-        assertEquals(0, rowsAffected);
+        // 3. Post-conditions
+
+        // Check if returned artist has expected value
+        assertEquals(artist.getName(), artistUpdated.getName());
+        assertEquals(artist.getBio(), artistUpdated.getBio());
+        assertEquals(artist.getImgId(), artistUpdated.getImgId());
+        assertEquals(NEW_ARTIST_AVG_RATING, artistUpdated.getAvgRating(),0);
+        assertEquals(NEW_ARTIST_RATING_AMOUNT, artistUpdated.getRatingCount().intValue());
+
+        // Check if artist is saved correctly in database
+        assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist",
+                String.format("id = '%d' AND name = '%s' AND bio = '%s' AND img_id = '%d' AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
+                        PRE_EXISTING_ARTIST_ID,
+                        NEW_ARTIST_NAME,
+                        NEW_ARTIST_BIO,
+                        PRE_EXISTING_IMAGE_ID,
+                        NEW_ARTIST_AVG_RATING,
+                        NEW_ARTIST_RATING_AMOUNT)));
+    }
+
+    @Test
+    public void test_delete() {
+        // 1. Pre-conditions - the artist exist
+
+        // 2. Execute
+        boolean deleted = artistDao.delete(PRE_EXISTING_ARTIST_ID);
+
+        // 3. Post-conditions
+        assertTrue(deleted);
         assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist",
-                String.format("name = '%s'", NEW_ARTISTNAME)));
+                String.format("id = %d", PRE_EXISTING_ARTIST_ID)));
     }
 
     @Test
-    public void testDeleteById_ExistingArtist() throws SQLException {
-        // 1. Pre-condiciones - existe el artist
+    public void test_delete_NonExistingArtist() {
+        // 1. Pre-conditions - the artist exist
 
-        // 2. Ejercitar
-        int rowsAffected = artistDao.deleteById(PRE_EXISTING_ARTISTID);
+        // 2. Execute
+        boolean deleted = artistDao.delete(NEW_ARTIST_ID);
 
-        // 3. Post-condiciones
-        assertEquals(1, rowsAffected);
-        assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist", String.format("id = %d", PRE_EXISTING_ARTISTID)));
+        // 3. Post-conditions
+        assertFalse(deleted);
     }
 
     @Test
-    public void testDeleteById_NonExistingArtist() throws SQLException {
-        // 1. Pre-condiciones - existe el artist
+    public void test_updateRating() {
+        // 1. Pre-conditions - the artist exist
 
-        // 2. Ejercitar
-        int rowsAffected = artistDao.deleteById(NEW_ARTISTID);
+        // 2. Execute
+        boolean updated = artistDao.updateRating(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_AVG_RATING, NEW_ARTIST_RATING_AMOUNT);
 
-        // 3. Post-condiciones
-        assertEquals(0, rowsAffected);
-        assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist", String.format("id = %d", NEW_ARTISTID)));
+        // 3. Post-conditions
+        assertTrue(updated);
+        assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist",
+                String.format("id = %d AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
+                        PRE_EXISTING_ARTIST_ID,
+                        NEW_ARTIST_AVG_RATING,
+                        NEW_ARTIST_RATING_AMOUNT)));
     }
+
+    @Test
+    public void test_updateRating_BadParameters() throws SQLException {
+        // 1. Pre-conditions - the artist exist
+
+        // 2. Execute
+        boolean updated = artistDao.updateRating(PRE_EXISTING_ARTIST_ID, -1, -1);
+
+        // 3. Post-conditions
+        assertFalse(updated);
+        assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist",
+                String.format("id = %d AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
+                        PRE_EXISTING_ARTIST_ID,
+                        NEW_ARTIST_AVG_RATING,
+                        NEW_ARTIST_RATING_AMOUNT)));
+    }
+
+    @Test
+    public void test_hasUserReviewed_Yes() throws SQLException {
+        // 1. Pre-conditions - the user made a review about artist
+
+        // 2. Execute
+        boolean deleted = artistDao.hasUserReviewed(PRE_EXISTING_USER_ID, PRE_EXISTING_ARTIST_ID);
+
+        // 3. Post-conditions
+        assertTrue(deleted);
+    }
+
+    @Test
+    public void test_hasUserReviewed_No() throws SQLException {
+        // 1. Pre-conditions - the user did not make a review about artist
+
+        // 2. Execute
+        boolean deleted = artistDao.hasUserReviewed(PRE_EXISTING_USER_ID, PRE_EXISTING_ARTIST_2_ID);
+
+        // 3. Post-conditions
+        assertFalse(deleted);
+    }
+
+
 }

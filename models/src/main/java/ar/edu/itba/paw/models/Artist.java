@@ -26,6 +26,15 @@ public class Artist {
         this.avgRating = avgRating;
     }
 
+    public Artist(Long id, String name, String bio, Long imgId, Integer ratingCount, Float avgRating) {
+        this.id = id;
+        this.name = name;
+        this.bio = bio;
+        this.imgId = imgId;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
+    }
+
     public Artist(Long id, String name, String bio, Long imgId) {
         this.id = id;
         this.name = name;
