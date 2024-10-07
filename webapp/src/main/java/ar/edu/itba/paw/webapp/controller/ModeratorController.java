@@ -57,12 +57,14 @@ public class ModeratorController {
     @RequestMapping(value = "/block/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView block(@PathVariable(name = "reviewId") final long reviewId) {
         reviewService.block(reviewId);
+        LOGGER.info("Review with ID {} has been blocked", reviewId);
         return new ModelAndView("redirect:/");
     }
 
     @RequestMapping(value = "/unblock/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView unblock(@PathVariable(name = "reviewId") final long reviewId) {
         reviewService.unblock(reviewId);
+        LOGGER.info("Review with ID {} has been unblocked", reviewId);
         return new ModelAndView("redirect:/");
     }
 
@@ -86,6 +88,7 @@ public class ModeratorController {
         }
 
         Artist artist = artistService.create(transformArtistToDTO(modArtistForm));
+        LOGGER.info("New artist created with ID: {}", artist.getId());
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artist.getId());
         modelAndView.addObject("artist", artist);
@@ -141,6 +144,7 @@ public class ModeratorController {
             return editArtistForm(modArtistForm, loggedUser, artistId);
 
         Artist artist = artistService.update(transformArtistToDTO(modArtistForm));
+        LOGGER.info("Artist with ID {} has been updated", artistId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
         modelAndView.addObject("artist", artist);
@@ -173,6 +177,7 @@ public class ModeratorController {
             return addAlbumForm(artistId, modAlbumForm, loggedUser);
 
         Album album = albumService.create(transformAlbumToDTO(modAlbumForm), artistId);
+        LOGGER.info("New album created with ID: {} for artist with ID: {}", album.getId(), artistId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + album.getId());
         modelAndView.addObject("album", album);
@@ -230,6 +235,7 @@ public class ModeratorController {
             return editAlbumForm(albumId, modAlbumForm, loggedUser);
 
         Album newAlbum = albumService.update(transformAlbumToDTO(modAlbumForm));
+        LOGGER.info("Album with ID {} has been updated", albumId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + albumId);
         modelAndView.addObject("album", newAlbum);
@@ -262,6 +268,7 @@ public class ModeratorController {
             return addSongForm(albumId, modSongForm, loggedUser);
 
         Song song = songService.create(transformSongToDTO(modSongForm), new Album(albumId));
+        LOGGER.info("New song created with ID: {} for album with ID: {}", song.getId(), albumId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + song.getId());
         modelAndView.addObject("song", song);
@@ -300,6 +307,7 @@ public class ModeratorController {
             return editSongForm(songId, modSongForm, loggedUser);
 
         Song newSong = songService.update(transformSongToDTO(modSongForm), new Album(modSongForm.getAlbumId()));
+        LOGGER.info("Song with ID {} has been updated", songId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + songId);
         modelAndView.addObject("song", newSong);
@@ -309,6 +317,7 @@ public class ModeratorController {
     @RequestMapping(path = "/delete/artist/{artistId:\\d+}")
     public ModelAndView deleteArtist(@PathVariable(name = "artistId") final long artistId) {
         artistService.delete(artistId);
+        LOGGER.info("Artist with ID {} has been deleted", artistId);
         return new ModelAndView("redirect:/home");
     }
 
@@ -321,6 +330,7 @@ public class ModeratorController {
         }
 
         albumService.delete(albumOptional.get());
+        LOGGER.info("Album with ID {} has been deleted", albumId);
         return new ModelAndView("redirect:/artist/" + albumOptional.get().getArtist().getId());
     }
 
@@ -332,12 +342,14 @@ public class ModeratorController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
         songService.delete(songId);
+        LOGGER.info("Song with ID {} has been deleted", songId);
         return new ModelAndView("redirect:/artist/" + songOptional.get().getAlbum().getId());
     }
 
     @RequestMapping(path = "/update-ratings", method = RequestMethod.GET)
     public ModelAndView updateAvgRatingForAll(@ModelAttribute("loggedUser") User loggedUser) {
         reviewService.updateAvgRatingForAll();
+        LOGGER.info("Average ratings have been updated for all items");
         return new ModelAndView("redirect:/");
     }
 

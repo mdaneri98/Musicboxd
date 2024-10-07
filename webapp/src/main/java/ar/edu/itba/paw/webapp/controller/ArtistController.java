@@ -5,9 +5,7 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
-import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.context.MessageSource;
@@ -25,11 +23,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @RequestMapping ("/artist")
 @Controller
 public class ArtistController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArtistController.class);
 
     private final UserService userService;
     private final ArtistService artistService;
@@ -49,7 +51,6 @@ public class ArtistController {
 
     @RequestMapping("/")
     public ModelAndView findAll() {
-        //TODO: Redirigir a algun artista.
         return new ModelAndView("redirect:/");
     }
 
@@ -147,6 +148,7 @@ public class ArtistController {
                 review.isBlocked()
         );
         reviewService.updateArtistReview(artistReview);
+        LOGGER.info("Artist review updated for artist ID {} by user ID {}", artistId, loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
@@ -166,6 +168,7 @@ public class ArtistController {
                 false
         );
         reviewService.saveArtistReview(artistReview);
+        LOGGER.info("New artist review created for artist ID {} by user ID {}", artistId, loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
@@ -173,18 +176,21 @@ public class ArtistController {
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
         ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get();
         reviewService.deleteReview(review, loggedUser.getId());
+        LOGGER.info("Artist review deleted for artist ID {} by user ID {}", artistId, loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
     @RequestMapping(value = "/{artistId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
         userService.addFavoriteArtist(loggedUser.getId(), artistId);
+        LOGGER.info("Artist ID {} added to favorites by user ID {}", artistId, loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
     @RequestMapping(value = "/{artistId:\\d+}/remove-favorite", method = RequestMethod.GET)
     public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
         userService.removeFavoriteArtist(loggedUser.getId(), artistId);
+        LOGGER.info("Artist ID {} removed from favorites by user ID {}", artistId, loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 }
