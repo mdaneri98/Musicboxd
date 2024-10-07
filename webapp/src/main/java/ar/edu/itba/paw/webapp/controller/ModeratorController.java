@@ -49,13 +49,7 @@ public class ModeratorController {
 
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     public ModelAndView home() {
-        final ModelAndView mav = new ModelAndView("/moderator/m_home");
-
-        mav.addObject("artists", artistService.findAll());
-        mav.addObject("albums", albumService.findAll());
-        mav.addObject("songs", songService.findAll());
-
-        return mav;
+        return new ModelAndView("/moderator/m_home");
     }
 
     @RequestMapping(value = "/block/{reviewId:\\d+}", method = RequestMethod.GET)

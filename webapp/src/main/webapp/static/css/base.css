@@ -49,6 +49,13 @@ h6 {
 a {
     color: #fbfbfb;
     text-decoration: none;
+    transition: transform 0.5s ease;
+}
+
+a:hover {
+    text-decoration: none;
+    color: white;
+    scale: 1.01;
 }
 
 /* Input Fields */
