@@ -39,6 +39,7 @@
             <c:url var="posturl" value="/artist/${artist.id}/reviews" />
             <jsp:include page="/WEB-INF/jsp/components/review_form.jsp">
                 <jsp:param name="posturl" value="${posturl}"/>
+                <jsp:param name="cancelUrl" value="${artistUrl}"/>
             </jsp:include>
         </c:when>
         <c:otherwise>
