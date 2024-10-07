@@ -23,11 +23,14 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RequestMapping("/review")
 @Controller
 public class ReviewController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewController.class);
 
     private final ReviewService reviewService;
 
@@ -90,12 +93,14 @@ public class ReviewController {
     @RequestMapping(value = "/like/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView createLike(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "reviewId") long reviewId) {
         reviewService.createLike(loggedUser.getId(), reviewId);
+        LOGGER.info("User with ID {} liked review with ID {}", loggedUser.getId(), reviewId);
         return new ModelAndView("redirect:/review/" + reviewId);
     }
 
     @RequestMapping(value = "/remove-like/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView removeLike(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "reviewId") long reviewId) {
         reviewService.removeLike(loggedUser.getId(), reviewId);
+        LOGGER.info("User with ID {} removed like from review with ID {}", loggedUser.getId(), reviewId);
         return new ModelAndView("redirect:/review/" + reviewId);
     }
 }

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Controller
 public class IndexController {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
     private final ArtistService artistService;
     private final ReviewService reviewService;
@@ -103,7 +103,7 @@ public class IndexController {
     @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
     @ResponseBody
     public String subSearch(@PathVariable("type") String type, @RequestParam(name = "s", defaultValue = "") String substringSearch) {
-        logger.debug("Iniciando búsqueda en subSearch con type={} y substringSearch={}", type, substringSearch);
+        LOGGER.info("Initiating search in subSearch with type={} and substringSearch={}", type, substringSearch);
 
         String jsonResult = "";
         switch (type) {
@@ -134,7 +134,7 @@ public class IndexController {
                         .collect(Collectors.joining(",", "[", "]"));
                 break;
             default:
-                logger.warn("Tipo de búsqueda no reconocido: {}", type);
+                LOGGER.warn("Unrecognized search type: {}", type);
                 return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
         }
         return jsonResult;
