@@ -38,35 +38,33 @@ public class ModeratorController {
     private final SongService songService;
     private final ReviewService reviewService;
     private final MessageSource messageSource;
+    private final ImageService imageService;
 
-    public ModeratorController(ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService, MessageSource messageSource) {
+    public ModeratorController(ArtistService artistService, AlbumService albumService, SongService songService, ReviewService reviewService, MessageSource messageSource, ImageService imageService) {
         this.artistService = artistService;
         this.albumService = albumService;
         this.songService = songService;
         this.reviewService = reviewService;
         this.messageSource = messageSource;
+        this.imageService = imageService;
     }
 
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     public ModelAndView home() {
-        final ModelAndView mav = new ModelAndView("/moderator/m_home");
-
-        mav.addObject("artists", artistService.findAll());
-        mav.addObject("albums", albumService.findAll());
-        mav.addObject("songs", songService.findAll());
-
-        return mav;
+        return new ModelAndView("/moderator/m_home");
     }
 
     @RequestMapping(value = "/block/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView block(@PathVariable(name = "reviewId") final long reviewId) {
         reviewService.block(reviewId);
+        LOGGER.info("Review with ID {} has been blocked", reviewId);
         return new ModelAndView("redirect:/");
     }
 
     @RequestMapping(value = "/unblock/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView unblock(@PathVariable(name = "reviewId") final long reviewId) {
         reviewService.unblock(reviewId);
+        LOGGER.info("Review with ID {} has been unblocked", reviewId);
         return new ModelAndView("redirect:/");
     }
 
@@ -75,18 +73,22 @@ public class ModeratorController {
                                       @ModelAttribute("loggedUser") User loggedUser) {
         ModelAndView modelAndView = new ModelAndView("moderator/add-artist");
         modelAndView.addObject("postUrl", "/mod/add/artist");
+        modelAndView.addObject("defaultImgId", imageService.getDefaultImgId());
         return modelAndView;
     }
 
     @RequestMapping(path = "/add/artist", method = RequestMethod.POST)
     public ModelAndView submitArtistForm(@Valid @ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
-                                         @ModelAttribute("loggedUser") User loggedUser,
-                                         final BindingResult errors) {
+                                         final BindingResult errors,
+                                         @ModelAttribute("loggedUser") User loggedUser) {
+
+        // Check if there are any validation errors
         if (errors.hasErrors()) {
             return addArtistForm(modArtistForm, loggedUser);
         }
 
         Artist artist = artistService.create(transformArtistToDTO(modArtistForm));
+        LOGGER.info("New artist created with ID: {}", artist.getId());
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artist.getId());
         modelAndView.addObject("artist", artist);
@@ -100,6 +102,7 @@ public class ModeratorController {
 
         ModelAndView modelAndView = new ModelAndView("moderator/add-artist");
         modelAndView.addObject("postUrl", "/mod/edit/artist/" + artistId);
+        modelAndView.addObject("defaultImgId", imageService.getDefaultImgId());
 
         Optional<Artist> artist = artistService.find(artistId);
         if (artist.isEmpty()) {
@@ -132,14 +135,16 @@ public class ModeratorController {
     }
 
     @RequestMapping(path = "edit/artist/{artistId:\\d+}", method = RequestMethod.POST)
-    public ModelAndView submitArtistForm(@ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
+    public ModelAndView submitArtistForm(@Valid @ModelAttribute("modArtistForm") final ModArtistForm modArtistForm,
+                                         final BindingResult errors,
                                          @ModelAttribute("loggedUser") User loggedUser,
-                                         @PathVariable(name = "artistId") long artistId,
-                                         final BindingResult errors) {
+                                         @PathVariable(name = "artistId") long artistId) {
+
         if (errors.hasErrors())
             return editArtistForm(modArtistForm, loggedUser, artistId);
 
         Artist artist = artistService.update(transformArtistToDTO(modArtistForm));
+        LOGGER.info("Artist with ID {} has been updated", artistId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
         modelAndView.addObject("artist", artist);
@@ -157,7 +162,10 @@ public class ModeratorController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
-        return new ModelAndView("moderator/add-album").addObject(artistId);
+        ModelAndView modelAndView = new ModelAndView("moderator/add-album").addObject(artistId);
+        modelAndView.addObject("postUrl", "/mod/add/artist/" + artistId + "/album");
+        modelAndView.addObject("defaultImgId", imageService.getDefaultImgId());
+        return modelAndView;
     }
 
     @RequestMapping(path = "add/artist/{artistId:\\d+}/album", method = RequestMethod.POST)
@@ -169,6 +177,7 @@ public class ModeratorController {
             return addAlbumForm(artistId, modAlbumForm, loggedUser);
 
         Album album = albumService.create(transformAlbumToDTO(modAlbumForm), artistId);
+        LOGGER.info("New album created with ID: {} for artist with ID: {}", album.getId(), artistId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + album.getId());
         modelAndView.addObject("album", album);
@@ -182,6 +191,7 @@ public class ModeratorController {
 
         ModelAndView modelAndView = new ModelAndView("moderator/add-album");
         modelAndView.addObject("postUrl", "/mod/edit/album/" + albumId);
+        modelAndView.addObject("defaultImgId", imageService.getDefaultImgId());
 
         Optional<Album> album = albumService.find(albumId);
         if (album.isEmpty()) {
@@ -217,13 +227,15 @@ public class ModeratorController {
 
     @RequestMapping(path = "edit/album/{albumId:\\d+}", method = RequestMethod.POST)
     public ModelAndView submitEditAlbumForm(@PathVariable(name = "albumId") final long albumId,
-                                      @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
-                                      @ModelAttribute("loggedUser") User loggedUser,
-                                      final BindingResult errors) {
+                                            @Valid @ModelAttribute("modAlbumForm") final ModAlbumForm modAlbumForm,
+                                            final BindingResult errors,
+                                            @ModelAttribute("loggedUser") User loggedUser) {
+
         if (errors.hasErrors())
             return editAlbumForm(albumId, modAlbumForm, loggedUser);
 
         Album newAlbum = albumService.update(transformAlbumToDTO(modAlbumForm));
+        LOGGER.info("Album with ID {} has been updated", albumId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + albumId);
         modelAndView.addObject("album", newAlbum);
@@ -242,18 +254,21 @@ public class ModeratorController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode("The album doesn't exist.", StandardCharsets.UTF_8));
         }
 
-        return new ModelAndView("moderator/add-song").addObject(albumId);
+        ModelAndView modelAndView = new ModelAndView("moderator/add-song").addObject(albumId);
+        modelAndView.addObject("postUrl", "/mod/add/album/" + albumId + "/song");
+        return modelAndView;
     }
 
     @RequestMapping(path = "add/album/{albumId:\\d+}/song", method = RequestMethod.POST)
     public ModelAndView submitSongForm(@PathVariable(name = "albumId") final long albumId,
                                        @Valid @ModelAttribute("modSongForm") final ModSongForm modSongForm,
-                                       @ModelAttribute("loggedUser") User loggedUser,
-                                       final BindingResult errors) {
+                                       final BindingResult errors,
+                                       @ModelAttribute("loggedUser") User loggedUser) {
         if (errors.hasErrors())
             return addSongForm(albumId, modSongForm, loggedUser);
 
         Song song = songService.create(transformSongToDTO(modSongForm), new Album(albumId));
+        LOGGER.info("New song created with ID: {} for album with ID: {}", song.getId(), albumId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + song.getId());
         modelAndView.addObject("song", song);
@@ -285,13 +300,14 @@ public class ModeratorController {
 
     @RequestMapping(path = "/edit/song/{songId:\\d+}", method = RequestMethod.POST)
     public ModelAndView submitEditSongForm(@PathVariable(name = "songId") final long songId,
-                                     @ModelAttribute("modSongForm") final ModSongForm modSongForm,
-                                     @ModelAttribute("loggedUser") User loggedUser,
-                                     final BindingResult errors) {
+                                           @Valid @ModelAttribute("modSongForm") final ModSongForm modSongForm,
+                                           final BindingResult errors,
+                                           @ModelAttribute("loggedUser") User loggedUser) {
         if (errors.hasErrors())
             return editSongForm(songId, modSongForm, loggedUser);
 
         Song newSong = songService.update(transformSongToDTO(modSongForm), new Album(modSongForm.getAlbumId()));
+        LOGGER.info("Song with ID {} has been updated", songId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + songId);
         modelAndView.addObject("song", newSong);
@@ -301,6 +317,7 @@ public class ModeratorController {
     @RequestMapping(path = "/delete/artist/{artistId:\\d+}")
     public ModelAndView deleteArtist(@PathVariable(name = "artistId") final long artistId) {
         artistService.delete(artistId);
+        LOGGER.info("Artist with ID {} has been deleted", artistId);
         return new ModelAndView("redirect:/home");
     }
 
@@ -313,12 +330,26 @@ public class ModeratorController {
         }
 
         albumService.delete(albumOptional.get());
+        LOGGER.info("Album with ID {} has been deleted", albumId);
         return new ModelAndView("redirect:/artist/" + albumOptional.get().getArtist().getId());
+    }
+
+    @RequestMapping(path = "delete/song/{songId:\\d+}")
+    public ModelAndView deleteSong(@PathVariable(name = "songId") final long songId) {
+        Optional<Song> songOptional = songService.find(songId);
+        if (songOptional.isEmpty() ) {
+            String errorMessage = messageSource.getMessage("error.song.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+        songService.delete(songId);
+        LOGGER.info("Song with ID {} has been deleted", songId);
+        return new ModelAndView("redirect:/artist/" + songOptional.get().getAlbum().getId());
     }
 
     @RequestMapping(path = "/update-ratings", method = RequestMethod.GET)
     public ModelAndView updateAvgRatingForAll(@ModelAttribute("loggedUser") User loggedUser) {
         reviewService.updateAvgRatingForAll();
+        LOGGER.info("Average ratings have been updated for all items");
         return new ModelAndView("redirect:/");
     }
 

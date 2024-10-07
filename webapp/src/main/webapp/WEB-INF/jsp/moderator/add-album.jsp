@@ -5,7 +5,7 @@
 <html>
 <head>
 
-    <spring:message var="pageTitle" text="Submit an Album"/>
+    <spring:message var="pageTitle" code="submit.album.heading"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
@@ -21,7 +21,7 @@
     </jsp:include>
 </div>
 <div class="container form-container">
-    <h1>Submit Album</h1>
+    <h1><spring:message code="submit.album.title"/></h1>
 
     <c:url var="postURL" value="${postUrl}" />
     <form:form id="albumForm" modelAttribute="modAlbumForm" action="${postURL}" method="post" enctype="multipart/form-data">
@@ -30,7 +30,7 @@
             <div class="info-container">
                 <!-- Image Preview -->
                 <c:if test="${albumId == null}">
-                    <c:url var="albumImgURL" value="/images/1"/>
+                    <c:url var="albumImgURL" value="/images/${defaultImgId}"/>
                 </c:if>
                 <c:if test="${albumId != null}">
                     <c:url var="albumImgURL" value="/images/${modAlbumForm.albumImageId}"/>
@@ -43,59 +43,57 @@
                 <input name="albumImageId" type="hidden" value="${modAlbumForm.albumImageId}"/>
                 <div class="data-container element-details-container">
                     <div>
-                        <label>Title:
-                            <form:errors path="title" cssClass="error" element="p" cssStyle="color:red;"/>
-                            <form:input path="title" type="text" required="true"/>
+                        <label><spring:message code="submit.album.title.label"/>:
+                        <form:errors path="title" cssClass="error" cssStyle="color:red;"/>
+                        <form:input path="title" type="text" required="true"/>
                         </label>
                     </div>
                     <div>
-                        <label>Genre:
-                            <form:errors path="genre" cssClass="error" element="p" cssStyle="color:red;"/>
+                        <label><spring:message code="submit.album.genre.label"/>:
+                            <form:errors path="genre" cssClass="error" cssStyle="color:red;"/>
                             <form:input path="genre" type="text" required="true"/>
                         </label>
                     </div>
-                    <!--
                     <div>
-                        <label>Release Date:
-                            form:errors path="releaseDate" cssClass="error" />
-                            <input name="releaseDate" type="datetime-local" />
+                        <label><spring:message code="submit.album.release.date.label"/>:
+                            <form:errors path="releaseDate" cssClass="error" cssStyle="color:red;"/>
+                            <form:input path="releaseDate" type="date" required="true"/>
                         </label>
                     </div>
-                    -->
                 </div>
             </div>
             <input name="deleted" id="deletedAlbum" type="hidden" value="false"/>
             <c:if test="${albumId != null}">
                 <c:url var="deleteUrl" value="/mod/delete/album/${albumId}"/>
-                <a href="${deleteUrl}" style="margin-left: auto">
-                    <button type="button" class="remove-button">Delete Album</button>
+                <a style="margin-left: auto" onclick="deleteAlbum()">
+                    <button type="button" class="remove-button"><spring:message code="button.delete.album"/></button>
                 </a>
             </c:if>
         </div>
 
         <!-- Song List Section -->
-        <h2>Songs</h2>
+        <h2><spring:message code="submit.album.songs.title"/></h2>
         <div id="SongContainer">
             <c:forEach items="${modAlbumForm.songs}" var="song" varStatus="status">
                 <input name="songs[${status.index}].id" type="hidden" value="${song.id}">
                 <input name="songs[${status.index}].albumId" type="hidden" value="${song.albumId}"/>
                 <div id="song-${status.index}" class="info-container sub-element-container">
                     <div class="data-container element-details-container song-details-container">
-                        <label>Title:
+                        <label><spring:message code="submit.song.title.label"/>:
+                            <form:errors path="songs[${status.index}].title" cssClass="error" cssStyle="color:red;"/>
                             <form:input path="songs[${status.index}].title" type="text" required="true" class="element-field"/>
-                            <form:errors path="songs[${status.index}].title" cssClass="error" element="p" cssStyle="color:red;"/>
                         </label>
-                        <label>Duration:
+                        <label><spring:message code="submit.song.duration.label"/>:
+                            <form:errors path="songs[${status.index}].duration" cssClass="error" cssStyle="color:red;"/>
                             <form:input path="songs[${status.index}].duration" type="text" required="true" class="element-field"/>
-                            <form:errors path="songs[${status.index}].duration" cssClass="error" element="p" cssStyle="color:red;"/>
                         </label>
-                        <label>Track Number:
+                        <label><spring:message code="submit.song.track.number.label"/>:
+                            <form:errors path="songs[${status.index}].trackNumber" cssClass="error" cssStyle="color:red;"/>
                             <form:input path="songs[${status.index}].trackNumber" type="number" required="true" class="element-field"/>
-                            <form:errors path="songs[${status.index}].trackNumber" cssClass="error" element="p" cssStyle="color:red;"/>
                         </label>
                     </div>
                     <!-- Remove button for existing songs -->
-                    <button type="button" class="remove-button" onclick="removeSong(document.getElementById('song-' + ${status.index}))">Remove Song</button>
+                    <button type="button" class="remove-button" onclick="removeSong(document.getElementById('song-' + ${status.index}))"><spring:message code="button.remove.song"/></button>
                 </div>
                 <!-- Flag deleted songs -->
                 <input name="songs[${status.index}].deleted" id="deletedSong-${status.index}" type="hidden" value="false"/>
@@ -104,8 +102,8 @@
 
         <!-- Add Song Button -->
         <div>
-            <c:url var="defaultImgURL" value="/images/1"/>
-            <button type="button" id="addSongButton" onclick="addSong()">+ Add Song</button>
+            <c:url var="defaultImgURL" value="/images/${defaultImgId}"/>
+            <button type="button" id="addSongButton" onclick="addSong()"><spring:message code="button.add.song"/></button>
         </div>
 
         <br><br>
@@ -118,11 +116,11 @@
                 <c:url value="/album/${albumId}" var="cancel_url" />
             </c:if>
             <a href="${cancel_url}">
-                <button type="button">Cancel</button>
+                <button type="button"><spring:message code="button.cancel"/></button>
             </a>
 
-            <!-- Confirm Button -->
-            <button type="submit" style="margin-left: auto">Submit Artist</button>
+            <!-- Submit Button -->
+            <button type="submit" style="margin-left: auto"><spring:message code="submit.album.button"/></button>
         </div>
     </form:form>
 
@@ -199,13 +197,38 @@
             toggleAddButton(songCount);
         }
 
-        function removeSong(songDiv) {
+        function deleteAlbum() {
             // Get the modal and buttons
-            var modal = document.getElementById("confirmationModal");
-            var yesButton = document.getElementById("modalYes");
-            var noButton = document.getElementById("modalNo");
+            var overlay = document.getElementById("confirmationModalAlbum");
+            var modal = document.getElementById("confirmationModalAlbum");
+            var yesButton = document.getElementById("modalYesAlbum");
+            var noButton = document.getElementById("modalNoAlbum");
 
             // Show the modal
+            overlay.style.display = "block";
+            modal.style.display = "block";
+
+            // Handle the Yes button click
+            yesButton.onclick = function () {
+                window.location.href = "${deleteUrl}";
+            }
+
+            // Handle the No button click (just close the modal)
+            noButton.onclick = function () {
+                overlay.style.display = "none";
+                modal.style.display = "none";
+            };
+        }
+
+        function removeSong(songDiv) {
+            // Get the modal and buttons
+            var overlay = document.getElementById("modalOverlaySong");
+            var modal = document.getElementById("confirmationModalSong");
+            var yesButton = document.getElementById("modalYesSong");
+            var noButton = document.getElementById("modalNoSong");
+
+            // Show the modal
+            overlay.style.display = "block";
             modal.style.display = "block";
 
             // Handle the Yes button click
@@ -228,6 +251,7 @@
                 }
 
                 // Hide the modal after removing the album
+                overlay.style.display = "none";
                 modal.style.display = "none";
 
                 // Update the button's enabled/disabled state
@@ -236,7 +260,8 @@
 
             // Handle the No button click (just close the modal)
             noButton.onclick = function() {
-                modal.style.display = "none"; // Hide the modal without taking any action
+                overlay.style.display = "none";
+                modal.style.display = "none";
             };
         }
 
@@ -265,8 +290,18 @@
 
     </script>
 </div>
+<!-- Confirmation for Album -->
+<spring:message var="confirmation_text" code="confirmation.window.album.message"/>
 <jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
-    <jsp:param name="message" value="Are you sure you want to delete this?"/>
+    <jsp:param name="message" value="${confirmation_text}"/>
+    <jsp:param name="id" value="Album"/>
+</jsp:include>
+
+<!-- Confirmation for Song -->
+<spring:message var="confirmation_text" code="confirmation.window.song.message"/>
+<jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
+    <jsp:param name="message" value="${confirmation_text}"/>
+    <jsp:param name="id" value="Song"/>
 </jsp:include>
 </body>
 </html>

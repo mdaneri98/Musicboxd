@@ -6,12 +6,14 @@
   <artifactId>paw-2024b-02</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>TuneTracker</name>
+  <name>Musicbox</name>
+  <url>http://pawserver.it.itba.edu.ar/paw-2024b-02</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
+    <maven-war-plugin.version>2.6</maven-war-plugin.version>
 
     <spring.version>5.3.33</spring.version>
     <org.postgresql.version>42.2.5</org.postgresql.version>
@@ -24,10 +26,9 @@
     <thymeleaf.version>3.0.12.RELEASE</thymeleaf.version>
 
     <!-- Loggin dependencies -->
-    <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
-    <slf4j.version>1.7.5</slf4j.version>
+    <org.slf4j.version>1.7.5</org.slf4j.version>
     <logback.version>1.1.2</logback.version>
-    <maven-war-plugin.version>2.6</maven-war-plugin.version>
+    <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
 
     <javax.validation-api.version>2.0.1.Final</javax.validation-api.version>
     <org.hibernate-validator.version>6.2.4.Final</org.hibernate-validator.version>
@@ -116,7 +117,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
+        <version>${org.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -131,7 +132,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
+        <version>${org.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.logback-extensions</groupId>
@@ -176,6 +177,12 @@
         <version>${hsqldb.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+        <scope>test</scope>
+      </dependency>
 
     <!-- Upload File Dependencies -->
       <dependency>
@@ -195,15 +202,24 @@
     <module>models</module>
   </modules>
 
-  <!--
-  <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-war-plugin</artifactId>
-    <version>${maven-war-plugin.version}</version>
-    <configuration>
-      <packagingExcludes>**/logback-test.xml</packagingExcludes>
-    </configuration>
-  </plugin>
-  -->
+  <build>
+    <!-- lock down plugins versions to avoid using Maven defaults -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>${maven-war-plugin.version}</version>
+          <configuration>
+            <packagingExcludes>**/logback-test.xml</packagingExcludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>

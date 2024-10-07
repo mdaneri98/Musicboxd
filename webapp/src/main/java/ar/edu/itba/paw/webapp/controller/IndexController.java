@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Controller
 public class IndexController {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
     private final ArtistService artistService;
     private final ReviewService reviewService;
@@ -69,15 +69,7 @@ public class IndexController {
 
     @RequestMapping("/search")
     public ModelAndView search(@ModelAttribute("loggedUser") User loggedUser) {
-        ModelAndView mav = new ModelAndView("search");
-
-        List<Album> albums = albumService.findPaginated(FilterType.NEWEST,1, 10);
-        List<Artist> artists = artistService.findPaginated(FilterType.RATING,1, 10);
-
-        mav.addObject("top_albums", albums);
-        mav.addObject("top_artists", artists);
-
-        return mav;
+        return new ModelAndView("search");
     }
 
     @RequestMapping("/music")
@@ -111,7 +103,7 @@ public class IndexController {
     @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
     @ResponseBody
     public String subSearch(@PathVariable("type") String type, @RequestParam(name = "s", defaultValue = "") String substringSearch) {
-        logger.debug("Iniciando búsqueda en subSearch con type={} y substringSearch={}", type, substringSearch);
+        LOGGER.info("Initiating search in subSearch with type={} and substringSearch={}", type, substringSearch);
 
         String jsonResult = "";
         switch (type) {
@@ -142,7 +134,7 @@ public class IndexController {
                         .collect(Collectors.joining(",", "[", "]"));
                 break;
             default:
-                logger.warn("Tipo de búsqueda no reconocido: {}", type);
+                LOGGER.warn("Unrecognized search type: {}", type);
                 return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
         }
         return jsonResult;
