@@ -215,3 +215,7 @@ input[type="checkbox"] {
 .register-link a:hover {
     text-decoration: underline;
 }
+
+.change-password{
+    margin-left: 10px;
+}

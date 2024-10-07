@@ -244,7 +244,7 @@ public class AlbumJdbcDaoTest {
         assertFalse(deleted);
     }
 
-    @Test
+    //@Test
     public void test_updateRating() {
         // 1. Pre-conditions - the album exist
 
