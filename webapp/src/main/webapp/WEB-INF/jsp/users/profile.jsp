@@ -41,7 +41,7 @@
     <h2><spring:message code="label.favorite.artists"/></h2>
     <c:if test="${artists.size() == 0}">
         <div class="artist">
-            <p><spring:message code="label.up.to.five.artist"/></p>
+            <span class="add-favorites"><spring:message code="label.up.to.five.artist"/></span>
         </div>
     </c:if>
     <div class="carousel-container">
@@ -69,7 +69,7 @@
     <h2><spring:message code="label.favorite.albums"/></h2>
     <c:if test="${albums.size() == 0}">
         <div class="artist">
-            <p><spring:message code="label.up.to.five.albums"/></p>
+            <span class="add-favorites"><spring:message code="label.up.to.five.albums"/></span>
         </div>
     </c:if>
     <div class="carousel-container">
@@ -94,10 +94,10 @@
         </div>
     </div>
 
-    <h2>Favorite Songs</h2>
+    <h2><spring:message code="label.favorite.songs"/></h2>
     <c:if test="${songs.size() == 0}">
         <div class="artist">
-            <p><spring:message code="label.up.to.five.songs"/></p>
+            <span class="add-favorites"><spring:message code="label.up.to.five.songs"/></span>
         </div>
     </c:if>
     <ul class="song-list">
