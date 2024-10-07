@@ -46,11 +46,41 @@
                 <jsp:param name="posturl" value="${posturl}"/>
             </jsp:include>
             <c:url var="deleteUrl" value="/song/${song.id}/delete-review" />
-            <a href="${deleteUrl}" class="delete-button">
+            <a onclick="deleteReview()" style="margin-left: auto" class="delete-button">
                 <spring:message code="label.delete.review" />
             </a>
         </c:otherwise>
     </c:choose>
-</div>
+</div><!-- Confirmation for Review -->
+<spring:message var="confirmation_text" code="confirmation.window.review.message"/>
+<jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
+    <jsp:param name="message" value="${confirmation_text}"/>
+    <jsp:param name="id" value="Review"/>
+</jsp:include>
 </body>
+
+<script>
+    function deleteReview() {
+        // Get the modal and buttons
+        var overlay = document.getElementById("modalOverlayReview");
+        var modal = document.getElementById("confirmationModalReview");
+        var yesButton = document.getElementById("modalYesReview");
+        var noButton = document.getElementById("modalNoReview");
+
+        // Show the modal
+        overlay.style.display = "block";
+        modal.style.display = "block";
+
+        // Handle the Yes button click
+        yesButton.onclick = function () {
+            window.location.href = "${deleteUrl}";
+        }
+
+        // Handle the No button click (just close the modal)
+        noButton.onclick = function () {
+            overlay.style.display = "none";
+            modal.style.display = "none";
+        };
+    }
+</script>
 </html>
