@@ -1,19 +1,8 @@
--- Limpiar tablas existentes
-DELETE FROM review_like;
-DELETE FROM song_review;
-DELETE FROM album_review;
-DELETE FROM artist_review;
-DELETE FROM review;
-DELETE FROM song;
-DELETE FROM album;
-DELETE FROM artist;
-DELETE FROM cuser;
-DELETE FROM image;
 
 -- Insertar imágenes
-INSERT INTO image (id, content) VALUES (1, 'dummy_image_data');
-INSERT INTO image (id, content) VALUES (2, 'dummy_image_data');
-INSERT INTO image (id, content) VALUES (3, 'dummy_image_data');
+INSERT INTO image (id, content) VALUES (1, CAST('deadbeef' AS BYTEA));
+INSERT INTO image (id, content) VALUES (2, CAST('deadbeef' AS BYTEA));
+INSERT INTO image (id, content) VALUES (3, CAST('deadbeef' AS BYTEA));
 
 -- Insertar usuarios
 INSERT INTO cuser (id, username, email, password, name, img_id, verified, moderator)

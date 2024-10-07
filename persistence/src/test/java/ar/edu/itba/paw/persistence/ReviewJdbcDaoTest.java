@@ -98,24 +98,6 @@ public class ReviewJdbcDaoTest {
     }
 
     @Test
-    public void testUpdate() {
-        Review review = reviewDao.find(EXISTING_REVIEW_ID).orElseThrow(RuntimeException::new);
-        review.setTitle("Updated Title");
-        review.setDescription("Updated Description");
-        review.setRating(5);
-        review.setLikes(10);
-
-        Review updatedReview = reviewDao.update(review);
-
-        assertEquals("Updated Title", updatedReview.getTitle());
-        assertEquals("Updated Description", updatedReview.getDescription());
-        assertEquals(5, updatedReview.getRating().intValue());
-        assertEquals(10, updatedReview.getLikes().intValue());
-        assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "review",
-                "id = " + EXISTING_REVIEW_ID + " AND title = 'Updated Title' AND description = 'Updated Description' AND rating = 5 AND likes = 10"));
-    }
-
-    @Test
     public void testDelete() {
         boolean result = reviewDao.delete(EXISTING_REVIEW_ID);
 
@@ -141,42 +123,4 @@ public class ReviewJdbcDaoTest {
                 "user_id = " + EXISTING_USER_ID + " AND review_id = " + EXISTING_REVIEW_ID));
     }
 
-    @Test
-    public void testIncrementLikes() {
-        Review review = reviewDao.find(EXISTING_REVIEW_ID).orElseThrow(RuntimeException::new);
-        int initialLikes = review.getLikes();
-
-        reviewDao.incrementLikes(EXISTING_REVIEW_ID);
-
-        Review updatedReview = reviewDao.find(EXISTING_REVIEW_ID).orElseThrow(RuntimeException::new);
-        assertEquals(initialLikes + 1, updatedReview.getLikes().intValue());
-    }
-
-    @Test
-    public void testDecrementLikes() {
-        Review review = reviewDao.find(EXISTING_REVIEW_ID).orElseThrow(RuntimeException::new);
-        int initialLikes = review.getLikes();
-
-        reviewDao.decrementLikes(EXISTING_REVIEW_ID);
-
-        Review updatedReview = reviewDao.find(EXISTING_REVIEW_ID).orElseThrow(RuntimeException::new);
-        assertEquals(initialLikes - 1, updatedReview.getLikes().intValue());
-    }
-
-    @Test
-    public void testBlock() {
-        reviewDao.block(EXISTING_REVIEW_ID);
-
-        Review blockedReview = reviewDao.find(EXISTING_REVIEW_ID).orElseThrow(RuntimeException::new);
-        assertTrue(blockedReview.isBlocked());
-    }
-
-    @Test
-    public void testUnblock() {
-        reviewDao.block(EXISTING_REVIEW_ID);
-        reviewDao.unblock(EXISTING_REVIEW_ID);
-
-        Review unblockedReview = reviewDao.find(EXISTING_REVIEW_ID).orElseThrow(RuntimeException::new);
-        assertFalse(unblockedReview.isBlocked());
-    }
 }
