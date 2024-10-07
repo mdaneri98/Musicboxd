@@ -9,6 +9,7 @@
         font-family: 'Circular Std', Arial, sans-serif;
         color: #fff;
     }
+    
     .rating-header {
         display: flex;
         justify-content: space-between;
