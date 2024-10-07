@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -285,7 +286,7 @@ public class SongJdbcDaoTest {
         assertFalse(deleted);
     }
 
-    //@Test
+    @Test
     public void test_updateRating() {
         // 1. Pre-conditions - the song exist
 
@@ -295,7 +296,7 @@ public class SongJdbcDaoTest {
         // 3. Post-conditions
         assertTrue(updated);
         assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"song",
-                String.format("id = %d AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
+                String.format(Locale.US, "id = %d AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
                         PRE_EXISTING_SONG_ID,
                         NEW_SONG_AVG_RATING,
                         NEW_SONG_RATING_AMOUNT)));

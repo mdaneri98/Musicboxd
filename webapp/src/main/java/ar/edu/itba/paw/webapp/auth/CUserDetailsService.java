@@ -27,7 +27,7 @@ public class CUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = us.findByUsername(username).orElseThrow(() -> {
-            LOGGER.warn("Intento de acceso con usuario no existente: " + username);
+            LOGGER.info("Intento de acceso con usuario no existente: " + username);
             return new UsernameNotFoundException("User not found");
         });
 
