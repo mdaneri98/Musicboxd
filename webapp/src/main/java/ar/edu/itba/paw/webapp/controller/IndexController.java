@@ -50,8 +50,8 @@ public class IndexController {
 
         List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, loggedUserId);
         List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUserId, pageNum, pageSize, loggedUserId);
-        boolean hasNextPopular = popularReviews.size() >= pageSize-1;
-        boolean hasNextFollowing = followingReviews.size() >= pageSize-1;
+        boolean hasNextPopular = popularReviews.size() == pageSize;
+        boolean hasNextFollowing = followingReviews.size() == pageSize;
 
         mav.addObject("success", success);
         mav.addObject("error", error);
