@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
@@ -72,7 +73,11 @@ public class ArtistServiceImpl implements ArtistService {
         if (artist.isEmpty())
             return false;
 
+        // Delete Images
+        List<Album> list = albumService.findByArtistId(id);
+        list.forEach(album -> imageService.delete(album.getImgId()));
         imageService.delete(artist.get().getImgId());
+
         return artistDao.delete(id);
     }
 

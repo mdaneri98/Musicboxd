@@ -127,6 +127,7 @@ public class ModeratorController {
             albumForm.setTitle(album.getTitle());
             albumForm.setGenre(album.getGenre());
             albumForm.setAlbumImageId(album.getImgId());
+            albumForm.setReleaseDate(album.getReleaseDate());
 
             albumForms.add(albumForm);
         }

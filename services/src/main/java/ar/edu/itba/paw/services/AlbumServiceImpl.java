@@ -113,10 +113,11 @@ public class AlbumServiceImpl implements AlbumService {
     public Album update(AlbumDTO albumDTO) {
         long imgId = imageService.update(albumDTO.getImgId(), albumDTO.getImage());
 
-        Album album = albumDao.find(albumDTO.getId()).get();//new Album(albumDTO.getId(), albumDTO.getTitle(), imgId, albumDTO.getGenre(), artist, albumDTO.getReleaseDate());
+        Album album = albumDao.find(albumDTO.getId()).get();
         album.setTitle(albumDTO.getTitle());
         album.setImgId(imgId);
         album.setGenre(albumDTO.getGenre());
+        album.setReleaseDate(albumDTO.getReleaseDate());
 
         album = albumDao.update(album);
 
