@@ -78,7 +78,6 @@
         function handleTabClick(event) {
             document.querySelectorAll('.search-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
-            document.getElementById('searchInput').value = '';
             closeAllLists();
         }
 
@@ -88,7 +87,7 @@
 
         function autocomplete(inp) {
             inp.addEventListener("input", function(e) {
-                if (e.keyCode != 40 || e.keyCode != 38 || e.keyCode != 13) {
+                if (e.keyCode != 40 && e.keyCode != 38 && e.keyCode != 13) {
                     var val = this.value;
                     if (!val) {
                         closeAllLists();
