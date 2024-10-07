@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -170,7 +171,7 @@ public class ArtistJdbcDaoTest {
                         PRE_EXISTING_IMAGE_ID)));
     }
 
-    //@Test
+    @Test
     public void test_update() {
         // 1. Pre-conditions - the artist exist
         Artist artist = new Artist(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_NAME, NEW_ARTIST_BIO, PRE_EXISTING_IMAGE_ID, NEW_ARTIST_RATING_AMOUNT, NEW_ARTIST_AVG_RATING);
@@ -189,7 +190,7 @@ public class ArtistJdbcDaoTest {
 
         // Check if artist is saved correctly in database
         assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist",
-                String.format("id = '%d' AND name = '%s' AND bio = '%s' AND img_id = '%d' AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
+                String.format(Locale.US, "id = '%d' AND name = '%s' AND bio = '%s' AND img_id = '%d' AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
                         PRE_EXISTING_ARTIST_ID,
                         NEW_ARTIST_NAME,
                         NEW_ARTIST_BIO,
@@ -222,7 +223,7 @@ public class ArtistJdbcDaoTest {
         assertFalse(deleted);
     }
 
-    //@Test
+    @Test
     public void test_updateRating() {
         // 1. Pre-conditions - the artist exist
 
@@ -232,7 +233,7 @@ public class ArtistJdbcDaoTest {
         // 3. Post-conditions
         assertTrue(updated);
         assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"artist",
-                String.format("id = %d AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
+                String.format(Locale.US, "id = %d AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
                         PRE_EXISTING_ARTIST_ID,
                         NEW_ARTIST_AVG_RATING,
                         NEW_ARTIST_RATING_AMOUNT)));

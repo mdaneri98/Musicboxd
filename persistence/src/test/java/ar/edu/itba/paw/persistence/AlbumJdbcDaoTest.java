@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -244,7 +245,7 @@ public class AlbumJdbcDaoTest {
         assertFalse(deleted);
     }
 
-    //@Test
+    @Test
     public void test_updateRating() {
         // 1. Pre-conditions - the album exist
 
@@ -253,8 +254,8 @@ public class AlbumJdbcDaoTest {
 
         // 3. Post-conditions
         assertTrue(updated);
-        assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate,"album",
-                String.format("id = %d AND ROUND(avg_rating, 1) = '%.1f' AND rating_amount = '%d'",
+        assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "album",
+                String.format(Locale.US, "id = %d AND ROUND(avg_rating, 1) = %.1f AND rating_amount = %d",
                         PRE_EXISTING_ALBUM_ID,
                         NEW_ALBUM_AVG_RATING,
                         NEW_ALBUM_RATING_AMOUNT)));
