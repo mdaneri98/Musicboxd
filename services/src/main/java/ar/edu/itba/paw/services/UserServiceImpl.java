@@ -57,6 +57,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean usernameExists(String username) {
+        return userDao.findByUsername(username).isPresent();
+    }
+
+    @Override
     @Transactional
     public void updateUserReviewAmount(Long userId) {
         userDao.updateUserReviewAmount(userId);

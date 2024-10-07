@@ -20,6 +20,14 @@
       </jsp:include>
     </div>
     <div class="container">
+      <div>
+        <c:if test="${not empty error}">
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong><spring:message code="message.error"/>:</strong>
+            <c:out value="${error}"/>
+          </div>
+        </c:if>
+      </div>
       <div class="info-container">
         <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
         <img src="${albumImgUrl}" alt="${album.title}" class="album">

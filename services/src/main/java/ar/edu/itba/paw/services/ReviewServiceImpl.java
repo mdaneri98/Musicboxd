@@ -87,16 +87,19 @@ public class ReviewServiceImpl implements ReviewService {
     public boolean delete(long id) {
         boolean res = false;
         if (isArtistReview(id)) {
+            ArtistReview r = reviewDao.findArtistReviewById(id).get();
             res = reviewDao.delete(id);
-            updateArtistRating(id);
+            updateArtistRating(r.getArtist().getId());
         }
         if (isAlbumReview(id)) {
+            AlbumReview r = reviewDao.findAlbumReviewById(id).get();
             res = reviewDao.delete(id);
-            updateAlbumRating(id);
+            updateAlbumRating(r.getAlbum().getId());
         }
         if (isSongReview(id)) {
+            SongReview r = reviewDao.findSongReviewById(id).get();
             res = reviewDao.delete(id);
-            updateSongRating(id);
+            updateSongRating(r.getSong().getId());
         }
 
         return res;
@@ -106,7 +109,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public boolean deleteReview(Review review, long userId) {
         boolean res = delete(review.getId());
-        if (res) updateUserReviewAmount(userId);
+        if (res) {
+            updateUserReviewAmount(userId);
+        }
         return res;
     }
 
