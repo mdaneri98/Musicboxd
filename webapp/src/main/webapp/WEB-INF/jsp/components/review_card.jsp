@@ -73,7 +73,7 @@
                         <a href="${removeLikeReviewLink}" style="color: red; font-size: 25px;">&#9829; </a>
                     </c:otherwise>
                 </c:choose>
-                <a href="${reviewUrl}" class="share-button">&#10150; <spring:message code="label.share" /></a>
+                <!-- <a href="${reviewUrl}" class="share-button">&#10150; <spring:message code="label.share" /></a> -->
             </div>
     </c:if>
             <c:if test="${param.blocked}">
@@ -92,57 +92,3 @@
             </c:if>
         </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.share-button').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                const relativeUrl = this.getAttribute('href');
-                const absoluteUrl = new URL(relativeUrl, window.location.origin).toString();
-                const shareText = '<spring:message code="label.share.message"/> ' + absoluteUrl;
-
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(shareText).then(showCopiedFeedback).catch(handleCopyError);
-                } else {
-                    fallbackCopyTextToClipboard(shareText);
-                }
-
-                function showCopiedFeedback() {
-                    const originalText = button.textContent;
-                    button.textContent = '<spring:message code="label.copied"/>';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                    }, 2000);
-                }
-
-                function handleCopyError(err) {
-                    console.error('Failed to copy: ', err);
-                    alert('Failed to copy link. Please copy it manually: ' + absoluteUrl);
-                }
-
-                function fallbackCopyTextToClipboard(text) {
-                    const textArea = document.createElement("textarea");
-                    textArea.value = text;
-                    textArea.style.position = "fixed";  // Avoid scrolling to bottom
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-
-                    try {
-                        const successful = document.execCommand('copy');
-                        if (successful) {
-                            showCopiedFeedback();
-                        } else {
-                            handleCopyError(new Error('execCommand returned false'));
-                        }
-                    } catch (err) {
-                        handleCopyError(err);
-                    }
-
-                    document.body.removeChild(textArea);
-                }
-            });
-        });
-    });
-</script>
