@@ -11,8 +11,8 @@
   <div class="modal-content">
     <p>${param.message}</p>
     <div>
-      <button id="modalYes${param.id}"><spring:message code="confirmation.window.yes"/></button>
       <button id="modalNo${param.id}"><spring:message code="confirmation.window.no"/></button>
+      <button id="modalYes${param.id}"><spring:message code="confirmation.window.yes"/></button>
     </div>
   </div>
 </div>

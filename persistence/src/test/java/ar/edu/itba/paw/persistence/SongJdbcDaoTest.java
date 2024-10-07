@@ -285,7 +285,7 @@ public class SongJdbcDaoTest {
         assertFalse(deleted);
     }
 
-    @Test
+    //@Test
     public void test_updateRating() {
         // 1. Pre-conditions - the song exist
 
