@@ -100,6 +100,7 @@
                 event.preventDefault();
                 const relativeUrl = this.getAttribute('href');
                 const absoluteUrl = new URL(relativeUrl, window.location.origin).toString();
+                console.log(absoluteUrl);
                 const shareText = '<spring:message code="label.share.message"/> ' + absoluteUrl;
 
                 if (navigator.clipboard && navigator.clipboard.writeText) {
