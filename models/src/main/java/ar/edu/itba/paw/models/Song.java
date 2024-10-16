@@ -1,19 +1,45 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-
+@Entity
+@Table(name = "song")
 public class Song {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "song_id_seq")
+    @SequenceGenerator(sequenceName = "song_id_seq", name = "song_id_seq", allocationSize = 1)
     private Long id;
+
+    @Column(nullable = false, length = 100)
     private String title;
+
+    @Column(nullable = false, length = 10)
     private String duration;
+
+    @Column(name = "track_number")
     private Integer trackNumber;
+
+    @Column(name = "created_at")
     private LocalDate createdAt;
+
+    @Column(name = "updated_at")
     private LocalDate updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "album_id")
     private Album album;
+
+    @Column(name = "rating_amount", nullable = false)
     private Integer ratingCount;
+
+    @Column(name = "avg_rating", nullable = false)
     private Float avgRating;
+
+    public Song() {
+        // Constructor vacío necesario para JPA
+    }
 
     public Song(Long id, String title, String duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Album album, Integer ratingCount, Float avgRating) {
         this.id = id;
@@ -122,7 +148,7 @@ public class Song {
         this.ratingCount = ratingCount;
     }
 
-    public void setAlbum(Album albumId) {
+    public void setAlbum(Album album) {
         this.album = album;
     }
 
@@ -137,7 +163,7 @@ public class Song {
         json.append("\"trackNumber\":").append(trackNumber).append(",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
         json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"imgId\":").append(album.getImgId()).append(",");
+        json.append("\"imgId\":").append(album != null ? album.getImgId() : null).append(",");
 
         // Convertir el álbum a JSON si no es nulo
         json.append("\"album\":").append(album != null ? album.toJson() : null);
@@ -155,5 +181,4 @@ public class Song {
         if (!Objects.equals(duration, song.duration)) return false;
         return Objects.equals(trackNumber, song.trackNumber);
     }
-
 }

@@ -1,22 +1,53 @@
 package ar.edu.itba.paw.models;
 
-
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "cuser")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cuser_id_seq")
+    @SequenceGenerator(sequenceName = "cuser_id_seq", name = "cuser_id_seq", allocationSize = 1)
     private Long id;
+
+    @Column(name = "username", length = 50, unique = true, nullable = false)
     private String username;
+
+    @Column(name = "email", length = 100, unique = true, nullable = false)
     private String email;
+
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
+
+    @Column(name = "name", length = 100)
     private String name;
+
+    @Column(name = "bio")
     private String bio;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "verified", nullable = false)
     private Boolean verified;
+
+    @Column(name = "moderator", nullable = false)
     private Boolean moderator;
+
+    @Column(name = "followers_amount")
     private Integer followersAmount;
+
+    @Column(name = "following_amount")
     private Integer followingAmount;
+
+    @Column(name = "review_amount")
     private Integer reviewAmount;
+
+    @Column(name = "img_id")
     private Long imgId;
 
     public User(){}
@@ -54,7 +85,6 @@ public class User {
     }
 
     public User(String username, String password, String email) {
-        this.id = 0L;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -86,10 +116,10 @@ public class User {
 
     public static User createAnonymous() {
         User anonymousUser = new User();
-        anonymousUser.id = 0L; // ID predeterminado para usuario anónimo
+        anonymousUser.id = 0L;
         anonymousUser.username = "";
         anonymousUser.email = "";
-        anonymousUser.password = ""; // Sin contraseña
+        anonymousUser.password = "";
         anonymousUser.name = "";
         anonymousUser.bio = "";
         anonymousUser.createdAt = LocalDateTime.now();
@@ -99,7 +129,7 @@ public class User {
         anonymousUser.followersAmount = 0;
         anonymousUser.followingAmount = 0;
         anonymousUser.reviewAmount = 0;
-        anonymousUser.imgId = null; // Sin imagen
+        anonymousUser.imgId = null;
 
         return anonymousUser;
     }
@@ -338,7 +368,6 @@ public class User {
         json.append("\"id\":").append(id).append(",");
         json.append("\"name\":\"").append(username).append("\",");
         json.append("\"email\":\"").append(email).append("\",");
-        //json.append("\"name\":\"").append(name).append("\",");
         json.append("\"bio\":\"").append(bio).append("\",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
         json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
