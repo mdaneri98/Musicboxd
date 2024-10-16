@@ -10,7 +10,7 @@
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
 
-    <c:url var="css" value="/static/css/artist_review.css" />
+    <c:url var="css" value="/static/css/moderator.css" />
     <link rel="stylesheet" href="${css}">
 
 </head>
@@ -21,35 +21,37 @@
         <jsp:param name="moderator" value="${loggedUser.moderator}"/>
     </jsp:include>
 </div>
-<div class="main-content container">
+<div class="container">
     <h1><spring:message code="label.edit.profile"/></h1>
 
     <c:url var="editProfileUrl" value="/user/edit" />
     <form:form modelAttribute="userProfileForm" action="${editProfileUrl}" method="post" enctype="multipart/form-data">
-        <div>
-            <label><spring:message code="label.username" />
-                <form:errors path="username" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="username" type="text" />
-            </label>
-        </div>
-        <div>
-            <label><spring:message code="label.name"/>
-                <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="name" type="text" />
-            </label>
-        </div>
-        <div>
-            <label><spring:message code="label.desc"/>
-                <form:errors path="bio" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:textarea path="bio" type="text" />
-            </label>
-        </div>
-        <div>
-            <label><spring:message code="label.profile.picture"/>
-                <form:errors path="profilePicture" cssClass="error" element="p" cssStyle="color:red;"/>
-                <form:input path="profilePicture" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(event)"/>
-            </label>
-            <img id="imagePreview" style="display:none;"/>
+        <div class="container">
+            <div class="info-container">
+                <c:url var="userImgURL" value="/images/${loggedUser.imgId}"/>
+                <img id="imagePreview" src="${userImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('userImageInput').click();"/>
+                <form:input path="profilePicture" id="userImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event,0)"/>
+                <div class="data-container element-details-container">
+                    <div>
+                        <label><spring:message code="label.username" />
+                            <form:errors path="username" cssClass="error" element="p" cssStyle="color:red;"/>
+                            <form:input path="username" type="text" />
+                        </label>
+                    </div>
+                    <div>
+                        <label><spring:message code="label.name"/>
+                            <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
+                            <form:input path="name" type="text" />
+                        </label>
+                    </div>
+                    <div>
+                        <label><spring:message code="label.desc"/>
+                            <form:errors path="bio" cssClass="error" element="p" cssStyle="color:red;"/>
+                            <form:textarea path="bio" type="text" />
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
         <div style="display: flex; gap: 10px;">
             <c:url value="/user/profile" var="discard_changes_url" />
@@ -62,22 +64,19 @@
 
     <script>
         // Previews Image inserted
-        function previewImage(event) {
+        function previewImage(event,index) {
             const file = event.target.files[0];
-            const preview = document.getElementById('imagePreview');
+            const preview = document.getElementById('imagePreview-' + index);
 
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
-                    preview.style.display = 'block'; // Show the image element
-                    preview.style.width = 'auto';
-                    preview.style.height = '150px';
-                    preview.style.marginBottom = '10px';
+                    // Show the image element
+                    preview.style.display = 'block';
                 }
-                reader.readAsDataURL(file); // Read the file and convert it to a data URL
-            } else {
-                preview.style.display = 'none'; // Hide the preview if no image is selected
+                // Read the file and convert it to a data URL
+                reader.readAsDataURL(file);
             }
         }
     </script>
