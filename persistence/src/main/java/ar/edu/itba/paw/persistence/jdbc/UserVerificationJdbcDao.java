@@ -1,8 +1,10 @@
-package ar.edu.itba.paw.persistence;
+package ar.edu.itba.paw.persistence.jdbc;
 
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.UserVerification;
 import ar.edu.itba.paw.models.VerificationType;
+import ar.edu.itba.paw.persistence.UserDao;
+import ar.edu.itba.paw.persistence.UserVerificationDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 

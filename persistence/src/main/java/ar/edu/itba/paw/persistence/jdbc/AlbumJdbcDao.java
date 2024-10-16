@@ -1,7 +1,8 @@
-package ar.edu.itba.paw.persistence;
+package ar.edu.itba.paw.persistence.jdbc;
 
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.persistence.AlbumDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;

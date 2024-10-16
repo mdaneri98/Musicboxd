@@ -16,6 +16,10 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -32,9 +36,11 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -124,8 +130,31 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(final DataSource ds){
-        return new DataSourceTransactionManager(ds);
+    public PlatformTransactionManager transactionManager(final EntityManagerFactory emf){
+        return new JpaTransactionManager(emf);
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        final LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
+
+        emf.setPackagesToScan("ar.edu.itba.paw.model");
+        emf.setDataSource(dataSource());
+
+        final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        emf.setJpaVendorAdapter(vendorAdapter);
+
+        final Properties properties = new Properties();
+        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
+
+        /* No utilizar en producción */
+        properties.setProperty("hibernate.show_sql", "true");
+        properties.setProperty("format_sql", "true");
+
+        emf.setJpaProperties(properties);
+
+        return emf;
     }
 
 }

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.persistence.config.TestConfig;
+import ar.edu.itba.paw.persistence.jdbc.ImageJdbcDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +16,6 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 

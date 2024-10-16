@@ -1,10 +1,11 @@
-package ar.edu.itba.paw.persistence;
+package ar.edu.itba.paw.persistence.jdbc;
 
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
+import ar.edu.itba.paw.persistence.ReviewDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

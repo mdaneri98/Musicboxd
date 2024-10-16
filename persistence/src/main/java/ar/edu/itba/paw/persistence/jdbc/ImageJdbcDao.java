@@ -1,6 +1,7 @@
-package ar.edu.itba.paw.persistence;
+package ar.edu.itba.paw.persistence.jdbc;
 
 import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.persistence.ImageDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
