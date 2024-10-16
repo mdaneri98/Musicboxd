@@ -1,10 +1,8 @@
-package ar.edu.itba.paw.persistence;
+package ar.edu.itba.paw.persistence.jdbc;
 
-import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.dtos.ArtistDTO;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,7 +13,6 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
-import java.time.LocalDate;
 import java.util.*;
 
 @Repository
