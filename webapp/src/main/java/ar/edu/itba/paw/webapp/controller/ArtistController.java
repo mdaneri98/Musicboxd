@@ -142,8 +142,8 @@ public class ArtistController {
 
         ArtistReview artistReview = new ArtistReview(
                 review.getId(),
-                new Artist(artistId),
                 loggedUser,
+                new Artist(artistId),
                 reviewForm.getTitle(),
                 reviewForm.getDescription(),
                 reviewForm.getRating(),

@@ -48,7 +48,7 @@ public class UserVerificationJdbcDao implements UserVerificationDao {
         if (!verifications.isEmpty()) {
             UserVerification userVerification = verifications.getFirst();
 
-            User user = userDao.find(userVerification.getUser_id()).orElseThrow();
+            User user = userDao.find(userVerification.getUserId()).orElseThrow();
             if (userVerification.getExpireDate().after(Timestamp.valueOf(LocalDateTime.now()))) {
                 user.setVerified(true);
                 if (userDao.update(user) == 1)
