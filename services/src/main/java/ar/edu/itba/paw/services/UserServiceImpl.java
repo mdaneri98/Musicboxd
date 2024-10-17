@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
         }
         List<User> followers = userDao.getFollowers(userId, limit, offset);
         List<User> following = userDao.getFollowing(userId, limit, offset);
-        return new UserFollowingData(followers, following);
+        return new UserFollowingData(userId, followers, following);
     }
 
     @Override

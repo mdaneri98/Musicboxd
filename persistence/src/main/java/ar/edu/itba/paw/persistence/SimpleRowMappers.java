@@ -33,7 +33,8 @@ public class SimpleRowMappers {
             rs.getLong("id"),
             rs.getLong("user_id"),
             rs.getString("code"),
-            rs.getTimestamp("expire_date")
+            rs.getTimestamp("expire_date"),
+            rs.getString("")
     );
 
     public static final RowMapper<Artist> ARTIST_ROW_MAPPER = (rs, rowNum) -> new Artist(
