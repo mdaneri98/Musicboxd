@@ -21,7 +21,6 @@ public interface UserService {
     boolean isAlbumFavorite(Long userId, Long albumId);
     boolean isArtistFavorite(Long userId, Long albumId);
     boolean isSongFavorite(Long userId, Long albumId);
-    UserFollowingData getFollowingData(Long userId, int limit, int offset);
 
     int update(User user);
     boolean changePassword(Long userId, String newPassword);

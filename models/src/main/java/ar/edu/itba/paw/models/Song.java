@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -36,6 +37,14 @@ public class Song {
 
     @Column(name = "avg_rating", nullable = false)
     private Float avgRating;
+
+    @ManyToMany
+    @JoinTable(
+        name = "song_artist",
+        joinColumns = @JoinColumn(name = "song_id"),
+        inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
+    private List<Artist> artists;
 
     public Song() {
         // Constructor vacío necesario para JPA
@@ -150,6 +159,14 @@ public class Song {
 
     public void setAlbum(Album album) {
         this.album = album;
+    }
+
+    public List<Artist> getArtists() {
+        return artists;
+    }
+
+    public void setArtists(List<Artist> artists) {
+        this.artists = artists;
     }
 
     // Método para convertir a JSON

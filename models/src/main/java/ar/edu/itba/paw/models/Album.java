@@ -42,7 +42,7 @@ public class Album {
     @Column(name = "avg_rating", nullable = false)
     private Float avgRating;
 
-    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Song> songs = new ArrayList<>();
 
     public Album() {

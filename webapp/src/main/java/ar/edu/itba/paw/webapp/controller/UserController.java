@@ -183,20 +183,20 @@ public class UserController {
         ModelAndView mav = new ModelAndView("/users/follow_info");
         int pageSize = 100;
 
-        // Obtener la información de seguidores y seguidos de manera paginada
-        UserFollowingData followingData = userService.getFollowingData(userId, pageSize, (pageNum - 1) * pageSize);
-        List<User> followingList = followingData.getFollowing();
-        List<User> followersList = followingData.getFollowers();
-
-        // Determinar si mostrar botones "Next" y "Previous"
-        boolean showNext = followingList.size() == pageSize || followersList.size() == pageSize;
-        boolean showPrevious = pageNum > 1;
-
         Optional<User> userOptional = userService.find(userId);
         if (userOptional.isEmpty()) {
             String errorMessage = messageSource.getMessage("error.user.find", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
+
+        // Obtener la información de seguidores y seguidos de manera paginada
+        List<User> followingList = userOptional.get().getFollowing();
+        List<User> followersList = userOptional.get().getFollowers();
+
+        // Determinar si mostrar botones "Next" y "Previous"
+        boolean showNext = followingList.size() == pageSize || followersList.size() == pageSize;
+        boolean showPrevious = pageNum > 1;
+
 
         mav.addObject("user", userOptional.get());
         mav.addObject("followingList", followingList);
