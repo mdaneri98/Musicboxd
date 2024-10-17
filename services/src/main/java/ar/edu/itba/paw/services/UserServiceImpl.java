@@ -111,16 +111,16 @@ public class UserServiceImpl implements UserService {
         return userOpt;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public UserFollowingData getFollowingData(Long userId, int limit, int offset) {
-        if (userId == null || userDao.find(userId).isEmpty()) {
-            throw new IllegalArgumentException("Doesn't exists a user id with value %d".formatted(userId));
-        }
-        List<User> followers = userDao.getFollowers(userId, limit, offset);
-        List<User> following = userDao.getFollowing(userId, limit, offset);
-        return new UserFollowingData(userId, followers, following);
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public UserFollowingData getFollowingData(Long userId, int limit, int offset) {
+//        if (userId == null || userDao.find(userId).isEmpty()) {
+//            throw new IllegalArgumentException("Doesn't exists a user id with value %d".formatted(userId));
+//        }
+//        List<User> followers = userDao.getFollowers(userId, limit, offset);
+//        List<User> following = userDao.getFollowing(userId, limit, offset);
+//        return new UserFollowingData(userId, followers, following);
+//    }
 
     @Override
     @Transactional(readOnly = true)

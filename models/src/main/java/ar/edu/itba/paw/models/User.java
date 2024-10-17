@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "cuser")
@@ -49,6 +50,50 @@ public class User {
 
     @Column(name = "img_id")
     private Long imgId;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "follower",
+        joinColumns = @JoinColumn(name = "following"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> followers;
+
+    public List<User> getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(List<User> following) {
+        this.following = following;
+    }
+
+    public List<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
+    }
+
+    public Boolean getModerator() {
+        return moderator;
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "follower",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "following")
+    )
+    private List<User> following;
 
     public User(){}
 
