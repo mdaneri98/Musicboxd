@@ -3,21 +3,30 @@ package ar.edu.itba.paw.models.reviews;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.User;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "album_review")
 public class AlbumReview extends Review {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "album_id", nullable = false)
     private Album album;
 
-    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked) {
-        super(user, title, description, rating, createdAt, likes, blocked);
+    public AlbumReview() {
+        // Constructor vacío necesario para JPA
+    }
+
+    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
+        super(user, title, description, rating, createdAt, likes, isBlocked);
         this.album = album;
     }
 
-    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked) {
-        super(id, user, title, description, rating, createdAt, likes, blocked);
+    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
+        super(id, user, title, description, rating, createdAt, likes, isBlocked);
         this.album = album;
     }
-
 
     @Override
     public String getItemName() {
@@ -48,8 +57,7 @@ public class AlbumReview extends Review {
         return album;
     }
 
-    public void setAlbumId(Album album) {
+    public void setAlbum(Album album) {
         this.album = album;
     }
 }
-
