@@ -1,20 +1,53 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "album")
 public class Album {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "album_id_seq")
+    @SequenceGenerator(sequenceName = "album_id_seq", name = "album_id_seq", allocationSize = 1)
     private Long id;
+
+    @Column(nullable = false, length = 100)
     private String title;
+
+    @Column(length = 50)
     private String genre;
+
+    @Column(name = "release_date")
     private LocalDate releaseDate;
+
+    @Column(name = "created_at")
     private LocalDate createdAt;
+
+    @Column(name = "updated_at")
     private LocalDate updatedAt;
+
+    @Column(name = "img_id", nullable = false)
     private Long imgId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id")
     private Artist artist;
+
+    @Column(name = "rating_amount", nullable = false)
     private Integer ratingCount;
+
+    @Column(name = "avg_rating", nullable = false)
     private Float avgRating;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Song> songs = new ArrayList<>();
+
+    public Album() {
+        // Constructor vacío necesario para JPA
+    }
 
     public Album(Long id, String title, String genre, LocalDate releaseDate, LocalDate createdAt, LocalDate updatedAt, Long imgId, Artist artist, Integer ratingCount, Float avgRating) {
         this.id = id;
@@ -152,6 +185,14 @@ public class Album {
 
     public void setAvgRating(Float avgRating) {
         this.avgRating = avgRating;
+    }
+
+    public List<Song> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
     }
 
     // Método para convertir a JSON

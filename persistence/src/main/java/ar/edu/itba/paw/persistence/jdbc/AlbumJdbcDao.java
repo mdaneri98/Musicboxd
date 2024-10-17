@@ -19,13 +19,13 @@ import java.util.Optional;
 @Repository
 public class AlbumJdbcDao implements AlbumDao {
 
-   private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
 
 
-   public AlbumJdbcDao(final DataSource ds) {
-       this.jdbcTemplate = new JdbcTemplate(ds);
-   }
+    public AlbumJdbcDao(final DataSource ds) {
+        this.jdbcTemplate = new JdbcTemplate(ds);
+    }
 
     @Override
     public Optional<Album> find(long id) {
@@ -44,12 +44,12 @@ public class AlbumJdbcDao implements AlbumDao {
 
     @Override
     public List<Album> findPaginated(FilterType filterType, int limit, int offset) {
-       String sql = "SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, album.avg_rating AS avg_rating, album.rating_amount AS rating_amount, artist.id AS artist_id, name, artist.img_id AS artist_img_id "+
-               "FROM album JOIN artist ON album.artist_id = artist.id " +
-               filterType.getFilter() +
-               "LIMIT ? OFFSET ?";
+        String sql = "SELECT album.id AS album_id, title, genre, release_date, album.created_at, album.updated_at, album.img_id AS album_img_id, album.avg_rating AS avg_rating, album.rating_amount AS rating_amount, artist.id AS artist_id, name, artist.img_id AS artist_img_id "+
+                "FROM album JOIN artist ON album.artist_id = artist.id " +
+                filterType.getFilter() +
+                "LIMIT ? OFFSET ?";
 
-       return jdbcTemplate.query(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, SimpleRowMappers.ALBUM_ROW_MAPPER);
+        return jdbcTemplate.query(sql, new Object[]{ limit, offset }, new int[]{ Types.BIGINT, Types.BIGINT }, SimpleRowMappers.ALBUM_ROW_MAPPER);
     }
 
     @Override

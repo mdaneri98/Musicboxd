@@ -2,19 +2,47 @@ package ar.edu.itba.paw.models.reviews;
 
 import ar.edu.itba.paw.models.User;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "review")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Review {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "review_id_seq")
+    @SequenceGenerator(sequenceName = "review_id_seq", name = "review_id_seq", allocationSize = 1)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(nullable = false, length = 50)
     private String title;
+
+    @Column(nullable = false, length = 2000)
     private String description;
+
+    @Column(nullable = false)
     private Integer rating;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private Integer likes;
+
+    @Transient
     private Boolean isLiked;
+
+    @Column(name = "isblocked")
     private Boolean isBlocked;
+
+    public Review() {
+        // Constructor vacío necesario para JPA
+    }
 
     public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
         this.user = user;

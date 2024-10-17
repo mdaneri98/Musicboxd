@@ -1,19 +1,46 @@
 package ar.edu.itba.paw.models;
 
-
-
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "artist")
 public class Artist {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "artist_id_seq")
+    @SequenceGenerator(sequenceName = "artist_id_seq", name = "artist_id_seq", allocationSize = 1)
     private Long id;
+
+    @Column(nullable = false, length = 100)
     private String name;
+
+    @Column
     private String bio;
+
+    @Column(name = "created_at")
     private LocalDate createdAt;
+
+    @Column(name = "updated_at")
     private LocalDate updatedAt;
+
+    @Column(name = "img_id", nullable = false)
     private Long imgId;
+
+    @Column(name = "rating_amount", nullable = false)
     private Integer ratingCount;
+
+    @Column(name = "avg_rating", nullable = false)
     private Float avgRating;
+
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Album> albums = new ArrayList<>();
+
+    public Artist() {
+        // Constructor vacío necesario para JPA
+    }
 
     public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Long imgId, Integer ratingCount, Float avgRating) {
         this.id = id;
@@ -123,6 +150,14 @@ public class Artist {
         this.avgRating = avgRating;
     }
 
+    public List<Album> getAlbums() {
+        return albums;
+    }
+
+    public void setAlbums(List<Album> albums) {
+        this.albums = albums;
+    }
+    
     // Método para convertir a JSON
     public String toJson() {
         StringBuilder json = new StringBuilder();
@@ -148,5 +183,4 @@ public class Artist {
         if (!Objects.equals(bio, artist.bio)) return false;
         return Objects.equals(imgId, artist.imgId);
     }
-
 }

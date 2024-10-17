@@ -28,11 +28,6 @@ public class ReviewJdbcDao implements ReviewDao {
 
     private static final RowMapper<ArtistReview> ARTIST_REVIEW_ROW_MAPPER = (rs, rowNum) -> new ArtistReview(
             rs.getLong("id"),
-            new Artist(
-                    rs.getLong("artist_id"),
-                    rs.getString("artist_name"),
-                    rs.getLong("artist_img_id")
-            ),
             new User(
                     rs.getLong("user_id"),
                     rs.getString("username"),
@@ -40,6 +35,11 @@ public class ReviewJdbcDao implements ReviewDao {
                     rs.getLong("user_img_id"),
                     rs.getBoolean("verified"),
                     rs.getBoolean("moderator")
+            ),
+            new Artist(
+                    rs.getLong("artist_id"),
+                    rs.getString("artist_name"),
+                    rs.getLong("artist_img_id")
             ),
             rs.getString("title"),
             rs.getString("description"),
@@ -168,7 +168,7 @@ public class ReviewJdbcDao implements ReviewDao {
                         rs.getString("artist_name"),
                         rs.getLong("artist_img_id")
                 );
-                return new ArtistReview(rs.getLong("id"), artist, user, title, description, rating, createdAt, likes, isBlocked);
+                return new ArtistReview(rs.getLong("id"), user, artist, title, description, rating, createdAt, likes, isBlocked);
             } else {
                 return null;
             }

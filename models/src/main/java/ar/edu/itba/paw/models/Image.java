@@ -1,13 +1,22 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 
+@Entity
+@Table(name = "image")
 public class Image {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "content", nullable = false)
+    @Lob
     private byte[] bytes;
 
-    Image() {
-
+    public Image() {
+        // Constructor vacío necesario para JPA
     }
 
     public Image(Long id, byte[] bytes) {
