@@ -8,24 +8,25 @@ public interface UserService {
 
 
     Optional<User> find(long id);
-    List<User> findAll();
-    List<User> findByUsernameContaining(String sub);
+    List<User> findAll(int pageNumber, int pageSize);
+    List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize);
 
     Optional<User> create(String username, String email, String password);
 
     int createFollowing(User loggedUser, long followingUserId);
-
     int undoFollowing(User loggedUser, long followingUserId);
+    List<User> getFollowers(Long userId, int pageNumber, int pageSize);
+    List<User> getFollowings(Long userId, int pageNumber, int pageSize);
 
     boolean isFollowing(Long userId, Long otherId);
     boolean isAlbumFavorite(Long userId, Long albumId);
     boolean isArtistFavorite(Long userId, Long albumId);
     boolean isSongFavorite(Long userId, Long albumId);
 
-    int update(User user);
+    Optional<User> update(User user);
     boolean changePassword(Long userId, String newPassword);
 
-    int update(User user, byte[] bytes);
+    Optional<User> update(User user, byte[] bytes);
 
     int deleteById(long id);
 

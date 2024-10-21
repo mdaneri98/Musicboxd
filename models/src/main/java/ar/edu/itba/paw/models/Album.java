@@ -32,15 +32,15 @@ public class Album {
     @Column(name = "img_id", nullable = false)
     private Long imgId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist_id")
-    private Artist artist;
-
     @Column(name = "rating_amount", nullable = false)
     private Integer ratingCount;
 
     @Column(name = "avg_rating", nullable = false)
     private Float avgRating;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id")
+    private Artist artist;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Song> songs = new ArrayList<>();
@@ -105,6 +105,19 @@ public class Album {
     public Album(Long id) {
         this.id = id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Album album)) return false;
+        return Objects.equals(id, album.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
 
     // Getters y setters
     public Long getId() {
@@ -213,17 +226,6 @@ public class Album {
 
         json.append("}");
         return json.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Album album = (Album) o;
-        if (!Objects.equals(title, album.title)) return false;
-        if (!Objects.equals(genre, album.genre)) return false;
-        if (!Objects.equals(releaseDate, album.releaseDate)) return false;
-        return Objects.equals(imgId, album.imgId);
     }
 
 }

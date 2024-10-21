@@ -4,7 +4,7 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.config.TestConfig;
-import ar.edu.itba.paw.persistence.jdbc.AlbumJdbcDao;
+import ar.edu.itba.paw.persistence.AlbumJpaDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +59,7 @@ public class AlbumJdbcDaoTest {
 
     
     @Autowired
-    private AlbumJdbcDao albumDao;
+    private AlbumJpaDao albumDao;
 
     @Autowired
     private DataSource ds;

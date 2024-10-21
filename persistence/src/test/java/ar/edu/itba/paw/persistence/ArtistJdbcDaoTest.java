@@ -3,7 +3,6 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.config.TestConfig;
-import ar.edu.itba.paw.persistence.jdbc.ArtistJdbcDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +51,7 @@ public class ArtistJdbcDaoTest {
 
 
     @Autowired
-    private ArtistJdbcDao artistDao;
+    private ArtistJpaDao artistDao;
 
     @Autowired
     private DataSource ds;

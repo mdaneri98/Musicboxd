@@ -2,7 +2,9 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "cuser")
@@ -51,49 +53,41 @@ public class User {
     @Column(name = "img_id")
     private Long imgId;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
-        name = "follower",
-        joinColumns = @JoinColumn(name = "following"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> followers;
-
-    public List<User> getFollowing() {
-        return following;
-    }
-
-    public void setFollowing(List<User> following) {
-        this.following = following;
-    }
-
-    public List<User> getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(List<User> followers) {
-        this.followers = followers;
-    }
-
-    public Boolean getModerator() {
-        return moderator;
-    }
-
-    public Boolean getVerified() {
-        return verified;
-    }
-
-    public void setVerified(Boolean verified) {
-        this.verified = verified;
-    }
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "follower",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "following")
+            name = "relationship",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_id")
     )
     private List<User> following;
+
+    @ManyToMany(mappedBy = "relationship")
+    private List<User> followers;
+
+    @ManyToMany
+    @JoinTable(
+            name = "favorite_artist",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
+    private List<Artist> favoriteArtists;
+
+    @ManyToMany
+    @JoinTable(
+            name = "favorite_album",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "album_id")
+    )
+    private List<Album> favoriteAlbums;
+
+    @ManyToMany
+    @JoinTable(
+            name = "favorite_song",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "song_id")
+    )
+    private List<Song> favoriteSongs;
+
 
     public User(){}
 
@@ -179,7 +173,102 @@ public class User {
         return anonymousUser;
     }
 
+    // Implementaciones concretas
+    public void addFollowing(User user) {
+        if (this.following == null) {
+            this.following = new ArrayList<>();
+        }
+        if (!this.following.contains(user)) {
+            this.following.add(user);
+            user.getFollowers().add(this); // Añadir a la lista de seguidores del otro usuario
+            this.followingAmount++;
+            user.setFollowersAmount(user.getFollowersAmount() + 1);
+        }
+    }
+
+    public void removeFollowing(User user) {
+        if (this.following != null && this.following.contains(user)) {
+            this.following.remove(user);
+            user.getFollowers().remove(this); // Remover de la lista de seguidores del otro usuario
+            this.followingAmount--;
+            user.setFollowersAmount(user.getFollowersAmount() - 1);
+        }
+    }
+
+    public void addFollower(User user) {
+        if (this.followers == null) {
+            this.followers = new ArrayList<>();
+        }
+        if (!this.followers.contains(user)) {
+            this.followers.add(user);
+            user.getFollowing().add(this); // Añadir a la lista de "following" del otro usuario
+            this.followersAmount++;
+            user.setFollowingAmount(user.getFollowingAmount() + 1);
+        }
+    }
+
+    public void removeFollower(User user) {
+        if (this.followers != null && this.followers.contains(user)) {
+            this.followers.remove(user);
+            user.getFollowing().remove(this); // Remover de la lista de "following" del otro usuario
+            this.followersAmount--;
+            user.setFollowingAmount(user.getFollowingAmount() - 1);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
     // Getters y setters
+    public List<Artist> getFavoriteArtists() {
+        return favoriteArtists;
+    }
+
+    public List<Album> getFavoriteAlbums() {
+        return favoriteAlbums;
+    }
+
+    public List<Song> getFavoriteSongs() {
+        return favoriteSongs;
+    }
+
+    public List<User> getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(List<User> following) {
+        this.following = following;
+    }
+
+    public List<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
+    }
+
+    public Boolean getModerator() {
+        return moderator;
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
     public Integer getReviewAmount() {
         return reviewAmount != null ? reviewAmount : 0;
     }

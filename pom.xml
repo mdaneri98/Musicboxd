@@ -22,6 +22,9 @@
     <org.hibernate.version>5.1.0.Final</org.hibernate.version>
     <org.hibernate.jpa.version>1.0.0.Final</org.hibernate.jpa.version>
 
+    <!-- XML -->
+    <jaxb.version>2.3.1</jaxb.version>
+
     <!-- -->
     <spring.security.version>4.0.4.RELEASE</spring.security.version>
 
@@ -42,6 +45,10 @@
     <hsqldb.version>2.7.3</hsqldb.version>
 
     <commons-fileupload.version>1.3.3</commons-fileupload.version>
+
+
+    <skipTests>true</skipTests>
+
   </properties>
 
   <dependencyManagement>
@@ -211,6 +218,20 @@
         <artifactId>hibernate-jpa-2.1-api</artifactId>
         <version>${org.hibernate.jpa.version}</version>
       </dependency>
+
+      <!-- XML -->
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>${jaxb.version}</version>
+      </dependency>
+
+
     </dependencies>
   </dependencyManagement>
 

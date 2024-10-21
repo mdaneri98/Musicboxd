@@ -3,7 +3,6 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.*;
 import ar.edu.itba.paw.persistence.config.TestConfig;
-import ar.edu.itba.paw.persistence.jdbc.ReviewJdbcDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +35,7 @@ public class ReviewJdbcDaoTest {
     private static final long EXISTING_REVIEW_ID = 1L;
 
     @Autowired
-    private ReviewJdbcDao reviewDao;
+    private ReviewJpaDao reviewDao;
 
     @Autowired
     private DataSource ds;
