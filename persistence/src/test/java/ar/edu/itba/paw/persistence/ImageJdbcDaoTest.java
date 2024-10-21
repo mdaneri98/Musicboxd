@@ -2,7 +2,6 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.persistence.config.TestConfig;
-import ar.edu.itba.paw.persistence.jdbc.ImageJdbcDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,7 @@ public class ImageJdbcDaoTest {
     private static final byte[] PRE_EXISTING_IMAGE = new byte[] {(byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF};
 
     @Autowired
-    private ImageJdbcDao imageDao;
+    private ImageJpaDao imageDao;
 
     @Autowired
     private DataSource ds;

@@ -128,7 +128,7 @@ public class IndexController {
                         .collect(Collectors.joining(",", "[", "]"));
                 break;
             case "user":
-                List<User> users = userService.findByUsernameContaining(substringSearch);
+                List<User> users = userService.findByUsernameContaining(substringSearch, 1, 100);
                 jsonResult = users.stream()
                         .map(User::toJson)
                         .collect(Collectors.joining(",", "[", "]"));

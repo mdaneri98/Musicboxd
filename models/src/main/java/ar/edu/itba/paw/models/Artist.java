@@ -38,6 +38,14 @@ public class Artist {
     @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Album> albums = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "artist_song",
+            joinColumns = @JoinColumn(name = "artist_id"),
+            inverseJoinColumns = @JoinColumn(name = "song_id")
+    )
+    private List<Song> songs = new ArrayList<>();
+
     public Artist() {
         // Constructor vacío necesario para JPA
     }
@@ -83,6 +91,18 @@ public class Artist {
 
     public Artist(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Artist artist)) return false;
+        return Objects.equals(id, artist.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     // Getters y Setters
@@ -157,7 +177,11 @@ public class Artist {
     public void setAlbums(List<Album> albums) {
         this.albums = albums;
     }
-    
+
+    public List<Song> getSongs() {
+        return songs;
+    }
+
     // Método para convertir a JSON
     public String toJson() {
         StringBuilder json = new StringBuilder();
@@ -173,14 +197,4 @@ public class Artist {
         return json.toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Artist artist = (Artist) o;
-        if (!Objects.equals(id, artist.id)) return false;
-        if (!Objects.equals(name, artist.name)) return false;
-        if (!Objects.equals(bio, artist.bio)) return false;
-        return Objects.equals(imgId, artist.imgId);
-    }
 }

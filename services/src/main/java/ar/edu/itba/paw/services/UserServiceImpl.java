@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
+import javax.swing.text.html.Option;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -69,14 +70,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> findByUsernameContaining(String sub) {
-        return userDao.findByUsernameContaining(sub);
+    public List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize) {
+        return userDao.findByUsernameContaining(sub, pageNumber, pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> findAll() {
-        return userDao.findAll();
+    public List<User> findAll(int pageNumber, int pageSize) {
+        return userDao.findAll(pageNumber, pageSize);
     }
 
     @Override
@@ -111,16 +112,23 @@ public class UserServiceImpl implements UserService {
         return userOpt;
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public UserFollowingData getFollowingData(Long userId, int limit, int offset) {
-//        if (userId == null || userDao.find(userId).isEmpty()) {
-//            throw new IllegalArgumentException("Doesn't exists a user id with value %d".formatted(userId));
-//        }
-//        List<User> followers = userDao.getFollowers(userId, limit, offset);
-//        List<User> following = userDao.getFollowing(userId, limit, offset);
-//        return new UserFollowingData(userId, followers, following);
-//    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getFollowers(Long userId, int pageNumber, int pageSize) {
+        if (userId == null || userDao.find(userId).isEmpty()) {
+            throw new IllegalArgumentException("Doesn't exists a user id with value %d".formatted(userId));
+        }
+        return userDao.getFollowers(userId, pageNumber, pageSize);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getFollowings(Long userId, int pageNumber, int pageSize) {
+        if (userId == null || userDao.find(userId).isEmpty()) {
+            throw new IllegalArgumentException("Doesn't exists a user id with value %d".formatted(userId));
+        }
+        return userDao.getFollowings(userId, pageNumber, pageSize);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -187,19 +195,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public int update(User user) {
+    public Optional<User> update(User user) {
         return userDao.update(user);
     }
 
     @Override
     @Transactional
     public boolean changePassword(Long userId, String newPassword) {
-        return userDao.changePassword(userId, passwordEncoder.encode(newPassword));
+        return find(userId).map(user -> {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            return true;
+        }).orElse(false);
     }
+
 
     @Override
     @Transactional
-    public int update(User user, byte[] bytes) {
+    public Optional<User> update(User user, byte[] bytes) {
         long imgId = imageService.update(user.getImgId(), bytes);
         user.setImgId(imgId);
         return userDao.update(user);

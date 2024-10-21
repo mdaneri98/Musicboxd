@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,13 +39,8 @@ public class Song {
     @Column(name = "avg_rating", nullable = false)
     private Float avgRating;
 
-    @ManyToMany
-    @JoinTable(
-        name = "song_artist",
-        joinColumns = @JoinColumn(name = "song_id"),
-        inverseJoinColumns = @JoinColumn(name = "artist_id")
-    )
-    private List<Artist> artists;
+    @ManyToMany(mappedBy = "songs")  // "songs" es el nombre del atributo en Artist
+    private List<Artist> artists = new ArrayList<>();
 
     public Song() {
         // Constructor vacío necesario para JPA

@@ -5,7 +5,6 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.config.TestConfig;
-import ar.edu.itba.paw.persistence.jdbc.SongJdbcDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +59,7 @@ public class SongJdbcDaoTest {
     private static final int NEW_SONG_RATING_AMOUNT = 15;
 
     @Autowired
-    private SongJdbcDao songDao;
+    private SongJpaDao songDao;
 
     @Autowired
     private DataSource ds;
