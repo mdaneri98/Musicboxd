@@ -10,9 +10,9 @@ import java.util.List;
 
 public class ModArtistForm {
 
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 50, message = "Artist name must be between 2 and 50 characters long")
     private String name;
-    @Size(min = 2, max = 2048)
+    @Size(min = 2, max = 2048, message = "Artist bio must be between 2 and 2048 characters long")
     private String bio;
     @Nullable
     private MultipartFile artistImage;
