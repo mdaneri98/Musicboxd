@@ -5,6 +5,8 @@ import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.SongReview;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,7 +16,8 @@ import java.util.Optional;
 
 
 
-
+@Primary
+@Repository
 public class ReviewJpaDao implements ReviewDao {
 
     @PersistenceContext
