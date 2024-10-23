@@ -12,19 +12,19 @@ import javax.validation.constraints.Size;
 @PasswordMatch
 public class UserForm {
 
-    @Size(min = 4, max = 50)
-    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*")
-    @UsernameNotInUse
+    @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters long")
+    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "Username must start with a letter and can only contain letters and numbers")
+    @UsernameNotInUse(message = "This username is already taken")
     private String username;
 
-    @EmailNotInUse
-    @Email
+    @EmailNotInUse(message = "This email is already registered")
+    @Email(message = "Please enter a valid email address")
     private String email;
 
-    @Size(min = 8)
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
-    @Size(min = 8)
+    @Size(min = 8, message = "Repeated password must be at least 8 characters long")
     private String repeatPassword;
 
     public UserForm(String username, String email, String password, String repeatPassword) {

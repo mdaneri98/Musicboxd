@@ -6,11 +6,11 @@ import javax.validation.constraints.Size;
 
 public class ModSongForm {
 
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 255, message = "The song title must be between 1 and 255 characters long")
     private String title;
-    @Pattern(regexp = "^(?:(?:([0-9]{1,2}):)?([0-5]?[0-9]):)?([0-5][0-9])$", message = "Duration must be in the format MM:SS - Example: 10:24 or 3:15")
+    @Pattern(regexp = "^(?:(?:([0-9]{1,2}):)?([0-5]?[0-9]):)?([0-5][0-9])$", message = "Please enter the duration in the format MM:SS (e.g., 3:45 or 10:30)")
     private String duration;
-    @Positive
+    @Positive(message = "The track number must be a positive integer")
     private Integer trackNumber;
 
     // Hidden inputs

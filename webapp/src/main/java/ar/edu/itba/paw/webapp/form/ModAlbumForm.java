@@ -12,9 +12,9 @@ import java.util.List;
 
 public class ModAlbumForm {
 
-    @Size(min = 2, max = 255)
+    @Size(min = 2, max = 255, message = "The title must be between 2 and 255 characters long")
     private String title;
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 50, message = "The genre must be between 1 and 50 characters long")
     private String genre;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
