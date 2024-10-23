@@ -61,7 +61,7 @@ public class User {
     )
     private List<User> following;
 
-    @ManyToMany(mappedBy = "relationship")
+    @ManyToMany(mappedBy = "following")
     private List<User> followers;
 
     @ManyToMany

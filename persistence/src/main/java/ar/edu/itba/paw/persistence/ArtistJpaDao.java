@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -11,6 +12,7 @@ import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
+@Primary
 @Repository
 public class ArtistJpaDao implements ArtistDao {
 
