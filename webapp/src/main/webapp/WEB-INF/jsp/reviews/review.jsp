@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -8,7 +9,7 @@
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
 
-    <c:url var="css" value="/static/css/home.css" />
+    <c:url var="css" value="/static/css/comment.css" />
     <link rel="stylesheet" href="${css}">
 
     <c:url var="review_card" value="/static/css/review_card.css" />
@@ -42,6 +43,33 @@
             <jsp:param name="review_id" value="${review.id}"/>
             <jsp:param name="isLiked" value="${review.liked}"/>
         </jsp:include>
+    </div>
+    
+    <div class="comments-section">
+        <h3><spring:message code="comments.title"/></h3>
+        
+        <form method="POST" action="<c:url value='/review/${review.id}/comment'/>">
+            <textarea name="content" maxlength="500" class="comment-input" placeholder="<spring:message code='comments.placeholder'/>"></textarea>
+            <button type="submit" class="comment-submit"><spring:message code="comments.submit"/></button>
+        </form>
+
+        <div class="comments-list">
+            <c:forEach var="comment" items="${comments}">
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <img src="<c:url value='/images/${comment.user.imgId}'/>" class="comment-user-img" alt="${comment.user.username}">
+                        <span class="comment-username">${comment.user.username}</span>
+                        <span class="comment-date"><c:out value="${comment.createdAt}"/></span>
+                    </div>
+                    <p class="comment-content">${comment.content}</p>
+                    <c:if test="${loggedUser.id == comment.user.id || loggedUser.moderator}">
+                        <form method="POST" action="<c:url value='/review/${review.id}/comment/${comment.id}/delete'/>">
+                            <button type="submit" class="comment-delete"><spring:message code="comments.delete"/></button>
+                        </form>
+                    </c:if>
+                </div>
+            </c:forEach>
+        </div>
     </div>
 </div>
 </body>
