@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "verification")
@@ -12,14 +13,11 @@ public class UserVerification {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
     @Column(name = "code", nullable = false)
     private String code;
 
     @Column(name = "expire_date", nullable = false)
-    private Timestamp expireDate;
+    private LocalDateTime expireDate;
 
     @Column(name = "vtype", nullable = false)
     private String verificationType;
@@ -32,28 +30,28 @@ public class UserVerification {
         // Constructor vacío necesario para JPA
     }
 
-    public UserVerification(Long id, Long userId, String code, Timestamp expireDate, String verificationType) {
+    public UserVerification(Long id, String code, LocalDateTime expireDate, String verificationType, User user) {
         this.id = id;
-        this.userId = userId;
         this.code = code;
         this.expireDate = expireDate;
         this.verificationType = verificationType;
+        this.user = user;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
     public String getCode() {
         return code;
     }
 
-    public Timestamp getExpireDate() {
+    public LocalDateTime getExpireDate() {
         return expireDate;
+    }
+
+    public void setExpireDate(LocalDateTime expireDate) {
+        this.expireDate = expireDate;
     }
 
     public String getVerificationType() {
@@ -66,5 +64,13 @@ public class UserVerification {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setVerificationType(String verificationType) {
+        this.verificationType = verificationType;
     }
 }
