@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 public class AlbumReview extends Review {
     private Album album;
 
-    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked) {
-        super(user, title, description, rating, createdAt, likes, blocked);
+    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked, Integer commentAmount) {
+        super(user, title, description, rating, createdAt, likes, blocked, commentAmount);
         this.album = album;
     }
 
-    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked) {
-        super(id, user, title, description, rating, createdAt, likes, blocked);
+    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked, Integer commentAmount) {
+        super(id, user, title, description, rating, createdAt, likes, blocked, commentAmount);
         this.album = album;
     }
 

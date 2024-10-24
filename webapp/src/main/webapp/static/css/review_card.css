@@ -116,7 +116,7 @@
 .review-actions a {
     color: #a7a7a7;
     text-decoration: none;
-    margin-left: 6px;
+    margin-left: 2px;
     font-size: 14px;
 }
 
@@ -141,6 +141,10 @@
 .separator{
     border-top: 1px solid #434343;
     margin-bottom: 10px;
+}
+
+.review-icon {
+    margin-left: 12px;
 }
 
 @media (max-width: 768px) {

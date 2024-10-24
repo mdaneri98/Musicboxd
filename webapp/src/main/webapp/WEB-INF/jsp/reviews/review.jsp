@@ -43,6 +43,7 @@
             <jsp:param name="user_id" value="${review.user.id}"/>
             <jsp:param name="review_id" value="${review.id}"/>
             <jsp:param name="isLiked" value="${review.liked}"/>
+            <jsp:param name="commentAmount" value="${review.commentAmount}"/>
         </jsp:include>
     </div>
     
@@ -59,17 +60,20 @@
         <div class="comments-list">
             <c:forEach var="comment" items="${comments}">
                 <div class="comment-card">
+                    <c:url var="profileUrl" value="user/${comment.user.id}"/>
                     <div class="comment-header">
-                        <img src="<c:url value='/images/${comment.user.imgId}'/>" class="comment-user-img" alt="${comment.user.username}">
-                        <span class="comment-username">${comment.user.username}</span>
+                        <a href="${profileUrl}">
+                            <img src="<c:url value='/images/${comment.user.imgId}'/>" class="comment-user-img" alt="${comment.user.username}">
+                            <span class="comment-username">${comment.user.username}</span>
+                        </a>
                         <span class="comment-date"><c:out value="${comment.createdAt}"/></span>
+                        <c:if test="${loggedUser.id == comment.user.id || loggedUser.moderator}">
+                            <form method="POST" action="<c:url value='/review/${review.id}/comment/${comment.id}/delete'/>">
+                                <a type="submit" class="comment-delete"><spring:message code="comments.delete"/></a>
+                            </form>
+                        </c:if>
                     </div>
                     <p class="comment-content">${comment.content}</p>
-                    <c:if test="${loggedUser.id == comment.user.id || loggedUser.moderator}">
-                        <form method="POST" action="<c:url value='/review/${review.id}/comment/${comment.id}/delete'/>">
-                            <button type="submit" class="comment-delete"><spring:message code="comments.delete"/></button>
-                        </form>
-                    </c:if>
                 </div>
             </c:forEach>
         </div>
