@@ -84,12 +84,14 @@
 .comment-delete {
     background-color: #ff4c4c;
     color: #ffffff;
+    font-weight: bold;
     padding: 5px 10px;
     border: none;
     border-radius: 15px;
     cursor: pointer;
     font-size: 0.8rem;
     transition: background-color 0.3s ease;
+    margin-left: 20px;
 }
 
 .comment-delete:hover {

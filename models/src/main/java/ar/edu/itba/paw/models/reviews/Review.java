@@ -15,8 +15,9 @@ public abstract class Review {
     private Integer likes;
     private Boolean isLiked;
     private Boolean isBlocked;
+    private Integer commentAmount;
 
-    public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
+    public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
         this.user = user;
         this.title = title;
         this.description = description;
@@ -24,9 +25,10 @@ public abstract class Review {
         this.createdAt = createdAt;
         this.likes = likes;
         this.isBlocked = isBlocked;
+        this.commentAmount = commentAmount;
     }
 
-    public Review(Long id, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
+    public Review(Long id, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -35,6 +37,7 @@ public abstract class Review {
         this.createdAt = createdAt;
         this.likes = likes;
         this.isBlocked = isBlocked;
+        this.commentAmount = commentAmount;
     }
 
     public abstract String getItemName();
@@ -42,6 +45,14 @@ public abstract class Review {
     public abstract Long getItemImgId();
     public abstract String getItemType();
     public abstract String getItemLink();
+
+    public Integer getCommentAmount() {
+        return commentAmount;
+    }
+
+    public void setCommentAmount(Integer commentsAmount) {
+        this.commentAmount = commentsAmount;
+    }
 
     public Boolean getLiked() {
         return isLiked;

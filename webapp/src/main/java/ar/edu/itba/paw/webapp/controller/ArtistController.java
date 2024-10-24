@@ -149,7 +149,8 @@ public class ArtistController {
                 reviewForm.getRating(),
                 LocalDateTime.now(),
                 review.getLikes(),
-                review.isBlocked()
+                review.isBlocked(),
+                review.getCommentAmount()
         );
         reviewService.updateArtistReview(artistReview);
         LOGGER.info("Artist review updated for artist ID {} by user ID {}", artistId, loggedUser.getId());
@@ -169,7 +170,8 @@ public class ArtistController {
                 reviewForm.getRating(),
                 LocalDateTime.now(),
                 0,
-                false
+                false,
+                0
         );
         reviewService.saveArtistReview(artistReview);
         LOGGER.info("New artist review created for artist ID {} by user ID {}", artistId, loggedUser.getId());

@@ -9,4 +9,5 @@ public interface CommentService {
     List<Comment> findByReviewId(long reviewId);
     Comment save(Comment comment);
     void deleteById(long id);
+    void updateReviewCommentAmount(long reviewId);
 }

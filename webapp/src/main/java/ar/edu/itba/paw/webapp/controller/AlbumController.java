@@ -145,7 +145,8 @@ public class AlbumController {
                 reviewForm.getRating(),
                 LocalDateTime.now(),
                 review.getLikes(),
-                review.isBlocked()
+                review.isBlocked(),
+                review.getCommentAmount()
         );
         reviewService.updateAlbumReview(albumReview);
         LOGGER.info("Album review updated for album ID {} by user ID {}", albumId, loggedUser.getId());
@@ -166,7 +167,8 @@ public class AlbumController {
                 reviewForm.getRating(),
                 LocalDateTime.now(),
                 0,
-                false
+                false,
+                0
         );
         reviewService.saveAlbumReview(albumReview);
         LOGGER.info("New album review created for album ID {} by user ID {}", albumId, loggedUser.getId());

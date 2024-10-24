@@ -45,7 +45,8 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
             rs.getInt("likes"),
-            rs.getBoolean("isBlocked")
+            rs.getBoolean("isBlocked"),
+            rs.getInt("comment_amount")
     );
 
     private static final RowMapper<AlbumReview> ALBUM_REVIEW_ROW_MAPPER = (rs, rowNum) -> new AlbumReview(
@@ -73,7 +74,8 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
             rs.getInt("likes"),
-            rs.getBoolean("isBlocked")
+            rs.getBoolean("isBlocked"),
+            rs.getInt("comment_amount")
     );
 
     private static final RowMapper<SongReview> SONG_REVIEW_ROW_MAPPER = (rs, rowNum) -> new SongReview(
@@ -106,7 +108,8 @@ public class ReviewJdbcDao implements ReviewDao {
             rs.getInt("rating"),
             rs.getObject("created_at", LocalDateTime.class),
             rs.getInt("likes"),
-            rs.getBoolean("isBlocked")
+            rs.getBoolean("isBlocked"),
+            rs.getInt("comment_amount")
     );
 
     public static class ReviewRowMapper implements RowMapper<Review> {
@@ -128,6 +131,7 @@ public class ReviewJdbcDao implements ReviewDao {
             LocalDateTime createdAt = rs.getObject("created_at", LocalDateTime.class);
             int likes = rs.getInt("likes");
             boolean isBlocked = rs.getBoolean("isBlocked");
+            int commentAmount = rs.getInt("comment_amount");
 
             Long songReviewId = getLongOrNull(rs, "song_review_id");
             Long albumReviewId = getLongOrNull(rs, "album_review_id");
@@ -148,7 +152,7 @@ public class ReviewJdbcDao implements ReviewDao {
                                 rs.getObject("album_release_date", LocalDate.class)
                         )
                 );
-                return new SongReview(rs.getLong("id"), user, song, title, description, rating, createdAt, likes, isBlocked);
+                return new SongReview(rs.getLong("id"), user, song, title, description, rating, createdAt, likes, isBlocked, commentAmount);
             }
             if (albumReviewId != null) {
                 Album album = new Album(
@@ -159,7 +163,7 @@ public class ReviewJdbcDao implements ReviewDao {
                         new Artist(rs.getLong("album_artist_id")),
                         rs.getObject("album_release_date", LocalDate.class)
                 );
-                return new AlbumReview(rs.getLong("id"), user, album, title, description, rating, createdAt, likes, isBlocked);
+                return new AlbumReview(rs.getLong("id"), user, album, title, description, rating, createdAt, likes, isBlocked, commentAmount);
             }
             if (artistReviewId != null) {
                 Artist artist = new Artist(
@@ -167,7 +171,7 @@ public class ReviewJdbcDao implements ReviewDao {
                         rs.getString("artist_name"),
                         rs.getLong("artist_img_id")
                 );
-                return new ArtistReview(rs.getLong("id"), artist, user, title, description, rating, createdAt, likes, isBlocked);
+                return new ArtistReview(rs.getLong("id"), artist, user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
             } else {
                 return null;
             }
@@ -564,7 +568,7 @@ public class ReviewJdbcDao implements ReviewDao {
 
     @Override
     public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
-        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
+        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, r.comment_amount, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
                 "FROM review r "+
                 "LEFT JOIN cuser u ON r.user_id = u.id "+
                 "LEFT JOIN song_review sr ON r.id = sr.review_id "+
@@ -584,7 +588,7 @@ public class ReviewJdbcDao implements ReviewDao {
 
     @Override
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
-        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
+        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, r.comment_amount, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
                 "FROM review r "+
                 "JOIN follower f ON r.user_id = f.following " +
                 "LEFT JOIN cuser u ON r.user_id = u.id "+
@@ -605,7 +609,7 @@ public class ReviewJdbcDao implements ReviewDao {
 
     @Override
     public List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize) {
-        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
+        String sql = "SELECT r.id, r.title, r.description, r.rating, r.created_at, r.likes, r.isblocked AS isBlocked, r.comment_amount, u.id AS user_id, u.username, u.name AS user_name, u.img_id AS user_img_id, u.verified, u.moderator, sr.review_id AS song_review_id, s.id AS song_id, s.title AS song_title, s.duration, alr.review_id AS album_review_id, a.id AS album_id, a.title AS album_title, a.img_id AS album_img_id, a.genre, a.release_date AS album_release_date, arr.review_id AS artist_review_id, ar.id AS artist_id, ar.name AS artist_name, ar.img_id AS artist_img_id, aa.id AS album_artist_id " +
                 "FROM review r "+
                 "LEFT JOIN cuser u ON r.user_id = u.id "+
                 "LEFT JOIN song_review sr ON r.id = sr.review_id "+
@@ -631,6 +635,13 @@ public class ReviewJdbcDao implements ReviewDao {
     @Override
     public void unblock(Long reviewId) {
         jdbcTemplate.update("UPDATE review SET isBlocked = false WHERE id = ?", reviewId);
+    }
+
+    @Override
+    public void updateCommentAmount(long reviewId) {
+        final String sql = "SELECT COUNT(*) FROM comment WHERE review_id = ?";
+        Integer commentAmount = jdbcTemplate.queryForObject(sql, Integer.class, reviewId);
+        jdbcTemplate.update("UPDATE review SET comment_amount = ? WHERE id = ?", commentAmount, reviewId);
     }
 
 }
