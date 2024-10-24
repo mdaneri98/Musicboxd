@@ -11,6 +11,7 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
+import ar.edu.itba.paw.webapp.form.CommentForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -70,6 +71,7 @@ public class ReviewController {
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("review", review);
         mav.addObject("comments", comments);
+        mav.addObject("commentForm", new CommentForm());
         return mav;
     }
 
@@ -84,6 +86,7 @@ public class ReviewController {
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("review", review);
         mav.addObject("comments", comments);
+        mav.addObject("commentForm", new CommentForm());
         return mav;
     }
 
@@ -100,6 +103,7 @@ public class ReviewController {
         mav.addObject("review", review);
         mav.addObject("isLiked", reviewService.isLiked(loggedUser.getId(), reviewId));
         mav.addObject("comments", comments);
+        mav.addObject("commentForm", new CommentForm());
         return mav;
     }
 
@@ -117,14 +121,17 @@ public class ReviewController {
         return new ModelAndView("redirect:/review/" + reviewId);
     }
 
-    @PostMapping("/{reviewId:\\d+}/comment")
-    public ModelAndView createComment(@PathVariable long reviewId, @RequestParam String content, @ModelAttribute("loggedUser") User loggedUser) {
-        Comment comment = new Comment(loggedUser, reviewId, content);
+    @RequestMapping(value = "/{reviewId:\\d+}/comment", method = RequestMethod.POST)
+    public ModelAndView createComment(@PathVariable long reviewId, @Valid @ModelAttribute("commentForm") CommentForm commentForm, BindingResult bindingResult, @ModelAttribute("loggedUser") User loggedUser) {
+        if (bindingResult.hasErrors()) {
+            return new ModelAndView("redirect:/review/" + reviewId);
+        }
+        Comment comment = new Comment(loggedUser, reviewId, commentForm.getContent());
         commentService.save(comment);
         return new ModelAndView("redirect:/review/" + reviewId);
     }
 
-    @PostMapping("/{reviewId:\\d+}/comment/{commentId:\\d+}/delete")
+    @RequestMapping("/{reviewId:\\d+}/comment/{commentId:\\d+}/delete")
     public ModelAndView deleteComment(@PathVariable long reviewId, @PathVariable long commentId, @ModelAttribute("loggedUser") User loggedUser) {
         Comment comment = commentService.findById(commentId).get();
         if (comment.getUser().getId().equals(loggedUser.getId()) || loggedUser.isModerator()) {
