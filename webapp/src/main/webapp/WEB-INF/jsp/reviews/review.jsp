@@ -60,7 +60,7 @@
         <div class="comments-list">
             <c:forEach var="comment" items="${comments}">
                 <div class="comment-card">
-                    <c:url var="profileUrl" value="user/${comment.user.id}"/>
+                    <c:url var="profileUrl" value="/user/${comment.user.id}"/>
                     <div class="comment-header">
                         <a href="${profileUrl}">
                             <img src="<c:url value='/images/${comment.user.imgId}'/>" class="comment-user-img" alt="${comment.user.username}">
@@ -68,9 +68,8 @@
                         </a>
                         <span class="comment-date"><c:out value="${comment.createdAt}"/></span>
                         <c:if test="${loggedUser.id == comment.user.id || loggedUser.moderator}">
-                            <form method="POST" action="<c:url value='/review/${review.id}/comment/${comment.id}/delete'/>">
-                                <a type="submit" class="comment-delete"><spring:message code="comments.delete"/></a>
-                            </form>
+                            <c:url value='/review/${review.id}/comment/${comment.id}/delete' var="deleteCommentUrl"/>
+                            <a href="${deleteCommentUrl}" class="comment-delete"><spring:message code="comments.delete"/></a>
                         </c:if>
                     </div>
                     <p class="comment-content">${comment.content}</p>
