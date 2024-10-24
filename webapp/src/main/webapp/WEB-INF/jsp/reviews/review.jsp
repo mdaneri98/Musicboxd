@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -47,11 +48,13 @@
     
     <div class="comments-section">
         <h3><spring:message code="comments.title"/></h3>
-        
-        <form method="POST" action="<c:url value='/review/${review.id}/comment'/>">
-            <textarea name="content" maxlength="500" class="comment-input" placeholder="<spring:message code='comments.placeholder'/>"></textarea>
+
+        <c:url value='/review/${review.id}/comment' var="postComment"/>
+        <form:form modelAttribute="commentForm" method="POST" action="${postComment}">
+            <form:textarea path="content" maxlength="500" class="comment-input"/>
+            <form:errors path="content" cssClass="error" />
             <button type="submit" class="comment-submit"><spring:message code="comments.submit"/></button>
-        </form>
+        </form:form>
 
         <div class="comments-list">
             <c:forEach var="comment" items="${comments}">
