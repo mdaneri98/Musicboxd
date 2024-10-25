@@ -122,7 +122,7 @@ public class Song {
         this.ratingCount = ratingCount;
     }
 
-    public void setAlbum(Album albumId) {
+    public void setAlbum(Album album) {
         this.album = album;
     }
 

@@ -12,31 +12,41 @@ import ar.edu.itba.paw.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ar.edu.itba.paw.services.utils.TimeUtils; 
+import org.springframework.context.MessageSource; 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class ReviewServiceImpl implements ReviewService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
     private final ReviewDao reviewDao;
     private final SongService songService;
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final UserService userService;
+    private final TimeUtils timeUtils;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService) {
+        public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, MessageSource messageSource) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.userService = userService;
+        this.timeUtils = new TimeUtils(messageSource);
     }
 
     @Override
     @Transactional
     public int updateAvgRatingForAll(){
+        LOGGER.info("Updating average ratings for all songs, albums, and artists");
         List<Song> songs = songService.findAll();
         List<Album> albums = albumService.findAll();
         List<Artist> artists = artistService.findAll();
@@ -49,6 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
         for (Artist artist : artists) {
             updateArtistRating(artist.getId());
         }
+        LOGGER.info("Finished updating average ratings for all songs, albums, and artists");
         return 0;
     }
 
@@ -73,18 +84,25 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public Review create(Review entity) {
-        return null;
+        LOGGER.info("Creating new review: {}", entity);
+        Review createdReview = reviewDao.create(entity);
+        LOGGER.info("Review created successfully with ID: {}", createdReview.getId());
+        return createdReview;
     }
 
     @Override
     @Transactional
     public Review update(Review review) {
-        return reviewDao.update(review);
+        LOGGER.info("Updating review with ID: {}", review.getId());
+        Review updatedReview = reviewDao.update(review);
+        LOGGER.info("Review updated successfully");
+        return updatedReview;
     }
 
     @Override
     @Transactional
     public boolean delete(long id) {
+        LOGGER.info("Attempting to delete review with ID: {}", id);
         boolean res = false;
         if (isArtistReview(id)) {
             ArtistReview r = reviewDao.findArtistReviewById(id).get();
@@ -101,16 +119,22 @@ public class ReviewServiceImpl implements ReviewService {
             res = reviewDao.delete(id);
             updateSongRating(r.getSong().getId());
         }
-
+        if (res) {
+            LOGGER.info("Review with ID: {} deleted successfully", id);
+        } else {
+            LOGGER.warn("Failed to delete review with ID: {}", id);
+        }
         return res;
     }
 
     @Override
     @Transactional
     public boolean deleteReview(Review review, long userId) {
+        LOGGER.info("Attempting to delete review with ID: {} for user ID: {}", review.getId(), userId);
         boolean res = delete(review.getId());
         if (res) {
             updateUserReviewAmount(userId);
+            LOGGER.info("Review deleted and user review amount updated for user ID: {}", userId);
         }
         return res;
     }
@@ -120,50 +144,63 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public Review updateArtistReview(ArtistReview review) {
+        LOGGER.info("Updating artist review with ID: {}", review.getId());
         Review r = reviewDao.update(review);
         updateArtistRating(review.getArtist().getId());
+        LOGGER.info("Artist review updated and artist rating recalculated for artist ID: {}", review.getArtist().getId());
         return r;
     }
 
     @Override
     @Transactional
     public Review updateAlbumReview(AlbumReview review) {
+        LOGGER.info("Updating album review with ID: {}", review.getId());
         Review r = reviewDao.update(review);
         updateAlbumRating(review.getAlbum().getId());
+        LOGGER.info("Album review updated and album rating recalculated for album ID: {}", review.getAlbum().getId());
         return r;
     }
 
     @Override
     @Transactional
     public Review updateSongReview(SongReview review) {
+        LOGGER.info("Updating song review with ID: {}", review.getId());
         Review r = reviewDao.update(review);
         updateSongRating(review.getSong().getId());
+        LOGGER.info("Song review updated and song rating recalculated for song ID: {}", review.getSong().getId());
         return r;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ArtistReview> findArtistReviewById(long id) {
-        return reviewDao.findArtistReviewById(id);
+    public ArtistReview findArtistReviewById(long id, long loggedUserId) {
+        ArtistReview review = reviewDao.findArtistReviewById(id).get();
+        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setLiked(isLiked(loggedUserId, review.getId()));
+        return review;
     }
 
     @Override
     @Transactional
     public ArtistReview saveArtistReview(ArtistReview review) {
+        LOGGER.info("Saving new artist review for artist ID: {}", review.getArtist().getId());
         ArtistReview result = reviewDao.saveArtistReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateArtistRating(review.getArtist().getId());
+        LOGGER.info("Artist review saved, user review amount updated, and artist rating recalculated");
         return result;
     }
 
     @Override
     @Transactional
     public void updateArtistRating(long artistId) {
+        LOGGER.info("Updating rating for artist ID: {}", artistId);
         List<ArtistReview> reviews = reviewDao.findReviewsByArtistId(artistId);
         float avgRating = (float) reviews.stream().mapToInt(ArtistReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;
         int ratingAmount = reviews.size();
         artistService.updateRating(artistId, roundedAvgRating, ratingAmount);
+        LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
     }
 
     @Override
@@ -174,45 +211,61 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<AlbumReview> findAlbumReviewById(long id) {
-        return reviewDao.findAlbumReviewById(id);
+    public AlbumReview findAlbumReviewById(long id, long loggedUserId) {
+        AlbumReview review = reviewDao.findAlbumReviewById(id).get();
+        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setLiked(isLiked(loggedUserId, review.getId()));
+        return review;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId) {
-        return reviewDao.findArtistReviewByUserId(userId, artistId);
+    public ArtistReview findArtistReviewByUserId(long userId, long artistId,long loggedUserId) {
+        ArtistReview review = reviewDao.findArtistReviewByUserId(userId, artistId).get();
+        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setLiked(isLiked(loggedUserId, review.getId()));
+        return review;
+    }
+ 
+    @Override
+    @Transactional(readOnly = true)
+    public AlbumReview findAlbumReviewByUserId(long userId, long albumId, long loggedUserId) {
+        AlbumReview review = reviewDao.findAlbumReviewByUserId(userId, albumId).get();
+        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setLiked(isLiked(loggedUserId, review.getId()));
+        return review;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId) {
-        return reviewDao.findAlbumReviewByUserId(userId, albumId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<SongReview> findSongReviewByUserId(long userId, long songId) {
-        return reviewDao.findSongReviewByUserId(userId, songId);
+    public SongReview findSongReviewByUserId(long userId, long songId, long loggedUserId) {
+        SongReview review = reviewDao.findSongReviewByUserId(userId, songId).get();
+        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setLiked(isLiked(loggedUserId, review.getId()));
+        return review;
     }
 
     @Override
     @Transactional
     public AlbumReview saveAlbumReview(AlbumReview review) {
+        LOGGER.info("Saving new album review for album ID: {}", review.getAlbum().getId());
         AlbumReview result = reviewDao.saveAlbumReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateAlbumRating(review.getAlbum().getId());
+        LOGGER.info("Album review saved, user review amount updated, and album rating recalculated");
         return result;
     }
 
     @Override
     @Transactional
     public void updateAlbumRating(long albumId) {
+        LOGGER.info("Updating rating for album ID: {}", albumId);
         List<AlbumReview> reviews = reviewDao.findReviewsByAlbumId(albumId);
         float avgRating = (float) reviews.stream().mapToInt(AlbumReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;
         int ratingAmount = reviews.size();
         albumService.updateRating(albumId, roundedAvgRating, ratingAmount);
+        LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
     }
 
     @Override
@@ -223,34 +276,43 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<SongReview> findSongReviewById(long id) {
-        return reviewDao.findSongReviewById(id);
+    public SongReview findSongReviewById(long id, long loggedUserId) {
+        SongReview review = reviewDao.findSongReviewById(id).get();
+        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setLiked(isLiked(loggedUserId, review.getId()));
+        return review;
     }
 
 
     @Override
     @Transactional
     public SongReview saveSongReview(SongReview review) {
+        LOGGER.info("Saving new song review for song ID: {}", review.getSong().getId());
         SongReview result = reviewDao.saveSongReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateSongRating(review.getSong().getId());
+        LOGGER.info("Song review saved, user review amount updated, and song rating recalculated");
         return result;
     }
 
     @Override
     @Transactional
     public void updateUserReviewAmount(long userId) {
+        LOGGER.info("Updating review amount for user ID: {}", userId);
         userService.updateUserReviewAmount(userId);
+        LOGGER.info("User review amount updated for user ID: {}", userId);
     }
 
     @Override
     @Transactional
     public void updateSongRating(long songId) {
+        LOGGER.info("Updating rating for song ID: {}", songId);
         List<SongReview> reviews = reviewDao.findReviewsBySongId(songId);
         float avgRating = (float) reviews.stream().mapToInt(SongReview::getRating).average().orElse(0.0);
         float roundedAvgRating = Math.round(avgRating * 100.0) / 100.0f;
         int ratingAmount = reviews.size();
         songService.updateRating(songId, roundedAvgRating, ratingAmount);
+        LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
     }
 
     @Override
@@ -262,15 +324,19 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public void createLike(long userId, long reviewId) {
+        LOGGER.info("Creating like for review ID: {} by user ID: {}", reviewId, userId);
         reviewDao.createLike(userId, reviewId);
         reviewDao.incrementLikes(reviewId);
+        LOGGER.info("Like created and like count incremented for review ID: {}", reviewId);
     }
 
     @Override
     @Transactional
     public void removeLike(long userId, long reviewId) {
+        LOGGER.info("Removing like for review ID: {} by user ID: {}", reviewId, userId);
         reviewDao.deleteLike(userId, reviewId);
         reviewDao.decrementLikes(reviewId);
+        LOGGER.info("Like removed and like count decremented for review ID: {}", reviewId);
     }
 
     @Override
@@ -279,20 +345,12 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.isLiked(userId, reviewId);
     }
 
-    private <T extends Review> void setIsLiked(List<T> reviews, long userId) {
-        for (T review : reviews) {
-            if (userId < 1)
-                review.setLiked(false);
-            else
-                review.setLiked(isLiked(userId, review.getId()));
-        }
-    }
-
     @Override
     @Transactional(readOnly = true)
     public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize, long loggedUserId) {
         List<ArtistReview> reviews = reviewDao.findArtistReviewsPaginated(artistId, page, pageSize);
         setIsLiked(reviews, loggedUserId);
+        setTimeAgo(reviews);
         return reviews;
     }
 
@@ -301,6 +359,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize, long loggedUserId) {
         List<AlbumReview> reviews = reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize);
         setIsLiked(reviews, loggedUserId);
+        setTimeAgo(reviews);
         return reviews;
     }
 
@@ -309,6 +368,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize, long loggedUserId) {
         List<SongReview> reviews = reviewDao.findSongReviewsPaginated(songId, page, pageSize);
         setIsLiked(reviews, loggedUserId);
+        setTimeAgo(reviews);
         return reviews;
     }
 
@@ -335,6 +395,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize, long loggedUserId) {
         List<Review> list = reviewDao.findReviewsByUserPaginated(userId, page, pageSize);
         setIsLiked(list, loggedUserId);
+        setTimeAgo(list);
         return list;
     }
 
@@ -343,6 +404,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<Review> getPopularReviewsPaginated(int page, int pageSize, long loggedUserId) {
         List<Review> list = reviewDao.getPopularReviewsPaginated(page, pageSize);
         setIsLiked(list, loggedUserId);
+        setTimeAgo(list);
         return list;
     }
 
@@ -351,19 +413,38 @@ public class ReviewServiceImpl implements ReviewService {
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize, long loggedUserId) {
         List<Review> list = reviewDao.getReviewsFromFollowedUsersPaginated(userId, page, pageSize);
         setIsLiked(list, loggedUserId);
+        setTimeAgo(list);
         return list;
     }
 
     @Override
     @Transactional
     public void block(Long reviewId) {
+        LOGGER.info("Blocking review with ID: {}", reviewId);
         reviewDao.block(reviewId);
+        LOGGER.info("Review blocked successfully: {}", reviewId);
     }
 
     @Override
     @Transactional
     public void unblock(Long reviewId) {
+        LOGGER.info("Unblocking review with ID: {}", reviewId);
         reviewDao.unblock(reviewId);
+        LOGGER.info("Review unblocked successfully: {}", reviewId);
     }
 
+    private <T extends Review> void setTimeAgo(List<T> reviews) {
+        for (T review : reviews) {
+            review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        }
+    }
+
+    private <T extends Review> void setIsLiked(List<T> reviews, long userId) {
+        for (T review : reviews) {
+            if (userId < 1)
+                review.setLiked(false);
+            else
+                review.setLiked(isLiked(userId, review.getId()));
+        }
+    }
 }

@@ -141,6 +141,7 @@
                         <jsp:param name="isLiked" value="${review.liked}"/>
                         <jsp:param name="blocked" value="${review.isBlocked()}"/>
                         <jsp:param name="commentAmount" value="${review.commentAmount}"/>
+                        <jsp:param name="timeAgo" value="${review.timeAgo}"/>
                     </jsp:include>
                 </c:forEach>
             </div>

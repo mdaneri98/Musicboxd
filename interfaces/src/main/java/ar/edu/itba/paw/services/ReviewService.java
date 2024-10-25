@@ -1,12 +1,9 @@
 package ar.edu.itba.paw.services;
-
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
+import ar.edu.itba.paw.models.FilterType;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,18 +12,17 @@ public interface ReviewService extends CrudService<Review> {
 
     boolean deleteReview(Review review, long userId);
 
-    Optional<ArtistReview> findArtistReviewById(long id);
-    Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId);
+    ArtistReview findArtistReviewById(long id, long loggedUserId);
+    ArtistReview findArtistReviewByUserId(long userId, long artistId, long loggedUserId);
     ArtistReview saveArtistReview(ArtistReview review);
 
-    Optional<AlbumReview> findAlbumReviewById(long id);
-    Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId);
+    AlbumReview findAlbumReviewById(long id, long loggedUserId);
+    AlbumReview findAlbumReviewByUserId(long userId, long albumId, long loggedUserId);
     AlbumReview saveAlbumReview(AlbumReview review);
 
-    Optional<SongReview> findSongReviewById(long id);
-    Optional<SongReview> findSongReviewByUserId(long userId, long songId);
+    SongReview findSongReviewById(long id, long loggedUserId);
+    SongReview findSongReviewByUserId(long userId, long songId, long loggedUserId);
     SongReview saveSongReview(SongReview review);
-
 
     void createLike(long userId, long reviewId);
     void removeLike(long userId, long reviewId);
@@ -59,4 +55,6 @@ public interface ReviewService extends CrudService<Review> {
     Review updateSongReview(SongReview review);
     Review updateArtistReview(ArtistReview review);
     Review updateAlbumReview(AlbumReview review);
+
+    List<Review> findPaginated(FilterType filterType, int page, int pageSize);
 }

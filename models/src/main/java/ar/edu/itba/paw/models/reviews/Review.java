@@ -16,6 +16,7 @@ public abstract class Review {
     private Boolean isLiked;
     private Boolean isBlocked;
     private Integer commentAmount;
+    private String timeAgo;
 
     public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
         this.user = user;
@@ -127,5 +128,13 @@ public abstract class Review {
 
     public void setLikes(Integer likes) {
         this.likes = likes;
+    }
+
+    public String getTimeAgo() {
+        return timeAgo;
+    }
+
+    public void setTimeAgo(String timeAgo) {
+        this.timeAgo = timeAgo;
     }
 }

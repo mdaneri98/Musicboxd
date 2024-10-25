@@ -70,6 +70,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: white;
 }
 
 .review-content p {
@@ -145,6 +146,17 @@
 
 .review-icon {
     margin-left: 12px;
+}
+
+.review-timestamp {
+    font-size: 0.8rem;
+    color: #b3b3b3;
+    margin-left: 12px;
+}
+
+.name-and-date {
+    display: flex;
+    flex-direction: row;
 }
 
 @media (max-width: 768px) {

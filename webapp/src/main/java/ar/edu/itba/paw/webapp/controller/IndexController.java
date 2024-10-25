@@ -4,8 +4,6 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,8 +13,6 @@ import java.util.stream.Collectors;
 
 @Controller
 public class IndexController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
     private final ArtistService artistService;
     private final ReviewService reviewService;
@@ -103,7 +99,6 @@ public class IndexController {
     @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
     @ResponseBody
     public String subSearch(@PathVariable("type") String type, @RequestParam(name = "s", defaultValue = "") String substringSearch) {
-        LOGGER.info("Initiating search in subSearch with type={} and substringSearch={}", type, substringSearch);
 
         String jsonResult = "";
         switch (type) {
@@ -134,7 +129,6 @@ public class IndexController {
                         .collect(Collectors.joining(",", "[", "]"));
                 break;
             default:
-                LOGGER.warn("Unrecognized search type: {}", type);
                 return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
         }
         return jsonResult;

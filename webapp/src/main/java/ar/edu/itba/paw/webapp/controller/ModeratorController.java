@@ -9,8 +9,6 @@ import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ModAlbumForm;
 import ar.edu.itba.paw.webapp.form.ModArtistForm;
 import ar.edu.itba.paw.webapp.form.ModSongForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -30,8 +28,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/mod")
 @Controller
 public class ModeratorController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModeratorController.class);
 
     private final ArtistService artistService;
     private final AlbumService albumService;
@@ -57,14 +53,12 @@ public class ModeratorController {
     @RequestMapping(value = "/block/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView block(@PathVariable(name = "reviewId") final long reviewId) {
         reviewService.block(reviewId);
-        LOGGER.info("Review with ID {} has been blocked", reviewId);
         return new ModelAndView("redirect:/");
     }
 
     @RequestMapping(value = "/unblock/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView unblock(@PathVariable(name = "reviewId") final long reviewId) {
         reviewService.unblock(reviewId);
-        LOGGER.info("Review with ID {} has been unblocked", reviewId);
         return new ModelAndView("redirect:/");
     }
 
@@ -88,7 +82,6 @@ public class ModeratorController {
         }
 
         Artist artist = artistService.create(transformArtistToDTO(modArtistForm));
-        LOGGER.info("New artist created with ID: {}", artist.getId());
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artist.getId());
         modelAndView.addObject("artist", artist);
@@ -106,7 +99,6 @@ public class ModeratorController {
 
         Optional<Artist> artist = artistService.find(artistId);
         if (artist.isEmpty()) {
-            LOGGER.debug("Error in *GET* '/mod/edit/artist' no artist with id {}", artistId);
             String errorMessage = messageSource.getMessage("error.artist.find", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
@@ -145,7 +137,6 @@ public class ModeratorController {
             return editArtistForm(modArtistForm, loggedUser, artistId);
 
         Artist artist = artistService.update(transformArtistToDTO(modArtistForm));
-        LOGGER.info("Artist with ID {} has been updated", artistId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/artist/" + artistId);
         modelAndView.addObject("artist", artist);
@@ -158,7 +149,6 @@ public class ModeratorController {
                                      @ModelAttribute("loggedUser") User loggedUser) {
         Optional<Artist> artist = artistService.find(artistId);
         if(artist.isEmpty()) {
-            LOGGER.debug("Error in *GET* '/mod/add/artist/{}/album'. No artist with id {}", artistId, artistId);
             String errorMessage = messageSource.getMessage("error.artist.find", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
@@ -178,7 +168,6 @@ public class ModeratorController {
             return addAlbumForm(artistId, modAlbumForm, loggedUser);
 
         Album album = albumService.create(transformAlbumToDTO(modAlbumForm), artistId);
-        LOGGER.info("New album created with ID: {} for artist with ID: {}", album.getId(), artistId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + album.getId());
         modelAndView.addObject("album", album);
@@ -196,7 +185,6 @@ public class ModeratorController {
 
         Optional<Album> album = albumService.find(albumId);
         if (album.isEmpty()) {
-            LOGGER.debug("Error in *GET* '/mod/edit/album' no album with id {}", albumId);
             String errorMessage = messageSource.getMessage("error.album.find", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
@@ -236,7 +224,6 @@ public class ModeratorController {
             return editAlbumForm(albumId, modAlbumForm, loggedUser);
 
         Album newAlbum = albumService.update(transformAlbumToDTO(modAlbumForm));
-        LOGGER.info("Album with ID {} has been updated", albumId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/album/" + albumId);
         modelAndView.addObject("album", newAlbum);
@@ -251,7 +238,6 @@ public class ModeratorController {
         Optional<Album> album = albumService.find(albumId);
 
         if(album.isEmpty()) {
-            LOGGER.debug("Error in *GET* 'mod/add/album/{}/song'. No album with id {}", albumId, albumId);
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode("The album doesn't exist.", StandardCharsets.UTF_8));
         }
 
@@ -269,7 +255,6 @@ public class ModeratorController {
             return addSongForm(albumId, modSongForm, loggedUser);
 
         Song song = songService.create(transformSongToDTO(modSongForm), new Album(albumId));
-        LOGGER.info("New song created with ID: {} for album with ID: {}", song.getId(), albumId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + song.getId());
         modelAndView.addObject("song", song);
@@ -285,7 +270,6 @@ public class ModeratorController {
 
         Optional<Song> song = songService.find(songId);
         if (song.isEmpty()) {
-            LOGGER.debug("Error in *GET* '/mod/edit/song' no song with id {}", songId);
             String errorMessage = messageSource.getMessage("error.song.find", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
@@ -308,7 +292,6 @@ public class ModeratorController {
             return editSongForm(songId, modSongForm, loggedUser);
 
         Song newSong = songService.update(transformSongToDTO(modSongForm), new Album(modSongForm.getAlbumId()));
-        LOGGER.info("Song with ID {} has been updated", songId);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + songId);
         modelAndView.addObject("song", newSong);
@@ -318,7 +301,6 @@ public class ModeratorController {
     @RequestMapping(path = "/delete/artist/{artistId:\\d+}")
     public ModelAndView deleteArtist(@PathVariable(name = "artistId") final long artistId) {
         artistService.delete(artistId);
-        LOGGER.info("Artist with ID {} has been deleted", artistId);
         return new ModelAndView("redirect:/home");
     }
 
@@ -331,7 +313,6 @@ public class ModeratorController {
         }
 
         albumService.delete(albumOptional.get());
-        LOGGER.info("Album with ID {} has been deleted", albumId);
         return new ModelAndView("redirect:/artist/" + albumOptional.get().getArtist().getId());
     }
 
@@ -343,14 +324,12 @@ public class ModeratorController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
         songService.delete(songId);
-        LOGGER.info("Song with ID {} has been deleted", songId);
         return new ModelAndView("redirect:/artist/" + songOptional.get().getAlbum().getId());
     }
 
     @RequestMapping(path = "/update-ratings", method = RequestMethod.GET)
     public ModelAndView updateAvgRatingForAll(@ModelAttribute("loggedUser") User loggedUser) {
         reviewService.updateAvgRatingForAll();
-        LOGGER.info("Average ratings have been updated for all items");
         return new ModelAndView("redirect:/");
     }
 
@@ -402,8 +381,7 @@ public class ModeratorController {
         try {
           bytes = imageFile.getBytes();
         } catch (IOException e) {
-            LOGGER.debug("Error when reading input image: {}.", e.getMessage());
-            bytes = null;
+            bytes = null; 
         }
         return bytes;
     }
