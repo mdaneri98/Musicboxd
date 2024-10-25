@@ -4,9 +4,7 @@ import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.models.FilterType;
-
 import java.util.List;
-import java.util.Optional;
 
 public interface ReviewService extends CrudService<Review> {
 
