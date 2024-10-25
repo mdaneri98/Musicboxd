@@ -221,7 +221,7 @@ public class ReviewJdbcDao implements ReviewDao {
     @Override
     public Review update(Review review) {
         int result = jdbcTemplate.update(
-                "UPDATE review SET title = ?, description = ?, rating = ?, likes = ?, isblocked = ? WHERE id = ?",
+                "UPDATE review SET title = ?, description = ?, rating = ?, likes = ?, isblocked = ?, created_at = NOW() WHERE id = ?",
                 review.getTitle(),
                 review.getDescription(),
                 review.getRating(),
