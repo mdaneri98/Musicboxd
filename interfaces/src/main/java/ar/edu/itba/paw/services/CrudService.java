@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.reviews.Review;
 
 import java.util.List;
 import java.util.Optional;

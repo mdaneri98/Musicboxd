@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.form.validation.PasswordMatch;
 import ar.edu.itba.paw.webapp.form.validation.ResetPasswordMatch;
 
 import javax.validation.constraints.NotNull;
