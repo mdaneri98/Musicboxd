@@ -10,11 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,7 +20,7 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserDao userDao;
     private final UserVerificationDao userVerificationDao;
     private final PasswordEncoder passwordEncoder;
@@ -64,6 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUserReviewAmount(Long userId) {
+        LOGGER.info("Updating review amount for user with ID: {}", userId);
         userDao.updateUserReviewAmount(userId);
     }
 
@@ -82,9 +81,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Optional<User> create(String username, String email, String password) {
+        LOGGER.info("Creating new user with username: {} and email: {}", username, email);
         String hashedPassword = passwordEncoder.encode(password);
 
-        /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
         Optional<User> emailOptUser = this.findByEmail(email);
         Optional<User> usernameOptUser = this.findByUsername(username);
 
@@ -95,11 +94,14 @@ public class UserServiceImpl implements UserService {
                 user.setPassword(password);
                 user.setEmail(email);
                 userDao.update(user);
+                LOGGER.info("Updated existing user with email: {}", email);
             } else {
+                LOGGER.warn("Attempt to create user with existing email: {}", email);
                 throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
             }
         }
         if (usernameOptUser.isPresent()) {
+            LOGGER.warn("Attempt to create user with existing username: {}", username);
             throw new UserAlreadyExistsException("El usuario " + username + " ya está en uso.");
         }
         long imgId = imageService.save(null, true);
@@ -107,6 +109,9 @@ public class UserServiceImpl implements UserService {
         if (userOpt.isPresent()) {
             User createdUser = userOpt.get();
             this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
+            LOGGER.info("Successfully created new user with ID: {}", createdUser.getId());
+        } else {
+            LOGGER.error("Failed to create new user with username: {} and email: {}", username, email);
         }
         return userOpt;
     }
@@ -149,32 +154,38 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public int createFollowing(User userId, long followingId) {
+        LOGGER.info("Creating following relationship: User {} following User {}", userId.getId(), followingId);
         if (this.isFollowing(userId.getId(), followingId)) {
+            LOGGER.info("Following relationship already exists");
             return 0;
         }
-        return userDao.createFollowing(userId, find(followingId).get());
+        int result = userDao.createFollowing(userId, find(followingId).get());
+        LOGGER.info("Following relationship created successfully");
+        return result;
     }
 
     @Override
     @Transactional
     public int undoFollowing(User userId, long followingId) {
-        return userDao.undoFollowing(userId, find(followingId).get());
+        LOGGER.info("Removing following relationship: User {} unfollowing User {}", userId.getId(), followingId);
+        int result = userDao.undoFollowing(userId, find(followingId).get());
+        LOGGER.info("Following relationship removed successfully");
+        return result;
     }
 
     @Override
     @Transactional
     public void createVerification(VerificationType type, User user) {
+        LOGGER.info("Creating verification for user: {} with type: {}", user.getId(), type);
         try {
             String verificationCode = UUID.randomUUID().toString();
-
-            // Codifica el código de verificación para asegurarte de que sea seguro para la URL
             String encodedVerificationCode = URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
-
             userVerificationDao.startVerification(type, user, encodedVerificationCode);
 
             emailService.sendVerification(type, user.getEmail(), encodedVerificationCode);
+            LOGGER.info("Verification created and email sent successfully");
         } catch (MessagingException e) {
-            //logger.error("Error al enviar el correo de verificación al usuario: {}", user.getEmail(), e);
+            LOGGER.error("Failed to send verification email to user: {}", user.getEmail(), e);
             throw new VerificationEmailException("No se pudo enviar la verificación del email al usuario " + user.getEmail(), e);
         }
     }
@@ -182,33 +193,60 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long verify(VerificationType type, String code) {
-        return userVerificationDao.verify(type, code);
+        LOGGER.info("Verifying user with type: {} and code: {}", type, code);
+        Long result = userVerificationDao.verify(type, code);
+        if (result != null) {
+            LOGGER.info("User verified successfully");
+        } else {
+            LOGGER.warn("User verification failed");
+        }
+        return result;
     }
 
     @Override
     @Transactional
     public int update(User user) {
-        return userDao.update(user);
+        LOGGER.info("Updating user with ID: {}", user.getId());
+        int result = userDao.update(user);
+        LOGGER.info("User updated successfully");
+        return result;
     }
 
     @Override
     @Transactional
     public boolean changePassword(Long userId, String newPassword) {
-        return userDao.changePassword(userId, passwordEncoder.encode(newPassword));
+        LOGGER.info("Changing password for user with ID: {}", userId);
+        boolean result = userDao.changePassword(userId, passwordEncoder.encode(newPassword));
+        if (result) {
+            LOGGER.info("Password changed successfully for user with ID: {}", userId);
+        } else {
+            LOGGER.warn("Failed to change password for user with ID: {}", userId);
+        }
+        return result;
     }
 
     @Override
     @Transactional
     public int update(User user, byte[] bytes) {
+        LOGGER.info("Updating user with ID: {} and changing profile image", user.getId());
         long imgId = imageService.update(user.getImgId(), bytes);
         user.setImgId(imgId);
-        return userDao.update(user);
+        int result = userDao.update(user);
+        LOGGER.info("User updated and profile image changed successfully");
+        return result;
     }
 
     @Override
     @Transactional
     public int deleteById(long id) {
-        return userDao.deleteById(id);
+        LOGGER.info("Deleting user with ID: {}", id);
+        int result = userDao.deleteById(id);
+        if (result > 0) {
+            LOGGER.info("User with ID: {} deleted successfully", id);
+        } else {
+            LOGGER.warn("Failed to delete user with ID: {}", id);
+        }
+        return result;
     }
 
     @Override
@@ -220,16 +258,31 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean addFavoriteArtist(long userId, long artistId) {
+        LOGGER.info("Adding favorite artist with ID: {} for user with ID: {}", artistId, userId);
         if (getFavoriteArtistsCount(userId) >= 5) {
+            LOGGER.warn("User with ID: {} has reached the maximum number of favorite artists", userId);
             return false;
         }
-        return userDao.addFavoriteArtist(userId, artistId);
+        boolean result = userDao.addFavoriteArtist(userId, artistId);
+        if (result) {
+            LOGGER.info("Favorite artist added successfully");
+        } else {
+            LOGGER.warn("Failed to add favorite artist");
+        }
+        return result;
     }
 
     @Override
     @Transactional
     public boolean removeFavoriteArtist(long userId, long artistId) {
-        return userDao.removeFavoriteArtist(userId, artistId);
+        LOGGER.info("Removing favorite artist with ID: {} for user with ID: {}", artistId, userId);
+        boolean result = userDao.removeFavoriteArtist(userId, artistId);
+        if (result) {
+            LOGGER.info("Favorite artist removed successfully");
+        } else {
+            LOGGER.warn("Failed to remove favorite artist");
+        }
+        return result;
     }
 
     @Override
@@ -247,16 +300,31 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean addFavoriteAlbum(long userId, long albumId) {
+        LOGGER.info("Adding favorite album with ID: {} for user with ID: {}", albumId, userId);
         if (getFavoriteAlbumsCount(userId) >= 5) {
+            LOGGER.warn("User with ID: {} has reached the maximum number of favorite albums", userId);
             return false;
         }
-        return userDao.addFavoriteAlbum(userId, albumId);
+        boolean result = userDao.addFavoriteAlbum(userId, albumId);
+        if (result) {
+            LOGGER.info("Favorite album added successfully");
+        } else {
+            LOGGER.warn("Failed to add favorite album");
+        }
+        return result;
     }
 
     @Override
     @Transactional
     public boolean removeFavoriteAlbum(long userId, long albumId) {
-        return userDao.removeFavoriteAlbum(userId, albumId);
+        LOGGER.info("Removing favorite album with ID: {} for user with ID: {}", albumId, userId);
+        boolean result = userDao.removeFavoriteAlbum(userId, albumId);
+        if (result) {
+            LOGGER.info("Favorite album removed successfully");
+        } else {
+            LOGGER.warn("Failed to remove favorite album");
+        }
+        return result;
     }
 
     @Override
@@ -274,16 +342,31 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean addFavoriteSong(long userId, long songId) {
+        LOGGER.info("Adding favorite song with ID: {} for user with ID: {}", songId, userId);
         if (getFavoriteSongsCount(userId) >= 5) {
+            LOGGER.warn("User with ID: {} has reached the maximum number of favorite songs", userId);
             return false;
         }
-        return userDao.addFavoriteSong(userId, songId);
+        boolean result = userDao.addFavoriteSong(userId, songId);
+        if (result) {
+            LOGGER.info("Favorite song added successfully");
+        } else {
+            LOGGER.warn("Failed to add favorite song");
+        }
+        return result;
     }
 
     @Override
     @Transactional
     public boolean removeFavoriteSong(long userId, long songId) {
-        return userDao.removeFavoriteSong(userId, songId);
+        LOGGER.info("Removing favorite song with ID: {} for user with ID: {}", songId, userId);
+        boolean result = userDao.removeFavoriteSong(userId, songId);
+        if (result) {
+            LOGGER.info("Favorite song removed successfully");
+        } else {
+            LOGGER.warn("Failed to remove favorite song");
+        }
+        return result;
     }
 
     @Override

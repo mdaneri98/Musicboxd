@@ -44,6 +44,7 @@
             <jsp:param name="review_id" value="${review.id}"/>
             <jsp:param name="isLiked" value="${review.liked}"/>
             <jsp:param name="commentAmount" value="${review.commentAmount}"/>
+            <jsp:param name="timeAgo" value="${review.timeAgo}"/>
         </jsp:include>
     </div>
     
@@ -66,10 +67,10 @@
                             <img src="<c:url value='/images/${comment.user.imgId}'/>" class="comment-user-img" alt="${comment.user.username}">
                             <span class="comment-username">${comment.user.username}</span>
                         </a>
-                        <span class="comment-date"><c:out value="${comment.createdAt}"/></span>
+                        <span class="comment-date"><c:out value="${comment.timeAgo}"/></span>
                         <c:if test="${loggedUser.id == comment.user.id || loggedUser.moderator}">
                             <c:url value='/review/${review.id}/comment/${comment.id}/delete' var="deleteCommentUrl"/>
-                            <a href="${deleteCommentUrl}" class="comment-delete"><spring:message code="comments.delete"/></a>
+                            <a onclick="deleteComment(${comment.id})" class="comment-delete"><spring:message code="comments.delete"/></a>
                         </c:if>
                     </div>
                     <p class="comment-content">${comment.content}</p>
@@ -78,5 +79,37 @@
         </div>
     </div>
 </div>
+
+<!-- Confirmación para eliminar comentario -->
+<spring:message var="confirmation_text" code="confirmation.window.comment.message"/>
+<jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
+    <jsp:param name="message" value="${confirmation_text}"/>
+    <jsp:param name="id" value="Comment"/>
+</jsp:include>
+
+<script>
+    function deleteComment(commentId) {
+        // Obtener el modal y los botones
+        var overlay = document.getElementById("modalOverlayComment");
+        var modal = document.getElementById("confirmationModalComment");
+        var yesButton = document.getElementById("modalYesComment");
+        var noButton = document.getElementById("modalNoComment");
+
+        // Mostrar el modal
+        overlay.style.display = "block";
+        modal.style.display = "block";
+
+        // Manejar el clic en el botón Sí
+        yesButton.onclick = function () {
+            window.location.href = "${deleteCommentUrl}";
+        }
+
+        // Manejar el clic en el botón No (solo cerrar el modal)
+        noButton.onclick = function () {
+            overlay.style.display = "none";
+            modal.style.display = "none";
+        };
+    }
+</script>
 </body>
 </html>

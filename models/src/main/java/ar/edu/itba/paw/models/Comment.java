@@ -1,7 +1,5 @@
 package ar.edu.itba.paw.models;
 
-import ar.edu.itba.paw.models.reviews.Review;
-
 import java.time.LocalDateTime;
 
 public class Comment {
@@ -10,6 +8,7 @@ public class Comment {
     private Long reviewId;
     private String content;
     private LocalDateTime createdAt;
+    private String timeAgo;
 
     public Comment(Long id, User user, Long reviewId, String content, LocalDateTime createdAt) {
         this.id = id;
@@ -65,5 +64,13 @@ public class Comment {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getTimeAgo() {
+        return timeAgo;
+    }
+
+    public void setTimeAgo(String timeAgo) {
+        this.timeAgo = timeAgo;
     }
 }

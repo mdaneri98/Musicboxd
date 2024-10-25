@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 
 <div class="review-container">
     <c:if test="${!param.blocked}">
@@ -40,7 +42,10 @@
                 <c:url var="userImgUrl" value="/images/${param.user_img_id}" />
                 <img src="${userImgUrl}" alt="${param.user_name} Avatar" class="user-avatar">
                 <div class="user-data">
-                    <div class="user-name"><c:out value="${param.user_name}"/></div>
+                    <div class="name-and-date">
+                        <div class="user-name"><c:out value="${param.user_name}"/></div>
+                        <span class="review-timestamp"><c:out value="${param.timeAgo}"/></span>
+                    </div>
                     <div class="user-card-badges">
                         <c:if test="${param.verified}">
                             <span class="user-card-badge user-card-badge-verified"><spring:message code="label.verified" /></span>
