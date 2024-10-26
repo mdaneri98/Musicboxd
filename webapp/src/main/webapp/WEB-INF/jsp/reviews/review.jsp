@@ -78,6 +78,7 @@
             </c:forEach>
         </div>
     </div>
+    <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
 </div>
 
 <!-- Confirmación para eliminar comentario -->
@@ -86,6 +87,7 @@
     <jsp:param name="message" value="${confirmation_text}"/>
     <jsp:param name="id" value="Comment"/>
 </jsp:include>
+
 
 <script>
     function deleteComment(commentId) {

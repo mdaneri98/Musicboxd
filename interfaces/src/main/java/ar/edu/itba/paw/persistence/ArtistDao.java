@@ -12,5 +12,6 @@ public interface ArtistDao extends CrudDao<Artist> {
     boolean updateRating(long artistId, float newRating, int newRatingAmount);
     boolean hasUserReviewed(long userId, long artistId);
 
+    boolean deleteReviewsFromArtist(long artistId);
 }
 

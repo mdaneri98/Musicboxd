@@ -140,4 +140,10 @@ public class SongJdbcDao implements SongDao {
         return jdbcTemplate.update("DELETE FROM song WHERE id = ?", id) == 1;
     }
 
+    @Override
+    public boolean deleteReviewsFromSong(long songId){
+        final String sql = "DELETE FROM review WHERE id IN (SELECT r.id FROM review AS r JOIN song_review AS ar ON r.id = ar.review_id WHERE ar.song_id = ?)";
+        return jdbcTemplate.update(sql, songId) >= 1;
+    }
+
 }

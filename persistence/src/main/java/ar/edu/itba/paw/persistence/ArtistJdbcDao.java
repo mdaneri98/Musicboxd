@@ -113,5 +113,10 @@ public class ArtistJdbcDao implements ArtistDao {
         return jdbcTemplate.update("DELETE FROM artist WHERE id = ?", id) == 1;
     }
 
+    @Override
+    public boolean deleteReviewsFromArtist(long artistId){
+        final String sql = "DELETE FROM review WHERE id IN (SELECT r.id FROM review AS r JOIN artist_review AS ar ON r.id = ar.review_id WHERE ar.artist_id = ?)";
+        return jdbcTemplate.update(sql, artistId) >= 1;
+    }
 }
 

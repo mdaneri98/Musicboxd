@@ -14,5 +14,6 @@ public interface SongDao extends CrudDao<Song> {
     boolean updateRating(long songId, float newRating, int newRatingAmount);
     boolean hasUserReviewed(long userId, long songId);
 
+    boolean deleteReviewsFromSong(long songId);
 }
 

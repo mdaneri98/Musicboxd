@@ -42,7 +42,7 @@
     <c:url var="loginUrl" value="/user/login" />
     <a href="${loginUrl}"><spring:message code="label.already.have.an.account"/></a>
   </div>
+<jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
 </div>
-
 </body>
 </html>
