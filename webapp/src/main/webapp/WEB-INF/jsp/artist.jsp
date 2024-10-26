@@ -74,7 +74,7 @@
     </div>
 
     <c:if test="${albums.size() > 0}">
-        <h2><spring:message code="label.album"/></h2>
+        <h2><spring:message code="label.albums"/></h2>
         <div class="carousel-container">
             <div class="carousel">
                 <c:forEach var="album" items="${albums}" varStatus="status">
@@ -99,7 +99,7 @@
     </c:if>
 
     <c:if test="${songs.size() > 0}">
-        <h2><spring:message code="label.song"/></h2>
+        <h2><spring:message code="label.popular.songs"/></h2>
         <ul class="song-list">
             <c:forEach var="song" items="${songs}" varStatus="status">
                 <c:url var="songUrl" value="/song/${song.id}"/>
@@ -149,6 +149,7 @@
         <c:if test="${showPrevious}"><a href="${prevPage}"><button>Previous page</button></a></c:if>
         <c:if test="${showNext}"><a href="${nextPage}"><button>Next page</button></a></c:if>
     </c:if>
+<jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
 </div>
 </body>
 </html>

@@ -125,4 +125,9 @@ public class AlbumJdbcDao implements AlbumDao {
         return jdbcTemplate.update("DELETE FROM album WHERE id = ?", id) == 1;
     }
 
+    @Override
+    public boolean deleteReviewsFromAlbum(long albumId){
+        final String sql = "DELETE FROM review WHERE id IN (SELECT r.id FROM review AS r JOIN album_review AS ar ON r.id = ar.review_id WHERE ar.album_id = ?)";
+        return jdbcTemplate.update(sql, albumId) >= 1;
+    }
 }

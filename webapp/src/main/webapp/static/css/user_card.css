@@ -1,12 +1,22 @@
+/* Agregamos el contenedor de la grilla */
+.user-cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 20px;
+    width: 100%;
+}
+
 .user-card {
     background-color: #181818;
     border-radius: 12px;
     padding: 24px;
-    margin-bottom: 24px;
-    max-width: 360px;
+    width: calc(33.33% - 16px); /* Para que quepan 3 cards por fila con el gap */
+    min-width: 300px; /* Ancho mínimo para mantener el diseño */
     color: #fff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 0; /* Quitamos el margin ya que usamos gap */
 }
 
 .user-card:hover {
@@ -88,8 +98,15 @@ a {
     text-decoration: none;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 1200px) {
     .user-card {
-        max-width: 100%;
+        width: calc(50% - 12px); /* 2 cards por fila en pantallas medianas */
+    }
+}
+
+@media (max-width: 768px) {
+    .user-card {
+        width: 100%; /* 1 card por fila en pantallas pequeñas */
+        margin: 0;
     }
 }

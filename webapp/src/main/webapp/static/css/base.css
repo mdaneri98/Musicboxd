@@ -55,6 +55,7 @@ a {
 a:hover {
     text-decoration: none;
     color: white;
+    scale: 1.01;
 }
 
 /* Input Fields */

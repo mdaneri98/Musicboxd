@@ -154,6 +154,7 @@
       <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
     </div>
   </c:if>
+<jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
 </div>
 </body>
 </html>

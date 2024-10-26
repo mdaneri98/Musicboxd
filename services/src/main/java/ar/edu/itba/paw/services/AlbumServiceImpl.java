@@ -81,6 +81,7 @@ public class AlbumServiceImpl implements AlbumService {
             return false;
         }
         imageService.delete(album.get().getImgId());
+        albumDao.deleteReviewsFromAlbum(id);
         boolean deleted = albumDao.delete(id);
         if (deleted) {
             LOGGER.info("Album with ID {} deleted successfully", id);

@@ -93,6 +93,7 @@ public class ArtistServiceImpl implements ArtistService {
         LOGGER.info("Deleting image for artist: {} (ID: {})", artist.get().getName(), id);
         imageService.delete(artist.get().getImgId());
 
+        artistDao.deleteReviewsFromArtist(id);
         boolean deleted = artistDao.delete(id);
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);

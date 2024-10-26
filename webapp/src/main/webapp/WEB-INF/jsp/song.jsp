@@ -133,7 +133,8 @@
         </div>
       </footer>
     </section>
-  </section>
   </c:if>
+  <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
+  </section>
 </body>
 </html>

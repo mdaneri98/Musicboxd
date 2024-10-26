@@ -156,19 +156,25 @@ public class UserController {
     @RequestMapping("/{userId:\\d+}/follow-info")
     public ModelAndView followInfo(@ModelAttribute("loggedUser") User loggedUser,
                                    @PathVariable(name = "userId") long userId,
-                                   @RequestParam(name = "pageNum", required = false) Integer pageNum) {
-        if (pageNum == null || pageNum <= 0) {
-            pageNum = 1;
-        }
+                                   @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                                   @RequestParam(name = "page", required = false) String activePage) {
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
+        if (activePage == null || activePage.isEmpty()) activePage = "followers";
+        boolean followersActive = activePage.equals("followers");
+        boolean followingActive = activePage.equals("following");
+
 
         ModelAndView mav = new ModelAndView("/users/follow_info");
         int pageSize = 100;
 
         UserFollowingData followingData = userService.getFollowingData(userId, pageSize, (pageNum - 1) * pageSize);
+        List<User> userList = null;
         List<User> followingList = followingData.getFollowing();
         List<User> followersList = followingData.getFollowers();
+        if (followersActive) userList = followersList;
+        if (followingActive) userList = followingList;
 
-        boolean showNext = followingList.size() == pageSize || followersList.size() == pageSize;
+        boolean showNext = userList.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
         Optional<User> userOptional = userService.find(userId);
@@ -178,13 +184,10 @@ public class UserController {
         }
 
         mav.addObject("user", userOptional.get());
-        mav.addObject("followingList", followingList);
-        mav.addObject("followersList", followersList);
+        mav.addObject("userList", userList);
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("pageNum", pageNum);
-        mav.addObject("title", "Following");
-
-        // Añadir flags para mostrar los botones de navegación
+        mav.addObject("followersActive", followersActive);
         mav.addObject("showNext", showNext);
         mav.addObject("showPrevious", showPrevious);
 

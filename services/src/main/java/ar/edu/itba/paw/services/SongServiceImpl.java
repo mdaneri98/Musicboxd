@@ -81,6 +81,7 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public boolean delete(long id) {
         LOGGER.info("Deleting song with ID: {}", id);
+        songDao.deleteReviewsFromSong(id);
         boolean result = songDao.delete(id);
         if (result) {
             LOGGER.info("Song deleted successfully");
