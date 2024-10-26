@@ -103,8 +103,12 @@ public class UserServiceImpl implements UserService {
         if (usernameOptUser.isPresent()) {
             throw new UserAlreadyExistsException("El usuario " + username + " ya está en uso.");
         }
-        long imgId = imageService.save(null, true);
-        Optional<User> userOpt = userDao.create(username, email, hashedPassword, imgId);
+
+        Optional<Image> optionalImage = imageService.findById(imageService.getDefaultProfileImgId());
+        if (optionalImage.isEmpty())
+            throw new IllegalArgumentException("La imagen profile-default no existe.");
+
+        Optional<User> userOpt = userDao.create(username, email, hashedPassword, optionalImage.get());
         if (userOpt.isPresent()) {
             User createdUser = userOpt.get();
             this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
@@ -195,12 +199,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Optional<User> update(User user) {
-        return userDao.update(user);
-    }
-
-    @Override
-    @Transactional
     public boolean changePassword(Long userId, String newPassword) {
         return find(userId).map(user -> {
             user.setPassword(passwordEncoder.encode(newPassword));
@@ -208,12 +206,9 @@ public class UserServiceImpl implements UserService {
         }).orElse(false);
     }
 
-
     @Override
     @Transactional
-    public Optional<User> update(User user, byte[] bytes) {
-        long imgId = imageService.update(user.getImgId(), bytes);
-        user.setImgId(imgId);
+    public Optional<User> update(User user) {
         return userDao.update(user);
     }
 

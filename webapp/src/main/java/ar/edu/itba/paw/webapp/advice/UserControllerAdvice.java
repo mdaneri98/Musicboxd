@@ -19,15 +19,21 @@ public class UserControllerAdvice {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth != null) {
             LOGGER.info("Authentication object: {}", auth);
+            LOGGER.info("Authentication principal class: {}", auth.getPrincipal().getClass().getName());
             if (auth.getPrincipal() instanceof AuthCUserDetails pud) {
-                LOGGER.info("Logged-in user: {}", pud.getUser());
-                return pud.getUser();
+                User user = pud.getUser();
+                LOGGER.info("User object: {}", user);
+                if (user != null) {
+                    LOGGER.info("User fields - username: {}, id: {}", user.getUsername(), user.getId());
+                }
+                return user;
             } else {
-                LOGGER.warn("Principal is not an instance of AuthCUserDetails");
+                LOGGER.warn("Principal is not an instance of AuthCUserDetails, it is: {}",
+                        auth.getPrincipal().getClass().getName());
             }
         } else {
             LOGGER.warn("Authentication object is null");
         }
-        return null;
+        return User.createAnonymous();
     }
 }

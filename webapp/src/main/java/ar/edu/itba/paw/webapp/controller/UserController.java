@@ -109,7 +109,8 @@ public class UserController {
         loggedUser.setUsername(upf.getUsername());
         loggedUser.setName(upf.getName());
         loggedUser.setBio(upf.getBio());
-        userService.update(loggedUser, getBytes(upf.getProfilePicture()));
+        loggedUser.setImage(new Image(loggedUser.getImage().getId(), getBytes(upf.getProfilePicture())));
+        userService.update(loggedUser);
         LOGGER.info("User profile updated for user with ID: {}", loggedUser.getId());
         return new ModelAndView("redirect:/user/profile");
     }

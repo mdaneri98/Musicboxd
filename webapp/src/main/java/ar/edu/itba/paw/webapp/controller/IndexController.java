@@ -39,11 +39,10 @@ public class IndexController {
         long loggedUserId;
         ModelAndView mav;
 
-        if (loggedUser == null){
+        if (!User.isAnonymus(loggedUser)) {
             mav = new ModelAndView("anonymous/home");
             loggedUserId = 0;
-        }
-        else {
+        } else {
             mav = new ModelAndView("home");
             loggedUserId = loggedUser.getId();
         }
@@ -75,9 +74,8 @@ public class IndexController {
     @RequestMapping("/music")
     public ModelAndView music(@ModelAttribute("loggedUser") User loggedUser) {
         ModelAndView mav = new ModelAndView("anonymous/music");
-        if (loggedUser != null)
+        if (!User.isAnonymus(loggedUser))
             mav.setViewName("music");
-
 
         List<Album> topRatedAlbums = albumService.findPaginated(FilterType.RATING,1, 5);
         List<Album> mostPopularAlbums = albumService.findPaginated(FilterType.POPULAR,1, 5);

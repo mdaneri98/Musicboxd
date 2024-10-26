@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.User;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -22,24 +23,17 @@ public class ImageJpaDao implements ImageDao {
     }
 
     @Override
-    public long create(byte[] bytes) {
-        Image image = new Image();
-        image.setBytes(bytes);
+    public Image create(Image image) {
         em.persist(image);
-        em.flush(); // Ensure the image is persisted and the ID is generated.
-        return image.getId();
+        return image;
     }
 
     @Override
-    public boolean update(long imageId, byte[] bytes) {
-        Optional<Image> maybeImage = findById(imageId);
-        if (maybeImage.isPresent()) {
-            Image image = maybeImage.get();
-            image.setBytes(bytes);
-            em.merge(image);
-            return true;
+    public Optional<Image> update(Image image) {
+        if (em.find(Image.class, image.getId()) == null) {
+            return Optional.empty();
         }
-        return false;
+        return Optional.of(em.merge(image));
     }
 
     @Override

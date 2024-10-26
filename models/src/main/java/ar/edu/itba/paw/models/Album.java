@@ -29,8 +29,9 @@ public class Album {
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
-    @Column(name = "img_id", nullable = false)
-    private Long imgId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
+    private Image image;
 
     @Column(name = "rating_amount", nullable = false)
     private Integer ratingCount;
@@ -49,51 +50,51 @@ public class Album {
         // Constructor vacío necesario para JPA
     }
 
-    public Album(Long id, String title, String genre, LocalDate releaseDate, LocalDate createdAt, LocalDate updatedAt, Long imgId, Artist artist, Integer ratingCount, Float avgRating) {
+    public Album(Long id, String title, String genre, LocalDate releaseDate, LocalDate createdAt, LocalDate updatedAt, Image image, Artist artist, Integer ratingCount, Float avgRating) {
         this.id = id;
         this.title = title;
         this.genre = genre;
         this.releaseDate = releaseDate;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.imgId = imgId;
+        this.image = image;
         this.artist = artist;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
     }
 
-    public Album(Long id, String title, String genre, LocalDate releaseDate, Long imgId, Artist artist, Integer ratingCount, Float avgRating) {
+    public Album(Long id, String title, String genre, LocalDate releaseDate, Image image, Artist artist, Integer ratingCount, Float avgRating) {
         this.id = id;
         this.title = title;
         this.genre = genre;
         this.releaseDate = releaseDate;
-        this.imgId = imgId;
+        this.image = image;
         this.artist = artist;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
     }
 
-    public Album(Long id, String title, Long imgId, String genre, Artist artist, LocalDate releaseDate) {
+    public Album(Long id, String title, Image image, String genre, Artist artist, LocalDate releaseDate) {
         this.id = id;
         this.title = title;
-        this.imgId = imgId;
+        this.image = image;
         this.artist = artist;
         this.releaseDate = releaseDate;
         this.genre = genre;
     }
 
-    public Album(String title, String genre, LocalDate releaseDate, Long imgId, Artist artist) {
+    public Album(String title, String genre, LocalDate releaseDate, Image image, Artist artist) {
         this.title = title;
         this.genre = genre;
-        this.imgId = imgId;
+        this.image = image;
         this.artist = artist;
         this.releaseDate = releaseDate;
     }
 
-    public Album(String title, String genre, Long imgId, Artist artist) {
+    public Album(String title, String genre, Image image, Artist artist) {
         this.title = title;
         this.genre = genre;
-        this.imgId = imgId;
+        this.image = image;
         this.artist = artist;
     }
 
@@ -168,12 +169,12 @@ public class Album {
         this.updatedAt = updatedAt;
     }
 
-    public Long getImgId() {
-        return imgId;
+    public Image getImage() {
+        return image;
     }
 
-    public void setImgId(Long imgId) {
-        this.imgId = imgId;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public Artist getArtist() {
@@ -219,7 +220,7 @@ public class Album {
         json.append("\"releaseDate\":\"").append(releaseDate != null ? releaseDate.toString() : null).append("\",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
         json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"imgId\":").append(imgId).append(",");
+        json.append("\"imgId\":").append(image.getId()).append(",");
 
         // Convertir el artista a JSON si no es nulo
         json.append("\"artist\":").append(artist != null ? artist.toJson() : null);

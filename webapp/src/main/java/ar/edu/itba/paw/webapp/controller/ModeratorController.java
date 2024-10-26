@@ -115,7 +115,7 @@ public class ModeratorController {
         modArtistForm.setId(artistId);
         modArtistForm.setName(artist.get().getName());
         modArtistForm.setBio(artist.get().getBio());
-        modArtistForm.setArtistImgId(artist.get().getImgId());
+        modArtistForm.setArtistImgId(artist.get().getImage().getId());
 
         // Add Albums
         List<Album> albums = albumService.findByArtistId(artistId);
@@ -126,7 +126,7 @@ public class ModeratorController {
             albumForm.setId(album.getId());
             albumForm.setTitle(album.getTitle());
             albumForm.setGenre(album.getGenre());
-            albumForm.setAlbumImageId(album.getImgId());
+            albumForm.setAlbumImageId(album.getImage().getId());
             albumForm.setReleaseDate(album.getReleaseDate());
 
             albumForms.add(albumForm);
@@ -206,7 +206,7 @@ public class ModeratorController {
         modAlbumForm.setTitle(album.get().getTitle());
         modAlbumForm.setGenre(album.get().getGenre());
         modAlbumForm.setReleaseDate(album.get().getReleaseDate());
-        modAlbumForm.setAlbumImageId(album.get().getImgId());
+        modAlbumForm.setAlbumImageId(album.get().getImage().getId());
         modAlbumForm.setArtistId(album.get().getArtist().getId());
 
         // Add Songs

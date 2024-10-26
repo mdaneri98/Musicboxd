@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -113,9 +110,9 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public Optional<User> create(String username, String email, String password, long imgId) {
-        final User user = new User(username, email, password);
-        user.setImgId(imgId);
+    public Optional<User> create(String username, String email, String password, Image image) {
+        final User user = new User(username, password, email);
+        user.setImage(image);
         em.persist(user);
         return Optional.of(user);
     }

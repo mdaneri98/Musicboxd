@@ -59,7 +59,6 @@ public class ArtistJpaDao implements ArtistDao {
     @Override
     public Artist create(Artist artist) {
         entityManager.persist(artist);
-        entityManager.flush();  // This forces the INSERT operation to happen immediately
         return artist;
     }
 
@@ -82,7 +81,7 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public boolean hasUserReviewed(long userId, long artistId) {
-        String jpql = "SELECT COUNT(r) FROM Review r JOIN ArtistReview ar ON r.id = ar.artist_id WHERE r.user.id = :userId AND ar.artist.id = :artistId";
+        String jpql = "SELECT COUNT(r) FROM ArtistReview r WHERE r.user.id = :userId AND r.artist.id = :artistId";
         Long count = entityManager.createQuery(jpql, Long.class)
                 .setParameter("userId", userId)
                 .setParameter("artistId", artistId)

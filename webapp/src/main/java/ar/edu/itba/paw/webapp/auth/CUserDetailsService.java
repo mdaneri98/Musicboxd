@@ -31,11 +31,25 @@ public class CUserDetailsService implements UserDetailsService {
             return new UsernameNotFoundException("User not found");
         });
 
+        // Validación adicional
+        if (user.getUsername() == null || user.getId() == null) {
+            LOGGER.error("Usuario encontrado pero con campos críticos nulos: {}", user);
+            throw new UsernameNotFoundException("Invalid user state");
+        }
+
         final Collection<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         if (user.isModerator()) authorities.add(new SimpleGrantedAuthority("ROLE_MODERATOR"));
 
-        return new AuthCUserDetails(user, authorities);
+        AuthCUserDetails userDetails = new AuthCUserDetails(user, authorities);
+
+        // Validación después de crear AuthCUserDetails
+        if (userDetails.getUser() == null || userDetails.getUser().getUsername() == null) {
+            LOGGER.error("AuthCUserDetails creado con usuario inválido");
+            throw new UsernameNotFoundException("Invalid user state after AuthCUserDetails creation");
+        }
+
+        return userDetails;
     }
 
 }

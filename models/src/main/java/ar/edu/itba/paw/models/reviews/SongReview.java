@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models.reviews;
 
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 
@@ -39,8 +40,8 @@ public class SongReview extends Review {
     }
 
     @Override
-    public Long getItemImgId() {
-        return song.getAlbum().getImgId();
+    public Image getItemImage() {
+        return song.getAlbum().getImage();
     }
 
     @Override

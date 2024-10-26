@@ -9,9 +9,9 @@ public interface ImageDao {
 
     Optional<Image> findById(long imageId);
 
-    long create(byte[] bytes);
+    Image create(Image image);
 
-    boolean update(long imageId, byte[] bytes);
+    Optional<Image> update(Image image);
 
     boolean delete(long imageId);
 

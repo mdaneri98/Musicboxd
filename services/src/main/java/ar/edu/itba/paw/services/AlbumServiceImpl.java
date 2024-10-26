@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,6 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     @Transactional
     public Album create(Album album) {
-        album.setImgId(imageService.save((byte[]) null, false));
         return albumDao.create(album);
     }
 
@@ -70,24 +70,24 @@ public class AlbumServiceImpl implements AlbumService {
         if (album.isEmpty()) {
             return false;
         }
-        imageService.delete(album.get().getImgId());
+        //imageService.delete(album.get().getImgId());
         return albumDao.delete(id);
     }
 
     @Override
     @Transactional
     public boolean delete(Album album) {
-        if (album.getId() == null || album.getImgId() == null)
+        if (album.getId() == null)
             return false;
-        imageService.delete(album.getImgId());
+        //imageService.delete(album.getImgId());
         return albumDao.delete(album.getId());
     }
 
     @Override
     @Transactional
     public Album create(AlbumDTO albumDTO, long artistId) {
-        long imgId = imageService.save(albumDTO.getImage(), false);
-        Album album = new Album(0L, albumDTO.getTitle(), imgId, albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate());
+        Image image = imageService.create(new Image(0L, albumDTO.getImage()));
+        Album album = new Album(0L, albumDTO.getTitle(), image, albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate());
 
         album = albumDao.create(album);
 
@@ -111,11 +111,13 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     @Transactional
     public Album update(AlbumDTO albumDTO) {
-        long imgId = imageService.update(albumDTO.getImgId(), albumDTO.getImage());
+        Optional<Image> optionalImage = imageService.update(new Image(albumDTO.getImgId(), albumDTO.getImage()));
+        if (optionalImage.isEmpty())
+            throw new IllegalArgumentException("Image not found for update.");
 
         Album album = albumDao.find(albumDTO.getId()).get();
         album.setTitle(albumDTO.getTitle());
-        album.setImgId(imgId);
+        album.setImage(optionalImage.get());
         album.setGenre(albumDTO.getGenre());
         album.setReleaseDate(albumDTO.getReleaseDate());
 
@@ -133,7 +135,7 @@ public class AlbumServiceImpl implements AlbumService {
         for (AlbumDTO albumDTO : albumsDTO) {
             if (albumDTO.getId() != 0) {
                 if (albumDTO.isDeleted()) {
-                    delete(new Album(albumDTO.getId(), albumDTO.getTitle(), albumDTO.getImgId(), albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate()));
+                    delete(new Album(albumDTO.getId(), albumDTO.getTitle(), imageService.findById(albumDTO.getImgId()).get(), albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate()));
                 } else {
                     update(albumDTO);
                 }

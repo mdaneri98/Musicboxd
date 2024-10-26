@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models.reviews;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.User;
 
 import javax.persistence.*;
@@ -39,8 +40,8 @@ public class AlbumReview extends Review {
     }
 
     @Override
-    public Long getItemImgId() {
-        return album.getImgId();
+    public Image getItemImage() {
+        return album.getImage();
     }
 
     @Override

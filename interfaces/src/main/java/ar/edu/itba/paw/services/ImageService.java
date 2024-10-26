@@ -9,14 +9,14 @@ public interface ImageService {
 
     Optional<Image> findById(long imageId);
 
-    long save(byte[] bytes, boolean isProfile);
+    Image create(Image image);
 
-    long update(long imageId, byte[] bytes);
+    Optional<Image> update(Image image);
 
     boolean delete(long imageId);
 
-    public long getDefaultImgId();
+    long getDefaultImgId();
 
-    public long getDefaultProfileImgId();
+    long getDefaultProfileImgId();
 
 }
