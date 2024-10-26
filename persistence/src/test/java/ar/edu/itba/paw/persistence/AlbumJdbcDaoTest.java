@@ -84,7 +84,7 @@ public class AlbumJdbcDaoTest {
         assertEquals(PRE_EXISTING_ALBUM_TITLE, maybeAlbum.get().getTitle());
         assertEquals(PRE_EXISTING_ALBUM_GENRE, maybeAlbum.get().getGenre());
         assertEquals(PRE_EXISTING_ALBUM_RELEASE_DATE, maybeAlbum.get().getReleaseDate());
-        assertEquals(PRE_EXISTING_IMAGE_ID, maybeAlbum.get().getImgId().longValue());
+        assertEquals(PRE_EXISTING_IMAGE_ID, maybeAlbum.get().getImage().getId().longValue());
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -159,7 +159,7 @@ public class AlbumJdbcDaoTest {
     public void test_create() {
         // 1. Pre-conditions - the
         Artist artist = new Artist(PRE_EXISTING_ARTIST_ID);
-        Album album = new Album(NEW_ALBUM_TITLE, NEW_ALBUM_GENRE, NEW_ALBUM_RELEASE_DATE, PRE_EXISTING_IMAGE_ID, artist);
+        Album album = null;//new Album(NEW_ALBUM_TITLE, NEW_ALBUM_GENRE, NEW_ALBUM_RELEASE_DATE, PRE_EXISTING_IMAGE_ID, artist);
 
         // 2. Execute
         Album albumCreated = albumDao.create(album);
@@ -170,7 +170,7 @@ public class AlbumJdbcDaoTest {
         assertEquals(album.getTitle(), albumCreated.getTitle());
         assertEquals(album.getGenre(), albumCreated.getGenre());
         assertEquals(album.getReleaseDate(), albumCreated.getReleaseDate());
-        assertEquals(album.getImgId(), albumCreated.getImgId());
+        assertEquals(album.getImage().getId(), albumCreated.getImage().getId());
         assertEquals(PRE_EXISTING_ARTIST_ID, albumCreated.getArtist().getId().longValue());
         assertEquals(0, albumCreated.getAvgRating(),0);
         assertEquals(0, albumCreated.getRatingCount().intValue());
@@ -189,7 +189,7 @@ public class AlbumJdbcDaoTest {
     public void test_update() {
         // 1. Pre-conditions - the album exist
         Artist artist = new Artist(PRE_EXISTING_ARTIST_ID);
-        Album album = new Album(PRE_EXISTING_ALBUM_ID, NEW_ALBUM_TITLE, NEW_ALBUM_GENRE, NEW_ALBUM_RELEASE_DATE, PRE_EXISTING_IMAGE_ID, artist, NEW_ALBUM_RATING_AMOUNT, NEW_ALBUM_AVG_RATING);
+        Album album = null;//new Album(PRE_EXISTING_ALBUM_ID, NEW_ALBUM_TITLE, NEW_ALBUM_GENRE, NEW_ALBUM_RELEASE_DATE, PRE_EXISTING_IMAGE_ID, artist, NEW_ALBUM_RATING_AMOUNT, NEW_ALBUM_AVG_RATING);
 
         // 2. Execute
         Album albumUpdated = albumDao.update(album);
@@ -200,7 +200,7 @@ public class AlbumJdbcDaoTest {
         assertEquals(album.getTitle(), albumUpdated.getTitle());
         assertEquals(album.getGenre(), albumUpdated.getGenre());
         assertEquals(album.getReleaseDate(), albumUpdated.getReleaseDate());
-        assertEquals(album.getImgId(), albumUpdated.getImgId());
+        assertEquals(album.getImage().getId(), albumUpdated.getImage().getId());
         assertEquals(PRE_EXISTING_ARTIST_ID, albumUpdated.getArtist().getId().longValue());
         assertEquals(NEW_ALBUM_AVG_RATING, albumUpdated.getAvgRating(),0);
         assertEquals(NEW_ALBUM_RATING_AMOUNT, albumUpdated.getRatingCount().intValue());

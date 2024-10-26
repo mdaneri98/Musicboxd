@@ -35,7 +35,7 @@ public class AlbumJpaDao implements AlbumDao {
     @Override
     public List<Album> findPaginated(FilterType filterType, int limit, int offset) {
         // Aplicar filtros dinámicos y paginar los resultados
-        String baseQuery = "SELECT a FROM Album a JOIN FETCH a.artist " + filterType.getFilter();
+        String baseQuery = "SELECT a FROM Album a " + filterType.getFilter();
         TypedQuery<Album> query = entityManager.createQuery(baseQuery, Album.class);
         query.setFirstResult(offset);
         query.setMaxResults(limit);

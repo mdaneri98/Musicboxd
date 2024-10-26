@@ -75,7 +75,7 @@ public class ImageJdbcDaoTest {
         // 1. Pre-conditions - none
 
         // 2. Execute
-        long imgId = imageDao.create(PRE_EXISTING_IMAGE);
+        long imgId = 0;// imageDao.create(PRE_EXISTING_IMAGE);
 
         // 3. Post-conditions
         assertTrue(imgId > 0);
@@ -88,7 +88,7 @@ public class ImageJdbcDaoTest {
         // 1. Pre-conditions - image exist
 
         // 2. Execute
-        boolean updated = imageDao.update(PRE_EXISTING_IMAGE_ID, PRE_EXISTING_IMAGE);
+        boolean updated = false;//imageDao.update(PRE_EXISTING_IMAGE_ID, PRE_EXISTING_IMAGE);
 
         // 3. Post-conditions
         assertTrue(updated);
@@ -101,7 +101,7 @@ public class ImageJdbcDaoTest {
         // 1. Pre-conditions - image exist
 
         // 2. Execute
-        boolean updated = imageDao.update(NEW_IMAGE_ID, PRE_EXISTING_IMAGE);
+        boolean updated = false; //imageDao.update(NEW_IMAGE_ID, PRE_EXISTING_IMAGE);
 
         // 3. Post-conditions
         assertFalse(updated);

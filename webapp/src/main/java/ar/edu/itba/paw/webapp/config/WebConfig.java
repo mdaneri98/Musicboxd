@@ -67,7 +67,12 @@ import java.util.concurrent.TimeUnit;
 @EnableAsync
 @EnableTransactionManagement
 @EnableWebMvc
-@ComponentScan({"ar.edu.itba.paw.webapp.controller", "ar.edu.itba.paw.services", "ar.edu.itba.paw.persistence"})
+@ComponentScan({
+        "ar.edu.itba.paw.webapp.controller",
+        "ar.edu.itba.paw.webapp.advice",  // Agregamos el paquete de advice
+        "ar.edu.itba.paw.services",
+        "ar.edu.itba.paw.persistence"
+})
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

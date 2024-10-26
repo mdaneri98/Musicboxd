@@ -26,8 +26,6 @@ public interface UserService {
     Optional<User> update(User user);
     boolean changePassword(Long userId, String newPassword);
 
-    Optional<User> update(User user, byte[] bytes);
-
     int deleteById(long id);
 
     Optional<User> findByEmail(String email);

@@ -26,8 +26,9 @@ public class Artist {
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
-    @Column(name = "img_id", nullable = false)
-    private Long imgId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
+    private Image image;
 
     @Column(name = "rating_amount", nullable = false)
     private Integer ratingCount;
@@ -50,43 +51,43 @@ public class Artist {
         // Constructor vacío necesario para JPA
     }
 
-    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Long imgId, Integer ratingCount, Float avgRating) {
+    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Image image, Integer ratingCount, Float avgRating) {
         this.id = id;
         this.name = name;
         this.bio = bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.imgId = imgId;
+        this.image = image;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
     }
 
-    public Artist(Long id, String name, String bio, Long imgId, Integer ratingCount, Float avgRating) {
+    public Artist(Long id, String name, String bio, Image image, Integer ratingCount, Float avgRating) {
         this.id = id;
         this.name = name;
         this.bio = bio;
-        this.imgId = imgId;
+        this.image = image;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
     }
 
-    public Artist(Long id, String name, String bio, Long imgId) {
+    public Artist(Long id, String name, String bio, Image image) {
         this.id = id;
         this.name = name;
         this.bio = bio;
-        this.imgId = imgId;
+        this.image = image;
     }
 
-    public Artist(Long id, String name, Long imgId) {
+    public Artist(Long id, String name, Image image) {
         this.id = id;
         this.name = name;
-        this.imgId = imgId;
+        this.image = image;
     }
 
-    public Artist(String name, String bio, Long imgId) {
+    public Artist(String name, String bio, Image image) {
         this.name = name;
         this.bio = bio;
-        this.imgId = imgId;
+        this.image = image;
     }
 
     public Artist(Long id) {
@@ -146,12 +147,12 @@ public class Artist {
         this.updatedAt = updatedAt;
     }
 
-    public Long getImgId() {
-        return imgId;
+    public Image getImage() {
+        return image;
     }
 
-    public void setImgId(Long imgId) {
-        this.imgId = imgId;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public Integer getRatingCount() {
@@ -192,7 +193,7 @@ public class Artist {
         json.append("\"bio\":\"").append(bio).append("\",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
         json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"imgId\":").append(imgId);
+        json.append("\"imgId\":").append(this.image.getId());
         json.append("}");
         return json.toString();
     }

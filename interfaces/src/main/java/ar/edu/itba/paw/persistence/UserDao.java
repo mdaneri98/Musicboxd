@@ -11,7 +11,7 @@ public interface UserDao {
     List<User> findAll(int pageNumber, int pageSize);
     List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize);
 
-    Optional<User> create(String username, String email, String password, long imgId);
+    Optional<User> create(String username, String email, String password, Image image);
 
     int createFollowing(User loggedUser, User following);
 

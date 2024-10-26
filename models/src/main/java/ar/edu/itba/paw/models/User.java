@@ -50,8 +50,9 @@ public class User {
     @Column(name = "review_amount")
     private Integer reviewAmount;
 
-    @Column(name = "img_id")
-    private Long imgId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
+    private Image image;
 
     @ManyToMany
     @JoinTable(
@@ -91,7 +92,7 @@ public class User {
 
     public User(){}
 
-    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Long imgId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
+    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -101,14 +102,14 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.verified = verified;
-        this.imgId = imgId;
+        this.image = image;
         this.moderator = moderator;
         this.followersAmount = followersAmount != null ? followersAmount : 0;
         this.followingAmount = followingAmount != null ? followingAmount : 0;
         this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
     }
 
-    public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Long imgId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
+    public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -116,7 +117,7 @@ public class User {
         this.name = name;
         this.bio = bio;
         this.verified = verified;
-        this.imgId = imgId;
+        this.image = image;
         this.moderator = moderator;
         this.followersAmount = followersAmount != null ? followersAmount : 0;
         this.followingAmount = followingAmount != null ? followingAmount : 0;
@@ -129,7 +130,7 @@ public class User {
         this.password = password;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.imgId = 1L;
+        this.image = null;
         this.verified = false;
         this.moderator = false;
         this.followersAmount = 0;
@@ -137,11 +138,11 @@ public class User {
         this.reviewAmount = 0;
     }
 
-    public User(Long id, String username, String name, Long imgId, Boolean verified, Boolean moderator) {
+    public User(Long id, String username, String name, Image image, Boolean verified, Boolean moderator) {
         this.id = id;
         this.username = username;
         this.name = name;
-        this.imgId = imgId;
+        this.image = image;
         this.verified = verified;
         this.moderator = moderator;
     }
@@ -168,9 +169,13 @@ public class User {
         anonymousUser.followersAmount = 0;
         anonymousUser.followingAmount = 0;
         anonymousUser.reviewAmount = 0;
-        anonymousUser.imgId = null;
+        anonymousUser.image = null;
 
         return anonymousUser;
+    }
+
+    public static boolean isAnonymus(User user) {
+        return user == null || user.getId() <= 0;
     }
 
     // Implementaciones concretas
@@ -377,12 +382,12 @@ public class User {
         this.verified = verified;
     }
 
-    public Long getImgId() {
-        return imgId;
+    public Image getImage() {
+        return image;
     }
 
-    public void setImgId(Long imgId) {
-        this.imgId = imgId;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public static class Builder {
@@ -399,7 +404,7 @@ public class User {
         private Integer followersAmount;
         private Integer followingAmount;
         private Integer reviewAmount;
-        private Long imgId;
+        private Image image;
 
         public Builder() {
         }
@@ -469,8 +474,8 @@ public class User {
             return this;
         }
 
-        public Builder imgId(Long imgId) {
-            this.imgId = imgId;
+        public Builder image(Image image) {
+            this.image = image;
             return this;
         }
 
@@ -489,7 +494,7 @@ public class User {
             user.followersAmount = this.followersAmount;
             user.followingAmount = this.followingAmount;
             user.reviewAmount = this.reviewAmount;
-            user.imgId = this.imgId;
+            user.image = this.image;
             return user;
         }
     }
@@ -510,7 +515,7 @@ public class User {
         json.append("\"followersAmount\":").append(followersAmount).append(",");
         json.append("\"followingAmount\":").append(followingAmount).append(",");
         json.append("\"reviewAmount\":").append(reviewAmount).append(",");
-        json.append("\"imgId\":").append(imgId);
+        json.append("\"image\":").append(image);
         json.append("}");
         return json.toString();
     }

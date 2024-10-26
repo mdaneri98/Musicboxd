@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.models.reviews;
 
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "review")
@@ -40,6 +42,14 @@ public abstract class Review {
     @Column(name = "isblocked")
     private Boolean isBlocked;
 
+    @ManyToMany
+    @JoinTable(
+            name = "review_likes",
+            joinColumns = @JoinColumn(name = "review_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    List<User> likedBy;
+
     public Review() {
         // Constructor vacío necesario para JPA
     }
@@ -67,7 +77,7 @@ public abstract class Review {
 
     public abstract String getItemName();
     public abstract Long getItemId();
-    public abstract Long getItemImgId();
+    public abstract Image getItemImage();
     public abstract String getItemType();
     public abstract String getItemLink();
 

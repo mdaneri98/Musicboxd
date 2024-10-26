@@ -3,12 +3,14 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,8 +77,8 @@ public class ArtistServiceImpl implements ArtistService {
 
         // Delete Images
         List<Album> list = albumService.findByArtistId(id);
-        list.forEach(album -> imageService.delete(album.getImgId()));
-        imageService.delete(artist.get().getImgId());
+        list.forEach(album -> imageService.delete(album.getImage().getId()));
+        imageService.delete(artist.get().getImage().getId());
 
         return artistDao.delete(id);
     }
@@ -84,19 +86,23 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     @Transactional
     public boolean delete(Artist artist) {
-        if (artist.getId() == null || artist.getImgId() == null || artist.getId() < 1 || artist.getImgId() < 1)
+        if (artist.getId() == null || artist.getImage() == null || artist.getId() < 1 || artist.getImage().getId() < 1)
             return false;
 
-        imageService.delete(artist.getImgId());
+        imageService.delete(artist.getImage().getId());
         return artistDao.delete(artist.getId());
     }
 
     @Override
     @Transactional
     public Artist create(ArtistDTO artistDTO) {
-        long imgId = imageService.save(artistDTO.getImage(), false);
-        Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(),imgId);
+        Image image = imageService.create(new Image(0L, artistDTO.getImage()));
+        Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(), image);
 
+        artist.setCreatedAt(LocalDate.now());
+        artist.setUpdatedAt(LocalDate.now());
+        artist.setRatingCount(0);
+        artist.setAvgRating(0f);
         artist = artistDao.create(artist);
 
         if( artistDTO.getAlbums() != null ) {
@@ -108,12 +114,10 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     @Transactional
     public Artist update(ArtistDTO artistDTO) {
-        long imgId = imageService.update(artistDTO.getImgId(), artistDTO.getImage());
-
         Artist artist = artistDao.find(artistDTO.getId()).get();
         artist.setName(artistDTO.getName());
         artist.setBio(artistDTO.getBio());
-        artist.setImgId(imgId);
+        artist.setImage(new Image(artist.getImage().getId(), artistDTO.getImage()));
 
         artist = artistDao.update(artist);
 

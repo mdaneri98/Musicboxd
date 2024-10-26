@@ -28,36 +28,32 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Transactional
-    public long save(byte[] bytes, boolean isProfile) {
-        if (bytes == null || bytes.length == 0) {
-            LOGGER.debug("No image input. Default image used instead");
-            if (isProfile) {
-                return DEFAULT_PROFILE_IMAGE_ID;
-            } else {
-                return DEFAULT_IMAGE_ID;
-            }
+    public Image create(Image image) {
+        if (image.getBytes() == null || image.getBytes().length == 0) {
+            LOGGER.debug("No image value for save!.");
         }
-        return imageDao.create(bytes);
+        return imageDao.create(image);
     }
 
     @Transactional
-    public long update(long imageId, byte[] bytes) {
-        if(bytes == null || bytes.length == 0) {
-            LOGGER.debug("Image {} not updated. File empty", imageId);
-            return imageId;
+    public Optional<Image> update(Image image) {
+        if(image.getBytes() == null || image.getBytes().length == 0) {
+            LOGGER.debug("Image {} not updated. File empty", image.getId());
+            return Optional.empty();
         }
 
+        /*
         if(imageId == DEFAULT_IMAGE_ID || imageId == DEFAULT_PROFILE_IMAGE_ID) {
             return save(bytes, false);
         }
+        */
+        Optional<Image> imageOptional = imageDao.update(image);
+        if (imageOptional.isPresent())
+            LOGGER.debug("Image {} updated", image.getId());
+        else
+            LOGGER.debug("Image {} could not update", image.getId());
 
-        if(imageDao.update(imageId, bytes)) {
-            LOGGER.debug("Image {} updated", imageId);
-        } else {
-            LOGGER.debug("Image {} could not update", imageId);
-        }
-
-        return imageId;
+        return imageOptional;
     }
 
     @Transactional
@@ -69,12 +65,10 @@ public class ImageServiceImpl implements ImageService {
         return imageDao.delete(imageId);
     }
 
-    @Transactional
     public long getDefaultImgId() {
         return DEFAULT_IMAGE_ID;
     }
 
-    @Transactional
     public long getDefaultProfileImgId() {
         return DEFAULT_PROFILE_IMAGE_ID;
     }

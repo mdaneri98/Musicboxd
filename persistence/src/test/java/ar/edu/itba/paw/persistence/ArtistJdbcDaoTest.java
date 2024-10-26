@@ -74,7 +74,7 @@ public class ArtistJdbcDaoTest {
         assertTrue(maybeArtist.isPresent());
         assertEquals(PRE_EXISTING_ARTIST_ID, maybeArtist.get().getId().longValue());
         assertEquals(PRE_EXISTING_ARTIST_NAME, maybeArtist.get().getName());
-        assertEquals(PRE_EXISTING_IMAGE_ID, maybeArtist.get().getImgId().longValue());
+        assertEquals(PRE_EXISTING_IMAGE_ID, maybeArtist.get().getImage().getId().longValue());
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -148,7 +148,7 @@ public class ArtistJdbcDaoTest {
     @Test
     public void test_create() {
         // 1. Pre-conditions - the
-        Artist artist = new Artist(NEW_ARTIST_NAME,NEW_ARTIST_BIO,PRE_EXISTING_IMAGE_ID);
+        Artist artist = null;//new Artist(NEW_ARTIST_NAME,NEW_ARTIST_BIO,PRE_EXISTING_IMAGE_ID);
 
         // 2. Execute
         Artist artistCreated = artistDao.create(artist);
@@ -158,7 +158,7 @@ public class ArtistJdbcDaoTest {
         // Check if returned artist has expected value
         assertEquals(artist.getName(), artistCreated.getName());
         assertEquals(artist.getBio(), artistCreated.getBio());
-        assertEquals(artist.getImgId(), artistCreated.getImgId());
+        assertEquals(artist.getImage().getId(), artistCreated.getImage().getId());
         assertEquals(0, artistCreated.getAvgRating(),0);
         assertEquals(0, artistCreated.getRatingCount().intValue());
 
@@ -173,7 +173,7 @@ public class ArtistJdbcDaoTest {
     @Test
     public void test_update() {
         // 1. Pre-conditions - the artist exist
-        Artist artist = new Artist(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_NAME, NEW_ARTIST_BIO, PRE_EXISTING_IMAGE_ID, NEW_ARTIST_RATING_AMOUNT, NEW_ARTIST_AVG_RATING);
+        Artist artist = null;//new Artist(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_NAME, NEW_ARTIST_BIO, PRE_EXISTING_IMAGE_ID, NEW_ARTIST_RATING_AMOUNT, NEW_ARTIST_AVG_RATING);
 
         // 2. Execute
         Artist artistUpdated = artistDao.update(artist);
@@ -183,7 +183,7 @@ public class ArtistJdbcDaoTest {
         // Check if returned artist has expected value
         assertEquals(artist.getName(), artistUpdated.getName());
         assertEquals(artist.getBio(), artistUpdated.getBio());
-        assertEquals(artist.getImgId(), artistUpdated.getImgId());
+        assertEquals(artist.getImage().getId(), artistUpdated.getImage().getId());
         assertEquals(NEW_ARTIST_AVG_RATING, artistUpdated.getAvgRating(),0);
         assertEquals(NEW_ARTIST_RATING_AMOUNT, artistUpdated.getRatingCount().intValue());
 

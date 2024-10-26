@@ -64,7 +64,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public List<ArtistReview> findReviewsByArtistId(long artistId) {
         final TypedQuery<ArtistReview> query = em.createQuery(
-                "FROM ArtistReview ar WHERE ar.artist_id = :artistId AND ar.isBlocked = false ORDER BY ar.createdAt DESC",
+                "FROM ArtistReview review WHERE review.artist.id = :artistId AND review.isBlocked = false ORDER BY review.createdAt DESC",
                 ArtistReview.class
         );
         query.setParameter("artistId", artistId);
@@ -189,13 +189,15 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public boolean isLiked(Long userId, Long reviewId) {
         Long count = (Long) em.createQuery(
-                        "SELECT COUNT(rl) FROM review_likes rl WHERE rl.user_id = :userId AND rl.review_id = :reviewId"
+                        "SELECT COUNT(rl) FROM Review r JOIN r.likedBy u WHERE u.id = :userId AND r.id = :reviewId"
                 )
                 .setParameter("userId", userId)
                 .setParameter("reviewId", reviewId)
                 .getSingleResult();
+
         return count > 0;
     }
+
 
     @Override
     public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize) {
@@ -247,9 +249,12 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
         final TypedQuery<Review> query = em.createQuery(
-                "SELECT r FROM Review r WHERE r.user.id IN " +
-                        "(SELECT f.followed.id FROM Follow f WHERE f.follower.id = :userId) " +
-                        "AND r.isBlocked = false ORDER BY r.createdAt DESC",
+                "SELECT DISTINCT r FROM User u " +
+                        "JOIN u.following f " +
+                        "JOIN Review r ON r.user = f " +
+                        "WHERE u.id = :userId " +
+                        "AND r.isBlocked = false " +
+                        "ORDER BY r.createdAt DESC",
                 Review.class
         );
         query.setParameter("userId", userId);
