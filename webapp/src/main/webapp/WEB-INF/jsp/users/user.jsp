@@ -24,7 +24,7 @@
 <div class="container">
   <header>
     <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
-      <jsp:param name="imgId" value="${user.imgId}" />
+      <jsp:param name="imgId" value="${user.image.id}" />
       <jsp:param name="username" value="${user.username}" />
       <jsp:param name="name" value="${user.name}" />
       <jsp:param name="bio" value="${user.bio}" />
@@ -133,7 +133,7 @@
           <jsp:param name="rating" value="${review.rating}"/>
           <jsp:param name="review_content" value="${review.description}"/>
           <jsp:param name="user_name" value="@${review.user.username}"/>
-          <jsp:param name="user_img_id" value="${review.user.imgId}"/>
+          <jsp:param name="user_img_id" value="${review.user.image.id}"/>
           <jsp:param name="verified" value="${review.user.verified}"/>
           <jsp:param name="moderator" value="${loggedUser.moderator}"/>
           <jsp:param name="userModerator" value="${review.user.moderator}"/>
