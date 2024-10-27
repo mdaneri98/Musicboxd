@@ -238,7 +238,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
         final TypedQuery<Review> query = em.createQuery(
-                "FROM Review r WHERE r.isBlocked = false ORDER BY r.likes DESC, r.createdAt DESC",
+                "SELECT r FROM Review r WHERE r.isBlocked = false ORDER BY r.likes DESC, r.createdAt DESC",
                 Review.class
         );
         query.setFirstResult((page - 1) * pageSize);
