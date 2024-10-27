@@ -11,8 +11,8 @@ public class Image {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "content", nullable = false)
-    @Lob
+    @Column(name = "content", columnDefinition = "bytea", nullable = false)
+    //@Lob
     private byte[] bytes;
 
     public Image() {
