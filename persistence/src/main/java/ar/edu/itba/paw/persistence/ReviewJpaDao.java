@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.Review;
@@ -10,10 +11,12 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 
 
 @Primary
@@ -187,14 +190,33 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public boolean isLiked(Long userId, Long reviewId) {
-        Long count = (Long) em.createQuery(
-                        "SELECT COUNT(rl) FROM Review r JOIN r.likedBy u WHERE u.id = :userId AND r.id = :reviewId"
-                )
-                .setParameter("userId", userId)
-                .setParameter("reviewId", reviewId)
-                .getSingleResult();
+    public List<User> likedBy(int page, int pageSize) {
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM review.likedBy");
+        nativeQuery.setMaxResults(pageSize);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
 
+        final List<Long> idList = (List<Long>) nativeQuery.getResultList()
+                .stream().map(n -> (Long)((Number)n).longValue()).collect(Collectors.toList());
+
+        // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
+        if (idList.isEmpty())
+            return Collections.emptyList();
+
+        final TypedQuery<User> query = em.createQuery("FROM User WHERE id IN :ids", User.class);
+        query.setParameter("ids", idList);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public boolean isLiked(Long userId, Long reviewId) {
+        Query query = em.createQuery(
+                "SELECT COUNT(u) FROM Review r JOIN r.likedBy u WHERE r.id = :reviewId AND u.id = :userId"
+        );
+        query.setParameter("reviewId", reviewId);
+        query.setParameter("userId", userId);
+
+        Long count = (Long) query.getSingleResult();
         return count > 0;
     }
 

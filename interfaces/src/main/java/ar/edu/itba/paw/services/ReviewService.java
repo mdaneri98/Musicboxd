@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
@@ -28,6 +29,7 @@ public interface ReviewService extends CrudService<Review> {
     SongReview saveSongReview(SongReview review);
 
 
+    List<User> likedBy(int page, int pageSize);
     void createLike(long userId, long reviewId);
     void removeLike(long userId, long reviewId);
     boolean isLiked(long userId, long reviewId);
