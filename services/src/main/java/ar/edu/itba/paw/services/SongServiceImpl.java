@@ -9,6 +9,7 @@ import ar.edu.itba.paw.persistence.SongDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,7 +80,11 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional
     public Song create(SongDTO songDTO, Album album) {
-        Song song = new Song(0L, songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        song.setCreatedAt(LocalDate.now());
+        song.setUpdatedAt(LocalDate.now());
+        song.setRatingCount(0);
+        song.setAvgRating(0f);
         song = songDao.create(song);
         songDao.saveSongArtist(song, song.getAlbum().getArtist());
         return song;

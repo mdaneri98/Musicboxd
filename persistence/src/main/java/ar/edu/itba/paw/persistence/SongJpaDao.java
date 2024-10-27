@@ -68,7 +68,6 @@ public class SongJpaDao implements SongDao {
     @Override
     public Song create(Song song) {
         em.persist(song);
-        em.flush(); // Ensure the song is persisted and the ID is generated.
         return song;
     }
 
