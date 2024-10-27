@@ -170,3 +170,14 @@ CREATE TABLE IF NOT EXISTS review_like (
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, review_id)
 );
+
+CREATE TABLE IF NOT EXISTS comment (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    review_id INT NOT NULL,
+    content VARCHAR(500) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
+    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE
+);

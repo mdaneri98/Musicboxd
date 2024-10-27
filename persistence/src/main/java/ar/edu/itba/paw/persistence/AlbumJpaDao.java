@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
@@ -62,14 +63,12 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    @Transactional
     public Album create(Album album) {
         entityManager.persist(album);
         return album;
     }
 
     @Override
-    @Transactional
     public Album update(Album album) {
         // Actualizar una entidad existente
         entityManager.merge(album);
@@ -77,7 +76,6 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    @Transactional
     public boolean updateRating(long albumId, float newRating, int newRatingAmount) {
         // Actualizar la calificación del álbum
         Album album = entityManager.find(Album.class, albumId);
@@ -103,7 +101,6 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    @Transactional
     public boolean delete(long id) {
         // Eliminar un álbum por su ID
         Album album = entityManager.find(Album.class, id);
@@ -113,4 +110,14 @@ public class AlbumJpaDao implements AlbumDao {
         }
         return false;
     }
+
+    @Override
+    public boolean deleteReviewsFromAlbum(long albumId) {
+        Query query = entityManager.createQuery(
+                "DELETE FROM Review r WHERE r.id IN " +
+                        "(SELECT ar.review.id FROM AlbumReview ar WHERE ar.album.id = :albumId)");
+        query.setParameter("albumId", albumId);
+        return query.executeUpdate() >= 1;
+    }
+
 }

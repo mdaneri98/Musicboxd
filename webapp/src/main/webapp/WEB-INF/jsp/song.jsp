@@ -117,6 +117,8 @@
               <jsp:param name="user_id" value="${review.user.id}"/>
               <jsp:param name="review_id" value="${review.id}"/>
               <jsp:param name="isLiked" value="${review.liked}"/>
+              <jsp:param name="commentAmount" value="${review.commentAmount}"/>
+              <jsp:param name="timeAgo" value="${review.timeAgo}"/>
             </jsp:include>
           </c:forEach>
         </div>
@@ -131,7 +133,8 @@
         </div>
       </footer>
     </section>
-  </section>
   </c:if>
+  <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
+  </section>
 </body>
 </html>

@@ -53,13 +53,17 @@
             </a>
         </c:otherwise>
     </c:choose>
-</div><!-- Confirmation for Review -->
+    <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
+</div>
+
+<!-- Confirmation for Review -->
 <spring:message var="confirmation_text" code="confirmation.window.review.message"/>
 <jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
     <jsp:param name="message" value="${confirmation_text}"/>
     <jsp:param name="id" value="Review"/>
 </jsp:include>
 </body>
+
 
 <script>
     function deleteReview() {

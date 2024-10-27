@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models.reviews;
 
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.User;
 
@@ -42,6 +43,15 @@ public abstract class Review {
     @Column(name = "isblocked")
     private Boolean isBlocked;
 
+    @Column(name = "commentAmount")
+    private Integer commentAmount;
+
+    @Transient
+    private String timeAgo;
+
+    @OneToMany(mappedBy = "review", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comment> comments;
+
     @ManyToMany
     @JoinTable(
             name = "review_likes",
@@ -54,7 +64,7 @@ public abstract class Review {
         // Constructor vacío necesario para JPA
     }
 
-    public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
+    public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
         this.user = user;
         this.title = title;
         this.description = description;
@@ -62,9 +72,10 @@ public abstract class Review {
         this.createdAt = createdAt;
         this.likes = likes;
         this.isBlocked = isBlocked;
+        this.commentAmount = commentAmount;
     }
 
-    public Review(Long id, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
+    public Review(Long id, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -73,6 +84,7 @@ public abstract class Review {
         this.createdAt = createdAt;
         this.likes = likes;
         this.isBlocked = isBlocked;
+        this.commentAmount = commentAmount;
     }
 
     public abstract String getItemName();
@@ -80,6 +92,14 @@ public abstract class Review {
     public abstract Image getItemImage();
     public abstract String getItemType();
     public abstract String getItemLink();
+
+    public Integer getCommentAmount() {
+        return commentAmount;
+    }
+
+    public void setCommentAmount(Integer commentsAmount) {
+        this.commentAmount = commentsAmount;
+    }
 
     public Boolean getLiked() {
         return isLiked;
@@ -165,5 +185,13 @@ public abstract class Review {
 
     public void setLikes(Integer likes) {
         this.likes = likes;
+    }
+
+    public String getTimeAgo() {
+        return timeAgo;
+    }
+
+    public void setTimeAgo(String timeAgo) {
+        this.timeAgo = timeAgo;
     }
 }

@@ -7,8 +7,6 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -28,8 +26,6 @@ import java.util.Optional;
 @RequestMapping("/album")
 @Controller
 public class AlbumController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AlbumController.class);
 
     private final UserService userService;
     private final AlbumService albumService;
@@ -73,8 +69,7 @@ public class AlbumController {
         List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId, pageNum, pageSize, loggedUser.getId());
 
         boolean isReviewed = reviewService.hasUserReviewedAlbum(loggedUser.getId(), albumId);
-        Integer loggedUserRating = isReviewed ? reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get().getRating() : 0;
-
+        Integer loggedUserRating = isReviewed ? reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId()).getRating() : 0;
         boolean showNext = reviews.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
@@ -96,7 +91,7 @@ public class AlbumController {
 
     @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
-        if (!reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).isEmpty())
+        if (reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId()) != null)
             return new ModelAndView("redirect:/album/" + albumId);
 
         Album album = albumService.find(albumId).orElseThrow();
@@ -111,10 +106,10 @@ public class AlbumController {
 
     @RequestMapping(value = "/{albumId:\\d+}/edit-review", method = RequestMethod.GET)
     public ModelAndView editAlbumReview(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
-        if (reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).isEmpty())
+        if (reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId()) == null)
             return createForm(loggedUser, reviewForm, albumId);
 
-        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get();
+        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
 
         reviewForm.setTitle(review.getTitle());
         reviewForm.setDescription(review.getDescription());
@@ -134,7 +129,7 @@ public class AlbumController {
         if (errors.hasErrors()) {
             return createForm(loggedUser, reviewForm, albumId);
         }
-        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get();
+        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
 
         AlbumReview albumReview = new AlbumReview(
                 review.getId(),
@@ -145,10 +140,10 @@ public class AlbumController {
                 reviewForm.getRating(),
                 LocalDateTime.now(),
                 review.getLikes(),
-                review.isBlocked()
+                review.isBlocked(),
+                review.getCommentAmount()
         );
         reviewService.updateAlbumReview(albumReview);
-        LOGGER.info("Album review updated for album ID {} by user ID {}", albumId, loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
@@ -166,36 +161,33 @@ public class AlbumController {
                 reviewForm.getRating(),
                 LocalDateTime.now(),
                 0,
-                false
+                false,
+                0
         );
         reviewService.saveAlbumReview(albumReview);
-        LOGGER.info("New album review created for album ID {} by user ID {}", albumId, loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
     @RequestMapping(value = "/{albumId:\\d+}/delete-review", method = RequestMethod.GET)
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
-        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId).get();
+        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
         reviewService.deleteReview(review, loggedUser.getId());
-        LOGGER.info("Album review deleted for album ID {} by user ID {}", albumId, loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 
     @RequestMapping(value = "/{albumId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
-        if (userService.addFavoriteAlbum(loggedUser.getId(), albumId))
-            LOGGER.info("Album ID {} added to favorites by user ID {}", albumId, loggedUser.getId());
-        else {
+        if (userService.addFavoriteAlbum(loggedUser.getId(), albumId)) {
+            return new ModelAndView("redirect:/album/" + albumId);
+        } else {
             String errorMessage = messageSource.getMessage("error.too.many.favorites.album", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/album/" + albumId + "?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
-        return new ModelAndView("redirect:/album/" + albumId);
     }
 
     @RequestMapping(value = "/{albumId:\\d+}/remove-favorite", method = RequestMethod.GET)
     public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
         userService.removeFavoriteAlbum(loggedUser.getId(), albumId);
-        LOGGER.info("Album ID {} removed from favorites by user ID {}", albumId, loggedUser.getId());
-        return new ModelAndView("redirect:/album/" + albumId);
+        return new ModelAndView("redirect:/album/" + albumId); 
     }
 }

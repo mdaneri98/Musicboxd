@@ -4,8 +4,6 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,8 +13,6 @@ import java.util.stream.Collectors;
 
 @Controller
 public class IndexController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
     private final ArtistService artistService;
     private final ReviewService reviewService;
@@ -33,11 +29,22 @@ public class IndexController {
     }
 
     @RequestMapping(value = {"/home", "/"})
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, @RequestParam(name = "pageNum", required = false) Integer pageNum, @RequestParam(name = "error", required = false) String error, @RequestParam(name = "success", required = false) String success) {
+    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, 
+                            @RequestParam(name = "pageNum", required = false) Integer pageNum, 
+                            @RequestParam(name = "error", required = false) String error, 
+                            @RequestParam(name = "success", required = false) String success,
+                            @RequestParam(name = "page", required = false) String activePage) {
+                                
         if (pageNum == null || pageNum < 1) pageNum = 1;
+
+        if (activePage == null || activePage.isEmpty()) activePage = "forYou";
+        boolean forYouActive = activePage.equals("forYou");
+        boolean followingActive = activePage.equals("following");
+
         int pageSize = 10;
         long loggedUserId;
         ModelAndView mav;
+        List<Review> reviews;
 
         if (!User.isAnonymus(loggedUser)) {
             mav = new ModelAndView("anonymous/home");
@@ -47,21 +54,23 @@ public class IndexController {
             loggedUserId = loggedUser.getId();
         }
 
-        List<Review> popularReviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, loggedUserId);
-        List<Review> followingReviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUserId, pageNum, pageSize, loggedUserId);
-        boolean hasNextPopular = popularReviews.size() == pageSize;
-        boolean hasNextFollowing = followingReviews.size() == pageSize;
+        if (followingActive) {
+            reviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUserId, pageNum, pageSize, loggedUserId);
+
+        }
+        else {
+            reviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, loggedUserId);
+        }
 
         mav.addObject("success", success);
         mav.addObject("error", error);
-
-        mav.addObject("showNext", hasNextPopular || hasNextFollowing);
+        mav.addObject("showNext", reviews.size() == pageSize);
         mav.addObject("showPrevious", pageNum > 1);
-
-        mav.addObject("popularReviews", popularReviews);
-        mav.addObject("followingReviews", followingReviews);
+        mav.addObject("reviews",reviews);
         mav.addObject("pageNum", pageNum);
-        mav.addObject("pageSize", pageSize-1);
+        mav.addObject("pageSize", pageSize);
+        mav.addObject("forYouActive", forYouActive);
+        mav.addObject("followingActive", followingActive);
 
         return mav;
     }
@@ -101,7 +110,6 @@ public class IndexController {
     @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
     @ResponseBody
     public String subSearch(@PathVariable("type") String type, @RequestParam(name = "s", defaultValue = "") String substringSearch) {
-        LOGGER.info("Initiating search in subSearch with type={} and substringSearch={}", type, substringSearch);
 
         String jsonResult = "";
         switch (type) {
@@ -132,7 +140,6 @@ public class IndexController {
                         .collect(Collectors.joining(",", "[", "]"));
                 break;
             default:
-                LOGGER.warn("Unrecognized search type: {}", type);
                 return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
         }
         return jsonResult;

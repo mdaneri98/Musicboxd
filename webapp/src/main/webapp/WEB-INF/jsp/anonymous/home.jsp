@@ -12,6 +12,8 @@
     <c:url var="css" value="/static/css/home.css" />
     <link rel="stylesheet" href="${css}">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <c:url var="css2" value="/static/css/landing.css" />
     <link rel="stylesheet" href="${css2}">
 
@@ -72,7 +74,7 @@
 <div class="max-width">
     <h2><spring:message code="label.popular.reviews" /></h2>
     <div class="cards-container">
-        <c:forEach var="review" items="${popularReviews}">
+        <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
                 <jsp:param name="item_img_id" value="${review.itemImage.id}"/>
                 <jsp:param name="item_name" value="${review.itemName}"/>
@@ -90,20 +92,13 @@
                 <jsp:param name="user_id" value="${review.user.id}"/>
                 <jsp:param name="review_id" value="${review.id}"/>
                 <jsp:param name="isLiked" value="${review.liked}"/>
+                <jsp:param name="commentAmount" value="${review.commentAmount}"/>
+                <jsp:param name="timeAgo" value="${review.timeAgo}"/>
             </jsp:include>
         </c:forEach>
     </div>
-    <div class="pages">
-        <c:url value="/home/${pageNum + 1}" var="nextPage" />
-        <c:url value="/home/${pageNum -1}" var="prevPage" />
-        <c:if test="${pageNum > 1}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
-        <c:if test="${popularReviews.size() == 10}"><a href="${nextPage}"><button><spring:message code="button.next.page" /></button></a></c:if>
-    </div>
 </div>
 
-<footer>
-    <div class="container">
-        <p>&copy; 2024 Musicboxd. <spring:message code="label.rights.reserved"/></p>
-    </div>
-</footer>
+<jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
+
 </html>

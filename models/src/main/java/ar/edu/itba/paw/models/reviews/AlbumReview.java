@@ -19,13 +19,13 @@ public class AlbumReview extends Review {
         // Constructor vacío necesario para JPA
     }
 
-    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
-        super(user, title, description, rating, createdAt, likes, isBlocked);
+    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.album = album;
     }
 
-    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
-        super(id, user, title, description, rating, createdAt, likes, isBlocked);
+    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(id, user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.album = album;
     }
 
@@ -62,3 +62,4 @@ public class AlbumReview extends Review {
         this.album = album;
     }
 }
+

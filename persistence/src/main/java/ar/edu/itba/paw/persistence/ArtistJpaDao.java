@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,4 +100,14 @@ public class ArtistJpaDao implements ArtistDao {
         }
         return false;
     }
+
+    @Override
+    public boolean deleteReviewsFromArtist(long artistId) {
+        Query query = entityManager.createQuery(
+                "DELETE FROM Review r WHERE r.id IN " +
+                        "(SELECT ar.review.id FROM AlbumReview ar WHERE ar.artist.id = :artistId)");
+        query.setParameter("artistId", artistId);
+        return query.executeUpdate() >= 1;
+    }
+
 }

@@ -23,15 +23,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 @RequestMapping ("/artist")
 @Controller
 public class ArtistController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ArtistController.class);
 
     private final UserService userService;
     private final ArtistService artistService;
@@ -75,7 +71,7 @@ public class ArtistController {
         List<Song> songs = songService.findByArtistId(artistId);
         List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(artistId,pageNum,5, loggedUser.getId());
         boolean isReviewed = reviewService.hasUserReviewedArtist(loggedUser.getId(), artistId);
-        Integer loggedUserRating = isReviewed ? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get().getRating() : 0;
+        Integer loggedUserRating = isReviewed ? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()).getRating() : 0;
         boolean showNext = reviews.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
@@ -96,7 +92,7 @@ public class ArtistController {
 
     @RequestMapping(value = "/{artistId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long artistId) {
-        if (!reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).isEmpty())
+        if (reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()) != null)
             return new ModelAndView("redirect:/artist/" + artistId);
 
         Optional<Artist> artistOptional = artistService.find(artistId);
@@ -115,10 +111,10 @@ public class ArtistController {
 
     @RequestMapping(value = "/{artistId:\\d+}/edit-review", method = RequestMethod.GET)
     public ModelAndView editAlbumReview(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long artistId) {
-        if (reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).isEmpty())
+        if (reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()) == null)
             return createForm(loggedUser, reviewForm, artistId);
 
-        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get();
+        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
 
         reviewForm.setTitle(review.getTitle());
         reviewForm.setDescription(review.getDescription());
@@ -138,21 +134,21 @@ public class ArtistController {
         if (errors.hasErrors()) {
             return createForm(loggedUser, reviewForm, artistId);
         }
-        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get();
+        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
 
         ArtistReview artistReview = new ArtistReview(
                 review.getId(),
-                loggedUser,
                 new Artist(artistId),
+                loggedUser,
                 reviewForm.getTitle(),
                 reviewForm.getDescription(),
                 reviewForm.getRating(),
                 LocalDateTime.now(),
                 review.getLikes(),
-                review.isBlocked()
+                review.isBlocked(),
+                review.getCommentAmount()
         );
         reviewService.updateArtistReview(artistReview);
-        LOGGER.info("Artist review updated for artist ID {} by user ID {}", artistId, loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
@@ -169,26 +165,23 @@ public class ArtistController {
                 reviewForm.getRating(),
                 LocalDateTime.now(),
                 0,
-                false
+                false,
+                0
         );
         reviewService.saveArtistReview(artistReview);
-        LOGGER.info("New artist review created for artist ID {} by user ID {}", artistId, loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
     @RequestMapping(value = "/{artistId:\\d+}/delete-review", method = RequestMethod.GET)
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
-        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId).get();
+        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
         reviewService.deleteReview(review, loggedUser.getId());
-        LOGGER.info("Artist review deleted for artist ID {} by user ID {}", artistId, loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
     @RequestMapping(value = "/{artistId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
-        if(userService.addFavoriteArtist(loggedUser.getId(), artistId))
-            LOGGER.info("Artist ID {} added to favorites by user ID {}", artistId, loggedUser.getId());
-        else {
+        if(userService.addFavoriteArtist(loggedUser.getId(), artistId)) {
             String errorMessage = messageSource.getMessage("error.too.many.favorites.artist", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/artist/" + artistId + "?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
@@ -198,7 +191,6 @@ public class ArtistController {
     @RequestMapping(value = "/{artistId:\\d+}/remove-favorite", method = RequestMethod.GET)
     public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
         userService.removeFavoriteArtist(loggedUser.getId(), artistId);
-        LOGGER.info("Artist ID {} removed from favorites by user ID {}", artistId, loggedUser.getId());
-        return new ModelAndView("redirect:/artist/" + artistId);
+        return new ModelAndView("redirect:/artist/" + artistId); 
     }
 }
