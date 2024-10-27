@@ -83,7 +83,7 @@ public class Album {
         this.genre = genre;
     }
 
-    public Album(String title, String genre, LocalDate releaseDate, Image image, Artist artist) {
+    public Album(String title, Image image, String genre, Artist artist, LocalDate releaseDate) {
         this.title = title;
         this.genre = genre;
         this.image = image;

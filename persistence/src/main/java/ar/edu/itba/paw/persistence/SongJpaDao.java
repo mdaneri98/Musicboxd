@@ -115,7 +115,7 @@ public class SongJpaDao implements SongDao {
 
     @Override
     public boolean hasUserReviewed(long userId, long songId) {
-        String query = "SELECT COUNT(r) FROM SongReview sr JOIN sr.review r WHERE r.user.id = :userId AND sr.song.id = :songId";
+        String query = "SELECT COUNT(r) FROM SongReview sr WHERE r.user.id = :userId AND sr.song.id = :songId";
         Long count = em.createQuery(query, Long.class)
                 .setParameter("userId", userId)
                 .setParameter("songId", songId)

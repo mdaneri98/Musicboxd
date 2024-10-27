@@ -31,7 +31,7 @@
     </div>
     <div class="info-container">
       <div>
-        <c:url var="songImgUrl" value="/images/${album.imgId}"/>
+        <c:url var="songImgUrl" value="/images/${album.image.id}"/>
         <img src="${songImgUrl}" alt="${song.title}" class="album">
       </div>
       <div class="data-container">
@@ -48,7 +48,7 @@
           <c:forEach var="artist" items="${artists}">
             <c:url var="artistUrl" value="/artist/${artist.id}" />
             <a href="${artistUrl}" class="artist-button">
-              <c:url var="artistImgUrl" value="/images/${artist.imgId}"/>
+              <c:url var="artistImgUrl" value="/images/${artist.image.id}"/>
               <img src="${artistImgUrl}" alt="${artist.name}" class="secondary-image">
               <span><c:out value="${artist.name}"/></span>
             </a>
@@ -57,7 +57,7 @@
         <div class="artist-album-container">
         <c:url var="albumUrl" value="/album/${album.id}"/>
         <a href="${albumUrl}" class="artist-button">
-          <c:url var="albumImgUrl" value="/images/${album.imgId}"/>
+          <c:url var="albumImgUrl" value="/images/${album.image.id}"/>
           <img src="${albumImgUrl}" alt="${album.title}" class="primary-image">
           <span><c:out value="${album.title}"/></span>
         </a>
@@ -101,7 +101,7 @@
         <div class="cards-container">
           <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
-              <jsp:param name="item_img_id" value="${review.song.album.imgId}"/>
+              <jsp:param name="item_img_id" value="${review.song.album.image.id}"/>
               <jsp:param name="item_name" value="${review.song.title}"/>
               <jsp:param name="item_url" value="/song/${review.song.id}"/>
               <jsp:param name="item_type" value="Song"/>

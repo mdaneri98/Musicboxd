@@ -28,11 +28,11 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Transactional
-    public Image create(Image image) {
-        if (image.getBytes() == null || image.getBytes().length == 0) {
+    public Image create(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
             LOGGER.debug("No image value for save!.");
         }
-        return imageDao.create(image);
+        return imageDao.create(new Image(bytes));
     }
 
     @Transactional
