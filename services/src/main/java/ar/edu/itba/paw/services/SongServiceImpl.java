@@ -3,11 +3,12 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.persistence.SongDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 public class SongServiceImpl implements SongService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SongServiceImpl.class);
     private final SongDao songDao;
 
     public SongServiceImpl(SongDao songDao) {
@@ -60,58 +62,77 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional
     public Song create(Song song) {
+        LOGGER.info("Creating new song: {}", song.getTitle());
         Song createdSong = songDao.create(song);
         songDao.saveSongArtist(createdSong, song.getAlbum().getArtist());
+        LOGGER.info("Song created successfully with ID: {}", createdSong.getId());
         return createdSong;
     }
 
     @Override
     @Transactional
     public Song update(Song song) {
-        return songDao.update(song);
+        LOGGER.info("Updating song with ID: {}", song.getId());
+        Song updatedSong = songDao.update(song);
+        LOGGER.info("Song updated successfully");
+        return updatedSong;
     }
 
     @Override
     @Transactional
     public boolean delete(long id) {
-        return songDao.delete(id);
+        LOGGER.info("Deleting song with ID: {}", id);
+        songDao.deleteReviewsFromSong(id);
+        boolean result = songDao.delete(id);
+        if (result) {
+            LOGGER.info("Song deleted successfully");
+        } else {
+            LOGGER.warn("Failed to delete song with ID: {}", id);
+        }
+        return result;
     }
 
     @Override
     @Transactional
     public Song create(SongDTO songDTO, Album album) {
+        LOGGER.info("Creating new song from DTO: {}", songDTO.getTitle());
         Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
         song.setCreatedAt(LocalDate.now());
         song.setUpdatedAt(LocalDate.now());
         song.setRatingCount(0);
         song.setAvgRating(0f);
-        song = songDao.create(song);
         songDao.saveSongArtist(song, song.getAlbum().getArtist());
+        LOGGER.info("Song created successfully with ID: {}", song.getId());
         return song;
     }
 
     @Override
     @Transactional
     public boolean createAll(List<SongDTO> songsDTO, Album album) {
+        LOGGER.info("Creating multiple songs for album: {}", album.getTitle());
         for (SongDTO songDTO : songsDTO) {
             if (!songDTO.isDeleted()) {
                 create(songDTO, album);
             }
         }
+        LOGGER.info("All songs created successfully for album: {}", album.getTitle());
         return true;
     }
 
     @Override
     @Transactional
     public Song update(SongDTO songDTO, Album album) {
+        LOGGER.info("Updating song with ID: {}", songDTO.getId());
         Song song = new Song(songDTO.getId(), songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
         song = songDao.update(song);
+        LOGGER.info("Song updated successfully");
         return song;
     }
 
     @Override
     @Transactional
     public boolean updateAll(List<SongDTO> songsDTO, Album album) {
+        LOGGER.info("Updating multiple songs for album: {}", album.getTitle());
         for (SongDTO songDTO : songsDTO) {
             if (songDTO.getId() != 0) {
                 if (songDTO.isDeleted()) {
@@ -125,6 +146,7 @@ public class SongServiceImpl implements SongService {
                 }
             }
         }
+        LOGGER.info("All songs updated successfully for album: {}", album.getTitle());
         return true;
     }
 

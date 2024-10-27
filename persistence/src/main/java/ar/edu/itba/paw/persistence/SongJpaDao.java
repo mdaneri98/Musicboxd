@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
@@ -131,5 +132,15 @@ public class SongJpaDao implements SongDao {
         }
         return false;
     }
+
+    @Override
+    public boolean deleteReviewsFromSong(long songId) {
+        Query query = em.createQuery(
+                "DELETE FROM Review r WHERE r.id IN " +
+                        "(SELECT ar.review.id FROM AlbumReview ar WHERE ar.song.id = :songId)");
+        query.setParameter("songId", songId);
+        return query.executeUpdate() >= 1;
+    }
+
 }
 

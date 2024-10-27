@@ -220,7 +220,7 @@ public class ReviewJpaDao implements ReviewDao {
         return count > 0;
     }
 
-
+    //FIXME: Realizar la paginación mediante id's.
     @Override
     public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize) {
         final TypedQuery<ArtistReview> query = em.createQuery(
@@ -233,6 +233,7 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
+    //FIXME: Realizar la paginación mediante id's.
     @Override
     public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize) {
         final TypedQuery<AlbumReview> query = em.createQuery(
@@ -245,6 +246,7 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
+    //FIXME: Realizar la paginación mediante id's.
     @Override
     public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize) {
         final TypedQuery<SongReview> query = em.createQuery(
@@ -257,6 +259,7 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
+    //FIXME: Realizar la paginación mediante id's.
     @Override
     public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
         final TypedQuery<Review> query = em.createQuery(
@@ -285,6 +288,7 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
+    //FIXME: Realizar la paginación mediante id's.
     @Override
     public List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize) {
         final TypedQuery<Review> query = em.createQuery(
@@ -360,5 +364,24 @@ public class ReviewJpaDao implements ReviewDao {
         query.setMaxResults(limit);
         return query.getResultList();
     }
+
+    @Override
+    public void updateCommentAmount(long reviewId) {
+        Query query = em.createQuery(
+                "SELECT COUNT(u) FROM Review r JOIN r.likedBy u WHERE r.id = :reviewId AND u.id = :userId"
+        );
+        query.setParameter("reviewId", reviewId);
+
+        Long count = (Long) query.getSingleResult();
+    }
+
+    /* // === JDBC IMPL ===
+    @Override
+    public void updateCommentAmount2(long reviewId) {
+        final String sql = "SELECT COUNT(*) FROM comment WHERE review_id = ?";
+        Integer commentAmount = jdbcTemplate.queryForObject(sql, Integer.class, reviewId);
+        jdbcTemplate.update("UPDATE review SET comment_amount = ? WHERE id = ?", commentAmount, reviewId);
+    }
+     */
 
 }

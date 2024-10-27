@@ -14,25 +14,6 @@
     <c:url var="review_card" value="/static/css/review_card.css" />
     <link rel="stylesheet" href="${review_card}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $("#followingTab").hide();
-
-            $("#forYouButton").click(function() {
-                $("#forYouTab").show();
-                $("#followingTab").hide();
-                $(this).addClass("active");
-                $("#followingButton").removeClass("active");
-            });
-
-            $("#followingButton").click(function() {
-                $("#followingTab").show();
-                $("#forYouTab").hide();
-                $(this).addClass("active");
-                $("#forYouButton").removeClass("active");
-            });
-        });
-    </script>
 </head>
 <body>
 <div>
@@ -58,21 +39,32 @@
         </c:if>
     </div>
 
-    <div class="toggle">
-        <span id="forYouButton" class="tab-button active"><spring:message code="home.for.you"/></span>
+    <c:if test="${forYouActive}">
+        <div class="toggle">
+            <span class="tab-button active"><spring:message code="home.for.you"/></span>
         <span>/</span>
-        <span id="followingButton" class="tab-button"><spring:message code="home.following"/></span>
-    </div>
+        <c:url var="followingUrl" value="/home?pageNum=1&page=following"/>
+        <a href="${followingUrl}"><span class="tab-button"><spring:message code="home.following"/></span></a>
+        </div>
+    </c:if>
+    <c:if test="${followingActive}">
+        <div class="toggle">
+            <c:url var="forYouUrl" value="/home?pageNum=1&page=forYou"/>
+            <a href="${forYouUrl}"><span class="tab-button"><spring:message code="home.for.you"/></span></a>
+        <span>/</span>
+            <span class="tab-button active"><spring:message code="home.following"/></span>
+        </div>
+    </c:if>
     <div id="forYouTab">
         <h2><spring:message code="label.popular.reviews" /></h2>
-        <c:if test="${popularReviews.size() == 0}">
+        <c:if test="${reviews.size() == 0}">
             <div class="page-empty">
                 <h3><spring:message code="home.page.empty"/></h3>
                 <h4><spring:message code="home.try.previous"/></h4>
             </div>
         </c:if>
         <div class="cards-container">
-            <c:forEach var="review" items="${popularReviews}">
+            <c:forEach var="review" items="${reviews}">
                 <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
                     <jsp:param name="item_img_id" value="${review.itemImage.id}"/>
                     <jsp:param name="item_name" value="${review.itemName}"/>
@@ -122,30 +114,30 @@
                     <jsp:param name="user_id" value="${review.user.id}"/>
                     <jsp:param name="review_id" value="${review.id}"/>
                     <jsp:param name="isLiked" value="${review.liked}"/>
+                    <jsp:param name="commentAmount" value="${review.commentAmount}"/>
+                    <jsp:param name="timeAgo" value="${review.timeAgo}"/>
                 </jsp:include>
             </c:forEach>
         </div>
     </div>
 
     <div class="pages">
-        <c:url value="/home?pageNum=${pageNum + 1}" var="nextPage" />
-        <c:url value="/home?pageNum=${pageNum - 1}" var="prevPage" />
+        <c:url value="/home?pageNum=${pageNum + 1}&page=${forYouActive ? 'forYou' : 'following'}" var="nextPage" />
+        <c:url value="/home?pageNum=${pageNum - 1}&page=${forYouActive ? 'forYou' : 'following'}" var="prevPage" />
         <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page"/></button></a></c:if>
         <c:if test="${showNext}"><a href="${nextPage}"><button><spring:message code="button.next.page"/></button></a></c:if>
     </div>
+<jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
 </div>
-
 <script>
     $(document).ready(function() {
-        // Ocultar el mensaje de error después de 5 segundos
         setTimeout(function() {
             $('#errorAlert').alert('close');
-        }, 5000); // 5000ms = 5 segundos
+        }, 5000);
 
-        // Ocultar el mensaje de éxito después de 5 segundos
         setTimeout(function() {
             $('#successAlert').alert('close');
-        }, 5000); // 5000ms = 5 segundos
+        }, 5000);
     });
 </script>
 

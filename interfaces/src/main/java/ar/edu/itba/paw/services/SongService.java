@@ -1,12 +1,9 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.dtos.SongDTO;
-
 import java.util.List;
-import java.util.Optional;
 
 public interface SongService extends CrudService<Song> {
 

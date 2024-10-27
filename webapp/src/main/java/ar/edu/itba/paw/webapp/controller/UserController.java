@@ -7,8 +7,6 @@ import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,8 +28,6 @@ import java.util.Optional;
 @RequestMapping("/user")
 @Controller
 public class UserController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -56,27 +52,21 @@ public class UserController {
         int pageSize = 5;
 
         final ModelAndView mav = new ModelAndView("users/profile");
-        LOGGER.info("[/profile]Logged username: {}", loggedUser.getUsername());
 
-        // Obtener las listas paginadas
         List<Album> favoriteAlbums = userService.getFavoriteAlbums(loggedUser.getId());
         List<Artist> favoriteArtists = userService.getFavoriteArtists(loggedUser.getId());
         List<Song> favoriteSongs = userService.getFavoriteSongs(loggedUser.getId());
         List<Review> reviews = reviewService.findReviewsByUserPaginated(loggedUser.getId(), pageNum, pageSize, loggedUser.getId());
 
-        // Lógica para determinar si se deben mostrar los botones "Next" y "Previous"
-        boolean showNext = reviews.size() == pageSize;  // Si hay tantas reseñas como el tamaño de página, hay más para mostrar
-        boolean showPrevious = pageNum > 1;  // Mostrar "Previous" si no estamos en la primera página
+        boolean showNext = reviews.size() == pageSize;
+        boolean showPrevious = pageNum > 1;
 
-        // Agregar los objetos al modelo
         mav.addObject("user", userService.find(loggedUser.getId()).get());
         mav.addObject("albums", favoriteAlbums);
         mav.addObject("artists", favoriteArtists);
         mav.addObject("songs", favoriteSongs);
         mav.addObject("reviews", reviews);
         mav.addObject("pageNum", pageNum);
-
-        // Agregar flags para mostrar los botones "Next" y "Previous"
         mav.addObject("showNext", showNext);
         mav.addObject("showPrevious", showPrevious);
 
@@ -109,9 +99,8 @@ public class UserController {
         loggedUser.setUsername(upf.getUsername());
         loggedUser.setName(upf.getName());
         loggedUser.setBio(upf.getBio());
-        loggedUser.setImage(new Image(loggedUser.getImage().getId(), getBytes(upf.getProfilePicture())));
         userService.update(loggedUser);
-        LOGGER.info("User profile updated for user with ID: {}", loggedUser.getId());
+
         return new ModelAndView("redirect:/user/profile");
     }
 
@@ -125,7 +114,6 @@ public class UserController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
-        LOGGER.info("Email verified for user with ID: {}", userId);
         String successMessage = messageSource.getMessage("success.user.verification", null, LocaleContextHolder.getLocale());
         return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
     }
@@ -134,29 +122,24 @@ public class UserController {
     public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser,
                              @PathVariable(name = "userId") long userId,
                              @RequestParam(name = "pageNum", required = false) Integer pageNum) {
-        int pageSize = 5;  // Tamaño de página para las reseñas
+        int pageSize = 5;
 
-        // Si pageNum es nulo o menor que 1, se inicializa en 1
         if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }
 
-        // Si el ID del usuario es el mismo que el del loggedUser, redirige a su perfil
         if (userId == loggedUser.getId()) {
             return new ModelAndView("redirect:/user/profile?pageNum=" + pageNum);
         }
 
-        // Obtener los datos del usuario a mostrar
         final ModelAndView mav = new ModelAndView("/users/user");
         User user = userService.find(userId).orElseThrow();
 
         List<Review> reviews = reviewService.findReviewsByUserPaginated(userId, pageNum, pageSize, loggedUser.getId());
 
-        // Determinar si se deben mostrar los botones "Next" y "Previous"
         boolean showNext = reviews.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
-        // Añadir objetos al modelo
         mav.addObject("user", user);
         mav.addObject("isFollowing", userService.isFollowing(loggedUser.getId(), userId));
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
@@ -164,8 +147,6 @@ public class UserController {
         mav.addObject("songs", userService.getFavoriteSongs(userId));
         mav.addObject("reviews", reviews);
         mav.addObject("pageNum", pageNum);
-
-        // Añadir flags para mostrar los botones de navegación
         mav.addObject("showNext", showNext);
         mav.addObject("showPrevious", showPrevious);
 
@@ -176,10 +157,13 @@ public class UserController {
     @RequestMapping("/{userId:\\d+}/follow-info")
     public ModelAndView followInfo(@ModelAttribute("loggedUser") User loggedUser,
                                    @PathVariable(name = "userId") long userId,
-                                   @RequestParam(name = "pageNum", required = false) Integer pageNum) {
-        if (pageNum == null || pageNum <= 0) {
-            pageNum = 1;
-        }
+                                   @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                                   @RequestParam(name = "page", required = false) String activePage) {
+        if (pageNum == null || pageNum <= 0) pageNum = 1;
+        if (activePage == null || activePage.isEmpty()) activePage = "followers";
+        boolean followersActive = activePage.equals("followers");
+        boolean followingActive = activePage.equals("following");
+
 
         ModelAndView mav = new ModelAndView("/users/follow_info");
         int pageSize = 100;
@@ -194,19 +178,19 @@ public class UserController {
         List<User> followingList = userOptional.get().getFollowing();
         List<User> followersList = userOptional.get().getFollowers();
 
+        List<User> userList = null;
+        if (followersActive) userList = followersList;
+        if (followingActive) userList = followingList;
+
         // Determinar si mostrar botones "Next" y "Previous"
         boolean showNext = followingList.size() == pageSize || followersList.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
-
         mav.addObject("user", userOptional.get());
-        mav.addObject("followingList", followingList);
-        mav.addObject("followersList", followersList);
+        mav.addObject("userList", userList);
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("pageNum", pageNum);
-        mav.addObject("title", "Following");
-
-        // Añadir flags para mostrar los botones de navegación
+        mav.addObject("followersActive", followersActive);
         mav.addObject("showNext", showNext);
         mav.addObject("showPrevious", showPrevious);
 
@@ -235,8 +219,6 @@ public class UserController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
-        LOGGER.info("New user created with username: {}", userForm.getUsername());
-
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
         SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authenticationToken));
 
@@ -259,7 +241,6 @@ public class UserController {
 
         User user = userOptional.get();
         userService.createVerification(VerificationType.VERIFY_FORGOT_PASSWORD, user);
-        LOGGER.info("Password reset verification created for user with email: {}", email);
 
         return new ModelAndView("redirect:/user/login");
     }
@@ -288,7 +269,6 @@ public class UserController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
         userService.changePassword(userOptional.get().getId(), resetPasswordForm.getPassword());
-        LOGGER.info("Password reset for user with ID: {}", userId);
 
         String successMessage = messageSource.getMessage("success.user.change.password", null, LocaleContextHolder.getLocale());
         return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
@@ -298,7 +278,6 @@ public class UserController {
     public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser,
                                @PathVariable(name = "userId") long userId) {
         userService.createFollowing(loggedUser, userId);
-        LOGGER.info("User with ID {} started following user with ID {}", loggedUser.getId(), userId);
         return new ModelAndView("redirect:/user/" + userId);
     }
 
@@ -306,7 +285,6 @@ public class UserController {
     public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser,
                                  @PathVariable(name = "userId") long userId) {
         userService.undoFollowing(loggedUser, userId);
-        LOGGER.info("User with ID {} unfollowed user with ID {}", loggedUser.getId(), userId);
         return new ModelAndView("redirect:/user/" + userId);
     }
 
@@ -316,7 +294,6 @@ public class UserController {
         try {
             bytes = imageFile.getBytes();
         } catch (IOException e) {
-            LOGGER.debug("Error when reading input image: {}.", e.getMessage());
             bytes = null;
         }
         return bytes;

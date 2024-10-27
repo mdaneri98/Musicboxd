@@ -19,13 +19,13 @@ public class SongReview extends Review {
         // Constructor vacío necesario para JPA
     }
 
-    public SongReview(User user, Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
-        super(user, title, description, rating, createdAt, likes, isBlocked);
+    public SongReview(User user, Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.song = song;
     }
 
-    public SongReview(Long id, User user, Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked) {
-        super(id, user, title, description, rating, createdAt, likes, isBlocked);
+    public SongReview(Long id, User user,Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(id, user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.song = song;
     }
 

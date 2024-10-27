@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <title>404 Not Found</title>
+    <title>403</title>
 
     <style>
         /* 404.css */

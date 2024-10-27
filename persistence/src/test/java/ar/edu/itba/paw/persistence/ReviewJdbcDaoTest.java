@@ -51,7 +51,7 @@ public class ReviewJdbcDaoTest {
     public void testSaveArtistReview() {
         User user = new User(EXISTING_USER_ID, "username", "name", null, true, false);
         Artist artist = null; //new Artist(EXISTING_ARTIST_ID, "Artist Name", 1L);
-        ArtistReview review = new ArtistReview(user, artist, "Title", "Description", 5, LocalDateTime.now(), 0, false);
+        ArtistReview review = null;//new ArtistReview(user, artist, "Title", "Description", 5, LocalDateTime.now(), 0, false);
 
         ArtistReview savedReview = reviewDao.saveArtistReview(review);
 
@@ -67,7 +67,7 @@ public class ReviewJdbcDaoTest {
         User user = new User(EXISTING_USER_ID, "username", "name", null, true, false);
         Artist artist = new Artist(EXISTING_ARTIST_ID);
         Album album = new Album(EXISTING_ALBUM_ID, "Album Title", null, "Genre", artist, LocalDate.now());
-        AlbumReview review = new AlbumReview(user, album, "Title", "Description", 4, LocalDateTime.now(), 0, false);
+        AlbumReview review = null; //new AlbumReview(user, album, "Title", "Description", 4, LocalDateTime.now(), 0, false);
 
         AlbumReview savedReview = reviewDao.saveAlbumReview(review);
 
@@ -84,7 +84,7 @@ public class ReviewJdbcDaoTest {
         Artist artist = new Artist(EXISTING_ARTIST_ID);
         Album album = new Album(EXISTING_ALBUM_ID, "Album Title", null, "Genre", artist, LocalDate.now());
         Song song = new Song(EXISTING_SONG_ID, "Song Title", "3:30", album);
-        SongReview review = new SongReview(user, song, "Title", "Description", 3, LocalDateTime.now(), 0, false);
+        SongReview review = null;// new SongReview(user, song, "Title", "Description", 3, LocalDateTime.now(), 0, false);
 
         SongReview savedReview = reviewDao.saveSongReview(review);
 

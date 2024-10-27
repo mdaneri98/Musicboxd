@@ -245,6 +245,5 @@
             </ul>
         </c:if>
     </div>
-
-
+<jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
 </div>

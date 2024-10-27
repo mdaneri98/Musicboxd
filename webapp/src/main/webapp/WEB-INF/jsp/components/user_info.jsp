@@ -13,15 +13,17 @@
         <a href="${userUrl}"><h3><c:out value="${param.name}"/></h3></a>
         <p class="artist-bio"><c:out value="${param.bio}"/></p>
         <div class="user-stats">
-            <c:url var="followInfoUrl" value="/user/${param.id}/follow-info"/>
-            <a href="${followInfoUrl}">
-                <span class="stat-item">
-                    <strong><c:out value="${param.reviewAmount}"/></strong> <spring:message code="label.reviews" /></span>
-                <span class="stat-item">
-                    <strong><c:out value="${param.followersAmount}"/></strong> <spring:message code="label.followers" /></span>
-                <span class="stat-item">
-                    <strong><c:out value="${param.followingAmount}"/></strong> <spring:message code="label.following" /></span>
-            </a>
+            <c:url var="followersInfoUrl" value="/user/${param.id}/follow-info?page=followers"/>
+            <c:url var="followingInfoUrl" value="/user/${param.id}/follow-info?page=following"/>
+            <span class="stat-item">
+                <a href="${userUrl}"><strong><c:out value="${param.reviewAmount}"/></strong> <spring:message code="label.reviews" /></a>
+            </span>
+            <span class="stat-item">
+                <a href="${followersInfoUrl}"><strong><c:out value="${param.followersAmount}"/></strong> <spring:message code="label.followers" /></a>
+            </span>
+            <span class="stat-item">
+                <a href="${followingInfoUrl}"><strong><c:out value="${param.followingAmount}"/></strong> <spring:message code="label.following" /></a>
+            </span>
         </div>
     </div>
 </div>

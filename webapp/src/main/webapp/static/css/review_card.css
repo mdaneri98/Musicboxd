@@ -70,6 +70,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: white;
 }
 
 .review-content p {
@@ -78,7 +79,6 @@
     overflow: hidden;
     color: #c3c3c3;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
 }
 
@@ -116,7 +116,7 @@
 .review-actions a {
     color: #a7a7a7;
     text-decoration: none;
-    margin-left: 6px;
+    margin-left: 2px;
     font-size: 14px;
 }
 
@@ -141,6 +141,21 @@
 .separator{
     border-top: 1px solid #434343;
     margin-bottom: 10px;
+}
+
+.review-icon {
+    margin-left: 12px;
+}
+
+.review-timestamp {
+    font-size: 0.8rem;
+    color: #b3b3b3;
+    margin-left: 12px;
+}
+
+.name-and-date {
+    display: flex;
+    flex-direction: row;
 }
 
 @media (max-width: 768px) {

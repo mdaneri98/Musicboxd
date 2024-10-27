@@ -10,7 +10,7 @@
         <c:url var="userImgUrl" value="/images/${param.imgId}"/>
         <img src="${userImgUrl}" alt="${param.username}" class="user-card-image">
         <div class="user-card-info">
-            <h2 class="user-card-username"><c:out value="${param.username}"/></h2>
+            <h1 class="user-card-username"><c:out value="${param.username}"/></h1>
             <p class="user-card-name"><c:out value="${param.name}"/></p>
         </div>
     </div>

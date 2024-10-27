@@ -9,6 +9,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "cuser")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cuser_id_seq")
     @SequenceGenerator(sequenceName = "cuser_id_seq", name = "cuser_id_seq", allocationSize = 1)
@@ -53,6 +54,9 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
     private Image image;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comment> comments;
 
     @ManyToMany
     @JoinTable(

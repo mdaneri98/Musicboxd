@@ -1,11 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
-
 import java.util.List;
-import java.util.Optional;
 
 public interface SongDao extends CrudDao<Song> {
 
@@ -17,5 +14,6 @@ public interface SongDao extends CrudDao<Song> {
     boolean updateRating(long songId, float newRating, int newRatingAmount);
     boolean hasUserReviewed(long userId, long songId);
 
+    boolean deleteReviewsFromSong(long songId);
 }
 
