@@ -123,7 +123,7 @@
             <div class="cards-container">
                 <c:forEach var="review" items="${reviews}">
                     <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
-                        <jsp:param name="item_img_id" value="${review.image.id}"/>
+                        <jsp:param name="item_img_id" value="${review.itemImage.id}"/>
                         <jsp:param name="item_name" value="${review.itemName}"/>
                         <jsp:param name="item_url" value="/${review.itemLink}"/>
                         <jsp:param name="item_type" value="${review.itemType}"/>
