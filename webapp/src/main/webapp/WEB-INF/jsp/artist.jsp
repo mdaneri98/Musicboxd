@@ -29,7 +29,7 @@
         </c:if>
     </div>
     <div class="info-container">
-        <c:url var="artistImgURL" value="/images/${artist.imgId}"/>
+        <c:url var="artistImgURL" value="/images/${artist.image.id}"/>
         <img src="${artistImgURL}" alt="Artist Name" class="primary-image">
         <div class="data-container">
             <p class="type"><spring:message code="label.artist"/>
@@ -82,7 +82,7 @@
                     <div class="item">
                         <a href="${albumUrl}" class="album">
                             <div class="album-image-container">
-                                <c:url var="albumImgURL" value="/images/${album.imgId}"/>
+                                <c:url var="albumImgURL" value="/images/${album.image.id}"/>
                                 <img src="${albumImgURL}" alt="Album ${status.index + 1}">
                                 <div class="album-rating">
                                     <fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/>
@@ -123,7 +123,7 @@
     <div class="cards-container">
         <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
-                <jsp:param name="item_img_id" value="${review.artist.imgId}"/>
+                <jsp:param name="item_img_id" value="${review.artist.image.id}"/>
                 <jsp:param name="item_name" value="${review.artist.name}"/>
                 <jsp:param name="item_url" value="/artist/${review.artist.id}"/>
                 <jsp:param name="item_type" value="Artist"/>

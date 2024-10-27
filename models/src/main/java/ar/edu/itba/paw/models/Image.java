@@ -7,16 +7,20 @@ import javax.persistence.*;
 public class Image {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "images_image_id_seq")
+    @SequenceGenerator(sequenceName = "images_image_id_seq", name = "images_image_id_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "content", columnDefinition = "bytea", nullable = false)
-    //@Lob
+    @Column(name = "content", nullable = false)
     private byte[] bytes;
 
     public Image() {
         // Constructor vacío necesario para JPA
+    }
+
+    public Image(byte[] bytes) {
+        this.bytes = bytes;
     }
 
     public Image(Long id, byte[] bytes) {

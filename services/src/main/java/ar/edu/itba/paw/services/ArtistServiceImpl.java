@@ -96,7 +96,7 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     @Transactional
     public Artist create(ArtistDTO artistDTO) {
-        Image image = imageService.create(new Image(0L, artistDTO.getImage()));
+        Image image = imageService.create(artistDTO.getImage());
         Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(), image);
 
         artist.setCreatedAt(LocalDate.now());

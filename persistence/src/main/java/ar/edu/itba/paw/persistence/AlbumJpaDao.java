@@ -64,9 +64,7 @@ public class AlbumJpaDao implements AlbumDao {
     @Override
     @Transactional
     public Album create(Album album) {
-        // Persistir una nueva entidad
         entityManager.persist(album);
-        entityManager.flush(); // Garantizar que la entidad se guarde y el ID se genere
         return album;
     }
 
@@ -95,7 +93,7 @@ public class AlbumJpaDao implements AlbumDao {
     public boolean hasUserReviewed(long userId, long albumId) {
         // Comprobar si un usuario ha revisado un álbum
         TypedQuery<Long> query = entityManager.createQuery(
-                "SELECT COUNT(ar) FROM AlbumReview ar JOIN ar.review r WHERE r.user.id = :userId AND ar.album.id = :albumId",
+                "SELECT COUNT(ar) FROM AlbumReview ar WHERE ar.user.id = :userId AND ar.album.id = :albumId",
                 Long.class
         );
         query.setParameter("userId", userId);

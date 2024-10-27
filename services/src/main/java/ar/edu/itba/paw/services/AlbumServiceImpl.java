@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,8 +87,12 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     @Transactional
     public Album create(AlbumDTO albumDTO, long artistId) {
-        Image image = imageService.create(new Image(0L, albumDTO.getImage()));
-        Album album = new Album(0L, albumDTO.getTitle(), image, albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate());
+        Image image = imageService.create(albumDTO.getImage());
+        Album album = new Album(albumDTO.getTitle(), image, albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate());
+        album.setCreatedAt(LocalDate.now());
+        album.setUpdatedAt(LocalDate.now());
+        album.setRatingCount(0);
+        album.setAvgRating(0f);
 
         album = albumDao.create(album);
 

@@ -9,7 +9,7 @@ public interface ImageService {
 
     Optional<Image> findById(long imageId);
 
-    Image create(Image image);
+    Image create(byte[] bytes);
 
     Optional<Image> update(Image image);
 
