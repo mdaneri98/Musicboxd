@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
@@ -30,6 +31,7 @@ public interface ReviewDao extends CrudDao<Review> {
 
 
     // Métodos para likes
+    List<User> likedBy(int page, int pageSize);
     void createLike(long userId, long reviewId);
     void deleteLike(long userId, long reviewId);
     void incrementLikes(long reviewId);

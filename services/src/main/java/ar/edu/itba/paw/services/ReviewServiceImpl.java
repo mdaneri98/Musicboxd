@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
@@ -12,6 +9,7 @@ import ar.edu.itba.paw.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.MethodNotAllowedException;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,19 +53,19 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Review> find(long id) {
-        return Optional.empty();
+        return reviewDao.find(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Review> findAll() {
-        return null;
+        throw new RuntimeException("Method not allowed");
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Review> findPaginated(FilterType filterType, int page, int pageSize) {
-        return null;
+        return reviewDao.findPaginated(filterType, page, pageSize);
     }
 
     @Override
@@ -106,6 +104,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public List<User> likedBy(int page, int pageSize) {
+        return reviewDao.likedBy(page, pageSize);
+    }
+
+    @Override
     @Transactional
     public boolean deleteReview(Review review, long userId) {
         boolean res = delete(review.getId());
@@ -114,8 +117,6 @@ public class ReviewServiceImpl implements ReviewService {
         }
         return res;
     }
-
-
 
     @Override
     @Transactional

@@ -124,6 +124,17 @@ public abstract class Review {
         this.title = title;
     }
 
+    public Boolean getBlocked() {
+        return isBlocked;
+    }
+
+    /*
+    -> No debe accederse, puede haber muchos usuarios.
+    public List<User> getLikedBy() {
+        return likedBy;
+    }
+     */
+
     public String getDescription() {
         return description;
     }
