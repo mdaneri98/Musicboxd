@@ -45,7 +45,7 @@
 
   <header>
     <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
-      <jsp:param name="imgId" value="${user.imgId}" />
+      <jsp:param name="imgId" value="${user.image.id}" />
       <jsp:param name="username" value="${user.username}" />
       <jsp:param name="name" value="${user.name}" />
       <jsp:param name="bio" value="${user.bio}" />
