@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,10 +129,10 @@ public class ArtistServiceImpl implements ArtistService {
         Image image = imageService.create(artistDTO.getImage());
         Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(), image);
 
-        artist.setCreatedAt(LocalDate.now());
-        artist.setUpdatedAt(LocalDate.now());
+        artist.setCreatedAt(LocalDateTime.now());
+        artist.setUpdatedAt(LocalDateTime.now());
         artist.setRatingCount(0);
-        artist.setAvgRating(0f);
+        artist.setAvgRating(0d);
         artist = artistDao.create(artist);
         LOGGER.info("Artist created successfully with ID: {}", artist.getId());
 

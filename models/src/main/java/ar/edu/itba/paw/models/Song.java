@@ -2,6 +2,7 @@ package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,10 +25,10 @@ public class Song {
     private Integer trackNumber;
 
     @Column(name = "created_at")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
@@ -37,7 +38,7 @@ public class Song {
     private Integer ratingCount;
 
     @Column(name = "avg_rating", nullable = false)
-    private Float avgRating;
+    private Double avgRating;
 
     @ManyToMany
     @JoinTable(
@@ -51,7 +52,7 @@ public class Song {
         // Constructor vacío necesario para JPA
     }
 
-    public Song(Long id, String title, String duration, Integer trackNumber, LocalDate createdAt, LocalDate updatedAt, Album album, Integer ratingCount, Float avgRating) {
+    public Song(Long id, String title, String duration, Integer trackNumber, LocalDateTime createdAt, LocalDateTime updatedAt, Album album, Integer ratingCount, Double avgRating) {
         this.id = id;
         this.title = title;
         this.duration = duration;
@@ -122,19 +123,19 @@ public class Song {
         this.trackNumber = trackNumber;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDate getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -142,11 +143,11 @@ public class Song {
         return album;
     }
 
-    public Float getAvgRating() {
+    public Double getAvgRating() {
         return avgRating;
     }
 
-    public void setAvgRating(Float avgRating) {
+    public void setAvgRating(Double avgRating) {
         this.avgRating = avgRating;
     }
 

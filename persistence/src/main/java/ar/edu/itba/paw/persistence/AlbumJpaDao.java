@@ -4,8 +4,6 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -76,7 +74,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public boolean updateRating(long albumId, float newRating, int newRatingAmount) {
+    public boolean updateRating(long albumId, double newRating, int newRatingAmount) {
         // Actualizar la calificación del álbum
         Album album = entityManager.find(Album.class, albumId);
         if (album != null) {

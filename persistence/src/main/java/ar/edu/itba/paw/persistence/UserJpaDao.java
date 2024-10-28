@@ -263,7 +263,7 @@ public class UserJpaDao implements UserDao {
         Album album = em.find(Album.class, albumId);
         if (user == null || album == null)
             return false;
-        return user.getFavoriteArtists().remove(album);
+        return user.getFavoriteAlbums().remove(album);
     }
 
     @Override
