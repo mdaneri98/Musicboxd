@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <style>
     .rating-component {
         background-color: #121212;
@@ -69,7 +70,7 @@
         </div>
         <div class="rating-item">
             <div class="rating-number">
-                <span class="rating-star">&#9733;</span>${param.averageRating}<span class="rating-fraction">/ 5</span>
+                <span class="rating-star">&#9733;</span><fmt:formatNumber value="${param.averageRating}" type="number" maxFractionDigits="2"/><span class="rating-fraction">/ 5</span>
             </div>
             <div class="rating-text"><spring:message code="label.avg.rating" /></div>
         </div>
