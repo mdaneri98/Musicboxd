@@ -367,12 +367,19 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public void updateCommentAmount(long reviewId) {
-        Query query = em.createQuery(
-                "SELECT COUNT(u) FROM Review r JOIN r.likedBy u WHERE r.id = :reviewId AND u.id = :userId"
+        Query countQuery = em.createQuery(
+                "SELECT COUNT(c) FROM Comment c WHERE c.review.id = :reviewId"
         );
-        query.setParameter("reviewId", reviewId);
+        countQuery.setParameter("reviewId", reviewId);
 
-        Long count = (Long) query.getSingleResult();
+        Long count = (Long) countQuery.getSingleResult();
+
+        Query updateQuery = em.createQuery(
+                "UPDATE Review r SET r.commentAmount = :count WHERE r.id = :reviewId"
+        );
+        updateQuery.setParameter("count", count.intValue());
+        updateQuery.setParameter("reviewId", reviewId);
+        updateQuery.executeUpdate();
     }
 
     /* // === JDBC IMPL ===
