@@ -174,7 +174,7 @@ public class UserController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
-        // Obtener la información de seguidores y seguidos de manera paginada
+        // FIXME: Get list paginated
         List<User> followingList = userOptional.get().getFollowing();
         List<User> followersList = userOptional.get().getFollowers();
 

@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import org.springframework.stereotype.Service;
@@ -101,6 +98,10 @@ public class AlbumServiceImpl implements AlbumService {
             return false;
         }
         LOGGER.info("Deleting album: {} (ID: {})", album.getTitle(), album.getId());
+        albumDao.deleteReviewsFromAlbum(album.getId());
+        for (Song song : album.getSongs()) {
+            songService.deleteReviewsFromSong(song.getId());
+        }
         imageService.delete(album.getImage().getId());
         boolean deleted = albumDao.delete(album.getId());
         if (deleted) {

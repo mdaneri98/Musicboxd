@@ -265,6 +265,7 @@ public class ReviewJpaDao implements ReviewDao {
         final TypedQuery<Review> query = em.createQuery(
                 "SELECT r FROM Review r " +
                 "WHERE r.isBlocked = false " +
+                "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
                 "ORDER BY r.likes DESC, r.createdAt DESC",
                 Review.class
         );
@@ -281,6 +282,7 @@ public class ReviewJpaDao implements ReviewDao {
                         "JOIN Review r ON r.user = f " +
                         "WHERE u.id = :userId " +
                         "AND r.isBlocked = false " +
+                        "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
                         "ORDER BY r.createdAt DESC",
                 Review.class
         );
