@@ -46,6 +46,7 @@
         <c:url var="followingUrl" value="/home?pageNum=1&page=following"/>
         <a href="${followingUrl}"><span class="tab-button"><spring:message code="home.following"/></span></a>
         </div>
+        <h2><spring:message code="label.popular.reviews" /></h2>
     </c:if>
     <c:if test="${followingActive}">
         <div class="toggle">
@@ -54,9 +55,9 @@
         <span>/</span>
             <span class="tab-button active"><spring:message code="home.following"/></span>
         </div>
+        <h2><spring:message code="label.following.reviews" /></h2>
     </c:if>
-    <div id="forYouTab">
-        <h2><spring:message code="label.popular.reviews" /></h2>
+
         <c:if test="${reviews.size() == 0}">
             <div class="page-empty">
                 <h3><spring:message code="home.page.empty"/></h3>
@@ -87,7 +88,6 @@
                 </jsp:include>
             </c:forEach>
         </div>
-    </div>
 
     <div class="pages">
         <c:url value="/home?pageNum=${pageNum + 1}&page=${forYouActive ? 'forYou' : 'following'}" var="nextPage" />

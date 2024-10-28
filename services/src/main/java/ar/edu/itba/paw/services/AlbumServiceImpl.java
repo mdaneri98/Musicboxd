@@ -192,7 +192,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional
-    public boolean updateRating(long albumId, float newRating, int newRatingAmount) {
+    public boolean updateRating(long albumId, Double newRating, int newRatingAmount) {
         LOGGER.info("Updating rating for album ID: {} to {} with {} ratings", albumId, newRating, newRatingAmount);
         boolean updated = albumDao.updateRating(albumId, newRating, newRatingAmount);
         if (updated) {

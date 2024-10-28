@@ -70,7 +70,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public boolean updateRating(long artistId, float newRating, int newRatingAmount) {
+    public boolean updateRating(long artistId, Double newRating, int newRatingAmount) {
         String jpql = "UPDATE Artist a SET a.avgRating = :avgRating, a.ratingCount = :ratingCount WHERE a.id = :id";
         int updatedCount = entityManager.createQuery(jpql)
                 .setParameter("avgRating", newRating)

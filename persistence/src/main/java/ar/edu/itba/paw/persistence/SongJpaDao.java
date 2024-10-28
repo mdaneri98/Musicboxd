@@ -100,7 +100,7 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public boolean updateRating(long songId, double newRating, int newRatingAmount) {
+    public boolean updateRating(long songId, Double newRating, int newRatingAmount) {
         Optional<Song> maybeSong = find(songId);
         if (maybeSong.isPresent()) {
             Song song = maybeSong.get();

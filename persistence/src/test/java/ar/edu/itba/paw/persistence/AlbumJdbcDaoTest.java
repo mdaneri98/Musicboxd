@@ -54,7 +54,7 @@ public class AlbumJdbcDaoTest {
     private static final String NEW_ALBUM_TITLE = "DummyX";
     private static final String NEW_ALBUM_GENRE = "DummyX";
     private static final LocalDate NEW_ALBUM_RELEASE_DATE = LocalDate.parse("2015-11-15");
-    private static final float NEW_ALBUM_AVG_RATING = 3.4F;
+    private static final Double NEW_ALBUM_AVG_RATING = 3.4;
     private static final int NEW_ALBUM_RATING_AMOUNT = 15;
 
     
