@@ -178,13 +178,18 @@ public class UserController {
         List<User> followingList = userOptional.get().getFollowing();
         List<User> followersList = userOptional.get().getFollowers();
 
-        List<User> userList = null;
-        if (followersActive) userList = followersList;
-        if (followingActive) userList = followingList;
-
-        // Determinar si mostrar botones "Next" y "Previous"
-        boolean showNext = followingList.size() == pageSize || followersList.size() == pageSize;
         boolean showPrevious = pageNum > 1;
+        Boolean showNext = null;
+        List<User> userList = null;
+        if (followersActive){
+            userList = followersList;
+            showNext = followersList.size() == pageSize;
+        }
+        if (followingActive) {
+            userList = followingList;
+            showNext = followingList.size() == pageSize;
+        }
+
 
         mav.addObject("user", userOptional.get());
         mav.addObject("userList", userList);

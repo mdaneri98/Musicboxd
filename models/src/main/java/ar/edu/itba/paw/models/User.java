@@ -514,12 +514,12 @@ public class User {
         json.append("\"bio\":\"").append(bio).append("\",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
         json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"verified\":").append(verified).append(",");
-        json.append("\"moderator\":").append(moderator).append(",");
-        json.append("\"followersAmount\":").append(followersAmount).append(",");
-        json.append("\"followingAmount\":").append(followingAmount).append(",");
-        json.append("\"reviewAmount\":").append(reviewAmount).append(",");
-        json.append("\"image\":").append(image);
+        json.append("\"verified\":\"").append(verified).append("\",");
+        json.append("\"moderator\":\"").append(moderator).append("\",");
+        json.append("\"followersAmount\":\"").append(followersAmount).append("\",");
+        json.append("\"followingAmount\":\"").append(followingAmount).append("\",");
+        json.append("\"reviewAmount\":\"").append(reviewAmount).append("\",");
+        json.append("\"imgId\":\"").append(getImage().getId()).append("\"");
         json.append("}");
         return json.toString();
     }

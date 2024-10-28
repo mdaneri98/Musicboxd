@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -182,7 +181,7 @@ public class Song {
         json.append("\"trackNumber\":").append(trackNumber).append(",");
         json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
         json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"imgId\":").append(album != null ? album.getImage().getId() : null).append(",");
+        json.append("\"imgId\":\"").append(getAlbum().getImage().getId()).append("\",");
 
         // Convertir el álbum a JSON si no es nulo
         json.append("\"album\":").append(album != null ? album.toJson() : null);
