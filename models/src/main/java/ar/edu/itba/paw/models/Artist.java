@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,10 +21,10 @@ public class Artist {
     private String bio;
 
     @Column(name = "created_at")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
@@ -34,7 +34,7 @@ public class Artist {
     private Integer ratingCount;
 
     @Column(name = "avg_rating", nullable = false)
-    private Float avgRating;
+    private Double avgRating;
 
     @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Album> albums = new ArrayList<>();
@@ -46,7 +46,7 @@ public class Artist {
         // Constructor vacío necesario para JPA
     }
 
-    public Artist(Long id, String name, String bio, LocalDate createdAt, LocalDate updatedAt, Image image, Integer ratingCount, Float avgRating) {
+    public Artist(Long id, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, Image image, Integer ratingCount, Double avgRating) {
         this.id = id;
         this.name = name;
         this.bio = bio;
@@ -57,7 +57,7 @@ public class Artist {
         this.avgRating = avgRating;
     }
 
-    public Artist(Long id, String name, String bio, Image image, Integer ratingCount, Float avgRating) {
+    public Artist(Long id, String name, String bio, Image image, Integer ratingCount, Double avgRating) {
         this.id = id;
         this.name = name;
         this.bio = bio;
@@ -126,19 +126,19 @@ public class Artist {
         this.bio = bio;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDate getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -158,11 +158,11 @@ public class Artist {
         this.ratingCount = ratingCount;
     }
 
-    public Float getAvgRating() {
+    public Double getAvgRating() {
         return avgRating;
     }
 
-    public void setAvgRating(Float avgRating) {
+    public void setAvgRating(Double avgRating) {
         this.avgRating = avgRating;
     }
 

@@ -13,10 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Component
 public class TimeUtils {
 
-    @Autowired
     private static MessageSource messageSource;
 
     private TimeUtils() {}
+
+    @Autowired
+    public void setMessageSource(MessageSource messageSource) {
+        TimeUtils.messageSource = messageSource;
+    }
 
     public static String formatTimeAgo(LocalDateTime dateTime) {
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());

@@ -62,7 +62,7 @@ public class User {
     @JoinTable(
             name = "follower",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "following_id")
+            inverseJoinColumns = @JoinColumn(name = "following")
     )
     private List<User> following;
 

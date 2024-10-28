@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,10 +96,10 @@ public class SongServiceImpl implements SongService {
     public Song create(SongDTO songDTO, Album album) {
         LOGGER.info("Creating new song from DTO: {}", songDTO.getTitle());
         Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
-        song.setCreatedAt(LocalDate.now());
-        song.setUpdatedAt(LocalDate.now());
+        song.setCreatedAt(LocalDateTime.now());
+        song.setUpdatedAt(LocalDateTime.now());
         song.setRatingCount(0);
-        song.setAvgRating(0f);
+        song.setAvgRating(0d);
         songDao.saveSongArtist(song, song.getAlbum().getArtist());
         LOGGER.info("Song created successfully with ID: {}", song.getId());
         return song;

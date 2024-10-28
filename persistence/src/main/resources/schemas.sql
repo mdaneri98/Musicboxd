@@ -90,30 +90,27 @@ CREATE TABLE IF NOT EXISTS review (
 );
 
 CREATE TABLE IF NOT EXISTS artist_review (
-    review_id INT NOT NULL,
+    review_id INT NOT NULL PRIMARY KEY,
     artist_id INT NOT NULL,
 
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE,
-    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE,
-    PRIMARY KEY (review_id, artist_id)
+    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS album_review (
-    review_id INT NOT NULL,
+    review_id INT NOT NULL PRIMARY KEY,
     album_id INT NOT NULL,
 
     FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE CASCADE,
-    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE,
-    PRIMARY KEY (review_id, album_id)
+    FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS song_review (
-   review_id INT NOT NULL,
+   review_id INT NOT NULL PRIMARY KEY,
    song_id INT NOT NULL,
 
    FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE,
-   FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE,
-   PRIMARY KEY (review_id, song_id)
+   FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS verification (

@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,10 +117,10 @@ public class AlbumServiceImpl implements AlbumService {
         LOGGER.info("Creating new album from DTO: {} for artist ID: {}", albumDTO.getTitle(), artistId);
         Image image = imageService.create(albumDTO.getImage());
         Album album = new Album(albumDTO.getTitle(), image, albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate());
-        album.setCreatedAt(LocalDate.now());
-        album.setUpdatedAt(LocalDate.now());
+        album.setCreatedAt(LocalDateTime.now());
+        album.setUpdatedAt(LocalDateTime.now());
         album.setRatingCount(0);
-        album.setAvgRating(0f);
+        album.setAvgRating(0d);
 
         album = albumDao.create(album);
         LOGGER.info("Album created successfully with ID: {}", album.getId());

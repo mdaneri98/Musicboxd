@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "album_review")
+@PrimaryKeyJoinColumn(name = "review_id")
 public class AlbumReview extends Review {
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -6,7 +6,6 @@ import ar.edu.itba.paw.models.Song;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -101,7 +100,7 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public boolean updateRating(long songId, float newRating, int newRatingAmount) {
+    public boolean updateRating(long songId, double newRating, int newRatingAmount) {
         Optional<Song> maybeSong = find(songId);
         if (maybeSong.isPresent()) {
             Song song = maybeSong.get();
@@ -115,7 +114,7 @@ public class SongJpaDao implements SongDao {
 
     @Override
     public boolean hasUserReviewed(long userId, long songId) {
-        String query = "SELECT COUNT(r) FROM SongReview sr WHERE r.user.id = :userId AND sr.song.id = :songId";
+        String query = "SELECT COUNT(sr) FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId";
         Long count = em.createQuery(query, Long.class)
                 .setParameter("userId", userId)
                 .setParameter("songId", songId)
