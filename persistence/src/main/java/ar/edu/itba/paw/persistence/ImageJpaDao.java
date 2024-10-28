@@ -19,7 +19,7 @@ public class ImageJpaDao implements ImageDao {
     @Override
     public Optional<Image> findById(long imageId) {
         return Optional.ofNullable(em.find(Image.class, imageId));
-    }
+    } 
 
     @Override
     public Image create(Image image) {

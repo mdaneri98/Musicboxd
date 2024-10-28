@@ -161,7 +161,7 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public void createLike(long userId, long reviewId) {
-        em.createNativeQuery("INSERT INTO review_likes (user_id, review_id) VALUES (:userId, :reviewId)")
+        em.createNativeQuery("INSERT INTO review_like (user_id, review_id) VALUES (:userId, :reviewId)")
                 .setParameter("userId", userId)
                 .setParameter("reviewId", reviewId)
                 .executeUpdate();
@@ -169,7 +169,7 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public void deleteLike(long userId, long reviewId) {
-        em.createNativeQuery("DELETE FROM review_likes WHERE user_id = :userId AND review_id = :reviewId")
+        em.createNativeQuery("DELETE FROM review_like WHERE user_id = :userId AND review_id = :reviewId")
                 .setParameter("userId", userId)
                 .setParameter("reviewId", reviewId)
                 .executeUpdate();
@@ -265,7 +265,6 @@ public class ReviewJpaDao implements ReviewDao {
         final TypedQuery<Review> query = em.createQuery(
                 "SELECT r FROM Review r " +
                 "WHERE r.isBlocked = false " +
-                "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
                 "ORDER BY r.likes DESC, r.createdAt DESC",
                 Review.class
         );
@@ -349,21 +348,8 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public List<Review> findPaginated(FilterType filterType, int limit, int offset) {
-        String queryStr = "FROM Review r WHERE r.isBlocked = false ";
-
-        switch (filterType) {
-            case FilterType.NEWEST:
-                queryStr += "ORDER BY r.createdAt DESC";
-                break;
-            case FilterType.LIKES:
-                queryStr += "ORDER BY r.likes DESC, r.createdAt DESC";
-                break;
-            case FilterType.POPULAR:
-                queryStr += "ORDER BY r.likes DESC, r.createdAt DESC";
-                break;
-            default:
-                queryStr += "ORDER BY r.createdAt DESC";
-        }
+        String queryStr = "FROM Review WHERE isBlocked = false ";
+        queryStr += filterType.getFilter();
 
         final TypedQuery<Review> query = em.createQuery(queryStr, Review.class);
         query.setFirstResult(offset);
