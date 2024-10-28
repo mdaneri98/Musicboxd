@@ -30,7 +30,7 @@ public class Song {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "album_id")
+    @JoinColumn(name = "album_id", nullable = false)
     private Album album;
 
     @Column(name = "rating_amount", nullable = false)

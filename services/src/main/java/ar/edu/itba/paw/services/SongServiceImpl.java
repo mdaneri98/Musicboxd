@@ -92,6 +92,11 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    public boolean deleteReviewsFromSong(long id){
+        return songDao.deleteReviewsFromSong(id);
+    }
+
+    @Override
     @Transactional
     public Song create(SongDTO songDTO, Album album) {
         LOGGER.info("Creating new song from DTO: {}", songDTO.getTitle());

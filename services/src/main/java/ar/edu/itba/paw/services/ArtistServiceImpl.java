@@ -87,14 +87,11 @@ public class ArtistServiceImpl implements ArtistService {
 
         // Delete Images
         List<Album> list = albumService.findByArtistId(id);
-        list.forEach(album -> {
-            LOGGER.info("Deleting image for album: {} (ID: {})", album.getTitle(), album.getId());
-            imageService.delete(album.getImage().getId());
-        });
+        list.forEach(album -> albumService.delete(album));
         LOGGER.info("Deleting image for artist: {} (ID: {})", artist.get().getName(), id);
-        imageService.delete(artist.get().getImage().getId());
 
         artistDao.deleteReviewsFromArtist(id);
+        imageService.delete(artist.get().getImage().getId());
         boolean deleted = artistDao.delete(id);
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);
