@@ -29,7 +29,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final UserService userService;
-    private final TimeUtils timeUtils;
 
     @Autowired
         public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, MessageSource messageSource) {
@@ -38,7 +37,6 @@ public class ReviewServiceImpl implements ReviewService {
         this.artistService = artistService;
         this.albumService = albumService;
         this.userService = userService;
-        this.timeUtils = new TimeUtils(messageSource);
     }
 
     @Override
@@ -176,7 +174,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public ArtistReview findArtistReviewById(long id, long loggedUserId) {
         ArtistReview review = reviewDao.findArtistReviewById(id).get();
-        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
         review.setLiked(isLiked(loggedUserId, review.getId()));
         return review;
     }
@@ -214,7 +212,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public AlbumReview findAlbumReviewById(long id, long loggedUserId) {
         AlbumReview review = reviewDao.findAlbumReviewById(id).get();
-        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
         review.setLiked(isLiked(loggedUserId, review.getId()));
         return review;
     }
@@ -225,7 +223,7 @@ public class ReviewServiceImpl implements ReviewService {
         Optional<ArtistReview> reviewOptional = reviewDao.findArtistReviewByUserId(userId, artistId);
         if (reviewOptional.isPresent()) {
             Review review = reviewOptional.get();
-            review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+            review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
             review.setLiked(isLiked(loggedUserId, review.getId()));
         }
         return reviewOptional;
@@ -237,7 +235,7 @@ public class ReviewServiceImpl implements ReviewService {
         Optional<AlbumReview> reviewOptional = reviewDao.findAlbumReviewByUserId(userId, albumId);
         if (reviewOptional.isPresent()) {
             Review review = reviewOptional.get();
-            review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+            review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
             review.setLiked(isLiked(loggedUserId, review.getId()));
         }
         return reviewOptional;
@@ -249,7 +247,7 @@ public class ReviewServiceImpl implements ReviewService {
         Optional<SongReview> reviewOptional = reviewDao.findSongReviewByUserId(userId, songId);
         if (reviewOptional.isPresent()) {
             Review review = reviewOptional.get();
-            review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+            review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
             review.setLiked(isLiked(loggedUserId, review.getId()));
         }
         return reviewOptional;
@@ -288,7 +286,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public SongReview findSongReviewById(long id, long loggedUserId) {
         SongReview review = reviewDao.findSongReviewById(id).get();
-        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
         review.setLiked(isLiked(loggedUserId, review.getId()));
         return review;
     }
@@ -445,7 +443,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private <T extends Review> void setTimeAgo(List<T> reviews) {
         for (T review : reviews) {
-            review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+            review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
         }
     }
 

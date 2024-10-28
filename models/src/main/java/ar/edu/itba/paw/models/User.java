@@ -60,7 +60,7 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-            name = "relationship",
+            name = "follower",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "following_id")
     )

@@ -43,7 +43,7 @@ public abstract class Review {
     @Column(name = "isblocked")
     private Boolean isBlocked;
 
-    @Column(name = "commentAmount")
+    @Column(name = "comment_amount")
     private Integer commentAmount;
 
     @Transient
@@ -54,7 +54,7 @@ public abstract class Review {
 
     @ManyToMany
     @JoinTable(
-            name = "review_likes",
+            name = "review_like",
             joinColumns = @JoinColumn(name = "review_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
