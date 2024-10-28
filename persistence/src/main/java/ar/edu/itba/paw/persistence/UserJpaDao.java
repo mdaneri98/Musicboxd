@@ -91,21 +91,11 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("SELECT * FROM cuser WHERE :username ILIKE ?");
-        nativeQuery.setParameter("username", "%" + sub + "%");
-        nativeQuery.setMaxResults(pageSize);
-        nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
-
-        final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> (Long)((Number)n).longValue()).collect(Collectors.toList());
-
-        // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
-        if (idList.isEmpty())
-            return Collections.emptyList();
-
-        final TypedQuery<User> query = em.createQuery("FROM User WHERE id IN :ids", User.class);
-        query.setParameter("ids", idList);
-
+        String jpql = "FROM User u WHERE LOWER(u.username) LIKE LOWER(:substring)";
+        TypedQuery<User> query = em.createQuery(jpql, User.class)
+                .setParameter("substring", "%" + sub + "%")
+                .setMaxResults(pageSize)
+                .setFirstResult((pageNumber - 1) * pageSize);
         return query.getResultList();
     }
 
@@ -126,7 +116,8 @@ public class UserJpaDao implements UserDao {
         if (user != null && userToFollow != null) {
             if (!user.getFollowing().contains(userToFollow)) {
                 user.getFollowing().add(userToFollow);
-                //em.merge(user); // Al ser usuarios ya gestionados, no es necesario.
+                user.setFollowingAmount(user.getFollowingAmount() + 1);
+                userToFollow.setFollowersAmount(userToFollow.getFollowersAmount() + 1);
                 return 1;
             }
         }
@@ -140,7 +131,11 @@ public class UserJpaDao implements UserDao {
 
         if (user != null && userToFollow != null) {
             if (user.getFollowing().contains(userToFollow)) {
-                return user.getFollowing().remove(userToFollow) ? 1 : 0;
+                if (user.getFollowing().remove(userToFollow)) {
+                    user.setFollowingAmount(user.getFollowingAmount() - 1);
+                    userToFollow.setFollowersAmount(userToFollow.getFollowersAmount() - 1);
+                    return 1;
+                }
             }
         }
         return 0;
@@ -154,7 +149,7 @@ public class UserJpaDao implements UserDao {
         if (user == null || userToFollow == null)
             return false;
 
-        return userToFollow.getFollowing().contains(userToFollow);
+        return user.getFollowing().contains(userToFollow);
     }
 
     @Override

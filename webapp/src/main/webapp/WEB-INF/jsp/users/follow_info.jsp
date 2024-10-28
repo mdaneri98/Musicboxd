@@ -49,7 +49,7 @@
   <div class="user-cards-grid">
     <c:forEach var="user_item" items="${userList}">
       <jsp:include page="/WEB-INF/jsp/components/user_card.jsp">
-        <jsp:param name="imgId" value="${user_item.imgId}"/>
+        <jsp:param name="imgId" value="${user_item.image.id}"/>
         <jsp:param name="username" value="@${user_item.username}"/>
         <jsp:param name="name" value="${user_item.name}"/>
         <jsp:param name="bio" value="${user_item.bio}"/>
