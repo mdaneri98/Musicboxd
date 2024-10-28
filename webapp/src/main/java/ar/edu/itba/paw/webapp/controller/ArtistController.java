@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.context.MessageSource;
@@ -71,7 +72,7 @@ public class ArtistController {
         List<Song> songs = songService.findByArtistId(artistId);
         List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(artistId,pageNum,5, loggedUser.getId());
         boolean isReviewed = reviewService.hasUserReviewedArtist(loggedUser.getId(), artistId);
-        Integer loggedUserRating = isReviewed ? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()).getRating() : 0;
+        Integer loggedUserRating = isReviewed ? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()).get().getRating() : 0;
         boolean showNext = reviews.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
@@ -92,7 +93,7 @@ public class ArtistController {
 
     @RequestMapping(value = "/{artistId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long artistId) {
-        if (reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()) != null)
+        if (reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()).isPresent())
             return new ModelAndView("redirect:/artist/" + artistId);
 
         Optional<Artist> artistOptional = artistService.find(artistId);
@@ -105,17 +106,16 @@ public class ArtistController {
         mav.addObject("artist", artist);
         mav.addObject("edit", false);
 
-
         return mav;
     }
 
     @RequestMapping(value = "/{artistId:\\d+}/edit-review", method = RequestMethod.GET)
     public ModelAndView editAlbumReview(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long artistId) {
-        if (reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()) == null)
+        Optional<ArtistReview> reviewOptional = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
+        if (reviewOptional.isEmpty())
             return createForm(loggedUser, reviewForm, artistId);
 
-        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
-
+        ArtistReview review = reviewOptional.get();
         reviewForm.setTitle(review.getTitle());
         reviewForm.setDescription(review.getDescription());
         reviewForm.setRating(review.getRating());
@@ -125,7 +125,6 @@ public class ArtistController {
         mav.addObject("reviewForm", reviewForm);
         mav.addObject("edit", true);
 
-
         return mav;
     }
 
@@ -134,8 +133,12 @@ public class ArtistController {
         if (errors.hasErrors()) {
             return createForm(loggedUser, reviewForm, artistId);
         }
-        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
 
+        Optional<ArtistReview> reviewOptional = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
+        if (reviewOptional.isEmpty())
+            return createForm(loggedUser, reviewForm, artistId);
+
+        ArtistReview review = reviewOptional.get();
         ArtistReview artistReview = new ArtistReview(
                 review.getId(),
                 new Artist(artistId),
@@ -174,8 +177,8 @@ public class ArtistController {
 
     @RequestMapping(value = "/{artistId:\\d+}/delete-review", method = RequestMethod.GET)
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
-        ArtistReview review = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
-        reviewService.deleteReview(review, loggedUser.getId());
+        Optional<ArtistReview> reviewOptional = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
+        reviewService.deleteReview(reviewOptional.get(), loggedUser.getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 
@@ -191,6 +194,6 @@ public class ArtistController {
     @RequestMapping(value = "/{artistId:\\d+}/remove-favorite", method = RequestMethod.GET)
     public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
         userService.removeFavoriteArtist(loggedUser.getId(), artistId);
-        return new ModelAndView("redirect:/artist/" + artistId); 
+        return new ModelAndView("redirect:/artist/" + artistId);
     }
 }

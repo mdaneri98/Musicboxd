@@ -10,21 +10,22 @@ import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.models.FilterType;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewService extends CrudService<Review> {
 
     boolean deleteReview(Review review, long userId);
 
     ArtistReview findArtistReviewById(long id, long loggedUserId);
-    ArtistReview findArtistReviewByUserId(long userId, long artistId, long loggedUserId);
+    Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId, long loggedUserId);
     ArtistReview saveArtistReview(ArtistReview review);
 
     AlbumReview findAlbumReviewById(long id, long loggedUserId);
-    AlbumReview findAlbumReviewByUserId(long userId, long albumId, long loggedUserId);
+    Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId, long loggedUserId);
     AlbumReview saveAlbumReview(AlbumReview review);
 
     SongReview findSongReviewById(long id, long loggedUserId);
-    SongReview findSongReviewByUserId(long userId, long songId, long loggedUserId);
+    Optional<SongReview> findSongReviewByUserId(long userId, long songId, long loggedUserId);
     SongReview saveSongReview(SongReview review);
 
 

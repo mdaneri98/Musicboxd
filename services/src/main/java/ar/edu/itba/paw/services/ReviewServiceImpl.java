@@ -221,29 +221,38 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public ArtistReview findArtistReviewByUserId(long userId, long artistId,long loggedUserId) {
-        ArtistReview review = reviewDao.findArtistReviewByUserId(userId, artistId).get();
-        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return review;
+    public Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId, long loggedUserId) {
+        Optional<ArtistReview> reviewOptional = reviewDao.findArtistReviewByUserId(userId, artistId);
+        if (reviewOptional.isPresent()) {
+            Review review = reviewOptional.get();
+            review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+            review.setLiked(isLiked(loggedUserId, review.getId()));
+        }
+        return reviewOptional;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AlbumReview findAlbumReviewByUserId(long userId, long albumId, long loggedUserId) {
-        AlbumReview review = reviewDao.findAlbumReviewByUserId(userId, albumId).get();
-        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return review;
+    public Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId, long loggedUserId) {
+        Optional<AlbumReview> reviewOptional = reviewDao.findAlbumReviewByUserId(userId, albumId);
+        if (reviewOptional.isPresent()) {
+            Review review = reviewOptional.get();
+            review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+            review.setLiked(isLiked(loggedUserId, review.getId()));
+        }
+        return reviewOptional;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SongReview findSongReviewByUserId(long userId, long songId, long loggedUserId) {
-        SongReview review = reviewDao.findSongReviewByUserId(userId, songId).get();
-        review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return review;
+    public Optional<SongReview> findSongReviewByUserId(long userId, long songId, long loggedUserId) {
+        Optional<SongReview> reviewOptional = reviewDao.findSongReviewByUserId(userId, songId);
+        if (reviewOptional.isPresent()) {
+            Review review = reviewOptional.get();
+            review.setTimeAgo(timeUtils.formatTimeAgo(review.getCreatedAt()));
+            review.setLiked(isLiked(loggedUserId, review.getId()));
+        }
+        return reviewOptional;
     }
 
     @Override

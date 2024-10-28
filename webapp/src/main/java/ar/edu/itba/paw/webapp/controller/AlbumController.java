@@ -69,7 +69,7 @@ public class AlbumController {
         List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId, pageNum, pageSize, loggedUser.getId());
 
         boolean isReviewed = reviewService.hasUserReviewedAlbum(loggedUser.getId(), albumId);
-        Integer loggedUserRating = isReviewed ? reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId()).getRating() : 0;
+        Integer loggedUserRating = isReviewed ? reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId()).get().getRating() : 0;
         boolean showNext = reviews.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
@@ -91,26 +91,25 @@ public class AlbumController {
 
     @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
-        if (reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId()) != null)
+        Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
+        if (reviewOptional.isPresent())
             return new ModelAndView("redirect:/album/" + albumId);
 
         Album album = albumService.find(albumId).orElseThrow();
-
         ModelAndView mav = new ModelAndView("reviews/album_review");
         mav.addObject("album", album);
         mav.addObject("edit", false);
-
 
         return mav;
     }
 
     @RequestMapping(value = "/{albumId:\\d+}/edit-review", method = RequestMethod.GET)
     public ModelAndView editAlbumReview(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
-        if (reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId()) == null)
+        Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
+        if (reviewOptional.isEmpty())
             return createForm(loggedUser, reviewForm, albumId);
 
-        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
-
+        AlbumReview review = reviewOptional.get();
         reviewForm.setTitle(review.getTitle());
         reviewForm.setDescription(review.getDescription());
         reviewForm.setRating(review.getRating());
@@ -129,8 +128,13 @@ public class AlbumController {
         if (errors.hasErrors()) {
             return createForm(loggedUser, reviewForm, albumId);
         }
-        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
 
+        Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
+        if (reviewOptional.isEmpty()) {
+            //TODO: ¿Redirigir?
+        }
+
+        AlbumReview review = reviewOptional.get();
         AlbumReview albumReview = new AlbumReview(
                 review.getId(),
                 loggedUser,
@@ -170,8 +174,8 @@ public class AlbumController {
 
     @RequestMapping(value = "/{albumId:\\d+}/delete-review", method = RequestMethod.GET)
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
-        AlbumReview review = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
-        reviewService.deleteReview(review, loggedUser.getId());
+        Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
+        reviewService.deleteReview(reviewOptional.get(), loggedUser.getId());
         return new ModelAndView("redirect:/album/" + albumId);
     }
 

@@ -28,7 +28,7 @@
     <form:form modelAttribute="userProfileForm" action="${editProfileUrl}" method="post" enctype="multipart/form-data">
         <div class="container">
             <div class="info-container">
-                <c:url var="userImgURL" value="/images/${loggedUser.imgId}"/>
+                <c:url var="userImgURL" value="/images/${loggedUser.image.id}"/>
                 <img id="imagePreview" src="${userImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('userImageInput').click();"/>
                 <form:input path="profilePicture" id="userImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event,0)"/>
                 <div class="data-container element-details-container">

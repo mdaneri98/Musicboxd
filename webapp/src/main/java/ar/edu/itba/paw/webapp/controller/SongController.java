@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/song")
 @Controller
@@ -63,7 +64,7 @@ public class SongController {
         List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId, pageNum, pageSize, loggedUser.getId());
 
         boolean isReviewed = reviewService.hasUserReviewedSong(loggedUser.getId(), songId);
-        Integer loggedUserRating = isReviewed ? reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId()).getRating() : 0;
+        Integer loggedUserRating = isReviewed ? reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId()).get().getRating() : 0;
 
         boolean showNext = reviews.size() == pageSize;
         boolean showPrevious = pageNum > 1;
@@ -87,7 +88,8 @@ public class SongController {
 
     @RequestMapping(value = "/{songId:\\d+}/reviews", method = RequestMethod.GET)
     public ModelAndView createForm(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long songId) {
-        if (reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId()) != null)
+        Optional<SongReview> reviewOptional = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
+        if (reviewOptional.isPresent())
             return new ModelAndView("redirect:/song/" + songId);
 
         final ModelAndView mav = new ModelAndView("reviews/song_review");
@@ -101,11 +103,11 @@ public class SongController {
 
     @RequestMapping(value = "/{songId:\\d+}/edit-review", method = RequestMethod.GET)
     public ModelAndView editSongReview(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long songId) {
-        if (reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId()) == null)
+        Optional<SongReview> reviewOptional = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
+        if (reviewOptional.isEmpty())
             return createForm(loggedUser, reviewForm, songId);
 
-        SongReview review = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
-
+        SongReview review = reviewOptional.get();
         reviewForm.setTitle(review.getTitle());
         reviewForm.setDescription(review.getDescription());
         reviewForm.setRating(review.getRating());
@@ -121,10 +123,12 @@ public class SongController {
 
     @RequestMapping(value = "/{songId:\\d+}/edit-review", method = RequestMethod.POST)
     public ModelAndView editSongReview(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
+        Optional<SongReview> reviewOptional = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
         if (errors.hasErrors()) {
             return createForm(loggedUser, reviewForm, songId);
         }
-        SongReview review = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
+
+        SongReview review = reviewOptional.get();
 
         SongReview songReview = new SongReview(
                 review.getId(),
@@ -166,8 +170,8 @@ public class SongController {
 
     @RequestMapping(value = "/{songId:\\d+}/delete-review", method = RequestMethod.GET)
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
-        SongReview review = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
-        reviewService.deleteReview(review, loggedUser.getId());
+        Optional<SongReview> reviewOptional = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
+        reviewService.deleteReview(reviewOptional.get(), loggedUser.getId());
         return new ModelAndView("redirect:/song/" + songId);
     }
 

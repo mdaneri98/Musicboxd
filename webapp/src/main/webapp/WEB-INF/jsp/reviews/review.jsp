@@ -64,7 +64,7 @@
                     <c:url var="profileUrl" value="/user/${comment.user.id}"/>
                     <div class="comment-header">
                         <a href="${profileUrl}">
-                            <img src="<c:url value='/images/${comment.user.imgId}'/>" class="comment-user-img" alt="${comment.user.username}">
+                            <img src="<c:url value='/images/${comment.user.image.id}'/>" class="comment-user-img" alt="${comment.user.username}">
                             <span class="comment-username">${comment.user.username}</span>
                         </a>
                         <span class="comment-date"><c:out value="${comment.timeAgo}"/></span>
