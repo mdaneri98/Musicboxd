@@ -24,7 +24,7 @@ public class Comment {
     @Column
     private String content;
 
-    @Column
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Transient

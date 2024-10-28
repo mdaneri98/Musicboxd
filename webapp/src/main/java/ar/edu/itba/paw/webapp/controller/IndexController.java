@@ -46,7 +46,7 @@ public class IndexController {
         ModelAndView mav;
         List<Review> reviews;
 
-        if (!User.isAnonymus(loggedUser)) {
+        if (User.isAnonymus(loggedUser)) {
             mav = new ModelAndView("anonymous/home");
             loggedUserId = 0;
         } else {
