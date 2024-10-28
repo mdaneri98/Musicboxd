@@ -7,16 +7,18 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@Component
 public class TimeUtils {
 
-    private final MessageSource messageSource;
+    @Autowired
+    private static MessageSource messageSource;
 
-    public TimeUtils(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
+    private TimeUtils() {}
 
-    public String formatTimeAgo(LocalDateTime dateTime) {
+    public static String formatTimeAgo(LocalDateTime dateTime) {
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         Duration duration = Duration.between(dateTime, now);
 

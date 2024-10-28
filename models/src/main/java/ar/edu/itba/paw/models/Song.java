@@ -39,7 +39,12 @@ public class Song {
     @Column(name = "avg_rating", nullable = false)
     private Float avgRating;
 
-    @ManyToMany(mappedBy = "songs")  // "songs" es el nombre del atributo en Artist
+    @ManyToMany
+    @JoinTable(
+            name = "song_artist",
+            joinColumns = @JoinColumn(name = "song_id"),
+            inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
     private List<Artist> artists = new ArrayList<>();
 
     public Song() {

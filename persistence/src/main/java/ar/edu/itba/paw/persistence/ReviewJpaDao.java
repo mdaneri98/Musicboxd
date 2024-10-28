@@ -382,13 +382,4 @@ public class ReviewJpaDao implements ReviewDao {
         updateQuery.executeUpdate();
     }
 
-    /* // === JDBC IMPL ===
-    @Override
-    public void updateCommentAmount2(long reviewId) {
-        final String sql = "SELECT COUNT(*) FROM comment WHERE review_id = ?";
-        Integer commentAmount = jdbcTemplate.queryForObject(sql, Integer.class, reviewId);
-        jdbcTemplate.update("UPDATE review SET comment_amount = ? WHERE id = ?", commentAmount, reviewId);
-    }
-     */
-
 }
