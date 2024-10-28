@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
-import javax.swing.text.html.Option;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;

@@ -74,7 +74,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public boolean updateRating(long albumId, double newRating, int newRatingAmount) {
+    public boolean updateRating(long albumId, Double newRating, int newRatingAmount) {
         // Actualizar la calificación del álbum
         Album album = entityManager.find(Album.class, albumId);
         if (album != null) {

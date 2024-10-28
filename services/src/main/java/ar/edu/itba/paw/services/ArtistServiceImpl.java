@@ -165,7 +165,7 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     @Transactional
-    public boolean updateRating(Long artistId, Float roundedAvgRating, Integer ratingAmount) {
+    public boolean updateRating(Long artistId, Double roundedAvgRating, Integer ratingAmount) {
         LOGGER.info("Updating rating for artist with ID: {}", artistId);
         boolean updated = artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
         if (updated) {

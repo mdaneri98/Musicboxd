@@ -15,7 +15,7 @@ public interface ArtistService extends CrudService<Artist> {
     Artist create(ArtistDTO artistDTO);
     Artist update(ArtistDTO artistDTO);
 
-    boolean updateRating(Long artistId, Float roundedAvgRating, Integer ratingAmount);
+    boolean updateRating(Long artistId, Double roundedAvgRating, Integer ratingAmount);
     boolean hasUserReviewed(long userId, long artistId);
 
 }

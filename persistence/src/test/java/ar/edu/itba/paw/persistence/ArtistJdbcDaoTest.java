@@ -45,7 +45,7 @@ public class ArtistJdbcDaoTest {
     private static final String PRE_EXISTING_ARTIST_NAME = "Dummy";
     private static final String NEW_ARTIST_NAME = "DummyX";
     private static final String NEW_ARTIST_BIO = "This is a description of DummyX";
-    private static final float NEW_ARTIST_AVG_RATING = 3.4F;
+    private static final Double NEW_ARTIST_AVG_RATING = 3.4;
     private static final int NEW_ARTIST_RATING_AMOUNT = 15;
 
 

@@ -55,7 +55,7 @@ public class SongJdbcDaoTest {
     private static final String NEW_SONG_TITLE = "DummyX";
     private static final String NEW_SONG_DURATION = "1:23";
     private static final int NEW_SONG_TRACK_NUMBER = 7;
-    private static final float NEW_SONG_AVG_RATING = 3.4F;
+    private static final Double NEW_SONG_AVG_RATING = 3.4;
     private static final int NEW_SONG_RATING_AMOUNT = 15;
 
     @Autowired

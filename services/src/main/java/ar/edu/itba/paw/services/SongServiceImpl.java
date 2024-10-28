@@ -151,7 +151,7 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional
-    public boolean updateRating(long songId, float newRating, int newRatingAmount) {
+    public boolean updateRating(long songId, Double newRating, int newRatingAmount) {
         return songDao.updateRating(songId, newRating, newRatingAmount);
     }
 

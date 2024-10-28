@@ -82,9 +82,7 @@ public class IndexController {
 
     @RequestMapping("/music")
     public ModelAndView music(@ModelAttribute("loggedUser") User loggedUser) {
-        ModelAndView mav = new ModelAndView("anonymous/music");
-        if (!User.isAnonymus(loggedUser))
-            mav.setViewName("music");
+        ModelAndView mav = new ModelAndView("music");
 
         List<Album> topRatedAlbums = albumService.findPaginated(FilterType.RATING,1, 5);
         List<Album> mostPopularAlbums = albumService.findPaginated(FilterType.POPULAR,1, 5);
