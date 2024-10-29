@@ -9,16 +9,25 @@
     </jsp:include>
 </head>
 <body>
-<div>
-    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
-        <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
-        <jsp:param name="moderator" value="${loggedUser.moderator}"/>
-    </jsp:include>
-</div>
+    <div class="main-container">
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+            <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
+            <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+        </jsp:include>
 
-    <h1><spring:message code="label.verification.expired" /></h1>
-    <c:url var="homeuRL" value="/" />
-    <a href="${homeuRL}"><spring:message code="label.return" /></a>
-
+        <main class="content-wrapper">
+            <div class="error-page">
+                <div class="error-content">
+                    <h1 class="error-title">
+                        <spring:message code="label.verification.expired" />
+                    </h1>
+                    <c:url var="homeUrl" value="/" />
+                    <a href="${homeUrl}" class="btn btn-primary">
+                        <spring:message code="label.return" />
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

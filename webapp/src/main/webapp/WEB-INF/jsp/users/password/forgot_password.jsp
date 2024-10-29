@@ -7,29 +7,33 @@
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
-
-    <c:url var="css" value="/static/css/register.css" />
-    <link rel="stylesheet" href="${css}">
 </head>
 <body>
-<div class="container">
-    <h1><p><spring:message code="webpage.name"/></p></h1>
-    <c:url var="posturl" value="/user/forgot-password" />
-    <form action="${posturl}" method="post">
-        <div class="form-group">
-            <label> <spring:message code="label.email"/>
-                <input type="email" name="email" required />
-            </label>
-        </div>
-        <button type="submit" class="button">
-            <spring:message code="button.change.password.send.email"/>
-        </button>
-    </form>
-    <div class="register-link">
-        <c:url var="loginUrl" value="/user/login" />
-        <a href="${loginUrl}"><spring:message code="label.already.have.an.account"/></a>
-    </div>
-</div>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title"><spring:message code="webpage.name"/></h1>
 
+            <c:url var="posturl" value="/user/forgot-password" />
+            <form action="${posturl}" method="post" class="auth-form">
+                <div class="form-group">
+                    <label class="form-label">
+                        <spring:message code="label.email"/>
+                    </label>
+                    <input type="email" name="email" class="form-control" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <spring:message code="button.change.password.send.email"/>
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <c:url var="loginUrl" value="/user/login" />
+                <a href="${loginUrl}" class="auth-link">
+                    <spring:message code="label.already.have.an.account"/>
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
