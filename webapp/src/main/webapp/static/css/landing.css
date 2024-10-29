@@ -128,13 +128,13 @@ nav {
     color: var(--text-subdued);
 }
 
-footer {
-    background-color: var(--background-highlight);
-    color: var(--text-subdued);
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 50px;
-}
+    footer {
+        background-color: var(--background-highlight);
+        color: var(--text-subdued);
+        text-align: center;
+        padding: 20px 0;
+        margin-top: 50px;
+    }
 
 /* ------------ User ------------ */
 .user-info {

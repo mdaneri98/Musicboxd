@@ -33,7 +33,6 @@
         <div id="autocompleteList" class="autocomplete-items"></div>
     </div>
 </div>
-    <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
 <script>
     var imgUrl = "<c:url value='/images/'/>";
     <c:url var="searchUrl" value="/search"/>

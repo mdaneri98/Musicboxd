@@ -147,7 +147,7 @@
         </jsp:include>
       </c:forEach>
     </div>
-    <div>
+    <div class="pages">
       <c:url value="/user/${user.id}?pageNum=${pageNum + 1}" var="nextPage" />
       <c:url value="/user/${user.id}?pageNum=${pageNum -1}" var="prevPage" />
       <c:if test="${showPrevious}"><a href="${prevPage}"><button><spring:message code="button.previous.page" /></button></a></c:if>
