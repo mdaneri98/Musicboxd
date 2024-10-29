@@ -129,21 +129,11 @@ public class SongController {
         }
 
         SongReview review = reviewOptional.get();
-
-        SongReview songReview = new SongReview(
-                review.getId(),
-                loggedUser,
-                new Song(songId),
-                reviewForm.getTitle(),
-                reviewForm.getDescription(),
-                reviewForm.getRating(),
-                LocalDateTime.now(),
-                review.getLikes(),
-                review.isBlocked(),
-                review.getCommentAmount()
-        );
-        songReview.setComments(review.getComments());
-        reviewService.updateSongReview(songReview);
+        review.setTitle(reviewForm.getTitle());
+        review.setDescription(reviewForm.getDescription());
+        review.setRating(reviewForm.getRating());
+        review.setCreatedAt(LocalDateTime.now());
+        reviewService.updateSongReview(review);
         return new ModelAndView("redirect:/song/" + songId);
     }
 
