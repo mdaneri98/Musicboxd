@@ -36,7 +36,7 @@
                     <c:url var="albumImgURL" value="/images/${modAlbumForm.albumImageId}"/>
                 </c:if>
                 <form:input path="albumImage" id="albumImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event)"/>
-                <img id="imagePreview" src="${albumImgURL}" class="primary-image" style="display: none;" onclick="document.getElementById('albumImageInput').click();" alt="image"/>
+                <img id="imagePreview" src="${albumImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('albumImageInput').click();"/>
 
                 <input name="id" type="hidden" value="${modAlbumForm.id}"/>
                 <input name="artistId" type="hidden" value="${modAlbumForm.artistId}"/>

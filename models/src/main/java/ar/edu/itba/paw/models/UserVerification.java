@@ -22,7 +22,7 @@ public class UserVerification {
     private String verificationType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     public UserVerification() {
