@@ -127,7 +127,12 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public Song update(SongDTO songDTO, Album album) {
         LOGGER.info("Updating song with ID: {}", songDTO.getId());
-        Song song = new Song(songDTO.getId(), songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        Song song = songDao.find(songDTO.getId()).get();
+        song.setTitle(songDTO.getTitle());
+        song.setDuration(songDTO.getDuration());
+        song.setTrackNumber(songDTO.getTrackNumber());
+        song.setAlbum(album);
+        song.setUpdatedAt(LocalDateTime.now());
         song = songDao.update(song);
         LOGGER.info("Song updated successfully");
         return song;
