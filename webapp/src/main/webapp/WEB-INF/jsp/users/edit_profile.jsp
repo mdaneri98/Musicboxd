@@ -29,8 +29,8 @@
         <div class="container">
             <div class="info-container">
                 <c:url var="userImgURL" value="/images/${loggedUser.image.id}"/>
-                <img id="imagePreview" src="${userImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('userImageInput').click();"/>
-                <form:input path="profilePicture" id="userImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event,0)"/>
+                <form:input path="profilePicture" id="userImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event)"/>
+                <img id="imagePreview" src="${userImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('userImageInput').click();" alt="image"/>
                 <div class="data-container element-details-container">
                     <div>
                         <label><spring:message code="label.username" />
@@ -64,9 +64,9 @@
 
     <script>
         // Previews Image inserted
-        function previewImage(event,index) {
+        function previewImage(event) {
             const file = event.target.files[0];
-            const preview = document.getElementById('imagePreview-' + index);
+            const preview = document.getElementById('imagePreview');
 
             if (file) {
                 const reader = new FileReader();

@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -17,6 +18,7 @@ public class UserProfileForm {
     @Size(max = 400, message = "Bio can be up to 400 characters.")
     private String bio;
 
+    @Nullable
     private final MultipartFile profilePicture;
 
     public UserProfileForm(String username, String name, String bio, MultipartFile profilePicture) {
