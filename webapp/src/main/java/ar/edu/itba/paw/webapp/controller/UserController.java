@@ -17,13 +17,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import ar.edu.itba.paw.services.ImageService;
+
 
 @RequestMapping("/user")
 @Controller
@@ -33,13 +34,15 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final ReviewService reviewService;
     private final MessageSource messageSource;
+    private final ImageService imageService;
 
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager, ReviewService reviewService, MessageSource messageSource) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, ReviewService reviewService, MessageSource messageSource, ImageService imageService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.reviewService = reviewService;
         this.messageSource = messageSource;
+        this.imageService = imageService;
     }
 
     @RequestMapping("/profile")
@@ -99,6 +102,7 @@ public class UserController {
         loggedUser.setUsername(upf.getUsername());
         loggedUser.setName(upf.getName());
         loggedUser.setBio(upf.getBio());
+        loggedUser.setImage(imageService.update(new Image(loggedUser.getImage().getId(), getBytes(upf.getProfilePicture()))).get());
         userService.update(loggedUser);
 
         return new ModelAndView("redirect:/user/profile");

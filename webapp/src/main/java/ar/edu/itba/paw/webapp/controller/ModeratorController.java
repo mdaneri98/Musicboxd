@@ -254,7 +254,7 @@ public class ModeratorController {
         if (errors.hasErrors())
             return addSongForm(albumId, modSongForm, loggedUser);
 
-        Song song = songService.create(transformSongToDTO(modSongForm), new Album(albumId));
+        Song song = songService.create(transformSongToDTO(modSongForm), albumService.find(albumId).get());
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + song.getId());
         modelAndView.addObject("song", song);
@@ -291,7 +291,7 @@ public class ModeratorController {
         if (errors.hasErrors())
             return editSongForm(songId, modSongForm, loggedUser);
 
-        Song newSong = songService.update(transformSongToDTO(modSongForm), new Album(modSongForm.getAlbumId()));
+        Song newSong = songService.update(transformSongToDTO(modSongForm), albumService.find(modSongForm.getAlbumId()).get());
 
         ModelAndView modelAndView = new ModelAndView("redirect:/song/" + songId);
         modelAndView.addObject("song", newSong);

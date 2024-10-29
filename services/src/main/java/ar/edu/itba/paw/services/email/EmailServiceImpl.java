@@ -76,6 +76,10 @@ public class EmailServiceImpl implements EmailService {
                 verificationURL = baseUrl + "/user/reset-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
                 template = "create_password";
             }
+            case VERIFY_GENERAL -> {
+                verificationURL = baseUrl + "/general-verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                template = "general_verification";
+            }
         }
 
         LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, email);
