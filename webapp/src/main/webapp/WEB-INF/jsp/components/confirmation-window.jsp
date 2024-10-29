@@ -1,18 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<c:url var="cssUrl" value='/static/css/confirmation-window.css'/>
-<link rel="stylesheet" href="${cssUrl}">
 
-<!-- Overlay -->
 <div id="modalOverlay${param.id}" class="modal-overlay"></div>
 
-<!-- Modal -->
-<div id="confirmationModal${param.id}" class="modal">
-  <div class="modal-content">
-    <p>${param.message}</p>
-    <div>
-      <button id="modalNo${param.id}"><spring:message code="confirmation.window.no"/></button>
-      <button id="modalYes${param.id}"><spring:message code="confirmation.window.yes"/></button>
+<div id="confirmationModal${param.id}" class="confirmation-modal">
+    <div class="confirmation-content">
+        <p class="confirmation-message">${param.message}</p>
+        <div class="confirmation-actions">
+            <button id="modalNo${param.id}" class="btn btn-secondary">
+                <spring:message code="confirmation.window.no"/>
+            </button>
+            <button id="modalYes${param.id}" class="btn btn-primary">
+                <spring:message code="confirmation.window.yes"/>
+            </button>
+        </div>
     </div>
-  </div>
 </div>

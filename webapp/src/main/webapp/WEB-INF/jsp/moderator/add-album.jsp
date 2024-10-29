@@ -4,130 +4,158 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-
     <spring:message var="pageTitle" code="submit.album.heading"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
-
-    <c:url var="css" value="/static/css/moderator.css" />
-    <link rel="stylesheet" href="${css}">
 </head>
 <body>
-<div>
-    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
-        <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
-        <jsp:param name="moderator" value="${loggedUser.moderator}"/>
-    </jsp:include>
-</div>
-<div class="container form-container">
-    <h1><spring:message code="submit.album.title"/></h1>
+    <div class="main-container">
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+            <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
+            <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+        </jsp:include>
 
-    <c:url var="postURL" value="${postUrl}" />
-    <form:form id="albumForm" modelAttribute="modAlbumForm" action="${postURL}" method="post" enctype="multipart/form-data">
-        <!-- Album Information -->
-        <div class="container">
-            <div class="info-container">
-                <!-- Image Preview -->
-                <c:if test="${albumId == null}">
-                    <c:url var="albumImgURL" value="/images/${defaultImgId}"/>
-                </c:if>
-                <c:if test="${albumId != null}">
-                    <c:url var="albumImgURL" value="/images/${modAlbumForm.albumImageId}"/>
-                </c:if>
-                <form:input path="albumImage" id="albumImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event)"/>
-                <img id="imagePreview" src="${albumImgURL}" class="primary-image" style="display: none;" onclick="document.getElementById('albumImageInput').click();" alt="image"/>
+        <main class="content-wrapper">
+            <div class="mod-form-container">
+                <h1 class="mod-form-title">
+                    <spring:message code="submit.album.title"/>
+                </h1>
 
-                <input name="id" type="hidden" value="${modAlbumForm.id}"/>
-                <input name="artistId" type="hidden" value="${modAlbumForm.artistId}"/>
-                <input name="albumImageId" type="hidden" value="${modAlbumForm.albumImageId}"/>
-                <div class="data-container element-details-container">
-                    <div>
-                        <label><spring:message code="submit.album.title.label"/>:
-                        <form:errors path="title" cssClass="error" cssStyle="color:red;"/>
-                        <form:input path="title" type="text" required="true"/>
-                        </label>
+                <c:url var="postURL" value="${postUrl}" />
+                <form:form id="albumForm" modelAttribute="modAlbumForm" action="${postURL}" method="post" enctype="multipart/form-data">
+                    <!-- Album Information -->
+                    <div class="info-container">
+                        <!-- Image Preview -->
+                        <c:if test="${albumId == null}">
+                            <c:url var="albumImgURL" value="/images/${defaultImgId}"/>
+                        </c:if>
+                        <c:if test="${albumId != null}">
+                            <c:url var="albumImgURL" value="/images/${modAlbumForm.albumImageId}"/>
+                        </c:if>
+                        <form:input path="albumImage" id="albumImageInput" type="file" accept=".jpg,.jpeg,.png" cssClass="hidden-input" onchange="previewImage(event)"/>
+                        <img id="imagePreview" src="${albumImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('albumImageInput').click();" alt="image"/>
+
+                        <input name="id" type="hidden" value="${modAlbumForm.id}"/>
+                        <input name="artistId" type="hidden" value="${modAlbumForm.artistId}"/>
+                        <input name="albumImageId" type="hidden" value="${modAlbumForm.albumImageId}"/>
+                        <div class="data-container element-details-container">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <spring:message code="submit.album.title.label"/>:
+                                </label>
+                                <form:errors path="title" cssClass="form-error"/>
+                                <form:input path="title" type="text" cssClass="form-control" required="true"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <spring:message code="submit.album.genre.label"/>:
+                                </label>
+                                <form:errors path="genre" cssClass="form-error"/>
+                                <form:input path="genre" type="text" cssClass="form-control" required="true"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <spring:message code="submit.album.release.date.label"/>:
+                                </label>
+                                <form:errors path="releaseDate" cssClass="form-error"/>
+                                <form:input path="releaseDate" type="date" cssClass="form-control" required="true"/>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label><spring:message code="submit.album.genre.label"/>:
-                            <form:errors path="genre" cssClass="error" cssStyle="color:red;"/>
-                            <form:input path="genre" type="text" required="true"/>
-                        </label>
+
+                    <!-- Delete option for existing albums -->
+                    <input name="deleted" id="deletedAlbum" type="hidden" value="false"/>
+                    <c:if test="${albumId != null}">
+                        <c:url var="deleteUrl" value="/mod/delete/album/${albumId}"/>
+                        <button type="button" onclick="deleteAlbum()" class="btn btn-danger">
+                            <spring:message code="button.delete.album"/>
+                        </button>
+                    </c:if>
+
+                    <!-- Songs Section -->
+                    <section class="mod-section">
+                        <h2><spring:message code="label.song"/></h2>
+                        <div id="SongContainer" class="mod-items-container">
+                            <c:forEach var="song" items="${modAlbumForm.songs}" varStatus="status">
+                                <div id="song-${status.index}" class="sub-element-container">
+                                    <div class="data-container element-details-container">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <spring:message code="submit.song.title.label"/>:
+                                            </label>
+                                            <form:errors path="songs[${status.index}].title" cssClass="form-error"/>
+                                            <form:input path="songs[${status.index}].title" type="text" cssClass="form-control" required="true"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <spring:message code="submit.song.duration.label"/>:
+                                            </label>
+                                            <form:errors path="songs[${status.index}].duration" cssClass="form-error"/>
+                                            <form:input path="songs[${status.index}].duration" type="text" cssClass="form-control" required="true"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <spring:message code="submit.song.track.number.label"/>:
+                                            </label>
+                                            <form:errors path="songs[${status.index}].trackNumber" cssClass="form-error"/>
+                                            <form:input path="songs[${status.index}].trackNumber" type="number" cssClass="form-control" required="true"/>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-danger" onclick="removeSong(document.getElementById('song-' + ${status.index}))">
+                                        <spring:message code="button.remove.song"/>
+                                    </button>
+                                </div>
+                                <input name="songs[${status.index}].id" type="hidden" value="${song.id}">
+                                <input name="songs[${status.index}].albumId" type="hidden" value="${song.albumId}"/>
+                                <input name="songs[${status.index}].deleted" id="deletedSong-${status.index}" type="hidden" value="false"/>
+                            </c:forEach>
+                        </div>
+
+                        <!-- Add Song Button -->
+                        <button type="button" id="addSongButton" onclick="addSong()" class="btn btn-secondary">
+                            <spring:message code="button.add.song"/>
+                        </button>
+                    </section>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <c:if test="${albumId == null}">
+                            <c:url value="/mod" var="cancel_url" />
+                        </c:if>
+                        <c:if test="${albumId != null}">
+                            <c:url value="/album/${albumId}" var="cancel_url" />
+                        </c:if>
+                        <a href="${cancel_url}" class="btn btn-secondary">
+                            <spring:message code="button.cancel"/>
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <spring:message code="submit.album.button"/>
+                        </button>
                     </div>
-                    <div>
-                        <label><spring:message code="submit.album.release.date.label"/>:
-                            <form:errors path="releaseDate" cssClass="error" cssStyle="color:red;"/>
-                            <form:input path="releaseDate" type="date" required="true"/>
-                        </label>
-                    </div>
-                </div>
+                </form:form>
             </div>
-            <input name="deleted" id="deletedAlbum" type="hidden" value="false"/>
-            <c:if test="${albumId != null}">
-                <c:url var="deleteUrl" value="/mod/delete/album/${albumId}"/>
-                <a style="margin-left: auto" onclick="deleteAlbum()">
-                    <button type="button" class="remove-button"><spring:message code="button.delete.album"/></button>
-                </a>
-            </c:if>
-        </div>
 
-        <!-- Song List Section -->
-        <h2><spring:message code="submit.album.songs.title"/></h2>
-        <div id="SongContainer">
-            <c:forEach items="${modAlbumForm.songs}" var="song" varStatus="status">
-                <input name="songs[${status.index}].id" type="hidden" value="${song.id}">
-                <input name="songs[${status.index}].albumId" type="hidden" value="${song.albumId}"/>
-                <div id="song-${status.index}" class="info-container sub-element-container">
-                    <div class="data-container element-details-container song-details-container">
-                        <label><spring:message code="submit.song.title.label"/>:
-                            <form:errors path="songs[${status.index}].title" cssClass="error" cssStyle="color:red;"/>
-                            <form:input path="songs[${status.index}].title" type="text" required="true" class="element-field"/>
-                        </label>
-                        <label><spring:message code="submit.song.duration.label"/>:
-                            <form:errors path="songs[${status.index}].duration" cssClass="error" cssStyle="color:red;"/>
-                            <form:input path="songs[${status.index}].duration" type="text" required="true" class="element-field"/>
-                        </label>
-                        <label><spring:message code="submit.song.track.number.label"/>:
-                            <form:errors path="songs[${status.index}].trackNumber" cssClass="error" cssStyle="color:red;"/>
-                            <form:input path="songs[${status.index}].trackNumber" type="number" required="true" class="element-field"/>
-                        </label>
-                    </div>
-                    <!-- Remove button for existing songs -->
-                    <button type="button" class="remove-button" onclick="removeSong(document.getElementById('song-' + ${status.index}))"><spring:message code="button.remove.song"/></button>
-                </div>
-                <!-- Flag deleted songs -->
-                <input name="songs[${status.index}].deleted" id="deletedSong-${status.index}" type="hidden" value="false"/>
-            </c:forEach>
-        </div>
+            <!-- Confirmation Modals -->
+            <spring:message var="confirmation_text" code="confirmation.window.album.message"/>
+            <jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
+                <jsp:param name="message" value="${confirmation_text}"/>
+                <jsp:param name="id" value="Album"/>
+            </jsp:include>
 
-        <!-- Add Song Button -->
-        <div>
-            <c:url var="defaultImgURL" value="/images/${defaultImgId}"/>
-            <button type="button" id="addSongButton" onclick="addSong()"><spring:message code="button.add.song"/></button>
-        </div>
-
-        <br><br>
-        <div style="display: flex">
-            <!-- Cancel Button -->
-            <c:if test="${albumId == null}">
-                <c:url value="/mod" var="cancel_url" />
-            </c:if>
-            <c:if test="${albumId != null}">
-                <c:url value="/album/${albumId}" var="cancel_url" />
-            </c:if>
-            <a href="${cancel_url}">
-                <button type="button"><spring:message code="button.cancel"/></button>
-            </a>
-
-            <!-- Submit Button -->
-            <button type="submit" style="margin-left: auto"><spring:message code="submit.album.button"/></button>
-        </div>
-    </form:form>
+            <spring:message var="confirmation_text" code="confirmation.window.song.message"/>
+            <jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
+                <jsp:param name="message" value="${confirmation_text}"/>
+                <jsp:param name="id" value="Song"/>
+            </jsp:include>
+        </main>
+    </div>
 
     <script>
         var songIndex = ${modAlbumForm.songs.size()};
         var songCount = ${modAlbumForm.songs.size()};
         var maxSongs = 15;
+
         function addSong() {
             var container = document.getElementById("SongContainer");
 
@@ -265,13 +293,6 @@
             };
         }
 
-        function toggleAddButton() {
-            var addSongButton = document.getElementById("addSongButton");
-            //Disables button if max albums has been reached
-            addSongButton.disabled = songCount >= maxSongs;
-        }
-
-        // Previews Image inserted
         function previewImage(event) {
             const file = event.target.files[0];
             const preview = document.getElementById('imagePreview');
@@ -288,20 +309,11 @@
             }
         }
 
+        function toggleAddButton() {
+            var addSongButton = document.getElementById("addSongButton");
+            //Disables button if max albums has been reached
+            addSongButton.disabled = songCount >= maxSongs;
+        }
     </script>
-</div>
-<!-- Confirmation for Album -->
-<spring:message var="confirmation_text" code="confirmation.window.album.message"/>
-<jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
-    <jsp:param name="message" value="${confirmation_text}"/>
-    <jsp:param name="id" value="Album"/>
-</jsp:include>
-
-<!-- Confirmation for Song -->
-<spring:message var="confirmation_text" code="confirmation.window.song.message"/>
-<jsp:include page="/WEB-INF/jsp/components/confirmation-window.jsp">
-    <jsp:param name="message" value="${confirmation_text}"/>
-    <jsp:param name="id" value="Song"/>
-</jsp:include>
 </body>
 </html>
