@@ -9,9 +9,6 @@
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
-
-    <c:url var="css" value="/static/css/moderator.css" />
-    <link rel="stylesheet" href="${css}">
 </head>
 <body>
 <div class="main-container">

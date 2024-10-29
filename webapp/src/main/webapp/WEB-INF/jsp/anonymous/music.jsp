@@ -18,12 +18,6 @@
     <jsp:param name="title" value="${pageTitle}"/>
   </jsp:include>
 
-  <c:url var="css" value="/static/css/home.css" />
-  <link rel="stylesheet" href="${css}">
-
-  <c:url var="css2" value="/static/css/landing.css" />
-  <link rel="stylesheet" href="${css2}">
-
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
