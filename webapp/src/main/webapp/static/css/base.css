@@ -708,3 +708,12 @@ button:hover:not(:disabled) {
 .container h2 {
     margin-left: 30px;
 }
+
+/* Footer */
+footer {
+    background-color: #1a1a1a;
+    color: #a7a7a7;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 50px;
+}
