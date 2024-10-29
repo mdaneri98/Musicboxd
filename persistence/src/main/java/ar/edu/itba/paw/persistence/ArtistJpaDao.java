@@ -104,7 +104,7 @@ public class ArtistJpaDao implements ArtistDao {
     public boolean deleteReviewsFromArtist(long artistId) {
         Query query = entityManager.createQuery(
                 "DELETE FROM Review r WHERE r.id IN " +
-                        "(SELECT ar.review.id FROM AlbumReview ar WHERE ar.artist.id = :artistId)");
+                        "(SELECT ar.id FROM AlbumReview ar WHERE ar.artist.id = :artistId)");
         query.setParameter("artistId", artistId);
         return query.executeUpdate() >= 1;
     }

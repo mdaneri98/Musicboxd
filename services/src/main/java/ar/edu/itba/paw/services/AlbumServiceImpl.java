@@ -79,7 +79,6 @@ public class AlbumServiceImpl implements AlbumService {
             LOGGER.warn("Album with ID {} not found for deletion", id);
             return false;
         }
-        imageService.delete(album.get().getImage().getId());
         albumDao.deleteReviewsFromAlbum(id);
         boolean deleted = albumDao.delete(id);
         if (deleted) {
@@ -102,7 +101,6 @@ public class AlbumServiceImpl implements AlbumService {
         for (Song song : album.getSongs()) {
             songService.deleteReviewsFromSong(song.getId());
         }
-        imageService.delete(album.getImage().getId());
         boolean deleted = albumDao.delete(album.getId());
         if (deleted) {
             LOGGER.info("Album {} (ID: {}) deleted successfully", album.getTitle(), album.getId());
@@ -151,8 +149,6 @@ public class AlbumServiceImpl implements AlbumService {
     public Album update(AlbumDTO albumDTO) {
         LOGGER.info("Updating album with ID: {}", albumDTO.getId());
         Optional<Image> optionalImage = imageService.update(new Image(albumDTO.getImgId(), albumDTO.getImage()));
-        if (optionalImage.isEmpty())
-            throw new IllegalArgumentException("Image not found for update.");
 
         Album album = albumDao.find(albumDTO.getId()).get();
         album.setTitle(albumDTO.getTitle());

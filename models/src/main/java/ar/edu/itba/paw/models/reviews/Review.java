@@ -60,6 +60,8 @@ public abstract class Review {
     )
     List<User> likedBy;
 
+
+
     public Review() {
         // Constructor vacío necesario para JPA
     }
@@ -99,6 +101,14 @@ public abstract class Review {
 
     public void setCommentAmount(Integer commentsAmount) {
         this.commentAmount = commentsAmount;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public Boolean getLiked() {

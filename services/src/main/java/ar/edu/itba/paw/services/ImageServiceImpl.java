@@ -39,14 +39,14 @@ public class ImageServiceImpl implements ImageService {
     public Optional<Image> update(Image image) {
         if(image.getBytes() == null || image.getBytes().length == 0) {
             LOGGER.debug("Image {} not updated. File empty", image.getId());
-            return Optional.empty();
+            return findById(image.getId());
         }
 
-        /*
-        if(imageId == DEFAULT_IMAGE_ID || imageId == DEFAULT_PROFILE_IMAGE_ID) {
-            return save(bytes, false);
+        if(image.getId() == DEFAULT_IMAGE_ID || image.getId() == DEFAULT_PROFILE_IMAGE_ID) {
+            LOGGER.debug("Image {} not updated. Cannot update default image", image.getId());
+            return Optional.of(create(image.getBytes()));
         }
-        */
+
         Optional<Image> imageOptional = imageDao.update(image);
         if (imageOptional.isPresent())
             LOGGER.debug("Image {} updated", image.getId());
