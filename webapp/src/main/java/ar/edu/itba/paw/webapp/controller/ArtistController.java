@@ -139,20 +139,11 @@ public class ArtistController {
             return createForm(loggedUser, reviewForm, artistId);
 
         ArtistReview review = reviewOptional.get();
-        ArtistReview artistReview = new ArtistReview(
-                review.getId(),
-                new Artist(artistId),
-                loggedUser,
-                reviewForm.getTitle(),
-                reviewForm.getDescription(),
-                reviewForm.getRating(),
-                LocalDateTime.now(),
-                review.getLikes(),
-                review.isBlocked(),
-                review.getCommentAmount()
-        );
-        artistReview.setComments(review.getComments());
-        reviewService.updateArtistReview(artistReview);
+        review.setTitle(reviewForm.getTitle());
+        review.setDescription(reviewForm.getDescription());
+        review.setRating(reviewForm.getRating());
+        review.setCreatedAt(LocalDateTime.now());
+        reviewService.updateArtistReview(review);
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 

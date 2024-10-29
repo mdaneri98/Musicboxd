@@ -130,25 +130,14 @@ public class AlbumController {
         }
 
         Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
-        if (reviewOptional.isEmpty()) {
-            //TODO: ¿Redirigir?
-        }
+        if (reviewOptional.isEmpty()) return new ModelAndView("redirect:/album/" + albumId);
 
         AlbumReview review = reviewOptional.get();
-        AlbumReview albumReview = new AlbumReview(
-                review.getId(),
-                loggedUser,
-                new Album(albumId),
-                reviewForm.getTitle(),
-                reviewForm.getDescription(),
-                reviewForm.getRating(),
-                LocalDateTime.now(),
-                review.getLikes(),
-                review.isBlocked(),
-                review.getCommentAmount()
-        );
-        albumReview.setComments(review.getComments()); 
-        reviewService.updateAlbumReview(albumReview);
+        review.setTitle(reviewForm.getTitle());
+        review.setDescription(reviewForm.getDescription());
+        review.setRating(reviewForm.getRating());
+        review.setCreatedAt(LocalDateTime.now());
+        reviewService.updateAlbumReview(review);
         return new ModelAndView("redirect:/album/" + albumId);
     }
 

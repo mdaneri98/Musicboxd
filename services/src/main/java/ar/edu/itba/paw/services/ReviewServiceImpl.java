@@ -332,7 +332,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void createLike(long userId, long reviewId) {
         LOGGER.info("Creating like for review ID: {} by user ID: {}", reviewId, userId);
         reviewDao.createLike(userId, reviewId);
-        reviewDao.incrementLikes(reviewId);
+        reviewDao.updateLikeCount(reviewId);
         LOGGER.info("Like created and like count incremented for review ID: {}", reviewId);
     }
 
@@ -341,7 +341,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void removeLike(long userId, long reviewId) {
         LOGGER.info("Removing like for review ID: {} by user ID: {}", reviewId, userId);
         reviewDao.deleteLike(userId, reviewId);
-        reviewDao.decrementLikes(reviewId);
+        reviewDao.updateLikeCount(reviewId);
         LOGGER.info("Like removed and like count decremented for review ID: {}", reviewId);
     }
 

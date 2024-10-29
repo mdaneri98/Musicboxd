@@ -176,18 +176,19 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public void incrementLikes(long reviewId) {
-        em.createQuery("UPDATE Review r SET r.likes = r.likes + 1 WHERE r.id = :reviewId")
+    public void updateLikeCount(long reviewId) {
+        Query countQuery = em.createNativeQuery(
+                "SELECT COUNT(*) FROM review_like WHERE review_id = :reviewId"
+        );
+        countQuery.setParameter("reviewId", reviewId);
+        Integer likes = ((Number) countQuery.getSingleResult()).intValue();
+
+        em.createQuery("UPDATE Review r SET r.likes = :likes WHERE r.id = :reviewId")
                 .setParameter("reviewId", reviewId)
+                .setParameter("likes", likes)
                 .executeUpdate();
     }
 
-    @Override
-    public void decrementLikes(long reviewId) {
-        em.createQuery("UPDATE Review r SET r.likes = r.likes - 1 WHERE r.id = :reviewId")
-                .setParameter("reviewId", reviewId)
-                .executeUpdate();
-    }
 
     @Override
     public List<User> likedBy(int page, int pageSize) {
@@ -259,20 +260,20 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
-    //FIXME: Realizar la paginación mediante id's.
-    @Override
-    public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
-        final TypedQuery<Review> query = em.createQuery(
-                "SELECT r FROM Review r " +
-                "WHERE r.isBlocked = false " +
-                "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
-                "ORDER BY r.likes DESC, r.createdAt DESC",
-                Review.class
-        );
-        query.setFirstResult((page - 1) * pageSize);
-        query.setMaxResults(pageSize);
-        return query.getResultList();
-    }
+     //FIXME: Realizar la paginación mediante id's.
+     @Override
+     public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
+         final TypedQuery<Review> query = em.createQuery(
+                 "SELECT r FROM Review r " +
+                 "WHERE r.isBlocked = false " +
+                 "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
+                 "ORDER BY r.likes DESC, r.createdAt DESC",
+                 Review.class
+         );
+         query.setFirstResult((page - 1) * pageSize);
+         query.setMaxResults(pageSize);
+         return query.getResultList();
+     }
 
     @Override
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
@@ -350,8 +351,9 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public List<Review> findPaginated(FilterType filterType, int limit, int offset) {
-        String queryStr = "FROM Review WHERE isBlocked = false ";
-        queryStr += filterType.getFilter();
+        String queryStr = "FROM Review WHERE isBlocked = false " +
+        "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
+         filterType.getFilter();
 
         final TypedQuery<Review> query = em.createQuery(queryStr, Review.class);
         query.setFirstResult(offset);
