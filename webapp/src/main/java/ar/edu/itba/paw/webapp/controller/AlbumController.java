@@ -147,6 +147,7 @@ public class AlbumController {
                 review.isBlocked(),
                 review.getCommentAmount()
         );
+        albumReview.setComments(review.getComments()); 
         reviewService.updateAlbumReview(albumReview);
         return new ModelAndView("redirect:/album/" + albumId);
     }

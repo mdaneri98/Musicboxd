@@ -142,6 +142,7 @@ public class SongController {
                 review.isBlocked(),
                 review.getCommentAmount()
         );
+        songReview.setComments(review.getComments());
         reviewService.updateSongReview(songReview);
         return new ModelAndView("redirect:/song/" + songId);
     }

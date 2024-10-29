@@ -151,6 +151,7 @@ public class ArtistController {
                 review.isBlocked(),
                 review.getCommentAmount()
         );
+        artistReview.setComments(review.getComments());
         reviewService.updateArtistReview(artistReview);
         return new ModelAndView("redirect:/artist/" + artistId);
     }
@@ -184,7 +185,7 @@ public class ArtistController {
 
     @RequestMapping(value = "/{artistId:\\d+}/add-favorite", method = RequestMethod.GET)
     public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
-        if(userService.addFavoriteArtist(loggedUser.getId(), artistId)) {
+        if(!userService.addFavoriteArtist(loggedUser.getId(), artistId)) {
             String errorMessage = messageSource.getMessage("error.too.many.favorites.artist", null, LocaleContextHolder.getLocale());
             return new ModelAndView("redirect:/artist/" + artistId + "?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }

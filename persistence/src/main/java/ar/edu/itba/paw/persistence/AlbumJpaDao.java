@@ -113,7 +113,7 @@ public class AlbumJpaDao implements AlbumDao {
     public boolean deleteReviewsFromAlbum(long albumId) {
         Query query = entityManager.createQuery(
                 "DELETE FROM Review r WHERE r.id IN " +
-                        "(SELECT ar.review.id FROM AlbumReview ar WHERE ar.album.id = :albumId)");
+                        "(SELECT ar.id FROM AlbumReview ar WHERE ar.album.id = :albumId)");
         query.setParameter("albumId", albumId);
         return query.executeUpdate() >= 1;
     }

@@ -193,9 +193,9 @@ public class ReviewServiceImpl implements ReviewService {
     public void updateArtistRating(long artistId) {
         LOGGER.info("Updating rating for artist ID: {}", artistId);
         List<ArtistReview> reviews = reviewDao.findReviewsByArtistId(artistId);
-        Double avgRating = (Double) reviews.stream().mapToInt(ArtistReview::getRating).average().orElse(0.0);
+        Double avgRating = reviews.stream().mapToInt(ArtistReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        int ratingAmount = reviews.size();
+        Integer ratingAmount = reviews.size();
         artistService.updateRating(artistId, roundedAvgRating, ratingAmount);
         LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
     }
@@ -267,7 +267,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void updateAlbumRating(long albumId) {
         LOGGER.info("Updating rating for album ID: {}", albumId);
         List<AlbumReview> reviews = reviewDao.findReviewsByAlbumId(albumId);
-        Double avgRating = (Double) reviews.stream().mapToInt(AlbumReview::getRating).average().orElse(0.0);
+        Double avgRating = reviews.stream().mapToInt(AlbumReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();
         albumService.updateRating(albumId, roundedAvgRating, ratingAmount);
@@ -314,7 +314,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void updateSongRating(long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
         List<SongReview> reviews = reviewDao.findReviewsBySongId(songId);
-        Double avgRating = (Double) reviews.stream().mapToInt(SongReview::getRating).average().orElse(0.0);
+        Double avgRating = reviews.stream().mapToInt(SongReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();
         songService.updateRating(songId, roundedAvgRating, ratingAmount);

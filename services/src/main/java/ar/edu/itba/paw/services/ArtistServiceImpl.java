@@ -88,10 +88,8 @@ public class ArtistServiceImpl implements ArtistService {
         // Delete Images
         List<Album> list = albumService.findByArtistId(id);
         list.forEach(album -> albumService.delete(album));
-        LOGGER.info("Deleting image for artist: {} (ID: {})", artist.get().getName(), id);
 
         artistDao.deleteReviewsFromArtist(id);
-        imageService.delete(artist.get().getImage().getId());
         boolean deleted = artistDao.delete(id);
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);
@@ -108,8 +106,6 @@ public class ArtistServiceImpl implements ArtistService {
             LOGGER.warn("Invalid artist data for deletion: {}", artist);
             return false;
         }
-        LOGGER.info("Deleting image for artist: {} (ID: {})", artist.getName(), artist.getId());
-        imageService.delete(artist.getImage().getId());
         boolean deleted = artistDao.delete(artist.getId());
         if (deleted) {
             LOGGER.info("Artist {} (ID: {}) deleted successfully", artist.getName(), artist.getId());
@@ -145,10 +141,11 @@ public class ArtistServiceImpl implements ArtistService {
     public Artist update(ArtistDTO artistDTO) {
         LOGGER.info("Updating artist from DTO: {} (ID: {})", artistDTO.getName(), artistDTO.getId());
 
+        Optional<Image> optionalImage = imageService.update(new Image(artistDTO.getImgId(), artistDTO.getImage()));
         Artist artist = artistDao.find(artistDTO.getId()).get();
         artist.setName(artistDTO.getName());
         artist.setBio(artistDTO.getBio());
-        artist.setImage(new Image(artist.getImage().getId(), artistDTO.getImage()));
+        artist.setImage(optionalImage.get());
 
         artist = artistDao.update(artist);
         LOGGER.info("Artist updated successfully");

@@ -136,7 +136,7 @@ public class SongJpaDao implements SongDao {
     public boolean deleteReviewsFromSong(long songId) {
         Query query = em.createQuery(
                 "DELETE FROM Review r WHERE r.id IN " +
-                        "(SELECT ar.review.id FROM AlbumReview ar WHERE ar.song.id = :songId)");
+                        "(SELECT ar.id FROM AlbumReview ar WHERE ar.song.id = :songId)");
         query.setParameter("songId", songId);
         return query.executeUpdate() >= 1;
     }
