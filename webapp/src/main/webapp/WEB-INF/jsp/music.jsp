@@ -31,7 +31,6 @@
                         <span id="popularArtistButton" class="tab active">
                             <spring:message code="discovery.most-popular"/>
                         </span>
-                        <span class="tab-separator">/</span>
                         <span id="topRatedArtistButton" class="tab">
                             <spring:message code="discovery.top-rated"/>
                         </span>
@@ -100,7 +99,6 @@
                         <span id="popularAlbumButton" class="tab active">
                             <spring:message code="discovery.most-popular"/>
                         </span>
-                        <span class="tab-separator">/</span>
                         <span id="topRatedAlbumButton" class="tab">
                             <spring:message code="discovery.top-rated"/>
                         </span>
@@ -169,7 +167,6 @@
                         <span id="popularSongButton" class="tab active">
                             <spring:message code="discovery.most-popular"/>
                         </span>
-                        <span class="tab-separator">/</span>
                         <span id="topRatedSongButton" class="tab">
                             <spring:message code="discovery.top-rated"/>
                         </span>

@@ -39,14 +39,16 @@
                 <div class="tabs">
                     <c:if test="${forYouActive}">
                         <span class="tab active"><spring:message code="home.for.you"/></span>
-                        <span class="tab-separator">/</span>
                         <c:url var="followingUrl" value="/home?pageNum=1&page=following"/>
-                        <a href="${followingUrl}" class="tab"><spring:message code="home.following"/></a>
+                        <a href="${followingUrl}">
+                            <span class="tab"><spring:message code="home.following"/></span>
+                        </a>
                     </c:if>
                     <c:if test="${followingActive}">
                         <c:url var="forYouUrl" value="/home?pageNum=1&page=forYou"/>
-                        <a href="${forYouUrl}" class="tab"><spring:message code="home.for.you"/></a>
-                        <span class="tab-separator">/</span>
+                        <a href="${forYouUrl}" >
+                            <span class="tab"><spring:message code="home.for.you"/></span>
+                        </a>
                         <span class="tab active"><spring:message code="home.following"/></span>
                     </c:if>
                 </div>

@@ -62,6 +62,12 @@
                 </c:forEach>
             </div>
 
+            <c:if test="${userList.size() == 0}">
+                <p class="no-results">
+                    <spring:message code="label.no.results"/>
+                </p>
+            </c:if>
+
             <!-- Pagination -->
             <div class="pagination">
                 <c:url value="/user/${user.id}/follow-info/?pageNum=${pageNum + 1}&page=${followersActive ? 'followers' : 'following'}" var="nextPage" />
