@@ -19,12 +19,11 @@
             <div class="search-container">
                 <h1 class="search-title"><spring:message code="webpage.name"/></h1>
                 
-                <div class="search-tabs">
-                    <span class="search-tab active" data-type="music">
+                <div class="tabs">
+                    <span class="tab active" data-type="music">
                         <spring:message code="search.tab.music"/>
                     </span>
-                    <span class="tab-separator">/</span>
-                    <span class="search-tab" data-type="users">
+                    <span class="tab" data-type="users">
                         <spring:message code="search.tab.users"/>
                     </span>
                 </div>
@@ -87,12 +86,12 @@
             }
 
             function handleTabClick(event) {
-                document.querySelectorAll('.search-tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
                 event.target.classList.add('active');
                 closeAllLists();
             }
 
-            document.querySelectorAll('.search-tab').forEach(tab => {
+            document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', handleTabClick);
             });
 
@@ -139,7 +138,7 @@
                 resultsContainer.setAttribute("class", "search-results-list");
                 document.getElementById('searchInput').parentNode.appendChild(resultsContainer);
 
-                var activeTab = document.querySelector('.search-tab.active').dataset.type;
+                var activeTab = document.querySelector('.tab.active').dataset.type;
                 var searchArray = (activeTab === 'music') ? [...s_artists, ...s_albums, ...s_songs] : s_users;
                 searchArray = sortBySubstring(searchArray, val);
 
@@ -149,7 +148,7 @@
                 }
 
                 <c:url var="elementUrl" value="/"/>
-                searchArray.slice(0, 7).forEach(function (item) {
+                searchArray.slice(0, 8).forEach(function (item) {
                     var resultItem = document.createElement("DIV");
                     resultItem.className = "search-result-item";
                     resultItem.innerHTML = createSearchResultItem(item);
