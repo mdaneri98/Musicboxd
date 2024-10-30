@@ -1824,3 +1824,32 @@ textarea.form-control {
         padding: var(--space-md);
     }
 }
+
+/* Primary Image for Forms */
+.primary-image {
+    width: 12rem;
+    height: 12rem;
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--space-lg);
+    transition: opacity 0.3s ease;
+}
+
+.primary-image:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+@media (max-width: 48rem) { /* 768px */
+    .primary-image {
+        width: 10rem;
+        height: 10rem;
+    }
+}
+
+@media (max-width: 36rem) { /* 576px */
+    .primary-image {
+        width: 8rem;
+        height: 8rem;
+    }
+}
