@@ -7,6 +7,7 @@ import ar.edu.itba.paw.services.exception.UserAlreadyExistsException;
 import ar.edu.itba.paw.services.exception.VerificationEmailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import javax.mail.MessagingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -113,6 +115,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOpt = userDao.create(username, email, hashedPassword, optionalImage.get());
         if (userOpt.isPresent()) {
             User createdUser = userOpt.get();
+            createdUser.setPreferredLanguage(LocaleContextHolder.getLocale().getLanguage());
             this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
             LOGGER.info("Successfully created new user with ID: {}", createdUser.getId());
         } else {

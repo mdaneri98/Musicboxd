@@ -42,6 +42,9 @@ public class User {
     @Column(name = "moderator", nullable = false)
     private Boolean moderator;
 
+    @Column(name = "preferred_language", nullable = true)
+    private String preferredLanguage;
+
     @Column(name = "followers_amount")
     private Integer followersAmount;
 
@@ -308,6 +311,14 @@ public class User {
 
     public void setFollowersAmount(Integer followersAmount) {
         this.followersAmount = followersAmount != null ? followersAmount : 0;
+    }
+
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
     }
 
     public boolean isModerator() {

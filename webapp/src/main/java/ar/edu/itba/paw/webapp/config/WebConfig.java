@@ -24,10 +24,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -78,13 +82,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public MessageSource messageSource() {
-        final ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
-
-        ms.setCacheSeconds((int) TimeUnit.SECONDS.toSeconds(5));
-        ms.setBasename("i18n/messages");
-        ms.setDefaultEncoding(StandardCharsets.UTF_8.name());
-
-        return ms;
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames(
+                "i18n/messages",     // Para mensajes generales de la aplicación
+                "i18n/mail_messages" // Para mensajes de email
+        );
+        messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        messageSource.setDefaultLocale(Locale.ENGLISH);
+        //messageSource.setFallbackToSystemLocale(false);
+        //messageSource.setUseCodeAsDefaultMessage(true);
+        return messageSource;
     }
 
     @Bean
@@ -165,6 +172,24 @@ public class WebConfig implements WebMvcConfigurer {
         return emf;
     }
 
+    // ============ Locale ============
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver resolver = new SessionLocaleResolver();
+        resolver.setDefaultLocale(Locale.ENGLISH);
+        return resolver;
+    }
 
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        interceptor.setParamName("lang");
+        return interceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
+    }
 
 }
