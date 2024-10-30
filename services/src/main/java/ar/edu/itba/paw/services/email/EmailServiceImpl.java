@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services.email;
 
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.VerificationType;
 import ar.edu.itba.paw.services.EmailService;
 import org.slf4j.Logger;
@@ -65,10 +66,10 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Async
-    public void sendVerification(VerificationType type, String email, String code) throws MessagingException {
+    public void sendVerification(VerificationType type, User to, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
-        // Obtiene el locale actual
-        Locale currentLocale = LocaleContextHolder.getLocale();
+
+        Locale currentLocale = new Locale.Builder().setLanguage(to.getPreferredLanguage()).build();
 
         String baseUrl = environment.getProperty("app.url.base");
         String verificationURL = "";
@@ -93,13 +94,14 @@ public class EmailServiceImpl implements EmailService {
             }
         }
 
-        LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, email);
+        LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, to
+.getEmail());
         LOGGER.debug("Verification URL: {}", verificationURL);
 
         params.put("verificationURL", verificationURL);
         this.sendMessageUsingThymeleafTemplate(
                 template,
-                email,
+                to.getEmail(),
                 emailSubject,
                 params,
                 currentLocale

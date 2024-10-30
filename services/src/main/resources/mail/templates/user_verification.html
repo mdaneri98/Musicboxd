@@ -1,55 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><!-- create_password.html -->
-        <!DOCTYPE html>
-        <html xmlns:th="http://www.thymeleaf.org">
-        <head>
-        <meta charset="UTF-8">
-        <title>[[#{email.reset.title}]]</title>
-    <style>
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 20px 0;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .header {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .message {
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1 class="header">[[#{email.reset.title}]]</h1>
-
-    <p class="message">[[#{email.reset.message}]]</p>
-
-    <a class="button" th:href="${verificationURL}">[[#{email.reset.button}]]</a>
-
-    <p class="footer">[[#{email.footer.message}]]</p>
-</div>
-</body>
-</html>
-
 <!-- user_verification.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>[[#{email.verify.title}]]</title>
@@ -81,18 +32,13 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="header">[[#{email.verify.title}]]</h1>
+    <h1 class="header" th:text="#{email.verify.title}"></h1>
 
-    <p class="message">[[#{email.verify.message}]]</p>
+    <p class="message" th:text="#{email.verify.message}"></p>
 
-    <a class="button" th:href="${verificationURL}">[[#{email.verify.button}]]</a>
+    <a class="button" th:href="${verificationURL}" th:text="#{email.verify.button}"></a>
 
-    <p class="footer">[[#{email.footer.message}]]</p>
+    <p class="footer" th:text="#{email.footer.message}"></p>
 </div>
-</body>
-</html></title>
-</head>
-<body>
-
 </body>
 </html>

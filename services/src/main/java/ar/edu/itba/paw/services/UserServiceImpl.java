@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
             String encodedVerificationCode = URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
             userVerificationDao.startVerification(type, user, encodedVerificationCode);
 
-            emailService.sendVerification(type, user.getEmail(), encodedVerificationCode);
+            emailService.sendVerification(type, user, encodedVerificationCode);
             LOGGER.info("Verification created and email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send verification email to user: {}", user.getEmail(), e);
