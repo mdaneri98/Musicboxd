@@ -42,7 +42,7 @@ public class User {
     @Column(name = "moderator", nullable = false)
     private Boolean moderator;
 
-    @Column(name = "preferred_language", nullable = true)
+    @Column(name = "preferred_language", nullable = false, columnDefinition = "varchar(20) default 'es'")
     private String preferredLanguage;
 
     @Column(name = "followers_amount")
