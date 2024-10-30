@@ -35,7 +35,7 @@ public class UserLocaleResolver extends SessionLocaleResolver {
 
     @Override
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-        logger.info("Storing locale in session: {}", locale);
+        logger.debug("Storing locale in session: {}", locale);
         request.getSession().setAttribute(LOCALE_SESSION_ATTRIBUTE_NAME, locale);
         super.setLocale(request, response, locale);
     }
