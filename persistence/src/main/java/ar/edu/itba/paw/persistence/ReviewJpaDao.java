@@ -298,7 +298,7 @@ public class ReviewJpaDao implements ReviewDao {
     public List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize) {
         final TypedQuery<Review> query = em.createQuery(
                 "FROM Review r " +
-                "WHERE r.user.id = :userId AND r.isBlocked = false " +
+                "WHERE r.user.id = :userId " +
                 "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
                 "ORDER BY r.createdAt DESC",
                 Review.class

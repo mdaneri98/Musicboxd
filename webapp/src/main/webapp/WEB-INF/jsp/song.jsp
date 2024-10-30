@@ -111,7 +111,7 @@
           </div>
           <div class="song-info-item">
             <span class="info-label"><spring:message code="label.release.date"/>:</span>
-            <span class="info-value"><c:out value="${song.album.releaseDate}"/></span>
+            <span class="info-value"><c:out value="${song.album.formattedReleaseDate}"/></span>
           </div>
         </div>
       </section>

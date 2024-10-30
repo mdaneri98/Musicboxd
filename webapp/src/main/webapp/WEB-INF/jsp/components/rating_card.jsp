@@ -12,7 +12,7 @@
         </div>
         <div class="rating-stat-item">
             <div class="rating-value">
-                <span class="star">&#9733;</span>
+                <span class="star filled">&#9733;</span>
                 <fmt:formatNumber value="${param.averageRating}" type="number" maxFractionDigits="2"/>
                 <span class="rating-max">/ 5</span>
             </div>

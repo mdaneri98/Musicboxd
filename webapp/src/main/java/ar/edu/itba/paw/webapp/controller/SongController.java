@@ -162,7 +162,7 @@ public class SongController {
     @RequestMapping(value = "/{songId:\\d+}/delete-review", method = RequestMethod.GET)
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
         Optional<SongReview> reviewOptional = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
-        reviewService.deleteReview(reviewOptional.get(), loggedUser.getId());
+        reviewService.delete(reviewOptional.get().getId());
         return new ModelAndView("redirect:/song/" + songId);
     }
 

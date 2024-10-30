@@ -40,18 +40,14 @@
         <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
         <c:choose>
           <c:when test="${!isFollowing}">
-            <form action="${follow_user_url}" method="post">
-              <button type="submit" class="btn btn-primary">
+              <a href="${follow_user_url}" class="btn btn-primary">
                 <spring:message code="label.follow"/>
-              </button>
-            </form>
+              </a>
           </c:when>
           <c:otherwise>
-            <form action="${unfollow_user_url}" method="post">
-              <button type="submit" class="btn btn-secondary">
-                <spring:message code="label.unfollow"/>
-              </button>
-            </form>
+            <a href="${unfollow_user_url}" class="btn btn-secondary">
+              <spring:message code="label.unfollow"/>
+            </a>
           </c:otherwise>
         </c:choose>
       </div>

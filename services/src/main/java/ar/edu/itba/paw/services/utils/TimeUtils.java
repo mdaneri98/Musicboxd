@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services.utils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -43,5 +44,15 @@ public class TimeUtils {
         } else {
             return messageSource.getMessage("label.just.now", null, LocaleContextHolder.getLocale());
         }
+    }
+
+    public static String formatDate(LocalDate date) {
+        int day = date.getDayOfMonth();
+        String monthKey = "label.month." + date.getMonthValue();
+        String year = String.valueOf(date.getYear()); // Convert to String to avoid formatting issues
+        
+        return messageSource.getMessage("label.date.format", 
+            new Object[]{day, messageSource.getMessage(monthKey, null, LocaleContextHolder.getLocale()), year}, 
+            LocaleContextHolder.getLocale());
     }
 }

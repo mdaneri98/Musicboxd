@@ -283,14 +283,14 @@ public class UserController {
         return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
     }
 
-    @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)
+    @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.GET)
     public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser,
                                @PathVariable(name = "userId") long userId) {
         userService.createFollowing(loggedUser, userId);
         return new ModelAndView("redirect:/user/" + userId);
     }
 
-    @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.POST)
+    @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.GET)
     public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser,
                                  @PathVariable(name = "userId") long userId) {
         userService.undoFollowing(loggedUser, userId);
