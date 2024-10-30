@@ -45,7 +45,7 @@
                             <div class="carousel">
                                 <c:forEach var="artist" items="${topRatedArtists}" varStatus="status">
                                     <c:url var="artistUrl" value="/artist/${artist.id}"/>
-                                    <div class="music-item">
+                                    <div class="music-item artist-item">
                                         <a href="${artistUrl}" class="music-item-link">
                                             <div class="music-item-image-container">
                                                 <c:url var="artistImgURL" value="/images/${artist.image.id}"/>
@@ -72,7 +72,7 @@
                             <div class="carousel">
                                 <c:forEach var="artist" items="${mostPopularArtists}" varStatus="status">
                                     <c:url var="artistUrl" value="/artist/${artist.id}"/>
-                                    <div class="music-item">
+                                    <div class="music-item artist-item">
                                         <a href="${artistUrl}" class="music-item-link">
                                             <div class="music-item-image-container">
                                                 <c:url var="artistImgURL" value="/images/${artist.image.id}"/>
@@ -114,7 +114,7 @@
                             <div class="carousel">
                                 <c:forEach var="album" items="${topRatedAlbums}" varStatus="status">
                                     <c:url var="albumUrl" value="/album/${album.id}"/>
-                                    <div class="music-item">
+                                    <div class="music-item album-item">
                                         <a href="${albumUrl}" class="music-item-link">
                                             <div class="music-item-image-container">
                                                 <c:url var="albumImgURL" value="/images/${album.image.id}"/>
@@ -141,7 +141,7 @@
                             <div class="carousel">
                                 <c:forEach var="album" items="${mostPopularAlbums}" varStatus="status">
                                     <c:url var="albumUrl" value="/album/${album.id}"/>
-                                    <div class="music-item">
+                                    <div class="music-item album-item">
                                         <a href="${albumUrl}" class="music-item-link">
                                             <div class="music-item-image-container">
                                                 <c:url var="albumImgURL" value="/images/${album.image.id}"/>
