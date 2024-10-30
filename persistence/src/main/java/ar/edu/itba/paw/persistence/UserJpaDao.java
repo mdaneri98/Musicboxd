@@ -116,12 +116,26 @@ public class UserJpaDao implements UserDao {
         if (user != null && userToFollow != null) {
             if (!user.getFollowing().contains(userToFollow)) {
                 user.getFollowing().add(userToFollow);
-                user.setFollowingAmount(user.getFollowingAmount() + 1);
-                userToFollow.setFollowersAmount(userToFollow.getFollowersAmount() + 1);
+                user.setFollowingAmount(countFollowing(user.getId()));
+                userToFollow.setFollowersAmount(countFollowers(userToFollow.getId()));
                 return 1;
             }
         }
         return 0;
+    }
+
+    @Override
+    public int countFollowers(Long userId) {
+        Query query = em.createQuery("SELECT COUNT(u) FROM User u JOIN u.following f WHERE f.id = :userId");
+        query.setParameter("userId", userId);
+        return ((Long) query.getSingleResult()).intValue();
+    }
+
+    @Override 
+    public int countFollowing(Long userId) {
+        Query query = em.createQuery("SELECT COUNT(f) FROM User u JOIN u.following f WHERE u.id = :userId");
+        query.setParameter("userId", userId);
+        return ((Long) query.getSingleResult()).intValue();
     }
 
     @Override
@@ -132,8 +146,8 @@ public class UserJpaDao implements UserDao {
         if (user != null && userToFollow != null) {
             if (user.getFollowing().contains(userToFollow)) {
                 if (user.getFollowing().remove(userToFollow)) {
-                    user.setFollowingAmount(user.getFollowingAmount() - 1);
-                    userToFollow.setFollowersAmount(userToFollow.getFollowersAmount() - 1);
+                    user.setFollowingAmount(countFollowing(user.getId()));
+                    userToFollow.setFollowersAmount(countFollowers(userToFollow.getId()));
                     return 1;
                 }
             }
@@ -329,9 +343,16 @@ public class UserJpaDao implements UserDao {
     //============================ Reviews ============================
     @Override
     public void updateUserReviewAmount(Long userId) {
-        User user = em.find(User.class, userId);
-        if (user != null)
-            user.setReviewAmount(user.getReviewAmount() + 1);
+        Query countQuery = em.createQuery(
+                "SELECT COUNT(r) FROM Review r WHERE r.user.id = :userId AND r.isBlocked = false"
+        );
+        countQuery.setParameter("userId", userId);
+        Integer reviewCount = ((Number) countQuery.getSingleResult()).intValue();
+
+        em.createQuery("UPDATE User u SET u.reviewAmount = :reviewCount WHERE u.id = :userId")
+                .setParameter("userId", userId)
+                .setParameter("reviewCount", reviewCount)
+                .executeUpdate();
     }
 
 }

@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.persistence.SongDao;
+import ar.edu.itba.paw.services.utils.TimeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -25,37 +26,45 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Song> find(long id) {
-        return songDao.find(id);
+        Optional<Song> song = songDao.find(id);
+        song.ifPresent(s -> s.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(s.getAlbum().getReleaseDate())));
+        return song;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findAll() {
-        return songDao.findAll();
+        List<Song> songs = songDao.findAll();
+        songs.forEach(s -> s.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(s.getAlbum().getReleaseDate())));
+        return songs;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findByTitleContaining(String sub) {
-        return songDao.findByTitleContaining(sub);
+        List<Song> songs = songDao.findByTitleContaining(sub);
+        return songs;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findPaginated(FilterType filterType, int page, int pageSize) {
-        return songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+        List<Song> songs = songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+        return songs;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findByArtistId(long id) {
-        return songDao.findByArtistId(id);
+        List<Song> songs = songDao.findByArtistId(id);
+        return songs;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findByAlbumId(long id) {
-        return songDao.findByAlbumId(id);
+        List<Song> songs = songDao.findByAlbumId(id);
+        return songs;
     }
 
     @Override

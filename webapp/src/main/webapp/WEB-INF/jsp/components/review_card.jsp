@@ -34,8 +34,8 @@
                     <c:url var="userImgUrl" value="/images/${param.user_img_id}" />
                     <img src="${userImgUrl}" alt="${param.user_name}" class="img-avatar">
                     <div class="user-details">
-                        <span class="user-name"><c:out value="${param.user_name}"/></span>
                         <span class="review-timestamp"><c:out value="${param.timeAgo}"/></span>
+                        <span class="user-name"><c:out value="${param.user_name}"/></span>
                         <div class="user-badges">
                             <c:if test="${param.verified}">
                                 <span class="badge badge-verified">
@@ -74,8 +74,9 @@
 
                 <!-- Comment action -->
                 <div class="action-item">
+                    <c:url var="reviewUrl" value="/review/${param.review_id}" />
                     <span class="action-count">${param.commentAmount}</span>
-                    <a href="${itemUrl}" class="action-link">
+                    <a href="${reviewUrl}" class="action-link">
                         <i class="fa-regular fa-comment"></i>
                     </a>
                 </div>
