@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import ar.edu.itba.paw.webapp.config.resolver.UserLocaleResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -175,7 +176,7 @@ public class WebConfig implements WebMvcConfigurer {
     // ============ Locale ============
     @Bean
     public LocaleResolver localeResolver() {
-        SessionLocaleResolver resolver = new SessionLocaleResolver();
+        SessionLocaleResolver resolver = new UserLocaleResolver();
         resolver.setDefaultLocale(Locale.ENGLISH);
         return resolver;
     }
@@ -189,7 +190,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(localeChangeInterceptor()).addPathPatterns("/**");
     }
 
 }
