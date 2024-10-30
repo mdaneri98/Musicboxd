@@ -103,6 +103,7 @@ public class UserJpaDao implements UserDao {
     public Optional<User> create(String username, String email, String password, Image image) {
         final User user = new User(username, password, email);
         user.setImage(image);
+        user.setPreferredLanguage("es");
         em.persist(user);
         return Optional.of(user);
     }
@@ -116,8 +117,8 @@ public class UserJpaDao implements UserDao {
         if (user != null && userToFollow != null) {
             if (!user.getFollowing().contains(userToFollow)) {
                 user.getFollowing().add(userToFollow);
-                user.setFollowingAmount(user.getFollowingAmount() + 1);
-                userToFollow.setFollowersAmount(userToFollow.getFollowersAmount() + 1);
+                user.setFollowingAmount(countFollowing(user.getId()));
+                userToFollow.setFollowersAmount(countFollowers(user.getId()));
                 return 1;
             }
         }
@@ -132,13 +133,27 @@ public class UserJpaDao implements UserDao {
         if (user != null && userToFollow != null) {
             if (user.getFollowing().contains(userToFollow)) {
                 if (user.getFollowing().remove(userToFollow)) {
-                    user.setFollowingAmount(user.getFollowingAmount() - 1);
-                    userToFollow.setFollowersAmount(userToFollow.getFollowersAmount() - 1);
+                    user.setFollowingAmount(countFollowing(user.getId()));
+                    userToFollow.setFollowersAmount(countFollowers(userToFollow.getId()));
                     return 1;
                 }
             }
         }
         return 0;
+    }
+
+    @Override
+    public int countFollowers(Long userId) {
+        Query query = em.createQuery("SELECT COUNT(u) FROM User u JOIN u.following f WHERE f.id = :userId");
+        query.setParameter("userId", userId);
+        return ((Long) query.getSingleResult()).intValue();
+    }
+
+    @Override 
+    public int countFollowing(Long userId) {
+        Query query = em.createQuery("SELECT COUNT(f) FROM User u JOIN u.following f WHERE u.id = :userId");
+        query.setParameter("userId", userId);
+        return ((Long) query.getSingleResult()).intValue();
     }
 
     @Override
