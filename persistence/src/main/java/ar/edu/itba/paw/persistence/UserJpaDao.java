@@ -103,6 +103,7 @@ public class UserJpaDao implements UserDao {
     public Optional<User> create(String username, String email, String password, Image image) {
         final User user = new User(username, password, email);
         user.setImage(image);
+        user.setPreferredLanguage("es");
         em.persist(user);
         return Optional.of(user);
     }
