@@ -20,39 +20,41 @@
 
   <main class="content-wrapper">
     <!-- User Info Header -->
-    <header>
-      <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
-        <jsp:param name="imgId" value="${user.image.id}" />
-        <jsp:param name="username" value="${user.username}" />
-        <jsp:param name="name" value="${user.name}" />
-        <jsp:param name="bio" value="${user.bio}" />
-        <jsp:param name="reviewAmount" value="${user.reviewAmount}" />
-        <jsp:param name="followersAmount" value="${user.followersAmount}" />
-        <jsp:param name="followingAmount" value="${user.followingAmount}" />
-        <jsp:param name="id" value="${user.id}" />
-      </jsp:include>
-    </header>
+    <div class="profile-header">
+      <header>
+        <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
+          <jsp:param name="imgId" value="${user.image.id}" />
+          <jsp:param name="username" value="${user.username}" />
+          <jsp:param name="name" value="${user.name}" />
+          <jsp:param name="bio" value="${user.bio}" />
+          <jsp:param name="reviewAmount" value="${user.reviewAmount}" />
+          <jsp:param name="followersAmount" value="${user.followersAmount}" />
+          <jsp:param name="followingAmount" value="${user.followingAmount}" />
+          <jsp:param name="id" value="${user.id}" />
+        </jsp:include>
+      </header>
 
-    <!-- Follow/Unfollow Button -->
-    <div class="user-actions">
-      <c:url value="/user/${user.id}/follow" var="follow_user_url" />
-      <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
-      <c:choose>
-        <c:when test="${!isFollowing}">
-          <form action="${follow_user_url}" method="post">
-            <button type="submit" class="btn btn-primary">
-              <spring:message code="label.follow"/>
-            </button>
-          </form>
-        </c:when>
-        <c:otherwise>
-          <form action="${unfollow_user_url}" method="post">
-            <button type="submit" class="btn btn-secondary">
-              <spring:message code="label.unfollow"/>
-            </button>
-          </form>
-        </c:otherwise>
-      </c:choose>
+      <!-- Follow/Unfollow Button -->
+      <div class="user-actions">
+        <c:url value="/user/${user.id}/follow" var="follow_user_url" />
+        <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
+        <c:choose>
+          <c:when test="${!isFollowing}">
+            <form action="${follow_user_url}" method="post">
+              <button type="submit" class="btn btn-primary">
+                <spring:message code="label.follow"/>
+              </button>
+            </form>
+          </c:when>
+          <c:otherwise>
+            <form action="${unfollow_user_url}" method="post">
+              <button type="submit" class="btn btn-secondary">
+                <spring:message code="label.unfollow"/>
+              </button>
+            </form>
+          </c:otherwise>
+        </c:choose>
+      </div>
     </div>
 
     <!-- Favorites Sections -->
@@ -119,11 +121,11 @@
               <a href="${songUrl}" class="song-item">
                 <span class="song-number">${status.index + 1}</span>
                 <span class="song-title"><c:out value="${song.title}"/></span>
-                <span class="song-rating">
+                <div class="rating-badge">
                   <fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/>
                   <span class="rating">${formattedRating}</span>
                   <span class="star">&#9733;</span>
-                </span>
+                </div>
               </a>
             </li>
           </c:forEach>

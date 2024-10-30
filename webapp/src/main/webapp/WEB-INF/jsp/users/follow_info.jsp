@@ -17,6 +17,7 @@
 
         <main class="content-wrapper">
             <!-- User Info Header -->
+            <div class="profile-header">
             <header>
                 <jsp:include page="/WEB-INF/jsp/components/user_info.jsp">
                     <jsp:param name="imgId" value="${user.image.id}" />
@@ -29,6 +30,7 @@
                     <jsp:param name="id" value="${user.id}" />
                 </jsp:include>
             </header>
+            </div>
 
             <!-- Section Title -->
             <h1 class="page-title">

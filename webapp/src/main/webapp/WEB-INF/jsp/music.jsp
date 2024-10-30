@@ -186,11 +186,11 @@
                                     <a href="${songUrl}" class="song-item">
                                         <span class="song-number">${status.index + 1}</span>
                                         <span class="song-title"><c:out value="${song.title}"/></span>
-                                        <span class="song-rating">
+                                        <div class="rating-badge">
                                             <fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/>
                                             <span class="rating">${formattedRating}</span>
                                             <span class="star">&#9733;</span>
-                                        </span>
+                                        </div>
                                     </a>
                                 </li>
                             </c:forEach>
@@ -208,11 +208,11 @@
                                     <a href="${songUrl}" class="song-item">
                                         <span class="song-number">${status.index + 1}</span>
                                         <span class="song-title"><c:out value="${song.title}"/></span>
-                                        <span class="song-rating">
+                                        <div class="rating-badge">
                                             <fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/>
                                             <span class="rating">${formattedRating}</span>
                                             <span class="star">&#9733;</span>
-                                        </span>
+                                        </div>
                                     </a>
                                 </li>
                             </c:forEach>
