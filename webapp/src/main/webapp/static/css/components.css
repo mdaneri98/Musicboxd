@@ -51,7 +51,9 @@
 
 .img-avatar {
   border-radius: 50%;
-  max-width: 5rem;
+  width: 5rem;
+  height: 5rem;
+  object-fit: cover;
 }
 
 /* Lists */

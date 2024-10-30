@@ -17,21 +17,21 @@
                 <h3><c:out value="${param.name}"/></h3>
             </a>
             <p class="user-profile-bio"><c:out value="${param.bio}"/></p>
-            
+
             <div class="user-profile-stats">
                 <c:url var="followersInfoUrl" value="/user/${param.id}/follow-info?page=followers"/>
                 <c:url var="followingInfoUrl" value="/user/${param.id}/follow-info?page=following"/>
-                
+
                 <a href="${userUrl}" class="stat-link">
                     <span class="stat-value">${param.reviewAmount}</span>
                     <span class="stat-label"><spring:message code="label.reviews" /></span>
                 </a>
-                
+
                 <a href="${followersInfoUrl}" class="stat-link">
                     <span class="stat-value">${param.followersAmount}</span>
                     <span class="stat-label"><spring:message code="label.followers" /></span>
                 </a>
-                
+
                 <a href="${followingInfoUrl}" class="stat-link">
                     <span class="stat-value">${param.followingAmount}</span>
                     <span class="stat-label"><spring:message code="label.following" /></span>

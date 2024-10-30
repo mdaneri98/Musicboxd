@@ -190,16 +190,17 @@
 }
 
 .music-item {
-  background-color: var(--color-background-secondary);
+  background-color: var(--color-background-elevated);
   padding: var(--space-sm);
   border-radius: var(--border-radius-md);
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, scale 0.3s ease;
   width: clamp(8rem, 15vw, 12rem);
   flex-shrink: 0;
 }
 
 .music-item:hover {
   background-color: var(--color-background-highlight);
+  scale: 1.05;
 }
 
 .music-item-link {
@@ -246,6 +247,10 @@
     color: #ffd700;
     margin-left: 0.125em;
     font-size: small;
+}
+
+.rating-badge .rating {
+    font-weight: 700;
 }
 
 /* Responsive adjustments */
@@ -305,21 +310,10 @@
   font-weight: 600;
 }
 
-.song-rating {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  color: var(--color-text-secondary);
+.song-item .rating-badge {
+    position: static; 
 }
 
-.song-rating .rating {
-  font-weight: 500;
-}
-
-.song-rating .star {
-  color: #ffd700;
-  font-size: 0.875rem;
-}
 
 @media (max-width: 48rem) { /* 768px */
   .song-list {
@@ -338,10 +332,6 @@
 
   .song-title {
     margin-right: var(--space-md);
-    font-size: 0.875rem;
-  }
-
-  .song-rating {
     font-size: 0.875rem;
   }
 }
@@ -637,8 +627,8 @@
 }
 
 .user-card-image {
-    width: clamp(3rem, 15%, 5rem);
-    height: clamp(3rem, 15%, 5rem);
+    width: clamp(3rem, 1%, 5rem);
+    height: clamp(3rem, 1%, 5rem);
     border-radius: 50%;
     object-fit: cover;
 }
@@ -774,6 +764,7 @@
     font-weight: bold;
     color: var(--color-text-primary);
     font-size: clamp(1rem, 2.5vw, 1.25rem);
+    text-align: center;
 }
 
 .stat-label {
@@ -1688,4 +1679,144 @@ textarea.form-control {
   .search-result-content {
     gap: var(--space-sm);
   }
+}
+
+/* Landing Page Header */
+.landing-header {
+    background-color: var(--color-background-secondary);
+    padding: var(--space-md) 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--space-lg);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: center;
+}
+
+.nav-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--color-text-primary);
+}
+
+/* Features Section */
+.feature-icon {
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: var(--space-md);
+    filter: invert(1); /* Para iconos oscuros en fondo claro */
+}
+
+/* Reviews Section */
+.reviews-section {
+    padding: var(--space-xl) 0;
+}
+
+.reviews-section h2 {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+/* Media queries */
+@media (max-width: 48rem) { /* 768px */
+    .nav-bar {
+        flex-direction: column;
+        gap: var(--space-md);
+        padding: var(--space-md);
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-md);
+    }
+
+    .feature-icon {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+@media (max-width: 36rem) { /* 576px */
+    .nav-links {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+}
+
+/* Profile Header */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-xl);
+    background-color: var(--color-background-secondary);
+    padding: var(--space-lg);
+    border-radius: var(--border-radius-lg);
+    gap: var(--space-lg);
+}
+
+.profile-header header {
+    flex: 1;
+    margin-right: 0;
+}
+
+.user-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: var(--space-md);
+    align-self: center;
+    margin-top: var(--space-lg);
+}
+
+.user-actions .btn {
+    min-width: 8rem;
+    height: fit-content;
+}
+
+/* Responsive adjustments */
+@media (max-width: 64rem) { /* 1024px */
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-md);
+        text-align: center;
+    }
+
+    .user-actions {
+        width: auto;
+        margin-top: var(--space-md);
+    }
+
+    .user-actions .btn {
+        width: auto;
+        min-width: 8rem;
+    }
+}
+
+@media (max-width: 48rem) { /* 768px */
+    .profile-header {
+        padding: var(--space-md);
+    }
 }

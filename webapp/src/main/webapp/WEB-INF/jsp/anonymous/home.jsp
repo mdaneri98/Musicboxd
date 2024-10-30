@@ -7,6 +7,18 @@
     <jsp:include page="/WEB-INF/jsp/components/head.jsp"/>
 </head>
 <body>
+    <!-- Links -->
+    <c:url var="home" value="/"/>
+    <c:url var="music" value="/music"/>
+    <c:url var="login" value="/user/login"/>
+    <c:url var="register" value="/user/register"/>
+
+    <!-- Icons -->
+    <c:url var="reviewIcon" value="/static/assets/reviewIcon.png" />
+    <c:url var="communityIcon" value="/static/assets/communityIcon.png" />
+    <c:url var="discoverIcon" value="/static/assets/discoverIcon.png" />
+
+    <!-- Content -->
     <div class="main-container">
         <header class="landing-header">
             <div class="content-wrapper">
