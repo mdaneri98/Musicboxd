@@ -52,4 +52,7 @@ public interface UserDao {
 
     void updateUserReviewAmount(Long userId);
 
+    int countFollowing(Long userId);
+    int countFollowers(Long userId);
+
 }
