@@ -164,7 +164,7 @@
 
             function createSearchResultItem(item) {
                 return `
-                    <div class="search-result-content">
+                    <div class="search-result-content" data-type="${item.type}">
                         <img src="` + imgUrl + item.imgId + `" alt="`+ item.name +`" class="search-result-image">
                         <div class="search-result-info">
                             <span class="search-result-name">` + item.name + `</span>

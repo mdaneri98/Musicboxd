@@ -41,7 +41,8 @@
 }
 
 body {
-  font-family: 'Circular Std', Arial, sans-serif;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 500;
   background-color: var(--color-background-primary);
   color: var(--color-text-primary);
   line-height: 1.6;
