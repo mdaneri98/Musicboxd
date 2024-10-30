@@ -50,14 +50,15 @@
                             </a>
                             <div class="album-info">
                                 <span class="album-genre"><c:out value="${album.genre}"/></span>
-                                <span class="info-separator">•</span>
-                                <span class="album-date"><c:out value="${album.releaseDate}"/></span>
+                                <span class="info-separator">&bull;</span>
+                                <span class="album-date"><c:out value="${album.formattedReleaseDate}"/></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Rating Card -->
+                <spring:message code="label.album" var="entityType"/>
                 <div class="rating-card-container">
                     <jsp:include page="/WEB-INF/jsp/components/rating_card.jsp">
                         <jsp:param name="totalRatings" value="${album.ratingCount}"/>

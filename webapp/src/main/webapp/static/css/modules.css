@@ -101,13 +101,20 @@
   gap: var(--space-xs);
 }
 
+.user-row {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm);
+}
+
 .user-name {
   font-weight: 600;
 }
 
 .review-timestamp {
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.13rem;
 }
 
 .review-actions {
@@ -1184,6 +1191,7 @@ textarea.form-control {
     display: flex;
     flex-direction: column;
     gap: var(--space-lg);
+    margin-bottom: var(--space-md);
 }
 
 .comment-card {
@@ -1768,31 +1776,27 @@ textarea.form-control {
 /* Profile Header */
 .profile-header {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
     margin-bottom: var(--space-xl);
     background-color: var(--color-background-secondary);
     padding: var(--space-lg);
     border-radius: var(--border-radius-lg);
-    gap: var(--space-lg);
 }
 
 .profile-header header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-lg);
     flex: 1;
-    margin-right: 0;
 }
 
 .user-actions {
-    flex-shrink: 0;
-    display: flex;
-    gap: var(--space-md);
-    align-self: center;
-    margin-top: var(--space-lg);
+    margin-left: var(--space-lg);
 }
 
 .user-actions .btn {
     min-width: 8rem;
-    height: fit-content;
+    padding: var(--space-sm) var(--space-lg);
 }
 
 /* Responsive adjustments */
@@ -1800,18 +1804,18 @@ textarea.form-control {
     .profile-header {
         flex-direction: column;
         align-items: center;
-        gap: var(--space-md);
         text-align: center;
     }
 
-    .user-actions {
-        width: auto;
-        margin-top: var(--space-md);
+    .profile-header header {
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: var(--space-md);
     }
 
-    .user-actions .btn {
-        width: auto;
-        min-width: 8rem;
+    .user-actions {
+        margin-left: 0;
+        margin-top: var(--space-md);
     }
 }
 

@@ -21,6 +21,9 @@ public interface UserDao {
 
     List<User> getFollowers(Long userId, int limit, int offset);
     List<User> getFollowings(Long userId, int limit, int offset);
+    
+    int countFollowers(Long userId);
+    int countFollowing(Long userId);
 
     Optional<User> update(User user);
 

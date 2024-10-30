@@ -80,6 +80,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Review create(Review entity) {
         LOGGER.info("Creating new review: {}", entity);
         Review createdReview = reviewDao.create(entity);
+        updateUserReviewAmount(createdReview.getUser().getId());
         LOGGER.info("Review created successfully with ID: {}", createdReview.getId());
         return createdReview;
     }
@@ -101,16 +102,19 @@ public class ReviewServiceImpl implements ReviewService {
         if (isArtistReview(id)) {
             ArtistReview r = reviewDao.findArtistReviewById(id).get();
             res = reviewDao.delete(id);
+            updateUserReviewAmount(r.getUser().getId());
             updateArtistRating(r.getArtist().getId());
         }
         if (isAlbumReview(id)) {
             AlbumReview r = reviewDao.findAlbumReviewById(id).get();
             res = reviewDao.delete(id);
+            updateUserReviewAmount(r.getUser().getId());
             updateAlbumRating(r.getAlbum().getId());
         }
         if (isSongReview(id)) {
             SongReview r = reviewDao.findSongReviewById(id).get();
             res = reviewDao.delete(id);
+            updateUserReviewAmount(r.getUser().getId());
             updateSongRating(r.getSong().getId());
         }
         if (res) {
@@ -124,18 +128,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<User> likedBy(int page, int pageSize) {
         return reviewDao.likedBy(page, pageSize);
-    }
-
-    @Override
-    @Transactional
-    public boolean deleteReview(Review review, long userId) {
-        LOGGER.info("Attempting to delete review with ID: {} for user ID: {}", review.getId(), userId);
-        boolean res = delete(review.getId());
-        if (res) {
-            updateUserReviewAmount(userId);
-            LOGGER.info("Review deleted and user review amount updated for user ID: {}", userId);
-        }
-        return res;
     }
 
     @Override
