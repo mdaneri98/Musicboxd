@@ -23,7 +23,7 @@ public class UserLocaleResolver extends SessionLocaleResolver {
             String preferredLanguage = userDetails.getUser().getPreferredLanguage();
             if (preferredLanguage != null && !preferredLanguage.isEmpty()) {
                 Locale userLocale = Locale.forLanguageTag(preferredLanguage.replace('_', '-'));
-                logger.info("Setting user preferred locale in session: {}", userLocale);
+                logger.debug("Setting user preferred locale in session: {}", userLocale);
                 // Guardamos explícitamente en la sesión
                 setLocale(request, null, userLocale);
                 return userLocale;
