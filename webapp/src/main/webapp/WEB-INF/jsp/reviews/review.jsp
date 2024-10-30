@@ -66,7 +66,7 @@
                                 <a href="${profileUrl}" class="comment-user">
                                     <c:url var="userImgUrl" value="/images/${comment.user.image.id}"/>
                                     <img src="${userImgUrl}" alt="${comment.user.username}" class="comment-user-img">
-                                    <span class="comment-username">${comment.user.username}</span>
+                                    <span class="comment-username">@${comment.user.username}</span>
                                 </a>
                                 <span class="comment-date"><c:out value="${comment.timeAgo}"/></span>
                                 
