@@ -1,82 +1,98 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" content="text/html" http-equiv="content-type">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificación de Usuario</title>
-
+    <meta charset="UTF-8">
+    <title><!-- create_password.html -->
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org">
+        <head>
+        <meta charset="UTF-8">
+        <title>[[#{email.reset.title}]]</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
         .container {
-            background-color: #ffffff;
             max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
         }
-
-        h1 {
-            color: #2C3E50;
-            font-size: 24px;
-        }
-
-        p {
-            font-size: 16px;
-            color: #7F8C8D;
-            margin-bottom: 30px;
-        }
-
-        a {
-            text-decoration: none;
+        .button {
             display: inline-block;
-            padding: 15px 25px;
-            font-size: 16px;
-            color: #ffffff;
-            background-color: #3498DB;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
             border-radius: 5px;
-            transition: background-color 0.3s ease;
         }
-
-        a:hover {
-            background-color: #2980B9;
+        .header {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-
-        @media (max-width: 600px) {
-            .container {
-                width: 90%;
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-
-            p {
-                font-size: 14px;
-            }
-
-            a {
-                padding: 12px 20px;
-                font-size: 14px;
-            }
+        .message {
+            line-height: 1.5;
+            margin-bottom: 20px;
         }
     </style>
-
 </head>
 <body>
 <div class="container">
-    <h1>Verificación de Usuario</h1>
-    <p>Entra en el siguiente enlace para verificar tu cuenta. ¡Gracias por unirte!</p>
-    <a th:href="${verificationURL}">Continuar</a>
+    <h1 class="header">[[#{email.reset.title}]]</h1>
+
+    <p class="message">[[#{email.reset.message}]]</p>
+
+    <a class="button" th:href="${verificationURL}">[[#{email.reset.button}]]</a>
+
+    <p class="footer">[[#{email.footer.message}]]</p>
 </div>
+</body>
+</html>
+
+<!-- user_verification.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>[[#{email.verify.title}]]</title>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .header {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .message {
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="header">[[#{email.verify.title}]]</h1>
+
+    <p class="message">[[#{email.verify.message}]]</p>
+
+    <a class="button" th:href="${verificationURL}">[[#{email.verify.button}]]</a>
+
+    <p class="footer">[[#{email.footer.message}]]</p>
+</div>
+</body>
+</html></title>
+</head>
+<body>
+
 </body>
 </html>
