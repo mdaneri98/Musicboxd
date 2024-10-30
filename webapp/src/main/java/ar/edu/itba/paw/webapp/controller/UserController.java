@@ -297,6 +297,20 @@ public class UserController {
         return new ModelAndView("redirect:/user/" + userId);
     }
 
+    @RequestMapping(path = "/language/{language}", method = RequestMethod.POST)
+    public ModelAndView updateLanguage(@ModelAttribute("loggedUser") User loggedUser,
+                                       @PathVariable("language") String language) {
+        if (!List.of("en", "es").contains(language)) {
+            String errorMessage = messageSource.getMessage("error.user.language.invalid", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/user/profile?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+
+        loggedUser.setPreferredLanguage(language);
+        userService.update(loggedUser);
+
+        return new ModelAndView("redirect:/user/profile");
+    }
+
     private byte[] getBytes(MultipartFile imageFile) {
         if (imageFile == null) { return null; }
         byte[] bytes;

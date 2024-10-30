@@ -4,10 +4,14 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,13 +23,15 @@ public class IndexController {
     private final UserService userService;
     private final SongService songService;
     private final AlbumService albumService;
+    private final MessageSource messageSource;
 
-    public IndexController(ArtistService artistService, ReviewService reviewService, UserService userService, SongService songService, AlbumService albumService) {
+    public IndexController(ArtistService artistService, ReviewService reviewService, UserService userService, SongService songService, AlbumService albumService, MessageSource messageSource) {
         this.artistService = artistService;
         this.reviewService = reviewService;
         this.userService = userService;
         this.songService = songService;
         this.albumService = albumService;
+        this.messageSource = messageSource;
     }
 
     @RequestMapping(value = {"/home", "/"})
