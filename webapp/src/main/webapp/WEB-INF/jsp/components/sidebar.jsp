@@ -44,6 +44,31 @@
         <img src="${profileImageUrl}" alt="Profile">
       </a>
     </li>
+
+    <!-- Language Toggle -->
+    <li>
+      <c:choose>
+        <c:when test="${loggedUser.preferredLanguage eq 'es'}">
+          <c:url var="changeLanguageUrl" value="/user/language/en" />
+          <form action="${changeLanguageUrl}" method="post" style="display: inline;">
+            <button type="submit" class="sidebar-icon" style="border: none; background: none; cursor: pointer;">
+              <i class="fas fa-language"></i>
+              <span style="font-size: 0.8em;">EN</span>
+            </button>
+          </form>
+        </c:when>
+        <c:otherwise>
+          <c:url var="changeLanguageUrl" value="/user/language/es" />
+          <form action="${changeLanguageUrl}" method="post" style="display: inline;">
+            <button type="submit" class="sidebar-icon" style="border: none; background: none; cursor: pointer;">
+              <i class="fas fa-language"></i>
+              <span style="font-size: 0.8em;">ES</span>
+            </button>
+          </form>
+        </c:otherwise>
+      </c:choose>
+    </li>
+
     <li>
       <c:url var="logoutUrl" value="/user/logout"/>
       <a href="${logoutUrl}" class="sidebar-icon">
