@@ -19,7 +19,7 @@
     <c:url var="discoverIcon" value="/static/assets/discoverIcon.png" />
 
     <!-- Content -->
-    <div class="main-container">
+    <div class="main-container-no-sidebar">
         <header class="landing-header">
                 <nav class="nav-bar">
                     <div class="logo"><spring:message code="webpage.name"/></div>

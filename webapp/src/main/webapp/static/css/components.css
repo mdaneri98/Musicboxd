@@ -12,7 +12,7 @@
 
 .btn-primary {
   background-color: var(--color-accent);
-  color: #000000;
+  color: var(--button-text-color);
 }
 
 .btn-primary:hover {
@@ -26,7 +26,7 @@
 }
 
 .btn-danger {
-  background-color: #cf3232;
+  background-color: cf3232;
   color: var(--color-text-primary);
 }
 
@@ -98,11 +98,11 @@
 
 .badge-verified {
   background-color: var(--color-accent);
-  color: #000;
+  color: var(--button-text-color);
 }
 
 .badge-moderator {
-  background-color: #1E3A8A;
+  background-color: var(--mod-badge);
   color: var(--color-text-primary);
 } 
 
@@ -121,15 +121,15 @@
 }
 
 .alert-danger {
-    background-color: rgba(255, 76, 76, 0.1);
-    border: 1px solid rgba(255, 76, 76, 0.2);
-    color: #ff4c4c;
+    background-color: var(--color-danger-bg);
+    border: 1px solid var(--color-danger-border);
+    color: var(--color-danger);
 }
 
 .alert-success {
-    background-color: rgba(29, 185, 84, 0.1);
-    border: 1px solid rgba(29, 185, 84, 0.2);
-    color: #1db954;
+    background-color: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+    color: var(--color-success);
 }
 
 /* Empty State */
