@@ -58,14 +58,15 @@
                 </div>
 
                 <!-- Rating Card -->
-                <spring:message code="label.album" var="entityType"/>
+                <spring:message code="label.album.lower.case" var="entityLabel"/>
                 <div class="rating-card-container">
                     <jsp:include page="/WEB-INF/jsp/components/rating_card.jsp">
                         <jsp:param name="totalRatings" value="${album.ratingCount}"/>
                         <jsp:param name="averageRating" value="${album.avgRating}"/>
                         <jsp:param name="userRating" value="${loggedUserRating}"/>
                         <jsp:param name="reviewed" value="${isReviewed}"/>
-                        <jsp:param name="entityType" value="${entityType}"/>
+                        <jsp:param name="entityType" value="album"/>
+                        <jsp:param name="entityLabel" value="${entityLabel}"/>
                         <jsp:param name="entityId" value="${albumId}"/>
                     </jsp:include>
                 </div>
