@@ -185,6 +185,7 @@
                                         <span class="song-title"><c:out value="${song.title}"/></span>
                                         <div class="rating-badge">
                                             <fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                                            <c:out value="${formattedRating}"/>
                                             <span class="rating">${formattedRating}</span>
                                             <span class="star">&#9733;</span>
                                         </div>
