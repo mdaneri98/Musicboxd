@@ -68,13 +68,14 @@
         </div>
 
         <!-- Rating Card -->
+        <spring:message code="label.song" var="entityType"/>
         <div class="rating-card-container">
           <jsp:include page="/WEB-INF/jsp/components/rating_card.jsp">
             <jsp:param name="totalRatings" value="${song.ratingCount}"/>
             <jsp:param name="averageRating" value="${song.avgRating}"/>
             <jsp:param name="userRating" value="${loggedUserRating}"/>
             <jsp:param name="reviewed" value="${isReviewed}"/>
-            <jsp:param name="entityType" value="song"/>
+            <jsp:param name="entityType" value="${entityType}"/>
             <jsp:param name="entityId" value="${songId}"/>
           </jsp:include>
         </div>
@@ -84,17 +85,27 @@
       <section class="entity-actions">
         <c:url value="/song/${song.id}/add-favorite" var="add_favorite_url" />
         <c:url value="/song/${song.id}/remove-favorite" var="remove_favorite_url" />
+        <c:url value="/user/login" var="login" />
         <c:choose>
-          <c:when test="${!isFavorite}">
-            <a href="${add_favorite_url}" class="btn btn-primary">
-              <spring:message code="button.add.favorites"/>
-            </a>
-          </c:when>
-          <c:otherwise>
-            <a href="${remove_favorite_url}" class="btn btn-secondary">
-              <spring:message code="button.remove.favorites"/>
-            </a>
-          </c:otherwise>
+            <c:when test="${loggedUser.id == 0}">
+                <a href="${login}" class="btn btn-primary">
+                  <spring:message code="label.login.favorite"/>
+                </a>
+            </c:when>
+            <c:otherwise>
+                <c:choose>
+                    <c:when test="${!isFavorite}">
+                        <a href="${add_favorite_url}" class="btn btn-primary">
+                            <spring:message code="button.add.favorites"/>
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="${remove_favorite_url}" class="btn btn-secondary">
+                            <spring:message code="button.remove.favorites"/>
+                        </a>
+                    </c:otherwise>
+                </c:choose>
+            </c:otherwise>
         </c:choose>
       </section>
 

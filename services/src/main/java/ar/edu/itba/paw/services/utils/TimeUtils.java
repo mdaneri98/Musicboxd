@@ -17,7 +17,7 @@ public class TimeUtils {
     private static MessageSource messageSource;
 
     private TimeUtils() {
-        throw new AssertionError("Utility class");
+//        throw new AssertionError("Utility class");
     }
 
 
@@ -50,9 +50,10 @@ public class TimeUtils {
     }
 
     public static String formatDate(LocalDate date) {
+        if (date == null) { return messageSource.getMessage("label.unknown", null, LocaleContextHolder.getLocale()); }
         int day = date.getDayOfMonth();
         String monthKey = "label.month." + date.getMonthValue();
-        String year = String.valueOf(date.getYear()); // Convert to String to avoid formatting issues
+        String year = String.valueOf(date.getYear());
         
         return messageSource.getMessage("label.date.format", 
             new Object[]{day, messageSource.getMessage(monthKey, null, LocaleContextHolder.getLocale()), year}, 

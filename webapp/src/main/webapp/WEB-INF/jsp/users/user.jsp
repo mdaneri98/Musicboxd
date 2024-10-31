@@ -38,16 +38,26 @@
       <div class="user-actions">
         <c:url value="/user/${user.id}/follow" var="follow_user_url" />
         <c:url value="/user/${user.id}/unfollow" var="unfollow_user_url" />
+        <c:url value="/user/login" var="login" />
         <c:choose>
-          <c:when test="${!isFollowing}">
-              <a href="${follow_user_url}" class="btn btn-primary">
-                <spring:message code="label.follow"/>
+          <c:when test="${loggedUser.id == 0}">
+              <a href="${login}" class="btn btn-primary">
+                <spring:message code="label.login.follow"/>
               </a>
           </c:when>
           <c:otherwise>
-            <a href="${unfollow_user_url}" class="btn btn-secondary">
-              <spring:message code="label.unfollow"/>
-            </a>
+            <c:choose>
+              <c:when test="${!isFollowing}">
+                  <a href="${follow_user_url}" class="btn btn-primary">
+                    <spring:message code="label.follow"/>
+                  </a>
+              </c:when>
+              <c:otherwise>
+                <a href="${unfollow_user_url}" class="btn btn-secondary">
+                  <spring:message code="label.unfollow"/>
+                </a>
+              </c:otherwise>
+            </c:choose>
           </c:otherwise>
         </c:choose>
       </div>
