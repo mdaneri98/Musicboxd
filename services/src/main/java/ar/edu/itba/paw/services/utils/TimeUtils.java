@@ -16,7 +16,10 @@ public class TimeUtils {
 
     private static MessageSource messageSource;
 
-    private TimeUtils() {}
+    private TimeUtils() {
+        throw new AssertionError("Utility class");
+    }
+
 
     @Autowired
     public void setMessageSource(MessageSource messageSource) {

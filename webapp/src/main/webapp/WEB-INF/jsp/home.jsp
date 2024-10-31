@@ -35,7 +35,7 @@
             </c:if>
 
             <!-- Tabs de navegación -->
-            <div class="section-header">
+            <div class="section-header-home">
                 <div class="tabs">
                     <c:if test="${forYouActive}">
                         <span class="tab active"><spring:message code="home.for.you"/></span>

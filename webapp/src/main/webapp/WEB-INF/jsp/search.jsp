@@ -40,6 +40,7 @@
                     <div id="autocompleteList" class="search-results"></div>
                 </div>
             </div>
+            <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
         </main>
     </div>
 
