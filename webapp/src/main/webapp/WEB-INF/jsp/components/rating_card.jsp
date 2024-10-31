@@ -50,7 +50,7 @@
                         <c:url var="reviewUrl" value="/${param.entityType}/${param.entityId}/reviews"/>
                         <a href="${reviewUrl}" class="btn btn-primary btn-block">
                             <i class="fas fa-star"></i>
-                            <spring:message code="label.rate.this"/> <c:out value="${param.entityType}"/>
+                            <spring:message code="label.rate.this"/> <c:out value="${param.entityLabel}"/>
                         </a>
                     </c:when>
                     <c:otherwise>
