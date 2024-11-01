@@ -52,9 +52,19 @@
                     <form:textarea path="content" maxlength="500" class="form-control comment-input" 
                                  placeholder="Write a comment..."/>
                     <form:errors path="content" cssClass="form-error" />
-                    <button type="submit" class="btn btn-primary">
-                        <spring:message code="comments.submit"/>
-                    </button>
+                    <c:choose>
+                        <c:when test="${loggedUser.id == 0}">
+                            <c:url value="/user/login" var="login"/>
+                            <a href="${login}" class="btn btn-primary">
+                                <spring:message code="label.login.comment"/>
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <button type="submit" class="btn btn-primary">
+                                <spring:message code="comments.submit"/>
+                            </button>
+                        </c:otherwise>
+                    </c:choose>
                 </form:form>
 
                 <!-- Comments List -->
@@ -66,7 +76,21 @@
                                 <a href="${profileUrl}" class="comment-user">
                                     <c:url var="userImgUrl" value="/images/${comment.user.image.id}"/>
                                     <img src="${userImgUrl}" alt="${comment.user.username}" class="comment-user-img">
-                                    <span class="comment-username">@${comment.user.username}</span>
+                                    <div class="user-details">
+                                        <span class="comment-username">@${comment.user.username}</span>
+                                        <div class="user-badges">
+                                            <c:if test="${comment.user.verified}">
+                                                <span class="badge badge-verified">
+                                                    <spring:message code="label.verified" />
+                                                </span>
+                                            </c:if>
+                                            <c:if test="${comment.user.moderator}">
+                                                <span class="badge badge-moderator">
+                                                    <spring:message code="label.moderator" />
+                                                </span>
+                                            </c:if>
+                                        </div>
+                                    </div>
                                 </a>
                                 <span class="comment-date"><c:out value="${comment.timeAgo}"/></span>
                                 

@@ -95,12 +95,14 @@ public class ReviewController {
 
     @RequestMapping(value = "/like/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView createLike(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "reviewId") long reviewId) {
-        if (loggedUser.getId() > 0) reviewService.createLike(loggedUser.getId(), reviewId);
+        if (loggedUser.getId() == 0) return new ModelAndView("redirect:/user/login");
+        reviewService.createLike(loggedUser.getId(), reviewId);
         return new ModelAndView("redirect:/review/" + reviewId);
     }
 
     @RequestMapping(value = "/remove-like/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView removeLike(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "reviewId") long reviewId) {
+        if (loggedUser.getId() == 0) return new ModelAndView("redirect:/user/login");
         reviewService.removeLike(loggedUser.getId(), reviewId);
         return new ModelAndView("redirect:/review/" + reviewId);
     }
@@ -110,6 +112,7 @@ public class ReviewController {
         if (bindingResult.hasErrors()) {
             return new ModelAndView("redirect:/review/" + reviewId);
         }
+        if (loggedUser.getId() == 0) return new ModelAndView("redirect:/user/login");
         Optional<Review> reviewOptional = reviewService.find(reviewId);
         Comment comment = new Comment(loggedUser, reviewOptional.get(), commentForm.getContent());
         commentService.save(comment);
