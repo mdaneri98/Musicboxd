@@ -95,7 +95,7 @@ public class ReviewController {
 
     @RequestMapping(value = "/like/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView createLike(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "reviewId") long reviewId) {
-        reviewService.createLike(loggedUser.getId(), reviewId);
+        if (loggedUser.getId() > 0) reviewService.createLike(loggedUser.getId(), reviewId);
         return new ModelAndView("redirect:/review/" + reviewId);
     }
 
