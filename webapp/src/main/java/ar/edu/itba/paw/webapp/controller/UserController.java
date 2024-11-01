@@ -48,6 +48,7 @@ public class UserController {
     @RequestMapping("/profile")
     public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser,
                                 @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+        if (loggedUser.getId() == 0) { return new ModelAndView("redirect:/"); }
         if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }

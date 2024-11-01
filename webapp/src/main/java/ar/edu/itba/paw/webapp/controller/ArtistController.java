@@ -6,7 +6,6 @@ import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
-import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.context.MessageSource;

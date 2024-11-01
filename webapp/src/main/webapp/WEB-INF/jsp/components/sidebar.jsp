@@ -8,19 +8,20 @@
             <i class="fas fa-home"></i>
         </a>
 
+        <!-- Music Discovery -->
+        <c:url var="musicUrl" value="/music"/>
+        <a href="${musicUrl}" class="sidebar-icon" title="Music">
+            <i class="fas fa-music"></i>
+        </a>
+
+        <!-- Search -->
+        <c:url var="musicSearchUrl" value="/search"/>
+        <a href="${musicSearchUrl}" class="sidebar-icon" title="Search">
+            <i class="fas fa-search"></i>
+        </a>
+
         <!-- Logged User Section -->
         <c:if test="${not empty param.loggedUserImgId}">
-            <!-- Music Discovery -->
-            <c:url var="musicUrl" value="/music"/>
-            <a href="${musicUrl}" class="sidebar-icon" title="Music">
-                <i class="fas fa-music"></i>
-            </a>
-
-            <!-- Search -->
-            <c:url var="musicSearchUrl" value="/search"/>
-            <a href="${musicSearchUrl}" class="sidebar-icon" title="Search">
-                <i class="fas fa-search"></i>
-            </a>
 
             <!-- Moderator Section -->
             <c:if test="${param.moderator}">
@@ -47,7 +48,7 @@
         <!-- Anonymous User Section -->
         <c:if test="${empty param.loggedUserImgId}">
             <c:url var="loginUrl" value="/user/login"/>
-            <a href="${loginUrl}" class="sidebar-icon" title="Login">
+            <a href="${loginUrl}" class="sidebar-icon profile-icon" title="Login">
                 <i class="fa-solid fa-right-to-bracket"></i>
             </a>
         </c:if>

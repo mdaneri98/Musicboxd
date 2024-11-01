@@ -37,19 +37,31 @@
     </div>
 
     <div class="rating-actions">
-        <c:if test="${!param.reviewed}">
-            <c:url var="reviewUrl" value="/${param.entityType}/${param.entityId}/reviews"/>
-            <a href="${reviewUrl}" class="btn btn-primary btn-block">
-                <i class="fas fa-star"></i>
-                <spring:message code="label.rate.this"/>
-            </a>
-        </c:if>
-        <c:if test="${param.reviewed}">
-            <c:url var="editReviewUrl" value="/${param.entityType}/${param.entityId}/edit-review"/>
-            <a href="${editReviewUrl}" class="btn btn-secondary btn-block">
-                <i class="fas fa-edit"></i>
-                <spring:message code="label.edit.your.review" />
-            </a>
-        </c:if>
+        <c:url value="/user/login" var="login" />
+        <c:choose>
+            <c:when test="${loggedUser.id == 0}">
+                <a href="${login}" class="btn btn-primary btn-block">
+                    <spring:message code="label.login.review"/>
+                </a>
+            </c:when>
+            <c:otherwise>
+                <c:choose>
+                    <c:when test="${!param.reviewed}">
+                        <c:url var="reviewUrl" value="/${param.entityType}/${param.entityId}/reviews"/>
+                        <a href="${reviewUrl}" class="btn btn-primary btn-block">
+                            <i class="fas fa-star"></i>
+                            <spring:message code="label.rate.this"/> <c:out value="${param.entityLabel}"/>
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <c:url var="editReviewUrl" value="/${param.entityType}/${param.entityId}/edit-review"/>
+                        <a href="${editReviewUrl}" class="btn btn-secondary btn-block">
+                            <i class="fas fa-edit"></i>
+                            <spring:message code="label.edit.your.review" />
+                        </a>
+                    </c:otherwise>
+                </c:choose>
+            </c:otherwise>
+        </c:choose>
     </div>
 </div>
