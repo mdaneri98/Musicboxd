@@ -9,25 +9,27 @@
     </jsp:include>
 </head>
 <body>
-    <!-- Links -->
-    <c:url var="home" value="/"/>
-    <c:url var="music" value="/music"/>
-    <c:url var="login" value="/user/login"/>
-    <c:url var="register" value="/user/register"/>
+<!-- Links -->
+<c:url var="home" value="/"/>
+<c:url var="music" value="/music"/>
+<c:url var="login" value="/user/login"/>
+<c:url var="register" value="/user/register"/>
+<c:url var="search" value="/search"/>
 
-
-    <div class="main-container-no-sidebar">
-        <header class="landing-header">
-            <nav class="nav-bar">
-                <div class="logo"><spring:message code="webpage.name"/></div>
-                <div class="nav-links">
-                    <a href="${home}" class="nav-link"><spring:message code="page.title.home"/></a>
-                    <a href="${music}" class="nav-link"><spring:message code="page.title.discovery"/></a>
-                    <a href="${login}" class="nav-link"><spring:message code="label.login"/></a>
-                    <a href="${register}" class="nav-link"><spring:message code="label.register"/></a>
-                </div>
-            </nav>
-        </header>
+<!-- Content -->
+<div class="main-container-no-sidebar">
+    <header class="landing-header">
+        <nav class="nav-bar">
+            <div class="logo"><spring:message code="webpage.name"/></div>
+            <div class="nav-links">
+                <a href="${home}" class="nav-link"><spring:message code="page.title.home"/></a>
+                <a href="${music}" class="nav-link"><spring:message code="page.title.discovery"/></a>
+                <a href="${search}" class="nav-link"><spring:message code="page.title.search"/></a>
+                <a href="${login}" class="nav-link"><spring:message code="label.login"/></a>
+                <a href="${register}" class="nav-link"><spring:message code="label.register"/></a>
+            </div>
+        </nav>
+    </header>
         <div class="auth-container">
             <div class="auth-card">
                 <h1 class="auth-title"><spring:message code="webpage.name"/></h1>

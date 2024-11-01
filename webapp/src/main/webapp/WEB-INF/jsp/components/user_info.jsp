@@ -9,7 +9,7 @@
             <img src="${userImgURL}" alt="${param.username}" class="user-profile-image">
         </a>
         <div class="user-profile-info">
-            <div class="user-profile-type">
+            <div class="entity-type">
                 <spring:message code="label.user" />
             </div>
             <a href="${userUrl}" class="user-profile-name">
