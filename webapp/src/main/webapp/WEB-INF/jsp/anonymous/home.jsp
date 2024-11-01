@@ -19,9 +19,8 @@
     <c:url var="discoverIcon" value="/static/assets/discoverIcon.png" />
 
     <!-- Content -->
-    <div class="main-container">
+    <div class="main-container-no-sidebar">
         <header class="landing-header">
-            <div class="content-wrapper">
                 <nav class="nav-bar">
                     <div class="logo"><spring:message code="webpage.name"/></div>
                     <div class="nav-links">
@@ -31,7 +30,6 @@
                         <a href="${register}" class="nav-link"><spring:message code="label.register"/></a>
                     </div>
                 </nav>
-            </div>
         </header>
 
         <main class="content-wrapper">
@@ -86,9 +84,9 @@
                     </c:forEach>
                 </div>
             </section>
+            <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
         </main>
 
-        <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
     </div>
 </body>
 </html>
