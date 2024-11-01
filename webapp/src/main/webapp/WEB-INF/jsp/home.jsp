@@ -56,8 +56,6 @@
 
             <!-- Contenido principal -->
             <section class="reviews-section">
-                <h2><spring:message code="label.popular.reviews" /></h2>
-                
                 <c:if test="${reviews.size() == 0}">
                     <div class="empty-state">
                         <h3><spring:message code="home.page.empty"/></h3>

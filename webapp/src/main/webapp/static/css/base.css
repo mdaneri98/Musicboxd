@@ -1,9 +1,9 @@
 :root {
   /* Colors */
-  --color-background-primary: #121212;
-  --color-background-secondary: #181818;
-  --color-background-elevated: #242424;
-  --color-background-highlight: #3c3c3c;
+  --color-background-primary: #212121;
+  --color-background-secondary: #414141;
+  --color-background-elevated: #5e5e5e;
+  --color-background-highlight: #828282;
   
   /* Text colors */
   --color-text-primary: #ffffff;
@@ -14,6 +14,7 @@
   /* Brand colors */
   --color-accent: #1DB954;
   --color-accent-hover: #1ed760;
+  --color-accent-gradient: #4a99b5;
 
   /* Mod colors */
   --mod-badge: #1E3A8A;
