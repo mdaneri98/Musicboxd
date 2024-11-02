@@ -6,6 +6,8 @@ import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.persistence.*;
+import ar.edu.itba.paw.services.exception.AcknowledgementEmailException;
+import ar.edu.itba.paw.services.exception.VerificationEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,8 @@ import ar.edu.itba.paw.services.utils.TimeUtils;
 import org.springframework.context.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,14 +31,16 @@ public class ReviewServiceImpl implements ReviewService {
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final UserService userService;
+    private final EmailService emailService;
 
     @Autowired
-        public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, MessageSource messageSource) {
+        public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -427,6 +433,20 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void block(Long reviewId) {
         LOGGER.info("Blocking review with ID: {}", reviewId);
+
+        Optional<Review> review = reviewDao.find(reviewId);
+        if (review.isEmpty())
+            throw new IllegalArgumentException("Review with ID: " + reviewId + " does not exist");
+
+        User user = review.get().getUser();
+        try {
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.get());
+            LOGGER.info("Acknowledgement email sent successfully");
+        } catch (MessagingException e) {
+            LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
+            throw new AcknowledgementEmailException("No se pudo enviar el reconocimiento del email al usuario " + user.getEmail(), e);
+        }
+
         reviewDao.block(reviewId);
         LOGGER.info("Review blocked successfully: {}", reviewId);
     }
