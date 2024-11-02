@@ -149,7 +149,7 @@
                 }
 
                 <c:url var="elementUrl" value="/"/>
-                searchArray.slice(0, 8).forEach(function (item) {
+                searchArray.slice(0, 7).forEach(function (item) {
                     var resultItem = document.createElement("DIV");
                     resultItem.className = "search-result-item";
                     resultItem.innerHTML = createSearchResultItem(item);
