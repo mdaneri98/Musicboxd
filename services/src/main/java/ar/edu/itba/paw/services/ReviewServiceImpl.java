@@ -34,7 +34,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final EmailService emailService;
 
     @Autowired
-        public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService) {
+    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
@@ -455,6 +455,20 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void unblock(Long reviewId) {
         LOGGER.info("Unblocking review with ID: {}", reviewId);
+
+        Optional<Review> review = reviewDao.find(reviewId);
+        if (review.isEmpty())
+            throw new IllegalArgumentException("Review with ID: " + reviewId + " does not exist");
+
+        User user = review.get().getUser();
+        try {
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.get());
+            LOGGER.info("Acknowledgement email sent successfully");
+        } catch (MessagingException e) {
+            LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
+            throw new AcknowledgementEmailException("No se pudo enviar el reconocimiento del email al usuario " + user.getEmail(), e);
+        }
+
         reviewDao.unblock(reviewId);
         LOGGER.info("Review unblocked successfully: {}", reviewId);
     }
