@@ -14,7 +14,9 @@
 <c:url var="music" value="/music"/>
 <c:url var="login" value="/user/login"/>
 <c:url var="register" value="/user/register"/>
+<c:url var="search" value="/search"/>
 
+<!-- Content -->
 <div class="main-container-no-sidebar">
     <header class="landing-header">
         <nav class="nav-bar">
@@ -22,6 +24,7 @@
             <div class="nav-links">
                 <a href="${home}" class="nav-link"><spring:message code="page.title.home"/></a>
                 <a href="${music}" class="nav-link"><spring:message code="page.title.discovery"/></a>
+                <a href="${search}" class="nav-link"><spring:message code="page.title.search"/></a>
                 <a href="${login}" class="nav-link"><spring:message code="label.login"/></a>
                 <a href="${register}" class="nav-link"><spring:message code="label.register"/></a>
             </div>

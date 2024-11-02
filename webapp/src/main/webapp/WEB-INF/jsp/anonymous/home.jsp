@@ -12,11 +12,7 @@
     <c:url var="music" value="/music"/>
     <c:url var="login" value="/user/login"/>
     <c:url var="register" value="/user/register"/>
-
-    <!-- Icons -->
-    <c:url var="reviewIcon" value="/static/assets/reviewIcon.png" />
-    <c:url var="communityIcon" value="/static/assets/communityIcon.png" />
-    <c:url var="discoverIcon" value="/static/assets/discoverIcon.png" />
+    <c:url var="search" value="/search"/>
 
     <!-- Content -->
     <div class="main-container-no-sidebar">
@@ -26,6 +22,7 @@
                     <div class="nav-links">
                         <a href="${home}" class="nav-link"><spring:message code="page.title.home"/></a>
                         <a href="${music}" class="nav-link"><spring:message code="page.title.discovery"/></a>
+                        <a href="${search}" class="nav-link"><spring:message code="page.title.search"/></a>
                         <a href="${login}" class="nav-link"><spring:message code="label.login"/></a>
                         <a href="${register}" class="nav-link"><spring:message code="label.register"/></a>
                     </div>
@@ -38,6 +35,11 @@
                 <p><spring:message code="label.webpage.description"/></p>
                 <a href="${register}" class="btn btn-primary"><spring:message code="label.get.started"/></a>
             </section>
+
+            <!-- Icons -->
+            <c:url var="reviewIcon" value="/static/assets/reviewIcon.png" />
+            <c:url var="communityIcon" value="/static/assets/communityIcon.png" />
+            <c:url var="discoverIcon" value="/static/assets/discoverIcon.png" />
 
             <section class="features-grid">
                 <div class="feature-card">
