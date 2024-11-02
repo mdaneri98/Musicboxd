@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" content="text/html" http-equiv="content-type">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2C3E50;
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #7F8C8D;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .review-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .review-details p {
+            margin: 10px 0;
+            color: #2C3E50;
+        }
+
+        .warning {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        a.button {
+            text-decoration: none;
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #3498DB;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        a.button:hover {
+            background-color: #2980B9;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            a.button {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Template para reseña bloqueada -->
+    <div th:if="${isBlocked}">
+        <h1 th:text="#{email.review.blocked.title}">Tu reseña ha sido bloqueada</h1>
+        <p th:text="#{email.review.blocked.greeting(${username})}">Hola Usuario</p>
+        <p th:text="#{email.review.blocked.message}">Tu reseña ha sido bloqueada por no cumplir con nuestras políticas de comunidad.</p>
+
+        <div class="review-details">
+            <p><strong th:text="#{email.review.details.title}">Título:</strong> <span th:text="${title}">Título de la reseña</span></p>
+            <p><strong th:text="#{email.review.details.item}">Item reseñado:</strong> <span th:text="${item_name}">Nombre del item</span></p>
+            <p><strong th:text="#{email.review.details.type}">Tipo:</strong> <span th:text="${item_type}">Tipo de item</span></p>
+        </div>
+
+        <p class="warning" th:text="#{email.review.blocked.reasons.title}">Motivos posibles del bloqueo:</p>
+        <p th:text="#{email.review.blocked.reasons.inappropriate}">• Contenido inapropiado o lenguaje ofensivo</p>
+        <p th:text="#{email.review.blocked.reasons.false}">• Información falsa o engañosa</p>
+        <p th:text="#{email.review.blocked.reasons.violation}">• Violación de nuestros términos de servicio</p>
+        <p th:text="#{email.review.blocked.reasons.spam}">• Contenido spam o publicitario no autorizado</p>
+
+        <p th:text="#{email.review.blocked.appeal}">Si crees que esto es un error, contáctanos respondiendo a este email.</p>
+    </div>
+
+    <!-- Template para reseña desbloqueada -->
+    <div th:unless="${isBlocked}">
+        <h1 th:text="#{email.review.unblocked.title}">¡Tu reseña ha sido desbloqueada!</h1>
+        <p th:text="#{email.review.unblocked.greeting(${username})}">Hola Usuario</p>
+        <p class="success" th:text="#{email.review.unblocked.message}">Después de una revisión, tu reseña ha sido desbloqueada y ya está nuevamente visible en nuestra plataforma.</p>
+
+        <div class="review-details">
+            <p><strong th:text="#{email.review.details.title}">Título:</strong> <span th:text="${title}">Título de la reseña</span></p>
+            <p><strong th:text="#{email.review.details.item}">Item reseñado:</strong> <span th:text="${item_name}">Nombre del item</span></p>
+            <p><strong th:text="#{email.review.details.type}">Tipo:</strong> <span th:text="${item_type}">Tipo de item</span></p>
+        </div>
+    </div>
+
+    <p class="footer">
+        <span th:text="#{email.review.footer.thanks}">Gracias por ser parte de nuestra comunidad.</span><br>
+        <span th:text="#{email.review.footer.team}">El equipo de MusicBoxd</span>
+    </p>
+</div>
+</body>
+</html>
