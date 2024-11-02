@@ -1015,8 +1015,40 @@ textarea.form-control {
 
 .mod-form {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.mod-entity-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    flex-grow: 1;
+}
+
+.mod-label {
+    display: flex;
+    flex-direction: column;
+}
+
+.mod-input {
+    padding: var(--space-sm);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-background-highlight);
+    border-radius: var(--border-radius-sm);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.mod-editable-image {
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.mod-editable-image:hover {
+    opacity: 0.8;
 }
 
 /* Album items dentro del form */
@@ -1034,20 +1066,15 @@ textarea.form-control {
     display: flex;
     gap: var(--space-lg);
     align-items: flex-start;
+    margin-bottom: var(--space-md);
 }
 
 .sub-element-image-preview {
-    width: clamp(8rem, 20%, 12rem);
+    width: clamp(8rem, 15vw, 13rem);
     height: auto;
     aspect-ratio: 1;
     object-fit: cover;
-    border-radius: var(--border-radius-md);
-    cursor: pointer;
-    transition: opacity 0.3s ease;
-}
-
-.sub-element-image-preview:hover {
-    opacity: 0.8;
+    border-radius: var(--border-radius-sm);
 }
 
 .element-details-container {
@@ -1543,6 +1570,7 @@ textarea.form-control {
 }
 
 .mod-tabs {
+    align-items: center;
     display: flex;
     justify-content: center;
     gap: var(--space-md);

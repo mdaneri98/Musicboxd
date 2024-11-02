@@ -22,34 +22,72 @@
                 </h1>
 
                 <div class="mod-tabs">
-                    <span class="mod-tab active" data-type="artists">
-                        <spring:message code="label.artist" />
-                    </span>
-                    <span class="tab-separator">/</span>
-                    <span class="mod-tab" data-type="albums">
-                        <spring:message code="label.album" />
-                    </span>
-                    <span class="tab-separator">/</span>
-                    <span class="mod-tab" data-type="songs">
-                        <spring:message code="label.song" />
-                    </span>
+                    <c:if test="${artistActive}">
+                        <span class="mod-tab active" data-type="artists">
+                            <spring:message code="label.artist" />
+                        </span>
+                        <c:url var="albumUrl" value="/mod?page=album"/>
+                        <a href="${albumUrl}">
+                            <span class="mod-tab"><spring:message code="label.album"/></span>
+                        </a>
+                        <c:url var="songUrl" value="/mod?page=song"/>
+                        <a href="${songUrl}">
+                            <span class="mod-tab"><spring:message code="label.song"/></span>
+                        </a>
+                    </c:if>
+                    <c:if test="${albumActive}">
+                        <c:url var="artistUrl" value="/mod?page=artist"/>
+                        <a href="${artistUrl}">
+                            <span class="mod-tab"><spring:message code="label.artist"/></span>
+                        </a>
+                        <span class="mod-tab active" data-type="albums">
+                            <spring:message code="label.album" />
+                        </span>
+                        <c:url var="songUrl" value="/mod?page=song"/>
+                        <a href="${songUrl}">
+                            <span class="mod-tab"><spring:message code="label.song"/></span>
+                        </a>
+                    </c:if>
+                    <c:if test="${songActive}">
+                        <c:url var="artistUrl" value="/mod?page=artist"/>
+                        <a href="${artistUrl}">
+                            <span class="mod-tab"><spring:message code="label.artist"/></span>
+                        </a>
+                        <c:url var="albumUrl" value="/mod?page=album"/>
+                        <a href="${albumUrl}">
+                            <span class="mod-tab"><spring:message code="label.album"/></span>
+                        </a>
+                        <span class="mod-tab active" data-type="songs">
+                            <spring:message code="label.song" />
+                        </span>
+                    </c:if>
                 </div>
 
-                <div class="mod-search">
-                    <input type="text" 
-                           class="form-control search-input" 
-                           id="searchInput" 
-                           placeholder="<spring:message code="search.placeholder"/>" 
-                           autocomplete="off">
-                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                    <div id="autocompleteList" class="search-results"></div>
-                </div>
+                <c:if test="${!artistActive}">
+                    <div class="mod-search">
+                        <input type="text"
+                               class="form-control search-input"
+                               id="searchInput"
+                               placeholder="<spring:message code="search.placeholder"/>"
+                               autocomplete="off">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        <div id="autocompleteList" class="search-results"></div>
+                    </div>
+                </c:if>
 
                 <div class="mod-actions">
                     <button id="redirectButton" onclick="redirect()" class="btn btn-primary">
-                        <spring:message code="button.complete" />
+                        <c:if test="${artistActive}">
+                            <spring:message code="button.mod.artist" />
+                        </c:if>
+                        <c:if test="${albumActive}">
+                            <spring:message code="button.mod.album" />
+                        </c:if>
+                        <c:if test="${songActive}">
+                            <spring:message code="button.mod.song" />
+                        </c:if>
                     </button>
                 </div>
             </div>
@@ -73,6 +111,30 @@
         var addAlbumUrlBase = "${addAlbumUrlBase}";
         var addSongUrlBase = "${addSongUrlBase}";
 
+        var isArtistActive = "${artistActive}";
+        var isAlbumActive = "${albumActive}";
+        var isSongActive = "${songActive}";
+
+        if(isArtistActive) {
+            console.log("Changed href");
+            window.location.href = addArtistUrl;
+        }
+        if(isAlbumActive) {
+            if (selected_item) {
+                var url = addAlbumUrlBase + selected_item.id + "/album";
+                console.log(url)
+                window.location.href = url;
+            }
+        }
+        if(isSongActive) {
+            if (selected_item) {
+                var url = addSongUrlBase + selected_item.id + "/song";
+                console.log(url)
+                window.location.href = url;
+            }
+        }
+
+        /*
         var activeTab = document.querySelector('.search-tab.active').dataset.type;
         switch (activeTab) {
             case 'artists':
@@ -93,7 +155,7 @@
                     window.location.href = url;
                 }
                 break;
-        }
+        }*/
     }
 
         document.addEventListener('DOMContentLoaded', function() {

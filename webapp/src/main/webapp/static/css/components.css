@@ -25,9 +25,19 @@
   color: var(--color-text-primary);
 }
 
+.btn-secondary:hover {
+    background-color: var(--color-background-highlight);
+}
+
 .btn-danger {
-  background-color: cf3232;
-  color: var(--color-text-primary);
+    display: flex;
+    margin-left: auto;
+    background-color: var(--color-danger);
+    color: var(--color-text-primary);
+}
+
+.btn-danger:hover {
+    background-color: var(--color-danger-hover);
 }
 
 /* Cards */

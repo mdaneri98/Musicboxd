@@ -26,38 +26,40 @@
                 <form:form modelAttribute="modSongForm" action="${postURL}" method="post" class="mod-form">
                     <input name="id" type="hidden" value="${modSongForm.id}"/>
                     <input name="albumId" type="hidden" value="${modSongForm.albumId}"/>
-                    
-                    <div class="element-details-container">
-                        <div class="form-group">
-                            <label class="form-label">
-                                <spring:message code="submit.song.title.label"/>:
-                            </label>
-                            <form:errors path="title" cssClass="form-error"/>
-                            <form:input path="title" type="text" cssClass="form-control" required="true"/>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="form-label">
-                                <spring:message code="submit.song.duration.label"/>:
-                            </label>
-                            <form:errors path="duration" cssClass="form-error"/>
-                            <form:input path="duration" type="text" cssClass="form-control" 
-                                       placeholder="MM:SS - Example: 10:24 or 3:15" required="true"/>
-                        </div>
+                    <div class="mod-form">
+                        <div class="element-details-container">
+                            <div>
+                                <label class="mod-label">
+                                    <spring:message code="submit.song.title.label"/>:
+                                </label>
+                                <form:errors path="title" cssClass="form-error"/>
+                                <form:input path="title" type="text" cssClass="form-control" required="true" class="mod-input"/>
+                            </div>
 
-                        <div class="form-group">
-                            <label class="form-label">
-                                <spring:message code="submit.song.track.number.label"/>:
-                            </label>
-                            <form:errors path="trackNumber" cssClass="form-error"/>
-                            <form:input path="trackNumber" type="number" cssClass="form-control" required="true"/>
+                            <div>
+                                <label class="mod-label">
+                                    <spring:message code="submit.song.duration.label"/>:
+                                </label>
+                                <form:errors path="duration" cssClass="form-error"/>
+                                <form:input path="duration" type="text" cssClass="form-control"
+                                           placeholder="MM:SS - Example: 10:24 or 3:15" required="true" class="mod-input"/>
+                            </div>
+
+                            <div>
+                                <label class="mod-label">
+                                    <spring:message code="submit.song.track.number.label"/>:
+                                </label>
+                                <form:errors path="trackNumber" cssClass="form-error"/>
+                                <form:input path="trackNumber" type="number" cssClass="form-control" required="true" class="mod-input"/>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Delete option for existing songs -->
                     <c:if test="${songId != null}">
                         <c:url var="deleteUrl" value="/mod/delete/song/${songId}"/>
-                        <button type="button" onclick="deleteSong()" class="btn btn-danger">
+                        <button type="button" onclick="deleteSong()" class="btn btn-danger" style="margin-left: auto">
                             <spring:message code="button.delete.song"/>
                         </button>
                     </c:if>
