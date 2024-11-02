@@ -26,7 +26,7 @@
             <c:url var="postURL" value="${postUrl}" />
             <form:form id="artistForm" modelAttribute="modArtistForm" action="${postURL}" method="post" enctype="multipart/form-data">
                 <!-- Artist Information -->
-                <div class="info-container">
+                <div class="mod-form">
                     <!-- Image Preview -->
                     <c:if test="${artistId == null}">
                         <c:url var="artistImgURL" value="/images/${defaultImgId}"/>
@@ -34,22 +34,22 @@
                     <c:if test="${artistId != null}">
                         <c:url var="artistImgURL" value="/images/${modArtistForm.artistImgId}"/>
                     </c:if>
-                    <img id="imagePreview-0" src="${artistImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('artistImageInput').click();"/>
+                    <img id="imagePreview-0" src="${artistImgURL}" class="entity-image mod-editable-image" onclick="document.getElementById('artistImageInput').click();"/>
                     <form:input path="artistImage" id="artistImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event,0)"/>
 
                     <input name="id" type="hidden" value="${modArtistForm.id}"/>
                     <input name="artistImgId" type="hidden" value="${modArtistForm.artistImgId}"/>
-                    <div class="data-container element-details-container">
+                    <div class="mod-entity-details">
                         <div>
-                            <label><spring:message code="submit.artist.name.label"/>:
+                            <label class="mod-label"><spring:message code="submit.artist.name.label"/>:
                                 <form:errors path="name" class="error" style="color:red;"/>
-                                <form:input path="name" type="text" required="true"/>
+                                <form:input path="name" type="text" required="true" class="mod-input"/>
                             </label>
                         </div>
                         <div>
-                            <label><spring:message code="submit.artist.desc.label"/>:
+                            <label class="mod-label"><spring:message code="submit.artist.desc.label"/>:
                                 <form:errors path="bio" class="error" style="color:red;"/>
-                                <form:textarea path="bio" rows="5" required="true"/>
+                                <form:textarea path="bio" rows="5" required="true" class="mod-input"/>
                             </label>
                         </div>
                     </div>
@@ -58,8 +58,8 @@
                 <input name="deleted" id="deletedArtist" type="hidden" value="false"/>
                 <c:if test="${artistId != null}">
                     <c:url var="deleteUrl" value="/mod/delete/artist/${artistId}"/>
-                    <a style="margin-left: auto" onclick="deleteArtist()">
-                        <button type="button" class="btn btn-danger">
+                    <a onclick="deleteArtist()">
+                        <button type="button" class="btn btn-danger" style="margin-left: auto">
                             <spring:message code="button.delete.artist"/>
                         </button>
                     </a>
@@ -72,23 +72,23 @@
                         <div id="album-${status.index}" class="sub-element-container">
                             <!-- Image -->
                             <c:url var="albumImgURL" value="/images/${album.albumImageId}"/>
-                            <img id="imagePreview-${status.index+1}" src="${albumImgURL}" class="sub-element-image-preview" style="cursor: pointer;" onclick="document.getElementById('albumImageInput${status.index}').click();"/>
+                            <img id="imagePreview-${status.index+1}" src="${albumImgURL}" class="sub-element-image-preview mod-editable-image" onclick="document.getElementById('albumImageInput${status.index}').click();"/>
                             <!-- Hidden input to store base64-encoded image -->
                             <form:errors path="albums[${status.index}].albumImage" class="error" style="color:red;"/>
                             <form:input path="albums[${status.index}].albumImage" id="albumImageInput${status.index}" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event,${status.index+1})"/>
 
-                            <div class="data-container element-details-container">
-                                <label><spring:message code="submit.album.title.label"/>:
+                            <div class="mod-entity-details">
+                                <label class="mod-label"><spring:message code="submit.album.title.label"/>:
                                     <form:errors path="albums[${status.index}].title" class="error" style="color:red;"/>
-                                    <form:input path="albums[${status.index}].title" type="text" required="true"/>
+                                    <form:input path="albums[${status.index}].title" type="text" required="true" class="mod-input"/>
                                 </label>
-                                <label><spring:message code="submit.album.genre.label"/>:
+                                <label class="mod-label"><spring:message code="submit.album.genre.label"/>:
                                     <form:errors path="albums[${status.index}].genre" class="error" style="color:red;"/>
-                                    <form:input path="albums[${status.index}].genre" type="text" required="true"/>
+                                    <form:input path="albums[${status.index}].genre" type="text" required="true" class="mod-input"/>
                                 </label>
-                                <label><spring:message code="submit.album.release.date.label"/>:
+                                <label class="mod-label"><spring:message code="submit.album.release.date.label"/>:
                                     <form:errors path="albums[${status.index}].releaseDate" class="error" style="color:red;"/>
-                                    <form:input path="albums[${status.index}].releaseDate" type="date" required="true"/>
+                                    <form:input path="albums[${status.index}].releaseDate" type="date" required="true" class="mod-input"/>
                                 </label>
                             </div>
                             <!-- Remove button for existing albums -->
@@ -161,28 +161,29 @@
 
         var newAlbumDiv = document.createElement("div");
         newAlbumDiv.setAttribute("id", "album-" + albumIndex);
-        newAlbumDiv.setAttribute("class", "info-container sub-element-container");
+        newAlbumDiv.setAttribute("class", "sub-element-container");
 
         var newAlbumDataDiv = document.createElement("div");
-        newAlbumDataDiv.setAttribute("class", "data-container element-details-container");
+        newAlbumDataDiv.setAttribute("class", "mod-entity-details");
 
         // Image
         var imagePreview = document.createElement("img");
         imagePreview.setAttribute("id", "imagePreview-" + (albumIndex + 1));
         imagePreview.setAttribute("src", "${defaultImgURL}");
-        imagePreview.setAttribute("class", "sub-element-image-preview");
-        imagePreview.setAttribute("style", "cursor: pointer;");
+        imagePreview.setAttribute("class", "sub-element-image-preview mod-editable-image");
         imagePreview.setAttribute("onclick", "document.getElementById('albumImageInput" + albumIndex + "').click();");
-
 
         // Labels
         var titleLabel = document.createElement("label");
+        titleLabel.setAttribute("class", "mod-label");
         titleLabel.textContent = "Title: ";
 
         var genreLabel = document.createElement("label");
+        genreLabel.setAttribute("class", "mod-label");
         genreLabel.textContent = "Genre: ";
 
         var releaseDateLabel = document.createElement("label");
+        releaseDateLabel.setAttribute("class", "mod-label");
         releaseDateLabel.textContent = "Release Date: ";
 
         // Inputs
@@ -199,17 +200,20 @@
         titleInput.setAttribute("type", "text");
         titleInput.setAttribute("required", "true");
         titleInput.setAttribute("placeholder", "Title of the album");
+        titleInput.setAttribute("class", "mod-input");
 
         var genreInput = document.createElement("input");
         genreInput.setAttribute("name", "albums[" + albumIndex + "].genre");
         genreInput.setAttribute("type", "text");
         genreInput.setAttribute("required", "true");
         genreInput.setAttribute("placeholder", "Genre of the album");
+        genreInput.setAttribute("class", "mod-input");
 
         var releaseDateInput = document.createElement("input");
         releaseDateInput.setAttribute("name", "albums[" + albumIndex + "].releaseDate");
         releaseDateInput.setAttribute("type", "date");
         releaseDateInput.setAttribute("required", "true");
+        releaseDateInput.setAttribute("class", "mod-input");
 
         var deletedInput = document.createElement("input");
         deletedInput.setAttribute("id", "deletedAlbum-" + albumIndex);
@@ -237,7 +241,7 @@
         var removeButton = document.createElement("button");
         removeButton.textContent = "Remove Album";
         removeButton.setAttribute("type", "button");
-        removeButton.setAttribute("class", "remove-button");
+        removeButton.setAttribute("class", "btn btn-danger");
         removeButton.onclick = function() {
             removeAlbum(newAlbumDiv);
         }

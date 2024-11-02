@@ -25,7 +25,7 @@
                 <c:url var="postURL" value="${postUrl}" />
                 <form:form id="albumForm" modelAttribute="modAlbumForm" action="${postURL}" method="post" enctype="multipart/form-data">
                     <!-- Album Information -->
-                    <div class="info-container">
+                    <div class="mod-form">
                         <!-- Image Preview -->
                         <c:if test="${albumId == null}">
                             <c:url var="albumImgURL" value="/images/${defaultImgId}"/>
@@ -34,32 +34,32 @@
                             <c:url var="albumImgURL" value="/images/${modAlbumForm.albumImageId}"/>
                         </c:if>
                         <form:input path="albumImage" id="albumImageInput" type="file" accept=".jpg,.jpeg,.png" cssClass="hidden-input" onchange="previewImage(event)"/>
-                        <img id="imagePreview" src="${albumImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('albumImageInput').click();" alt="image"/>
+                        <img id="imagePreview" src="${albumImgURL}" class="album-cover mod-editable-image" onclick="document.getElementById('albumImageInput').click();" alt="image"/>
 
                         <input name="id" type="hidden" value="${modAlbumForm.id}"/>
                         <input name="artistId" type="hidden" value="${modAlbumForm.artistId}"/>
                         <input name="albumImageId" type="hidden" value="${modAlbumForm.albumImageId}"/>
-                        <div class="data-container element-details-container">
-                            <div class="form-group">
-                                <label class="form-label">
+                        <div class="mod-entity-details">
+                            <div>
+                                <label class="mod-label">
                                     <spring:message code="submit.album.title.label"/>:
                                 </label>
                                 <form:errors path="title" cssClass="form-error"/>
-                                <form:input path="title" type="text" cssClass="form-control" required="true"/>
+                                <form:input path="title" type="text" cssClass="form-control" required="true" class="mod-input"/>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">
+                            <div>
+                                <label class="mod-label">
                                     <spring:message code="submit.album.genre.label"/>:
                                 </label>
                                 <form:errors path="genre" cssClass="form-error"/>
-                                <form:input path="genre" type="text" cssClass="form-control" required="true"/>
+                                <form:input path="genre" type="text" cssClass="form-control" required="true" class="mod-input"/>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">
+                            <div>
+                                <label class="mod-label">
                                     <spring:message code="submit.album.release.date.label"/>:
                                 </label>
                                 <form:errors path="releaseDate" cssClass="form-error"/>
-                                <form:input path="releaseDate" type="date" cssClass="form-control" required="true"/>
+                                <form:input path="releaseDate" type="date" cssClass="form-control" required="true" class="mod-input"/>
                             </div>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                     <input name="deleted" id="deletedAlbum" type="hidden" value="false"/>
                     <c:if test="${albumId != null}">
                         <c:url var="deleteUrl" value="/mod/delete/album/${albumId}"/>
-                        <button type="button" onclick="deleteAlbum()" class="btn btn-danger">
+                        <button type="button" onclick="deleteAlbum()" class="btn btn-danger" style="margin-left: auto">
                             <spring:message code="button.delete.album"/>
                         </button>
                     </c:if>
@@ -76,30 +76,30 @@
                     <!-- Songs Section -->
                     <section class="mod-section">
                         <h2><spring:message code="label.song"/></h2>
-                        <div id="SongContainer" class="mod-items-container">
+                        <div id="SongContainer">
                             <c:forEach var="song" items="${modAlbumForm.songs}" varStatus="status">
                                 <div id="song-${status.index}" class="sub-element-container">
-                                    <div class="data-container element-details-container">
-                                        <div class="form-group">
-                                            <label class="form-label">
+                                    <div class="mod-entity-details">
+                                        <div>
+                                            <label class="mod-label">
                                                 <spring:message code="submit.song.title.label"/>:
                                             </label>
                                             <form:errors path="songs[${status.index}].title" cssClass="form-error"/>
-                                            <form:input path="songs[${status.index}].title" type="text" cssClass="form-control" required="true"/>
+                                            <form:input path="songs[${status.index}].title" type="text" cssClass="form-control" required="true" class="mod-input"/>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="form-label">
+                                        <div>
+                                            <label class="mod-label">
                                                 <spring:message code="submit.song.duration.label"/>:
                                             </label>
                                             <form:errors path="songs[${status.index}].duration" cssClass="form-error"/>
-                                            <form:input path="songs[${status.index}].duration" type="text" cssClass="form-control" required="true"/>
+                                            <form:input path="songs[${status.index}].duration" type="text" cssClass="form-control" required="true" class="mod-input"/>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="form-label">
+                                        <div>
+                                            <label class="mod-label">
                                                 <spring:message code="submit.song.track.number.label"/>:
                                             </label>
                                             <form:errors path="songs[${status.index}].trackNumber" cssClass="form-error"/>
-                                            <form:input path="songs[${status.index}].trackNumber" type="number" cssClass="form-control" required="true"/>
+                                            <form:input path="songs[${status.index}].trackNumber" type="number" cssClass="form-control" required="true" class="mod-input"/>
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn-danger" onclick="removeSong(document.getElementById('song-' + ${status.index}))">
@@ -161,34 +161,40 @@
 
             var newSongDiv = document.createElement("div");
             newSongDiv.setAttribute("id", "song-" + songIndex);
-            newSongDiv.setAttribute("class", "info-container sub-element-container");
+            newSongDiv.setAttribute("class", "sub-element-container");
 
             var newAlbumDataDiv = document.createElement("div");
-            newAlbumDataDiv.setAttribute("class", "data-container element-details-container");
+            newAlbumDataDiv.setAttribute("class", "mod-entity-details");
 
             var titleLabel = document.createElement("label");
+            titleLabel.setAttribute("class", "mod-label");
             titleLabel.textContent = "Title: ";
 
             var durationLabel = document.createElement("label");
+            durationLabel.setAttribute("class", "mod-label");
             durationLabel.textContent = "Duration: ";
 
             var trackNumberLabel = document.createElement("label");
+            trackNumberLabel.setAttribute("class", "mod-label");
             trackNumberLabel.textContent = "Track Number: ";
 
             var titleInput = document.createElement("input");
             titleInput.setAttribute("type", "text");
             titleInput.setAttribute("name", "songs[" + songIndex + "].title");
             titleInput.setAttribute("required", "true");
+            titleInput.setAttribute("class", "mod-input");
 
             var durationInput = document.createElement("input");
             durationInput.setAttribute("type", "text");
             durationInput.setAttribute("name", "songs[" + songIndex + "].duration");
             durationInput.setAttribute("required", "true");
+            durationInput.setAttribute("class", "mod-input");
 
             var trackNumberInput = document.createElement("input");
             trackNumberInput.setAttribute("type", "number");
             trackNumberInput.setAttribute("name", "songs[" + songIndex + "].trackNumber");
             trackNumberInput.setAttribute("required", "true");
+            trackNumberInput.setAttribute("class", "mod-input");
 
             titleLabel.appendChild(titleInput);
             durationLabel.appendChild(durationInput);
@@ -203,7 +209,7 @@
             var removeButton = document.createElement("button");
             removeButton.textContent = "Remove Song";
             removeButton.setAttribute("type", "button");
-            removeButton.setAttribute("class", "remove-button");
+            removeButton.setAttribute("class", "btn btn-danger");
             removeButton.onclick = function () {
                 removeSong(newSongDiv);
             };

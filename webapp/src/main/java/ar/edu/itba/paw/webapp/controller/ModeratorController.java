@@ -46,8 +46,18 @@ public class ModeratorController {
     }
 
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
-    public ModelAndView home() {
-        return new ModelAndView("/moderator/m_home");
+    public ModelAndView home(@RequestParam(name = "page", required = false) String activePage) {
+
+        if (activePage == null || activePage.isEmpty()) activePage = "artist";
+        boolean artistActive = activePage.equals("artist");
+        boolean albumActive = activePage.equals("album");
+        boolean songActive = activePage.equals("song");
+
+        ModelAndView modelAndView = new ModelAndView("/moderator/m_home");
+        modelAndView.addObject("artistActive", artistActive);
+        modelAndView.addObject("albumActive", albumActive);
+        modelAndView.addObject("songActive", songActive);
+        return modelAndView;
     }
 
     @RequestMapping(value = "/block/{reviewId:\\d+}", method = RequestMethod.GET)
