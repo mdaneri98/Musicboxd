@@ -82,8 +82,9 @@ public class SongJpaDao implements SongDao {
                 return 0;
 
             if (!song.getArtists().contains(artist)) {
+                song.getArtists().add(artist);
                 artist.getSongs().add(song);
-                em.merge(artist);
+                em.merge(song);
             }
 
             return 1;
