@@ -23,7 +23,7 @@
                 </h1>
 
                 <c:url var="postURL" value="${postUrl}" />
-                <form:form modelAttribute="modSongForm" action="${postURL}" method="post" class="mod-form">
+                <form:form modelAttribute="modSongForm" action="${postURL}" method="post">
                     <input name="id" type="hidden" value="${modSongForm.id}"/>
                     <input name="albumId" type="hidden" value="${modSongForm.albumId}"/>
 
