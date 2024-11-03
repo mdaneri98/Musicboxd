@@ -114,6 +114,7 @@ public class SongServiceImpl implements SongService {
         song.setUpdatedAt(LocalDateTime.now());
         song.setRatingCount(0);
         song.setAvgRating(0d);
+        songDao.create(song);
         songDao.saveSongArtist(song, song.getAlbum().getArtist());
         LOGGER.info("Song created successfully with ID: {}", song.getId());
         return song;
