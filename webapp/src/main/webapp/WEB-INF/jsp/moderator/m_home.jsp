@@ -16,87 +16,49 @@
         </jsp:include>
 
         <main class="content-wrapper">
-            <div class="mod-container">
-                <h1 class="mod-title">
+            <div class="search-container">
+                <h1 class="search-title">
                     <spring:message code="label.moderator" />
                 </h1>
 
-                <div class="mod-tabs">
-                    <c:if test="${artistActive}">
-                        <span class="mod-tab active" data-type="artists">
-                            <spring:message code="label.artist" />
-                        </span>
-                        <c:url var="albumUrl" value="/mod?page=album"/>
-                        <a href="${albumUrl}">
-                            <span class="mod-tab"><spring:message code="label.album"/></span>
-                        </a>
-                        <c:url var="songUrl" value="/mod?page=song"/>
-                        <a href="${songUrl}">
-                            <span class="mod-tab"><spring:message code="label.song"/></span>
-                        </a>
-                    </c:if>
-                    <c:if test="${albumActive}">
-                        <c:url var="artistUrl" value="/mod?page=artist"/>
-                        <a href="${artistUrl}">
-                            <span class="mod-tab"><spring:message code="label.artist"/></span>
-                        </a>
-                        <span class="mod-tab active" data-type="albums">
-                            <spring:message code="label.album" />
-                        </span>
-                        <c:url var="songUrl" value="/mod?page=song"/>
-                        <a href="${songUrl}">
-                            <span class="mod-tab"><spring:message code="label.song"/></span>
-                        </a>
-                    </c:if>
-                    <c:if test="${songActive}">
-                        <c:url var="artistUrl" value="/mod?page=artist"/>
-                        <a href="${artistUrl}">
-                            <span class="mod-tab"><spring:message code="label.artist"/></span>
-                        </a>
-                        <c:url var="albumUrl" value="/mod?page=album"/>
-                        <a href="${albumUrl}">
-                            <span class="mod-tab"><spring:message code="label.album"/></span>
-                        </a>
-                        <span class="mod-tab active" data-type="songs">
-                            <spring:message code="label.song" />
-                        </span>
-                    </c:if>
+                <div class="tabs">
+                    <span class="tab active" data-type="artists"><spring:message code="label.artist"/></span>
+                    <span class="tab" data-type="albums"><spring:message code="label.album"/></span>
+                    <span class="tab" data-type="songs"><spring:message code="label.song"/></span>
                 </div>
 
-                <c:if test="${!artistActive}">
-                    <div class="mod-search">
-                        <input type="text"
-                               class="form-control search-input"
-                               id="searchInput"
-                               placeholder="<spring:message code="search.placeholder"/>"
-                               autocomplete="off">
-                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                        </svg>
-                        <div id="autocompleteList" class="search-results"></div>
-                    </div>
-                </c:if>
+                <div class="search-wrapper" style="display: none;">
+                    <input type="text"
+                           class="form-control search-input"
+                           id="searchInput"
+                           placeholder="<spring:message code="search.placeholder"/>"
+                           autocomplete="off">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <div id="autocompleteList" class="search-results"></div>
+                </div>
 
                 <div class="mod-actions">
                     <button id="redirectButton" onclick="redirect()" class="btn btn-primary">
-                        <c:if test="${artistActive}">
+                        <span class="artist-text">
                             <spring:message code="button.mod.artist" />
-                        </c:if>
-                        <c:if test="${albumActive}">
+                        </span>
+                        <span class="album-text" style="display: none;">
                             <spring:message code="button.mod.album" />
-                        </c:if>
-                        <c:if test="${songActive}">
+                        </span>
+                        <span class="song-text" style="display: none;">
                             <spring:message code="button.mod.song" />
-                        </c:if>
+                        </span>
                     </button>
                 </div>
             </div>
         </main>
     </div>
 
-    <c:url var="addArtistUrl" value="/mod/add/artist"/>
-    <c:url var="addAlbumUrlBase" value="/mod/add/artist"/>
-    <c:url var="addSongUrlBase" value="/mod/add/album"/>
+    <c:url var="addArtistUrl" value="/mod/add/artist/"/>
+    <c:url var="addAlbumUrlBase" value="/mod/add/artist/"/>
+    <c:url var="addSongUrlBase" value="/mod/add/album/"/>
     <c:url var="imageUrl" value="/images/"/>
 
     <script>
@@ -107,62 +69,32 @@
         let isErrorMessageShown = false;
 
     function redirect() {
-
         var addArtistUrl = "${addArtistUrl}";
         var addAlbumUrlBase = "${addAlbumUrlBase}";
         var addSongUrlBase = "${addSongUrlBase}";
 
-        var isArtistActive = "${artistActive}";
-        var isAlbumActive = "${albumActive}";
-        var isSongActive = "${songActive}";
+        const activeTab = document.querySelector('.tab.active').dataset.type;
 
-        if(isArtistActive) {
-            console.log("Changed href");
-            window.location.href = addArtistUrl;
-        }
-        if(isAlbumActive) {
-            if (selected_item) {
-                var url = addAlbumUrlBase + selected_item.id + "/album";
-                console.log(url)
-                window.location.href = url;
-            }
-        }
-        if(isSongActive) {
-            if (selected_item) {
-                var url = addSongUrlBase + selected_item.id + "/song";
-                console.log(url)
-                window.location.href = url;
-            }
-        }
-
-        /*
-        var activeTab = document.querySelector('.search-tab.active').dataset.type;
-        switch (activeTab) {
+        switch(activeTab) {
             case 'artists':
-                console.log("Changed href");
                 window.location.href = addArtistUrl;
                 break;
             case 'albums':
                 if (selected_item) {
-                    var url = addAlbumUrlBase + selected_item.id + "/album";
-                    console.log(url)
-                    window.location.href = url;
+                    window.location.href = addAlbumUrlBase + selected_item.id + "/album";
                 }
                 break;
             case 'songs':
                 if (selected_item) {
-                    var url = addSongUrlBase + selected_item.id + "/song";
-                    console.log(url)
-                    window.location.href = url;
+                    window.location.href = addSongUrlBase + selected_item.id + "/song";
                 }
                 break;
-        }*/
+        }
     }
 
         document.addEventListener('DOMContentLoaded', function() {
             var s_artists = [];
             var s_albums = [];
-            var s_songs = [];
 
             var searchUrl = "${searchUrl}";
             var currentFocus = -1;
@@ -171,11 +103,9 @@
                 Promise.all([
                     makeAjaxCall("/artist", substring),
                     makeAjaxCall("/album", substring),
-                    makeAjaxCall("/song", substring)
-                ]).then(([artists, albums, songs]) => {
+                ]).then(([artists, albums]) => {
                     s_artists = artists;
                     s_albums = albums;
-                    s_songs = songs;
                     updateAutocompleteResults(substring);
                 }).catch(error => {
                     console.error("Error al obtener datos:", error);
@@ -193,18 +123,28 @@
             }
 
             function handleTabClick(event) {
-                document.querySelectorAll('.search-tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
                 event.target.classList.add('active');
+                
+                const activeTab = event.target.dataset.type;
+                
+                const searchWrapper = document.querySelector('.search-wrapper');
+                searchWrapper.style.display = activeTab === 'artists' ? 'none' : 'block';
+
+                document.querySelector('.artist-text').style.display = activeTab === 'artists' ? 'block' : 'none';
+                document.querySelector('.album-text').style.display = activeTab === 'albums' ? 'block' : 'none';
+                document.querySelector('.song-text').style.display = activeTab === 'songs' ? 'block' : 'none';
+                
                 closeAllLists();
                 updateSearchInputVisibility();
             }
 
-            document.querySelectorAll('.search-tab').forEach(tab => {
+            document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', handleTabClick);
             });
 
             function updateSearchInputVisibility() {
-                const activeTab = document.querySelector('.search-tab.active').dataset.type;
+                const activeTab = document.querySelector('.tab.active').dataset.type;
                 const searchInput = document.getElementById('searchInput');
                 const searchIcon = document.querySelector('.search-icon');
                 
@@ -232,7 +172,7 @@
 
                 inp.addEventListener("keydown", function(e) {
                     var x = document.getElementById(this.id + "autocomplete-list");
-                    if (x) x = x.getElementsByClassName("autocomplete-item");
+                    if (x) x = x.getElementsByClassName("search-result-item");
                     if (e.keyCode == 40) {
                         currentFocus++;
                         addActive(x);
@@ -258,10 +198,10 @@
                 closeAllLists();
                 var a = document.createElement("DIV");
                 a.setAttribute("id", "searchInputautocomplete-list");
-                a.setAttribute("class", "autocomplete-items");
+                a.setAttribute("class", "search-results-list");
                 document.getElementById('searchInput').parentNode.appendChild(a);
 
-                var activeTab = document.querySelector('.search-tab.active').dataset.type;
+                var activeTab = document.querySelector('.tab.active').dataset.type;
                 var searchArray;
                 if (activeTab === 'albums') {
                     searchArray = s_artists;
@@ -280,7 +220,7 @@
                 <c:url var="elementUrl" value="/"/>
                 searchArray.slice(0, 7).forEach(function (item) {
                     var b = document.createElement("DIV");
-                    b.className = "autocomplete-item";
+                    b.className = "search-result-item";
                     b.innerHTML = createAutocompleteItem(item);
                     b.addEventListener("click", function (e) {
                         item.url = "${elementUrl}" + item.type + "/" + item.id;
@@ -295,7 +235,7 @@
             function showErrorMessage(message) {
                 closeAllLists();
                 var errorDiv = document.createElement("DIV");
-                errorDiv.setAttribute("class", "autocomplete-error");
+                errorDiv.setAttribute("class", "search-error");
                 errorDiv.textContent = message;
 
                 var searchWrapper = document.querySelector('.search-wrapper');
@@ -309,21 +249,23 @@
                 removeActive(x);
                 if (currentFocus >= x.length) currentFocus = 0;
                 if (currentFocus < 0) currentFocus = (x.length - 1);
-                x[currentFocus].classList.add("autocomplete-active");
+                x[currentFocus].classList.add("search-result-active");
             }
 
             function removeActive(x) {
                 for (var i = 0; i < x.length; i++) {
-                    x[i].classList.remove("autocomplete-active");
+                    x[i].classList.remove("search-result-active");
                 }
             }
 
             function createAutocompleteItem(item) {
                 return `
-                    <img src="` + imgUrl + item.imgId + `" alt="`+ item.name +`">
-                    <div class="autocomplete-item-info">
-                        <span class="autocomplete-item-name">` + item.name + `</span>
-                        <span class="autocomplete-item-type">` + item.type.charAt(0).toUpperCase() + item.type.slice(1) + `</span>
+                    <div class="search-result-content" data-type="${item.type}">
+                        <img src="` + imgUrl + item.imgId + `" alt="`+ item.name +`" class="search-result-image">
+                        <div class="search-result-info">
+                            <span class="search-result-name">` + item.name + `</span>
+                            <span class="search-result-type">` + item.type.charAt(0).toUpperCase() + item.type.slice(1) + `</span>
+                        </div>
                     </div>
                 `;
             }
@@ -349,13 +291,13 @@
             }
 
             function closeAllLists(elmnt) {
-                var x = document.getElementsByClassName("autocomplete-items");
+                var x = document.getElementsByClassName("search-results-list");
                 for (var i = 0; i < x.length; i++) {
                     if (elmnt != x[i] && elmnt != document.getElementById('searchInput')) {
                         x[i].parentNode.removeChild(x[i]);
                     }
                 }
-                var errorMsg = document.querySelector('.autocomplete-error');
+                var errorMsg = document.querySelector('.search-error');
                 if (errorMsg) {
                     errorMsg.remove();
                     isErrorMessageShown = false;
