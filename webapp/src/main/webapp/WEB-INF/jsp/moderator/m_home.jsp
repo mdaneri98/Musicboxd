@@ -95,12 +95,13 @@
     </div>
 
     <c:url var="addArtistUrl" value="/mod/add/artist"/>
-    <c:url var="addAlbumUrlBase" value="/mod/add/artist/"/>
-    <c:url var="addSongUrlBase" value="/mod/add/album/"/>
+    <c:url var="addAlbumUrlBase" value="/mod/add/artist"/>
+    <c:url var="addSongUrlBase" value="/mod/add/album"/>
+    <c:url var="imageUrl" value="/images/"/>
 
     <script>
         var selected_item;
-        var imgUrl = "<c:url value='/images/'/>";
+        var imgUrl = "${imageUrl}";
         <c:url var="searchUrl" value="/search"/>
 
         let isErrorMessageShown = false;
