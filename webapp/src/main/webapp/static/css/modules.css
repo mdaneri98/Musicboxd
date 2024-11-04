@@ -264,6 +264,7 @@
 
 .rating-badge .rating {
     font-weight: 700;
+    color: var(--button-text-color);
 }
 
 /* Responsive adjustments */
@@ -908,7 +909,7 @@
     padding: var(--space-xl);
     width: 100%;
     max-width: 40rem;
-    margin: 0 auto;
+    margin: var(--space-lg) auto;
 }
 
 .review-form {
@@ -2252,4 +2253,12 @@ textarea.form-control {
         flex: 1;
         justify-content: center;
     }
+}
+.delete-review-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: var(--space-lg) auto;
+    max-width: fit-content;
+    width: 100%;
 }

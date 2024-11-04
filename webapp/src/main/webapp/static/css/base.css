@@ -169,7 +169,7 @@ a {
   --color-star-border: #ccc;
   --color-star-filled: #ffd700;
   
-  --rating-badge-color: rgba(255, 255, 255, 0.15);
+  --rating-badge-color: rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="sepia"] {
@@ -201,7 +201,7 @@ a {
   --color-star-border: #7c5f1d;
   --color-star-filled: #daa520;
   
-  --rating-badge-color: rgba(92, 75, 55, 0.6);
+  --rating-badge-color: rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="ocean"] {
@@ -233,7 +233,7 @@ a {
   --color-star-border: #0174a6;
   --color-star-filled: #58d5ff;
   
-  --rating-badge-color: rgba(230, 243, 255, 0.15);
+  --rating-badge-color: rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="forest"] {
@@ -265,5 +265,5 @@ a {
   --color-star-border: #3b6c04;
   --color-star-filled: #9ccc65;
   
-  --rating-badge-color: rgba(232, 245, 233, 0.15);
+  --rating-badge-color: rgba(0, 0, 0, 0.6);
 }
