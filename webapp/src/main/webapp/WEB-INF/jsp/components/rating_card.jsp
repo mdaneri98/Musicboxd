@@ -5,7 +5,7 @@
 <div class="rating-card">
     <div class="rating-stats">
         <div class="rating-stat-item">
-            <div class="rating-value">${param.totalRatings}</div>
+            <div class="rating-value"><c:out value="${param.totalRatings}"/></div>
             <div class="rating-label">
                 <spring:message code="label.total.ratings" />
             </div>
@@ -28,7 +28,8 @@
                 <c:if test="${!param.reviewed}">
                     <span class="star">&#9733;</span>
                 </c:if>
-                ${param.userRating}<span class="rating-max">/ 5</span>
+                <c:out value="${param.userRating}"/>
+                <span class="rating-max">/ 5</span>
             </div>
             <div class="rating-label">
                 <spring:message code="label.your.rating" />

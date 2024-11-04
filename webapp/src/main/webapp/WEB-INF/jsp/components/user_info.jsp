@@ -15,6 +15,18 @@
             <a href="${userUrl}" class="user-profile-name">
                 <h1>@<c:out value="${param.username}"/></h1>
                 <h3><c:out value="${param.name}"/></h3>
+                <div class="user-badges">
+                    <c:if test="${param.verified}">
+                        <span class="badge badge-verified">
+                            <spring:message code="label.verified" />
+                        </span>
+                    </c:if>
+                    <c:if test="${param.moderator}">
+                        <span class="badge badge-moderator">
+                            <spring:message code="label.moderator" />
+                        </span>
+                    </c:if>
+                </div>
             </a>
             <p class="user-profile-bio"><c:out value="${param.bio}"/></p>
 
@@ -24,17 +36,17 @@
                 <c:url var="reviewPageUrl" value="/user/${param.id}?page=reviews"/>
 
                 <a href="${reviewPageUrl}" class="stat-link">
-                    <span class="stat-value">${param.reviewAmount}</span>
+                    <span class="stat-value"><c:out value="${param.reviewAmount}"/></span>
                     <span class="stat-label"><spring:message code="label.reviews" /></span>
                 </a>
 
                 <a href="${followersInfoUrl}" class="stat-link">
-                    <span class="stat-value">${param.followersAmount}</span>
+                    <span class="stat-value"><c:out value="${param.followersAmount}"/></span>
                     <span class="stat-label"><spring:message code="label.followers" /></span>
                 </a>
 
                 <a href="${followingInfoUrl}" class="stat-link">
-                    <span class="stat-value">${param.followingAmount}</span>
+                    <span class="stat-value"><c:out value="${param.followingAmount}"/></span>
                     <span class="stat-label"><spring:message code="label.following" /></span>
                 </a>
             </div>
