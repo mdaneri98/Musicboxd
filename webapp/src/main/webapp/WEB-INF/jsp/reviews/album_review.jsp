@@ -13,6 +13,7 @@
         <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
             <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
             <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+            <jsp:param name="unreadNotificationCount" value="${loggedUser.unreadNotificationCount}"/>
         </jsp:include>
 
         <main class="content-wrapper">
@@ -26,7 +27,7 @@
                     <img src="${imgUrl}" alt="${album.title}" class="review-preview-image">
                     <div class="review-preview-info">
                         <h2 class="review-preview-title"><c:out value="${album.title}"/></h2>
-                        <p class="review-preview-subtitle"><c:out value="${album.releaseDate}"/></p>
+                        <p class="review-preview-subtitle"><c:out value="${album.formattedReleaseDate}"/></p>
                     </div>
                 </a>
             </div>

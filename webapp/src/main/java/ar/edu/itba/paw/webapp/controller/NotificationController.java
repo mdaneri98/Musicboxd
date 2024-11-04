@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,15 +33,15 @@ public class NotificationController {
     
     @RequestMapping("/{id:\\d+}/read")
     @ResponseBody
-    public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
+    public ModelAndView markAsRead(@PathVariable Long id) {
         notificationService.markAsRead(id);
-        return ResponseEntity.ok().build();
+        return new ModelAndView("redirect:/notifications");
     }
     
     @RequestMapping("/read-all")
     @ResponseBody
-    public ResponseEntity<Void> markAllAsRead(@ModelAttribute("loggedUser") User loggedUser) {
+    public ModelAndView markAllAsRead(@ModelAttribute("loggedUser") User loggedUser) {
         notificationService.markAllAsRead(loggedUser.getId());
-        return ResponseEntity.ok().build();
+        return new ModelAndView("redirect:/notifications");
     }
 }

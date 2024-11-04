@@ -101,6 +101,9 @@ public class User {
     )
     private List<Song> favoriteSongs;
 
+    @Transient
+    private Integer unreadNotificationCount;
+
 
     public User(){}
 
@@ -408,6 +411,14 @@ public class User {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    public Integer getUnreadNotificationCount() {
+        return unreadNotificationCount;
+    }
+
+    public void setUnreadNotificationCount(Integer unreadNotificationCount) {
+        this.unreadNotificationCount = unreadNotificationCount;
     }
 
     public static class Builder {
