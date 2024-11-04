@@ -3,59 +3,72 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.persistence.SongDao;
+import ar.edu.itba.paw.services.utils.TimeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service 
 public class SongServiceImpl implements SongService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SongServiceImpl.class);
     private final SongDao songDao;
+    private final UserService userService;
 
-    public SongServiceImpl(SongDao songDao) {
+    public SongServiceImpl(SongDao songDao, UserService userService) {
         this.songDao = songDao;
+        this.userService = userService;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Song> find(long id) {
-        return songDao.find(id);
+        Optional<Song> song = songDao.find(id);
+        song.ifPresent(s -> s.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(s.getAlbum().getReleaseDate())));
+        return song;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findAll() {
-        return songDao.findAll();
+        List<Song> songs = songDao.findAll();
+        songs.forEach(s -> s.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(s.getAlbum().getReleaseDate())));
+        return songs;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findByTitleContaining(String sub) {
-        return songDao.findByTitleContaining(sub);
+        List<Song> songs = songDao.findByTitleContaining(sub);
+        return songs;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findPaginated(FilterType filterType, int page, int pageSize) {
-        return songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+        List<Song> songs = songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+        return songs;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findByArtistId(long id) {
-        return songDao.findByArtistId(id);
+        List<Song> songs = songDao.findByArtistId(id);
+        return songs;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Song> findByAlbumId(long id) {
-        return songDao.findByAlbumId(id);
+        List<Song> songs = songDao.findByAlbumId(id);
+        return songs;
     }
 
     @Override
@@ -81,7 +94,10 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public boolean delete(long id) {
         LOGGER.info("Deleting song with ID: {}", id);
+        List<Long> userIds = new ArrayList<>();
+        songDao.findReviewsBySongId(id).forEach(review -> userIds.add(review.getUser().getId()));
         songDao.deleteReviewsFromSong(id);
+        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean result = songDao.delete(id);
         if (result) {
             LOGGER.info("Song deleted successfully");
@@ -89,6 +105,12 @@ public class SongServiceImpl implements SongService {
             LOGGER.warn("Failed to delete song with ID: {}", id);
         }
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SongReview> findReviewsBySongId(long songId) {
+        return songDao.findReviewsBySongId(songId);
     }
 
     @Override

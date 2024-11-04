@@ -6,13 +6,15 @@ import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.persistence.*;
+import ar.edu.itba.paw.services.exception.AcknowledgementEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ar.edu.itba.paw.services.utils.TimeUtils;
-import org.springframework.context.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,14 +29,18 @@ public class ReviewServiceImpl implements ReviewService {
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final UserService userService;
+    private final EmailService emailService;
+    private final NotificationService notificationService;
 
     @Autowired
-        public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, MessageSource messageSource) {
+    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.userService = userService;
+        this.emailService = emailService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -80,7 +86,9 @@ public class ReviewServiceImpl implements ReviewService {
     public Review create(Review entity) {
         LOGGER.info("Creating new review: {}", entity);
         Review createdReview = reviewDao.create(entity);
+        updateUserReviewAmount(createdReview.getUser().getId());
         LOGGER.info("Review created successfully with ID: {}", createdReview.getId());
+        notificationService.notifyNewReview(createdReview, createdReview.getUser());
         return createdReview;
     }
 
@@ -101,16 +109,19 @@ public class ReviewServiceImpl implements ReviewService {
         if (isArtistReview(id)) {
             ArtistReview r = reviewDao.findArtistReviewById(id).get();
             res = reviewDao.delete(id);
+            updateUserReviewAmount(r.getUser().getId());
             updateArtistRating(r.getArtist().getId());
         }
         if (isAlbumReview(id)) {
             AlbumReview r = reviewDao.findAlbumReviewById(id).get();
             res = reviewDao.delete(id);
+            updateUserReviewAmount(r.getUser().getId());
             updateAlbumRating(r.getAlbum().getId());
         }
         if (isSongReview(id)) {
             SongReview r = reviewDao.findSongReviewById(id).get();
             res = reviewDao.delete(id);
+            updateUserReviewAmount(r.getUser().getId());
             updateSongRating(r.getSong().getId());
         }
         if (res) {
@@ -124,18 +135,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<User> likedBy(int page, int pageSize) {
         return reviewDao.likedBy(page, pageSize);
-    }
-
-    @Override
-    @Transactional
-    public boolean deleteReview(Review review, long userId) {
-        LOGGER.info("Attempting to delete review with ID: {} for user ID: {}", review.getId(), userId);
-        boolean res = delete(review.getId());
-        if (res) {
-            updateUserReviewAmount(userId);
-            LOGGER.info("Review deleted and user review amount updated for user ID: {}", userId);
-        }
-        return res;
     }
 
     @Override
@@ -184,6 +183,7 @@ public class ReviewServiceImpl implements ReviewService {
         ArtistReview result = reviewDao.saveArtistReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateArtistRating(review.getArtist().getId());
+        notificationService.notifyNewReview(result, result.getUser());
         LOGGER.info("Artist review saved, user review amount updated, and artist rating recalculated");
         return result;
     }
@@ -192,7 +192,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateArtistRating(long artistId) {
         LOGGER.info("Updating rating for artist ID: {}", artistId);
-        List<ArtistReview> reviews = reviewDao.findReviewsByArtistId(artistId);
+        List<ArtistReview> reviews = artistService.findReviewsByArtistId(artistId);
         Double avgRating = reviews.stream().mapToInt(ArtistReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         Integer ratingAmount = reviews.size();
@@ -258,6 +258,7 @@ public class ReviewServiceImpl implements ReviewService {
         AlbumReview result = reviewDao.saveAlbumReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateAlbumRating(review.getAlbum().getId());
+        notificationService.notifyNewReview(result, result.getUser());
         LOGGER.info("Album review saved, user review amount updated, and album rating recalculated");
         return result;
     }
@@ -266,7 +267,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateAlbumRating(long albumId) {
         LOGGER.info("Updating rating for album ID: {}", albumId);
-        List<AlbumReview> reviews = reviewDao.findReviewsByAlbumId(albumId);
+        List<AlbumReview> reviews = albumService.findReviewsByAlbumId(albumId);
         Double avgRating = reviews.stream().mapToInt(AlbumReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();
@@ -297,6 +298,7 @@ public class ReviewServiceImpl implements ReviewService {
         SongReview result = reviewDao.saveSongReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateSongRating(review.getSong().getId());
+        notificationService.notifyNewReview(result, result.getUser());
         LOGGER.info("Song review saved, user review amount updated, and song rating recalculated");
         return result;
     }
@@ -313,7 +315,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateSongRating(long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
-        List<SongReview> reviews = reviewDao.findReviewsBySongId(songId);
+        List<SongReview> reviews = songService.findReviewsBySongId(songId);
         Double avgRating = reviews.stream().mapToInt(SongReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();
@@ -333,6 +335,7 @@ public class ReviewServiceImpl implements ReviewService {
         LOGGER.info("Creating like for review ID: {} by user ID: {}", reviewId, userId);
         reviewDao.createLike(userId, reviewId);
         reviewDao.updateLikeCount(reviewId);
+        notificationService.notifyLike(find(reviewId).get(),userService.find(userId).get());
         LOGGER.info("Like created and like count incremented for review ID: {}", reviewId);
     }
 
@@ -427,6 +430,20 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void block(Long reviewId) {
         LOGGER.info("Blocking review with ID: {}", reviewId);
+
+        Optional<Review> review = reviewDao.find(reviewId);
+        if (review.isEmpty())
+            throw new IllegalArgumentException("Review with ID: " + reviewId + " does not exist");
+
+        User user = review.get().getUser();
+        try {
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.get());
+            LOGGER.info("Acknowledgement email sent successfully");
+        } catch (MessagingException e) {
+            LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
+            throw new AcknowledgementEmailException("No se pudo enviar el reconocimiento del email al usuario " + user.getEmail(), e);
+        }
+
         reviewDao.block(reviewId);
         LOGGER.info("Review blocked successfully: {}", reviewId);
     }
@@ -435,6 +452,20 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void unblock(Long reviewId) {
         LOGGER.info("Unblocking review with ID: {}", reviewId);
+
+        Optional<Review> review = reviewDao.find(reviewId);
+        if (review.isEmpty())
+            throw new IllegalArgumentException("Review with ID: " + reviewId + " does not exist");
+
+        User user = review.get().getUser();
+        try {
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.get());
+            LOGGER.info("Acknowledgement email sent successfully");
+        } catch (MessagingException e) {
+            LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
+            throw new AcknowledgementEmailException("No se pudo enviar el reconocimiento del email al usuario " + user.getEmail(), e);
+        }
+
         reviewDao.unblock(reviewId);
         LOGGER.info("Review unblocked successfully: {}", reviewId);
     }

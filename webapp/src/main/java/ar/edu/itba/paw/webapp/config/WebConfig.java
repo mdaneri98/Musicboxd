@@ -1,16 +1,15 @@
 package ar.edu.itba.paw.webapp.config;
 
+import ar.edu.itba.paw.webapp.config.resolver.UserLocaleResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
@@ -34,40 +33,19 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
-
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
-/*
-    @EnableWebMvc levanta los defaults.
-    @ComponentScan: Paquetes donde buscar nuevos componentes(Controllers,Services, etc.).
-        Costo que se paga por única vez al iniciar la aplicación.
- */
-
-/*
-@EnableWebMvc
-@ComponentScan({
-        "ar.edu.itba.paw.webapp.controller",
-        "ar.edu.itba.paw.webapp.advice",
-        "ar.edu.itba.paw.services",
-        "ar.edu.itba.paw.persistence"
-})
-@PropertySource("classpath:application.properties")
-@EnableTransactionManagement
-//@EnableScheduling
-@Configuration
-*/
 @EnableScheduling
 @EnableAsync
 @EnableTransactionManagement
 @EnableWebMvc
 @ComponentScan({
         "ar.edu.itba.paw.webapp.controller",
-        "ar.edu.itba.paw.webapp.advice",  // Agregamos el paquete de advice
+        "ar.edu.itba.paw.webapp.advice",
         "ar.edu.itba.paw.services",
         "ar.edu.itba.paw.persistence"
 })
@@ -175,7 +153,7 @@ public class WebConfig implements WebMvcConfigurer {
     // ============ Locale ============
     @Bean
     public LocaleResolver localeResolver() {
-        SessionLocaleResolver resolver = new SessionLocaleResolver();
+        SessionLocaleResolver resolver = new UserLocaleResolver();
         resolver.setDefaultLocale(Locale.ENGLISH);
         return resolver;
     }
@@ -189,7 +167,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(localeChangeInterceptor()).addPathPatterns("/**");
     }
 
 }

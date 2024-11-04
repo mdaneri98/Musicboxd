@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.reviews.AlbumReview;
 import java.util.List;
 
 public interface AlbumDao extends CrudDao<Album> {
@@ -12,4 +13,5 @@ public interface AlbumDao extends CrudDao<Album> {
     boolean hasUserReviewed(long userId, long albumId);
 
     boolean deleteReviewsFromAlbum(long albumId);
+    List<AlbumReview> findReviewsByAlbumId(long albumId);
 }

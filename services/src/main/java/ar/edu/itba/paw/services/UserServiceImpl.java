@@ -29,13 +29,15 @@ public class UserServiceImpl implements UserService {
 
     private final EmailService emailService;
     private final ImageService imageService;
+    private final NotificationService notificationService;
 
-    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, EmailService emailService, ImageService imageService) {
+    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, EmailService emailService, ImageService imageService, NotificationService notificationService) {
         this.userDao = userDao;
         this.userVerificationDao = userVerificationDao;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.imageService = imageService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -168,13 +170,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public int createFollowing(User userId, long followingId) {
-        LOGGER.info("Creating following relationship: User {} following User {}", userId.getId(), followingId);
-        if (this.isFollowing(userId.getId(), followingId)) {
+    public int createFollowing(User user, long followingId) {
+        LOGGER.info("Creating following relationship: User {} following User {}", user.getId(), followingId);
+        if (this.isFollowing(user.getId(), followingId)) {
             LOGGER.info("Following relationship already exists");
             return 0;
         }
-        int result = userDao.createFollowing(userId, find(followingId).get());
+        int result = userDao.createFollowing(user, find(followingId).get());
+        notificationService.notifyFollow(followingId, user);
         LOGGER.info("Following relationship created successfully");
         return result;
     }

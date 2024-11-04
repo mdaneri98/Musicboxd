@@ -6,7 +6,6 @@ import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
-import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import org.springframework.context.MessageSource;
@@ -170,7 +169,7 @@ public class ArtistController {
     @RequestMapping(value = "/{artistId:\\d+}/delete-review", method = RequestMethod.GET)
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long artistId) throws MessagingException {
         Optional<ArtistReview> reviewOptional = reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId());
-        reviewService.deleteReview(reviewOptional.get(), loggedUser.getId());
+        reviewService.delete(reviewOptional.get().getId());
         return new ModelAndView("redirect:/artist/" + artistId);
     }
 

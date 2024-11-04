@@ -4,66 +4,78 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-
     <spring:message var="pageTitle" code="edit.profile.title"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
-
-    <c:url var="css" value="/static/css/moderator.css" />
-    <link rel="stylesheet" href="${css}">
-
 </head>
 <body>
-<div>
-    <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
-        <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
-        <jsp:param name="moderator" value="${loggedUser.moderator}"/>
-    </jsp:include>
-</div>
-<div class="container">
-    <h1><spring:message code="label.edit.profile"/></h1>
+    <div class="main-container">
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+            <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
+            <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+            <jsp:param name="unreadNotificationCount" value="${loggedUser.unreadNotificationCount}"/>
+        </jsp:include>
 
-    <c:url var="editProfileUrl" value="/user/edit" />
-    <form:form modelAttribute="userProfileForm" action="${editProfileUrl}" method="post" enctype="multipart/form-data">
-        <div class="container">
-            <div class="info-container">
-                <c:url var="userImgURL" value="/images/${loggedUser.image.id}"/>
-                <form:input path="profilePicture" id="userImageInput" type="file" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(event)"/>
-                <img id="imagePreview" src="${userImgURL}" class="primary-image" style="cursor: pointer;" onclick="document.getElementById('userImageInput').click();" alt="image"/>
-                <div class="data-container element-details-container">
-                    <div>
-                        <label><spring:message code="label.username" />
-                            <form:errors path="username" cssClass="error" element="p" cssStyle="color:red;"/>
-                            <form:input path="username" type="text" />
-                        </label>
+        <main class="content-wrapper">
+            <div class="mod-form-container">
+                <h1 class="mod-form-title">
+                    <spring:message code="label.edit.profile"/>
+                </h1>
+
+                <c:url var="editProfileUrl" value="/user/edit" />
+                <form:form modelAttribute="userProfileForm" action="${editProfileUrl}" method="post" enctype="multipart/form-data" class="mod-form">
+                    <div class="entity-header">
+                        <div class="entity-main-info">
+                            <c:url var="userImgURL" value="/images/${loggedUser.image.id}"/>
+                            <form:input path="profilePicture" id="userImageInput" type="file" accept=".jpg,.jpeg,.png" cssClass="hidden-input" onchange="previewImage(event)"/>
+                            <img id="imagePreview" src="${userImgURL}" class="entity-image" style="cursor: pointer;" onclick="document.getElementById('userImageInput').click();" alt="Profile Image"/>
+                            
+                            <div class="entity-details">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <spring:message code="label.username" />
+                                    </label>
+                                    <form:errors path="username" cssClass="form-error"/>
+                                    <form:input path="username" type="text" cssClass="form-control"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <spring:message code="label.name"/>
+                                    </label>
+                                    <form:errors path="name" cssClass="form-error"/>
+                                    <form:input path="name" type="text" cssClass="form-control"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <spring:message code="label.desc"/>
+                                    </label>
+                                    <form:errors path="bio" cssClass="form-error"/>
+                                    <form:textarea path="bio" rows="4" cssClass="form-control"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label><spring:message code="label.name"/>
-                            <form:errors path="name" cssClass="error" element="p" cssStyle="color:red;"/>
-                            <form:input path="name" type="text" />
-                        </label>
+
+                    <div class="form-actions">
+                        <c:url value="/user/profile" var="discard_changes_url" />
+                        <a href="${discard_changes_url}" class="btn btn-secondary">
+                            <spring:message code="label.discard.changes"/>
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <spring:message code="label.update"/>
+                        </button>
                     </div>
-                    <div>
-                        <label><spring:message code="label.desc"/>
-                            <form:errors path="bio" cssClass="error" element="p" cssStyle="color:red;"/>
-                            <form:textarea path="bio" type="text" />
-                        </label>
-                    </div>
-                </div>
+                </form:form>
             </div>
-        </div>
-        <div style="display: flex; gap: 10px;">
-            <c:url value="/user/profile" var="discard_changes_url" />
-            <a href="${discard_changes_url}" style="flex: 1;">
-                <button type="button" style="width: 100%; height: 100%;"><spring:message code="label.discard.changes"/></button>
-            </a>
-            <button type="submit" style="flex: 1; width: 100%; height: 100%;"><spring:message code="label.update"/></button>
-        </div>
-    </form:form>
+
+            <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
+        </main>
+    </div>
 
     <script>
-        // Previews Image inserted
         function previewImage(event) {
             const file = event.target.files[0];
             const preview = document.getElementById('imagePreview');
@@ -72,16 +84,11 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
-                    // Show the image element
                     preview.style.display = 'block';
                 }
-                // Read the file and convert it to a data URL
                 reader.readAsDataURL(file);
             }
         }
     </script>
-    <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
-</div>
-
 </body>
 </html>

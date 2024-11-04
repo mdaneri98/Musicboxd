@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.auth;
 
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.services.NotificationService;
 import ar.edu.itba.paw.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,9 @@ public class CUserDetailsService implements UserDetailsService {
     private UserService us;
 
     @Autowired
+    private NotificationService ns;
+
+    @Autowired
     private static final Logger LOGGER = LoggerFactory.getLogger(CUserDetailsService.class);
 
     @Override
@@ -40,7 +44,7 @@ public class CUserDetailsService implements UserDetailsService {
         final Collection<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         if (user.isModerator()) authorities.add(new SimpleGrantedAuthority("ROLE_MODERATOR"));
-
+        user.setUnreadNotificationCount(ns.getUnreadCount(user.getId()));
         AuthCUserDetails userDetails = new AuthCUserDetails(user, authorities);
 
         // Validación después de crear AuthCUserDetails

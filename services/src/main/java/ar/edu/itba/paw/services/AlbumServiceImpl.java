@@ -1,13 +1,16 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.services.utils.TimeUtils;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,38 +22,52 @@ public class AlbumServiceImpl implements AlbumService {
     private final AlbumDao albumDao;
     private final ImageService imageService;
     private final SongService songService;
+    private final UserService userService;
 
-    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService) {
+    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UserService userService) {
         this.albumDao = albumDao;
         this.imageService = imageService;
         this.songService = songService;
+        this.userService = userService;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Album> find(long id) {
-        return albumDao.find(id);
+        Optional<Album> album = albumDao.find(id);
+        album.ifPresent(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return album;
     }
 
     @Transactional(readOnly = true)
     public List<Album> findPaginated(FilterType filterType, int page, int pageSize) {
-        return albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+        List<Album> albums = albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albums;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Album> findByArtistId(long id) {return albumDao.findByArtistId(id);}
+    public List<Album> findByArtistId(long id) {
+        List<Album> albums = albumDao.findByArtistId(id);
+        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albums;
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<Album> findAll() {
-        return albumDao.findAll();
+        List<Album> albums = albumDao.findAll();
+        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albums;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Album> findByTitleContaining(String sub) {
-        return albumDao.findByTitleContaining(sub);
+        List<Album> albums = albumDao.findByTitleContaining(sub);
+        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albums;
     }
 
     @Override
@@ -79,7 +96,10 @@ public class AlbumServiceImpl implements AlbumService {
             LOGGER.warn("Album with ID {} not found for deletion", id);
             return false;
         }
+        List<Long> userIds = new ArrayList<>();
+        albumDao.findReviewsByAlbumId(id).forEach(review -> userIds.add(review.getUser().getId()));
         albumDao.deleteReviewsFromAlbum(id);
+        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean deleted = albumDao.delete(id);
         if (deleted) {
             LOGGER.info("Album with ID {} deleted successfully", id);
@@ -90,6 +110,12 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<AlbumReview> findReviewsByAlbumId(long albumId) {
+        return albumDao.findReviewsByAlbumId(albumId);
+    }
+
+    @Override
     @Transactional
     public boolean delete(Album album) {
         if (album.getId() == null) {
@@ -97,10 +123,11 @@ public class AlbumServiceImpl implements AlbumService {
             return false;
         }
         LOGGER.info("Deleting album: {} (ID: {})", album.getTitle(), album.getId());
+        List<Long> userIds = new ArrayList<>();
+        albumDao.findReviewsByAlbumId(album.getId()).forEach(review -> userIds.add(review.getUser().getId()));
         albumDao.deleteReviewsFromAlbum(album.getId());
-        for (Song song : album.getSongs()) {
-            songService.deleteReviewsFromSong(song.getId());
-        }
+        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
+        album.getSongs().forEach(song -> songService.delete(song.getId()));
         boolean deleted = albumDao.delete(album.getId());
         if (deleted) {
             LOGGER.info("Album {} (ID: {}) deleted successfully", album.getTitle(), album.getId());
