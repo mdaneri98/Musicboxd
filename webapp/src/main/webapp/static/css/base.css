@@ -267,3 +267,35 @@ a {
   
   --rating-badge-color: rgba(0, 0, 0, 0.6);
 }
+
+[data-theme="kawaii"] {
+  --color-background-primary: #fff0f5;
+  --color-background-secondary: #ffe4e8;
+  --color-background-elevated: #ffd6e0;
+  --color-background-highlight: #ffcad4;
+  
+  --color-text-primary: #ff69b4;
+  --color-text-secondary: #ff8dc1;
+  --color-text-tertiary: #ffadd4;
+  --button-text-color: #ffffff;
+  
+  --color-accent: #ff69b4;
+  --color-accent-hover: #ff1493;
+  --color-accent-gradient: #ffc0cb;
+  
+  --mod-badge: #6c0438;
+  
+  --color-danger: #ff6b6b;
+  --color-danger-hover: #ff4f4f;
+  --color-danger-bg: rgba(255, 107, 107, 0.1);
+  --color-danger-border: rgba(255, 107, 107, 0.2);
+  
+  --color-success: #98fb98;
+  --color-success-bg: rgba(152, 251, 152, 0.1);
+  --color-success-border: rgba(152, 251, 152, 0.2);
+  
+  --color-star-border: #ffb6c1;
+  --color-star-filled: #ffd700;
+  
+  --rating-badge-color: rgba(0, 0, 0, 0.6);
+}
