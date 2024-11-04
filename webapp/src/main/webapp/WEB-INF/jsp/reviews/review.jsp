@@ -77,7 +77,7 @@
                                     <c:url var="userImgUrl" value="/images/${comment.user.image.id}"/>
                                     <img src="${userImgUrl}" alt="${comment.user.username}" class="comment-user-img">
                                     <div class="user-details">
-                                        <span class="comment-username">@${comment.user.username}</span>
+                                        <span class="comment-username">@<c:out value="${comment.user.username}"/></span>
                                         <div class="user-badges">
                                             <c:if test="${comment.user.verified}">
                                                 <span class="badge badge-verified">
@@ -92,15 +92,15 @@
                                         </div>
                                     </div>
                                 </a>
-                                <span class="comment-date"><c:out value="${comment.timeAgo}"/></span>
                                 
                                 <c:if test="${loggedUser.id == comment.user.id || loggedUser.moderator}">
-                                    <c:url value='/review/${review.id}/comment/${comment.id}/delete' var="deleteCommentUrl"/>
+                                    <c:url value='/review/${review.id}/comment/' var="baseCommentUrl"/>
                                     <button type="button" onclick="deleteComment(${comment.id})" class="btn btn-danger btn-sm">
                                         <spring:message code="comments.delete"/>
                                     </button>
                                 </c:if>
                             </div>
+                            <span class="comment-date"><c:out value="${comment.timeAgo}"/></span>
                             <p class="comment-content">${comment.content}</p>
                         </div>
                     </c:forEach>
@@ -129,7 +129,7 @@
             modal.style.display = "block";
 
             yesButton.onclick = function () {
-                window.location.href = "${deleteCommentUrl}";
+                window.location.href = "${baseCommentUrl}" + commentId + "/delete";
             }
 
             noButton.onclick = function () {

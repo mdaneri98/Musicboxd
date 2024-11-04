@@ -89,7 +89,6 @@ public class SongJpaDao implements SongDao {
 
             return 1;
         } catch (Exception e) {
-            //logger.error("Error saving song-artist relationship", e);
             return 0;
         }
     }
