@@ -47,11 +47,16 @@ public class UserController {
 
     @RequestMapping("/profile")
     public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser,
-                                @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+                                @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                                @RequestParam(name = "page", required = false) String page) {
         if (loggedUser.getId() == 0) { return new ModelAndView("redirect:/"); }
         if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }
+        if (page == null || page.isEmpty()) {
+            page = "favorites";
+        }
+        boolean reviewsActive = page.equals("reviews");
 
         int pageSize = 5;
 
@@ -73,6 +78,7 @@ public class UserController {
         mav.addObject("pageNum", pageNum);
         mav.addObject("showNext", showNext);
         mav.addObject("showPrevious", showPrevious);
+        mav.addObject("reviewsActive", reviewsActive);
 
         return mav;
     }
@@ -131,15 +137,23 @@ public class UserController {
     @RequestMapping("/{userId:\\d+}")
     public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser,
                              @PathVariable(name = "userId") long userId,
-                             @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+                             @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                             @RequestParam(name = "page", required = false) String page) {
         int pageSize = 5;
-
+        boolean reviewsActive = false;
+        
         if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }
+        if (page == null || page.isEmpty()) {
+            page = "favorites";
+        }
+        if (page.equals("reviews")) {
+            reviewsActive = true;
+        }
 
         if (userId == loggedUser.getId()) {
-            return new ModelAndView("redirect:/user/profile?pageNum=" + pageNum);
+            return new ModelAndView("redirect:/user/profile?pageNum=" + pageNum + "&page=" + page);
         }
 
         final ModelAndView mav = new ModelAndView("/users/user");
@@ -163,7 +177,7 @@ public class UserController {
         mav.addObject("pageNum", pageNum);
         mav.addObject("showNext", showNext);
         mav.addObject("showPrevious", showPrevious);
-
+        mav.addObject("reviewsActive", reviewsActive);
         return mav;
     }
 

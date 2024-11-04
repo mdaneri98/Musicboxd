@@ -21,8 +21,9 @@
             <div class="user-profile-stats">
                 <c:url var="followersInfoUrl" value="/user/${param.id}/follow-info?page=followers"/>
                 <c:url var="followingInfoUrl" value="/user/${param.id}/follow-info?page=following"/>
+                <c:url var="reviewPageUrl" value="/user/${param.id}?page=reviews"/>
 
-                <a href="${userUrl}" class="stat-link">
+                <a href="${reviewPageUrl}" class="stat-link">
                     <span class="stat-value">${param.reviewAmount}</span>
                     <span class="stat-label"><spring:message code="label.reviews" /></span>
                 </a>

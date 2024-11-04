@@ -63,6 +63,15 @@
       </div>
     </div>
 
+    <div class="tabs">
+      <span id="favoritesButton" class="tab ${reviewsActive ? '' : 'active'}">
+          <spring:message code="label.favorites"/>
+      </span>
+      <span id="reviewsButton" class="tab ${reviewsActive ? 'active' : ''}">
+          <spring:message code="label.reviews"/>
+      </span>
+  </div>
+
     <!-- Favorites Sections -->
     <section class="favorites-section">
       <!-- Favorite Artists -->
@@ -142,7 +151,6 @@
     <!-- Reviews Section -->
     <c:if test="${reviews.size() > 0}">
       <section class="reviews-section">
-        <h2><spring:message code="label.reviews"/></h2>
         <div class="reviews-grid">
           <c:forEach var="review" items="${reviews}">
             <jsp:include page="/WEB-INF/jsp/components/review_card.jsp">
@@ -190,5 +198,29 @@
     <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
   </main>
 </div>
+<script>
+  $(document).ready(function() {
+    <c:if test="${!reviewsActive}">
+    $(".reviews-section").hide();
+    </c:if>
+    <c:if test="${reviewsActive}">
+    $(".favorites-section").hide();
+    </c:if>
+
+    $("#favoritesButton").click(function () {
+      $(".favorites-section").show();
+      $(".reviews-section").hide();
+      $(this).addClass("active");
+      $("#reviewsButton").removeClass("active");
+    });
+
+    $("#reviewsButton").click(function () {
+      $(".reviews-section").show();
+      $(".favorites-section").hide();
+      $(this).addClass("active");
+      $("#favoritesButton").removeClass("active");
+    });
+  });
+</script>
 </body>
 </html>
