@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ar.edu.itba.paw.persistence.ReviewDao;
-import org.springframework.context.MessageSource;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +15,13 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentDao commentDao;
     private final ReviewDao reviewDao;
+    private final NotificationService notificationService;
 
     @Autowired
-    public CommentServiceImpl(final CommentDao commentDao, final ReviewDao reviewDao, final MessageSource messageSource) {
+    public CommentServiceImpl(final CommentDao commentDao, final ReviewDao reviewDao, final NotificationService notificationService) {
         this.commentDao = commentDao;
         this.reviewDao = reviewDao;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -41,6 +41,7 @@ public class CommentServiceImpl implements CommentService {
     public Comment save(Comment comment) {
         Comment savedComment = commentDao.save(comment);
         updateReviewCommentAmount(comment.getReview().getId());
+        notificationService.notifyComment(comment.getReview(), comment.getUser());
         return savedComment;
     }
 

@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
 import java.util.List;
+import ar.edu.itba.paw.models.reviews.SongReview;
 
 public interface SongDao extends CrudDao<Song> {
 
@@ -15,5 +16,6 @@ public interface SongDao extends CrudDao<Song> {
     boolean hasUserReviewed(long userId, long songId);
 
     boolean deleteReviewsFromSong(long songId);
+    List<SongReview> findReviewsBySongId(long songId);
 }
 

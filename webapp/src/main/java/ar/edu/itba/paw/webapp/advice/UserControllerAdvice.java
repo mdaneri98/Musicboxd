@@ -22,7 +22,6 @@ public class UserControllerAdvice {
             LOGGER.info("Authentication principal class: {}", auth.getPrincipal().getClass().getName());
             if (auth.getPrincipal() instanceof AuthCUserDetails pud) {
                 User user = pud.getUser();
-                LOGGER.info("User object: {}", user);
                 if (user != null) {
                     LOGGER.info("User fields - username: {}, id: {}", user.getUsername(), user.getId());
                 }

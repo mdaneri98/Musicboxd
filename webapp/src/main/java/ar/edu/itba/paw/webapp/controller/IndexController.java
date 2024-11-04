@@ -7,7 +7,6 @@ import ar.edu.itba.paw.services.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,14 +83,16 @@ public class IndexController {
     public ModelAndView music(@ModelAttribute("loggedUser") User loggedUser) {
         ModelAndView mav = new ModelAndView("music");
 
-        List<Album> topRatedAlbums = albumService.findPaginated(FilterType.RATING,1, 5);
-        List<Album> mostPopularAlbums = albumService.findPaginated(FilterType.POPULAR,1, 5);
+        int pageSize = 10;
 
-        List<Artist> topRatedArtists = artistService.findPaginated(FilterType.RATING,1, 5);
-        List<Artist> mostPopularArtists = artistService.findPaginated(FilterType.POPULAR,1, 5);
+        List<Album> topRatedAlbums = albumService.findPaginated(FilterType.RATING,1, pageSize);
+        List<Album> mostPopularAlbums = albumService.findPaginated(FilterType.POPULAR,1, pageSize);
 
-        List<Song> topRatedSongs = songService.findPaginated(FilterType.RATING,1, 5);
-        List<Song> mostPopularSongs = songService.findPaginated(FilterType.POPULAR,1, 5);
+        List<Artist> topRatedArtists = artistService.findPaginated(FilterType.RATING,1, pageSize);
+        List<Artist> mostPopularArtists = artistService.findPaginated(FilterType.POPULAR,1, pageSize);
+
+        List<Song> topRatedSongs = songService.findPaginated(FilterType.RATING,1, pageSize);
+        List<Song> mostPopularSongs = songService.findPaginated(FilterType.POPULAR,1, pageSize);
 
         mav.addObject("topRatedAlbums", topRatedAlbums);
         mav.addObject("mostPopularAlbums", mostPopularAlbums);

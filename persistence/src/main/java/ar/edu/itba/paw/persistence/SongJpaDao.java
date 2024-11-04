@@ -3,6 +3,8 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.reviews.SongReview;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,13 +84,13 @@ public class SongJpaDao implements SongDao {
                 return 0;
 
             if (!song.getArtists().contains(artist)) {
+                song.getArtists().add(artist);
                 artist.getSongs().add(song);
-                em.merge(artist);
+                em.merge(song);
             }
 
             return 1;
         } catch (Exception e) {
-            //logger.error("Error saving song-artist relationship", e);
             return 0;
         }
     }
@@ -114,7 +116,7 @@ public class SongJpaDao implements SongDao {
 
     @Override
     public boolean hasUserReviewed(long userId, long songId) {
-        String query = "SELECT COUNT(sr) FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId";
+        String query = "SELECT COUNT(sr) FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId AND sr.isBlocked = false";
         Long count = em.createQuery(query, Long.class)
                 .setParameter("userId", userId)
                 .setParameter("songId", songId)
@@ -139,6 +141,17 @@ public class SongJpaDao implements SongDao {
                         "(SELECT ar.id FROM SongReview ar WHERE ar.song.id = :songId)");
         query.setParameter("songId", songId);
         return query.executeUpdate() >= 1;
+    }
+
+
+    @Override
+    public List<SongReview> findReviewsBySongId(long songId) {
+        final TypedQuery<SongReview> query = em.createQuery(
+                "FROM SongReview sr WHERE sr.song.id = :songId AND sr.isBlocked = false ORDER BY sr.createdAt DESC",
+                SongReview.class
+        );
+        query.setParameter("songId", songId);
+        return query.getResultList();
     }
 
 }

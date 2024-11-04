@@ -1,8 +1,9 @@
-package ar.edu.itba.paw.services.email;
+package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.ReviewAcknowledgementType;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.VerificationType;
-import ar.edu.itba.paw.services.EmailService;
+import ar.edu.itba.paw.models.reviews.Review;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -43,6 +43,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final String MUSICBOXD_MAIL = "info.musicboxd@gmail.com";
 
+
     public void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
@@ -65,6 +66,7 @@ public class EmailServiceImpl implements EmailService {
         sendHtmlMessage(to, translatedSubject, htmlBody);
     }
 
+    @Override
     @Async
     public void sendVerification(VerificationType type, User to, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
@@ -107,4 +109,41 @@ public class EmailServiceImpl implements EmailService {
                 currentLocale
         );
     }
+
+    @Override
+    @Async
+    public void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, Review review) throws MessagingException {
+        final Map<String, Object> params = new HashMap<>();
+
+        Locale currentLocale = new Locale.Builder().setLanguage(to.getPreferredLanguage()).build();
+
+        String template = "";
+        String emailSubject = "";
+        switch (type) {
+            case BLOCKED -> {
+                template = "blocked_review";
+                params.put("isBlocked", true);
+                emailSubject = "review.acknowledgement.blocked";
+            }
+            case UNBLOCKED -> {
+                template = "unblocked_review";
+                params.put("isBlocked", false);
+                emailSubject = "review.acknowledgement.unblocked";
+            }
+        }
+        params.put("username", to.getUsername());
+        params.put("title", review.getTitle());
+        params.put("item_name", review.getItemName());
+        params.put("item_type", review.getItemType());
+
+        //params.put("verificationURL", verificationURL);
+        this.sendMessageUsingThymeleafTemplate(
+                template,
+                to.getEmail(),
+                emailSubject,
+                params,
+                currentLocale
+        );
+    }
+
 }
