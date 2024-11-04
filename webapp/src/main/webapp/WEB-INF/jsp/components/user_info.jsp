@@ -12,20 +12,22 @@
             <div class="entity-type">
                 <spring:message code="label.user" />
             </div>
+            <div class="user-badges">
+                <c:if test="${param.verified}">
+                            <span class="badge badge-verified">
+                                <spring:message code="label.verified" />
+                            </span>
+                </c:if>
+                <c:if test="${param.moderator}">
+                            <span class="badge badge-moderator">
+                                <spring:message code="label.moderator" />
+                            </span>
+                </c:if>
+            </div>
             <a href="${userUrl}" class="user-profile-name">
                 <h1>@<c:out value="${param.username}"/></h1>
-                <h3><c:out value="${param.name}"/></h3>
-                <div class="user-badges">
-                    <c:if test="${param.verified}">
-                        <span class="badge badge-verified">
-                            <spring:message code="label.verified" />
-                        </span>
-                    </c:if>
-                    <c:if test="${param.moderator}">
-                        <span class="badge badge-moderator">
-                            <spring:message code="label.moderator" />
-                        </span>
-                    </c:if>
+                <div class="user-name-badges">
+                    <h3><c:out value="${param.name}"/></h3>
                 </div>
             </a>
             <p class="user-profile-bio"><c:out value="${param.bio}"/></p>

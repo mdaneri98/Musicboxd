@@ -112,7 +112,8 @@
                                     <span class="song-number">${status.index + 1}</span>
                                     <span class="song-title"><c:out value="${song.title}"/></span>
                                     <div class="rating-badge">
-                                        <span class="rating"><fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/></span>
+                                        <fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                                        <span class="rating"><c:out value="${formattedRating}"/></span>
                                         <span class="star">&#9733;</span>
                                     </div>
                                 </a>

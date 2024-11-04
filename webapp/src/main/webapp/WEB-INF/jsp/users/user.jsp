@@ -89,7 +89,8 @@
                     <c:url var="artistImgURL" value="/images/${artist.image.id}"/>
                     <img src="${artistImgURL}" alt="${artist.name}" class="music-item-image">
                     <div class="rating-badge">
-                      <span class="rating"><fmt:formatNumber value="${artist.avgRating}" maxFractionDigits="1" var="formattedRating"/></span>
+                      <fmt:formatNumber value="${artist.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                      <span class="rating"><c:out value="${formattedRating}"/></span>
                       <span class="star">&#9733;</span>
                     </div>
                   </div>
@@ -114,7 +115,8 @@
                     <c:url var="albumImgURL" value="/images/${album.image.id}"/>
                     <img src="${albumImgURL}" alt="${album.title}" class="music-item-image">
                     <div class="rating-badge">
-                      <span class="rating"><fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/></span>
+                      <fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                      <span class="rating"><c:out value="${formattedRating}"/></span>
                       <span class="star">&#9733;</span>
                     </div>
                   </div>
@@ -137,7 +139,8 @@
                 <span class="song-number"><c:out value="${status.index + 1}"/></span>
                 <span class="song-title"><c:out value="${song.title}"/></span>
                 <div class="rating-badge">
-                  <span class="rating"><fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/></span>
+                  <fmt:formatNumber value="${song.avgRating}" maxFractionDigits="1" var="formattedRating"/>
+                  <span class="rating"><c:out value="${formattedRating}"/></span>
                   <span class="star">&#9733;</span>
                 </div>
               </a>
