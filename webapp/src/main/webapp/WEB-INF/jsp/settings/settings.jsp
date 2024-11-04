@@ -55,15 +55,20 @@
                                 <h3><spring:message code="settings.language.select"/></h3>
                                 <p><spring:message code="settings.language.description"/></p>
                             </div>
+                            <c:url var="changeLangEs" value="/user/language/es"/>
+                            <c:url var="changeLangEn" value="/user/language/en"/>
+
                             <div class="language-selector">
-                                <button class="language-btn active" data-lang="en">
-                                    <img src="/static/images/flags/en.png" alt="English">
-                                    English
-                                </button>
-                                <button class="language-btn" data-lang="es">
-                                    <img src="/static/images/flags/es.png" alt="Español">
-                                    Español
-                                </button>
+                                <form action="${changeLangEn}" method="post" style="display: inline;">
+                                    <button type="submit" class="language-btn ${loggedUser.preferredLanguage == "en" ? "active":""}">
+                                        English
+                                    </button>
+                                </form>
+                                <form action="${changeLangEs}" method="post" style="display: inline;">
+                                    <button type="submit" class="language-btn ${loggedUser.preferredLanguage == "es" ? "active":""}">
+                                        Castellano
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
