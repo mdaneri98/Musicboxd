@@ -153,7 +153,7 @@ public class UserController {
         }
 
         if (userId == loggedUser.getId()) {
-            return new ModelAndView("redirect:/user/profile?pageNum=" + pageNum + "&page=" + page);
+            return new ModelAndView("redirect:/user/profile?page=" + page);
         }
 
         final ModelAndView mav = new ModelAndView("/users/user");
