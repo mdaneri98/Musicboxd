@@ -91,6 +91,11 @@ public class UserController {
         return modelAndView;
     }
 
+    @RequestMapping(path = "/profile/settings", method = RequestMethod.GET)
+    public ModelAndView settings(@ModelAttribute("loggedUser") User loggedUser) {
+        return new ModelAndView("settings/settings");
+    }
+
     @RequestMapping(path = "/edit", method = RequestMethod.POST)
     public ModelAndView submitProfile(@Valid @ModelAttribute("userProfileForm") final UserProfileForm upf,
                                       final BindingResult errors,
