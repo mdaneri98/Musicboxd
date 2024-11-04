@@ -101,7 +101,7 @@
                                 </c:if>
                             </div>
                             <span class="comment-date"><c:out value="${comment.timeAgo}"/></span>
-                            <p class="comment-content">${comment.content}</p>
+                            <p class="comment-content"><c:out value="${comment.content}"/></p>
                         </div>
                     </c:forEach>
                 </div>

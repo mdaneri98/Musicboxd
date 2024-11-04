@@ -101,8 +101,7 @@
                                             <c:url var="albumImgURL" value="/images/${album.image.id}"/>
                                             <img src="${albumImgURL}" alt="${album.title}" class="music-item-image">
                                             <div class="rating-badge">
-                                                <fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/>
-                                                <span class="rating">${formattedRating}</span>
+                                                <span class="rating"><fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/></span>
                                                 <span class="star">&#9733;</span>
                                             </div>
                                         </div>

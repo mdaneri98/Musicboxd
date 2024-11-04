@@ -57,7 +57,7 @@
                 <div class="action-item">
                     <c:url var="likeReviewLink" value="/review/like/${param.review_id}" />
                     <c:url var="removeLikeReviewLink" value="/review/remove-like/${param.review_id}" />
-                    <span class="action-count">${param.likes}</span>
+                    <span class="action-count"><c:out value="${param.likes}"/></span>
                     <c:choose>
                         <c:when test="${!param.isLiked}">
                             <a href="${likeReviewLink}" class="action-link">
@@ -75,7 +75,7 @@
                 <!-- Comment action -->
                 <div class="action-item">
                     <c:url var="reviewUrl" value="/review/${param.review_id}" />
-                    <span class="action-count">${param.commentAmount}</span>
+                    <span class="action-count"><c:out value="${param.commentAmount}"/></span>
                     <a href="${reviewUrl}" class="action-link">
                         <i class="fa-regular fa-comment"></i>
                     </a>

@@ -5,7 +5,7 @@
 
 <div id="confirmationModal${param.id}" class="confirmation-modal">
     <div class="confirmation-content">
-        <p class="confirmation-message">${param.message}</p>
+        <p class="confirmation-message"><c:out value="${param.message}"/></p>
         <div class="confirmation-actions">
             <button id="modalNo${param.id}" class="btn btn-secondary">
                 <spring:message code="confirmation.window.no"/>

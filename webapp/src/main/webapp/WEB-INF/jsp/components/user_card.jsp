@@ -16,19 +16,19 @@
 
     <div class="user-card-stats">
         <div class="user-card-stat">
-            <span class="user-card-stat-value">${param.reviewAmount}</span>
+            <span class="user-card-stat-value"><c:out value="${param.reviewAmount}"/></span>
             <span class="user-card-stat-label">
                 <spring:message code="label.reviews" />
             </span>
         </div>
         <div class="user-card-stat">
-            <span class="user-card-stat-value">${param.followersAmount}</span>
+            <span class="user-card-stat-value"><c:out value="${param.followersAmount}"/></span>
             <span class="user-card-stat-label">
                 <spring:message code="label.followers" />
             </span>
         </div>
         <div class="user-card-stat">
-            <span class="user-card-stat-value">${param.followingAmount}</span>
+            <span class="user-card-stat-value"><c:out value="${param.followingAmount}"/></span>
             <span class="user-card-stat-label">
                 <spring:message code="label.following" />
             </span>
