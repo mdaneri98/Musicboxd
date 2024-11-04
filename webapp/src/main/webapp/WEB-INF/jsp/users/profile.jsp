@@ -166,8 +166,8 @@
 
                     <!-- Pagination -->
                     <div class="pagination">
-                        <c:url value="/user/profile?pageNum=${pageNum + 1}" var="nextPage" />
-                        <c:url value="/user/profile?pageNum=${pageNum - 1}" var="prevPage" />
+                        <c:url value="/user/profile?page=reviews&pageNum=${pageNum + 1}" var="nextPage" />
+                        <c:url value="/user/profile?page=reviews&pageNum=${pageNum - 1}" var="prevPage" />
                         <c:if test="${showPrevious}">
                             <a href="${prevPage}" class="btn btn-secondary">
                                 <spring:message code="button.previous.page" />
