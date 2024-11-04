@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeButtons = document.querySelectorAll('.theme-btn');
     if (themeButtons.length > 0) {
         const currentTheme = localStorage.getItem('theme') || 'dark';
-        const themes = ['dark', 'sepia', 'ocean', 'forest'];
+        const themes = ['dark', 'sepia', 'ocean', 'forest', 'kawaii'];
         const themeSelector = document.querySelector('.theme-selector');
         
         themeSelector.innerHTML = '';
@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 case 'forest':
                     icon.className = 'fas fa-tree';
+                    break;
+                case 'kawaii':
+                    icon.className = 'fas fa-heart';
                     break;
             }
             
