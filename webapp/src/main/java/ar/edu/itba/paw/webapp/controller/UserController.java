@@ -138,14 +138,18 @@ public class UserController {
         }
 
         final ModelAndView mav = new ModelAndView("/users/user");
-        User user = userService.find(userId).orElseThrow();
+        Optional<User> userOptional = userService.find(userId);
+        if (userOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.user.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
 
         List<Review> reviews = reviewService.findReviewsByUserPaginated(userId, pageNum, pageSize, loggedUser.getId());
 
         boolean showNext = reviews.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
-        mav.addObject("user", user);
+        mav.addObject("user", userOptional.get());
         mav.addObject("isFollowing", userService.isFollowing(loggedUser.getId(), userId));
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
         mav.addObject("artists", userService.getFavoriteArtists(userId));

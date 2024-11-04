@@ -1361,9 +1361,8 @@ textarea.form-control {
 }
 
 .comment-content {
-    color: var(--color-text-secondary);
     line-height: 1.6;
-    padding: var(--space-sm);
+    padding: var(--space-md);
 }
 
 .btn-sm {

@@ -154,7 +154,7 @@
     <script>
         var songIndex = ${modAlbumForm.songs.size()};
         var songCount = ${modAlbumForm.songs.size()};
-        var maxSongs = 15;
+        var maxSongs = 40;
 
         function addSong() {
             var container = document.getElementById("SongContainer");
@@ -317,7 +317,6 @@
 
         function toggleAddButton() {
             var addSongButton = document.getElementById("addSongButton");
-            //Disables button if max albums has been reached
             addSongButton.disabled = songCount >= maxSongs;
         }
     </script>

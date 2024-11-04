@@ -153,7 +153,7 @@
 <script>
     var albumIndex = ${modArtistForm.albums.size()};
     var albumCount = ${modArtistForm.albums.size()};
-    var maxAlbums = 10;
+    var maxAlbums = 40;
 
     function addAlbum() {
         // divs

@@ -57,9 +57,14 @@ public class SongController {
         }
 
         final ModelAndView mav = new ModelAndView("song");
-        int pageSize = 5; 
+        int pageSize = 5;
 
-        Song song = songService.find(songId).get();
+        Optional<Song> songOptional = songService.find(songId);
+        if (songOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.song.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+        Song song = songOptional.get();
         List<Artist> artists = artistService.findBySongId(songId);
         List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId, pageNum, pageSize, loggedUser.getId());
 
