@@ -264,7 +264,7 @@
 
 .rating-badge .rating {
     font-weight: 700;
-    color: var(--button-text-color);
+    color: white;
 }
 
 /* Responsive adjustments */
@@ -2261,4 +2261,12 @@ textarea.form-control {
     margin: var(--space-lg) auto;
     max-width: fit-content;
     width: 100%;
+}
+
+
+.user-name-badges {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm);
+    align-items: center;
 }
