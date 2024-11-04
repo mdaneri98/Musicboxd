@@ -38,6 +38,12 @@
                 <img src="${profileImageUrl}" alt="Profile" class="profile-image">
             </a>
 
+            <!-- Settings -->
+            <c:url var="settingsUrl" value="/user/profile/settings"/>
+            <a href="${settingsUrl}" class="sidebar-icon" title="Settings">
+                <i class="fas fa-cog"></i>
+            </a>
+
             <!-- Logout -->
             <c:url var="logoutUrl" value="/user/logout"/>
             <a href="${logoutUrl}" class="sidebar-icon" title="Logout">
