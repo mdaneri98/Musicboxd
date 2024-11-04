@@ -25,8 +25,8 @@
                     <c:url var="imgUrl" value="/images/${album.image.id}"/>
                     <img src="${imgUrl}" alt="${album.title}" class="review-preview-image">
                     <div class="review-preview-info">
-                        <h2 class="review-preview-title">${album.title}</h2>
-                        <p class="review-preview-subtitle">${album.releaseDate}</p>
+                        <h2 class="review-preview-title"><c:out value="${album.title}"/></h2>
+                        <p class="review-preview-subtitle"><c:out value="${album.releaseDate}"/></p>
                     </div>
                 </a>
             </div>
@@ -47,10 +47,12 @@
                             <jsp:param name="posturl" value="${posturl}"/>
                             <jsp:param name="cancelUrl" value="${albumUrl}"/>
                         </jsp:include>
-                        <c:url var="deleteUrl" value="/album/${album.id}/delete-review" />
-                        <button type="button" onclick="deleteReview()" class="btn btn-danger delete-review-btn">
-                            <spring:message code="label.delete.review" />
-                        </button>
+                        <div class="delete-review-container">
+                            <c:url var="deleteUrl" value="/album/${album.id}/delete-review" />
+                            <button type="button" onclick="deleteReview()" class="btn btn-danger">
+                                <spring:message code="label.delete.review" />
+                            </button>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>
