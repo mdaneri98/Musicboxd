@@ -28,6 +28,8 @@
                     <jsp:param name="followersAmount" value="${user.followersAmount}" />
                     <jsp:param name="followingAmount" value="${user.followingAmount}" />
                     <jsp:param name="id" value="${user.id}" />
+                    <jsp:param name="verified" value="${user.verified}" />
+                    <jsp:param name="moderator" value="${user.moderator}" />
                 </jsp:include>
             </header>
             </div>
