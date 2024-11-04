@@ -318,7 +318,7 @@ public class UserController {
         loggedUser.setPreferredLanguage(language);
         userService.update(loggedUser);
 
-        return new ModelAndView("redirect:/user/profile");
+        return new ModelAndView("redirect:/user/profile/settings");
     }
 
     private byte[] getBytes(MultipartFile imageFile) {
