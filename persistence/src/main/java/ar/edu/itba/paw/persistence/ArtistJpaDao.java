@@ -84,7 +84,7 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public boolean hasUserReviewed(long userId, long artistId) {
-        String jpql = "SELECT COUNT(r) FROM ArtistReview r WHERE r.user.id = :userId AND r.artist.id = :artistId";
+        String jpql = "SELECT COUNT(r) FROM ArtistReview r WHERE r.user.id = :userId AND r.artist.id = :artistId AND r.isBlocked = false";
         Long count = entityManager.createQuery(jpql, Long.class)
                 .setParameter("userId", userId)
                 .setParameter("artistId", artistId)

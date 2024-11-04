@@ -112,7 +112,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public Optional<SongReview> findSongReviewByUserId(long userId, long songId) {
         final TypedQuery<SongReview> query = em.createQuery(
-                "FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId AND sr.isBlocked = false",
+                "FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId",
                 SongReview.class
         );
         query.setParameter("userId", userId);
@@ -196,7 +196,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize) {
         final TypedQuery<ArtistReview> query = em.createQuery(
-                "FROM ArtistReview ar WHERE ar.artist.id = :artistId AND ar.isBlocked = false ORDER BY ar.createdAt DESC",
+                "FROM ArtistReview ar WHERE ar.artist.id = :artistId ORDER BY ar.createdAt DESC",
                 ArtistReview.class
         );
         query.setParameter("artistId", artistId);
@@ -209,7 +209,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize) {
         final TypedQuery<AlbumReview> query = em.createQuery(
-                "FROM AlbumReview ar WHERE ar.album.id = :albumId AND ar.isBlocked = false ORDER BY ar.createdAt DESC",
+                "FROM AlbumReview ar WHERE ar.album.id = :albumId ORDER BY ar.createdAt DESC",
                 AlbumReview.class
         );
         query.setParameter("albumId", albumId);
@@ -222,7 +222,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize) {
         final TypedQuery<SongReview> query = em.createQuery(
-                "FROM SongReview sr WHERE sr.song.id = :songId AND sr.isBlocked = false ORDER BY sr.createdAt DESC",
+                "FROM SongReview sr WHERE sr.song.id = :songId ORDER BY sr.createdAt DESC",
                 SongReview.class
         );
         query.setParameter("songId", songId);
