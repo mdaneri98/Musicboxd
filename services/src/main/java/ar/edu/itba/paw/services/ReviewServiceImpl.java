@@ -7,12 +7,10 @@ import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.persistence.*;
 import ar.edu.itba.paw.services.exception.AcknowledgementEmailException;
-import ar.edu.itba.paw.services.exception.VerificationEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ar.edu.itba.paw.services.utils.TimeUtils;
-import org.springframework.context.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,7 +188,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateArtistRating(long artistId) {
         LOGGER.info("Updating rating for artist ID: {}", artistId);
-        List<ArtistReview> reviews = reviewDao.findReviewsByArtistId(artistId);
+        List<ArtistReview> reviews = artistService.findReviewsByArtistId(artistId);
         Double avgRating = reviews.stream().mapToInt(ArtistReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         Integer ratingAmount = reviews.size();
@@ -264,7 +262,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateAlbumRating(long albumId) {
         LOGGER.info("Updating rating for album ID: {}", albumId);
-        List<AlbumReview> reviews = reviewDao.findReviewsByAlbumId(albumId);
+        List<AlbumReview> reviews = albumService.findReviewsByAlbumId(albumId);
         Double avgRating = reviews.stream().mapToInt(AlbumReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();
@@ -311,7 +309,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateSongRating(long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
-        List<SongReview> reviews = reviewDao.findReviewsBySongId(songId);
+        List<SongReview> reviews = songService.findReviewsBySongId(songId);
         Double avgRating = reviews.stream().mapToInt(SongReview::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();

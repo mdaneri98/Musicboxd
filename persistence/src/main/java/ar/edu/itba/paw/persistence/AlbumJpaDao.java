@@ -2,6 +2,8 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.reviews.AlbumReview;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
@@ -116,6 +118,16 @@ public class AlbumJpaDao implements AlbumDao {
                         "(SELECT ar.id FROM AlbumReview ar WHERE ar.album.id = :albumId)");
         query.setParameter("albumId", albumId);
         return query.executeUpdate() >= 1;
+    }
+
+    @Override
+    public List<AlbumReview> findReviewsByAlbumId(long albumId) {
+        final TypedQuery<AlbumReview> query = entityManager.createQuery(
+                "FROM AlbumReview ar WHERE ar.album.id = :albumId AND ar.isBlocked = false ORDER BY ar.createdAt DESC",
+                AlbumReview.class
+        );
+        query.setParameter("albumId", albumId);
+        return query.getResultList();
     }
 
 }

@@ -4,13 +4,14 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import java.util.List;
+import ar.edu.itba.paw.models.reviews.SongReview;
 
 public interface SongService extends CrudService<Song> {
 
     List<Song> findByArtistId(long id);
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
-
+    List<SongReview> findReviewsBySongId(long songId);
     Song create(SongDTO songDTO, Album album);
     boolean createAll(List<SongDTO> songsDTO, Album album);
     Song update(SongDTO songDTO, Album album);

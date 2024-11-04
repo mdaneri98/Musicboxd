@@ -13,19 +13,16 @@ public interface ReviewDao extends CrudDao<Review> {
 
     // Métodos específicos para ArtistReview
     Optional<ArtistReview> findArtistReviewById(long id);
-    List<ArtistReview> findReviewsByArtistId(long artistId);
     Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId);
     ArtistReview saveArtistReview(ArtistReview review);
 
     // Métodos específicos para AlbumReview
     Optional<AlbumReview> findAlbumReviewById(long id);
-    List<AlbumReview> findReviewsByAlbumId(long albumId);
     Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId);
     AlbumReview saveAlbumReview(AlbumReview review);
 
     // Métodos específicos para SongReview
     Optional<SongReview> findSongReviewById(long id);
-    List<SongReview> findReviewsBySongId(long songId);
     Optional<SongReview> findSongReviewByUserId(long userId, long songId);
     SongReview saveSongReview(SongReview review);
 

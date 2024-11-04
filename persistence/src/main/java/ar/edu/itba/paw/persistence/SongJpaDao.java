@@ -3,6 +3,8 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.reviews.SongReview;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,6 +141,17 @@ public class SongJpaDao implements SongDao {
                         "(SELECT ar.id FROM SongReview ar WHERE ar.song.id = :songId)");
         query.setParameter("songId", songId);
         return query.executeUpdate() >= 1;
+    }
+
+
+    @Override
+    public List<SongReview> findReviewsBySongId(long songId) {
+        final TypedQuery<SongReview> query = em.createQuery(
+                "FROM SongReview sr WHERE sr.song.id = :songId AND sr.isBlocked = false ORDER BY sr.createdAt DESC",
+                SongReview.class
+        );
+        query.setParameter("songId", songId);
+        return query.getResultList();
     }
 
 }
