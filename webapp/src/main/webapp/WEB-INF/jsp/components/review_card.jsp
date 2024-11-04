@@ -11,7 +11,15 @@
             </div>
             <div class="review-header-info">
                 <h3 class="review-title"><c:out value="${param.item_name}"/></h3>
-                <p class="review-type"><c:out value="${param.item_type}"/></p>
+                <c:if test="${param.item_type == 'Artist'}">
+                    <p class="review-type"><spring:message code="label.artist"/></p>
+                </c:if>
+                <c:if test="${param.item_type == 'Album'}">
+                    <p class="review-type"><spring:message code="label.album"/></p>
+                </c:if>
+                <c:if test="${param.item_type == 'Song'}">
+                    <p class="review-type"><spring:message code="label.song"/></p>
+                </c:if>
             </div>
             <div class="rating-display">
                 <div class="star-rating">

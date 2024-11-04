@@ -176,8 +176,9 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Following relationship already exists");
             return 0;
         }
-        int result = userDao.createFollowing(user, find(followingId).get());
-        notificationService.notifyFollow(followingId, user);
+        User following = find(followingId).get();
+        int result = userDao.createFollowing(user, following);
+        notificationService.notifyFollow(following, user);
         LOGGER.info("Following relationship created successfully");
         return result;
     }

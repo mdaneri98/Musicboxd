@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
+import ar.edu.itba.paw.models.reviews.Review;
 import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "notifications")
@@ -15,14 +17,17 @@ public class Notification {
     @Column(name = "type", nullable = false)
     private NotificationType type;
 
-    @Column(name = "recipient_user_id", nullable = false)
-    private Long recipientUserId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "recipient_user_id", nullable = false)
+    private User recipientUser;
 
-    @Column(name = "trigger_user_id")
-    private Long triggerUserId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "trigger_user_id")
+    private User triggerUser;
 
-    @Column(name = "resource_id")
-    private Long resourceId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "resource_id")
+    private Review review;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -35,6 +40,7 @@ public class Notification {
 
     @Transient
     private String timeAgo;
+    
 
     public enum NotificationType {
         LIKE,
@@ -47,14 +53,14 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(Long id, NotificationType type, Long recipientUserId,
-                       Long triggerUserId, Long resourceId, LocalDateTime createdAt, 
+    public Notification(Long id, NotificationType type, User recipientUser,
+                       User triggerUser, Review review, LocalDateTime createdAt, 
                        boolean read, String message) {
         this.id = id;
         this.type = type;
-        this.recipientUserId = recipientUserId;
-        this.triggerUserId = triggerUserId;
-        this.resourceId = resourceId;
+        this.recipientUser = recipientUser;
+        this.triggerUser = triggerUser;
+        this.review = review;
         this.createdAt = createdAt;
         this.read = read;
         this.message = message;
@@ -76,28 +82,28 @@ public class Notification {
         this.type = type;
     }
 
-    public Long getRecipientUserId() {
-        return recipientUserId;
+    public User getRecipientUser() {
+        return recipientUser;
     }
 
-    public void setRecipientUserId(Long recipientUserId) {
-        this.recipientUserId = recipientUserId;
+    public void setRecipientUser(User recipientUser) {
+        this.recipientUser = recipientUser;
     }
 
-    public Long getTriggerUserId() {
-        return triggerUserId;
+    public User getTriggerUser() {
+        return triggerUser;
     }
 
-    public void setTriggerUserId(Long triggerUserId) {
-        this.triggerUserId = triggerUserId;
+    public void setTriggerUser(User triggerUser) {
+        this.triggerUser = triggerUser;
     }
 
-    public Long getResourceId() {
-        return resourceId;
+    public Review getReview() {
+        return review;
     }
 
-    public void setResourceId(Long resourceId) {
-        this.resourceId = resourceId;
+    public void setReview(Review review) {
+        this.review = review;
     }
 
     public LocalDateTime getCreatedAt() {

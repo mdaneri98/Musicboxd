@@ -170,14 +170,27 @@
     padding: var(--space-lg);
 }
 
+.notifications {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
 .notification-item {
     background-color: var(--color-background-secondary);
     padding: var(--space-md);
     border-radius: var(--border-radius-md);
     margin-bottom: var(--space-md);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: var(--space-sm);
     transition: background-color 0.3s ease;
 }
 
@@ -201,7 +214,41 @@
     font-size: 0.875rem;
 }
 
+.notification-review-link {
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+}
+
+.notification-review-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md);
+    width: 100%;
+}
+
+.notification-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-review-image {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    margin-left: var(--space-md);
+}
+
+.notification-review-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+}
+
 .mark-read-btn {
+    align-self: flex-end;
     padding: var(--space-xs) var(--space-sm);
     background-color: var(--color-background-elevated);
     color: var(--color-text-secondary);
@@ -209,11 +256,11 @@
     border-radius: var(--border-radius-sm);
     cursor: pointer;
     transition: all 0.3s ease;
+    text-decoration: none;
 }
 
 .mark-read-btn:hover {
-    background-color: var(--color-accent);
-    color: var(--button-text-color);
+  scale: 1.02;
 }
 
 /* Notification Badge */
@@ -234,5 +281,17 @@
 }
 
 .sidebar-icon {
-    position: relative;  /* Para posicionar el badge correctamente */
+    position: relative;
+}
+
+.notification-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-md);
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
 }

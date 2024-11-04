@@ -108,7 +108,8 @@
 }
 
 .user-name {
-  font-weight: 600;
+    font-weight: 600;
+    color: var(--color-text-primary);
 }
 
 .review-timestamp {
@@ -2269,4 +2270,9 @@ textarea.form-control {
     flex-direction: row;
     gap: var(--space-sm);
     align-items: center;
+}
+
+.notifications {
+    display: flex;
+    flex-direction: row;
 }
