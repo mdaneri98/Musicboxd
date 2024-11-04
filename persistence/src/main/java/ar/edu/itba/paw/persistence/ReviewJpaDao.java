@@ -65,16 +65,6 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public List<ArtistReview> findReviewsByArtistId(long artistId) {
-        final TypedQuery<ArtistReview> query = em.createQuery(
-                "FROM ArtistReview review WHERE review.artist.id = :artistId AND review.isBlocked = false ORDER BY review.createdAt DESC",
-                ArtistReview.class
-        );
-        query.setParameter("artistId", artistId);
-        return query.getResultList();
-    }
-
-    @Override
     public Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId) {
         final TypedQuery<ArtistReview> query = em.createQuery(
                 "FROM ArtistReview ar WHERE ar.user.id = :userId AND ar.artist.id = :artistId",
@@ -97,15 +87,6 @@ public class ReviewJpaDao implements ReviewDao {
         return em.merge(review);
     }
 
-    @Override
-    public List<AlbumReview> findReviewsByAlbumId(long albumId) {
-        final TypedQuery<AlbumReview> query = em.createQuery(
-                "FROM AlbumReview ar WHERE ar.album.id = :albumId AND ar.isBlocked = false ORDER BY ar.createdAt DESC",
-                AlbumReview.class
-        );
-        query.setParameter("albumId", albumId);
-        return query.getResultList();
-    }
 
     @Override
     public Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId) {
@@ -126,16 +107,6 @@ public class ReviewJpaDao implements ReviewDao {
             return review;
         }
         return em.merge(review);
-    }
-
-    @Override
-    public List<SongReview> findReviewsBySongId(long songId) {
-        final TypedQuery<SongReview> query = em.createQuery(
-                "FROM SongReview sr WHERE sr.song.id = :songId AND sr.isBlocked = false ORDER BY sr.createdAt DESC",
-                SongReview.class
-        );
-        query.setParameter("songId", songId);
-        return query.getResultList();
     }
 
     @Override

@@ -23,15 +23,13 @@ public class IndexController {
     private final UserService userService;
     private final SongService songService;
     private final AlbumService albumService;
-    private final MessageSource messageSource;
 
-    public IndexController(ArtistService artistService, ReviewService reviewService, UserService userService, SongService songService, AlbumService albumService, MessageSource messageSource) {
+    public IndexController(ArtistService artistService, ReviewService reviewService, UserService userService, SongService songService, AlbumService albumService) {
         this.artistService = artistService;
         this.reviewService = reviewService;
         this.userService = userService;
         this.songService = songService;
         this.albumService = albumService;
-        this.messageSource = messageSource;
     }
 
     @RequestMapping(value = {"/home", "/"})

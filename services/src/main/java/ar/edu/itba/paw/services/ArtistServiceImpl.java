@@ -5,12 +5,14 @@ import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
+import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,11 +22,13 @@ public class ArtistServiceImpl implements ArtistService {
     private final ArtistDao artistDao;
     private final ImageService imageService;
     private final AlbumService albumService;
+    private final UserService userService;
 
-    public ArtistServiceImpl(ArtistDao artistDao, ImageService imageService, AlbumService albumService) {
+    public ArtistServiceImpl(ArtistDao artistDao, ImageService imageService, AlbumService albumService, UserService userService) {
         this.artistDao = artistDao;
         this.imageService = imageService;
         this.albumService = albumService;
+        this.userService = userService;
     }
 
     @Override
@@ -89,7 +93,10 @@ public class ArtistServiceImpl implements ArtistService {
         List<Album> list = albumService.findByArtistId(id);
         list.forEach(album -> albumService.delete(album));
 
+        List<Long> userIds = new ArrayList<>();
+        artistDao.findReviewsByArtistId(id).forEach(review -> userIds.add(review.getUser().getId()));
         artistDao.deleteReviewsFromArtist(id);
+        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean deleted = artistDao.delete(id);
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);
@@ -100,17 +107,33 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ArtistReview> findReviewsByArtistId(long artistId) {
+        return artistDao.findReviewsByArtistId(artistId);
+    }
+
+    @Override
     @Transactional
     public boolean delete(Artist artist) {
         if (artist.getId() == null || artist.getImage() == null || artist.getId() < 1 || artist.getImage().getId() < 1) {
             LOGGER.warn("Invalid artist data for deletion: {}", artist);
             return false;
         }
-        boolean deleted = artistDao.delete(artist.getId());
+        Long id = artist.getId();
+
+        // Delete Images
+        List<Album> list = albumService.findByArtistId(id);
+        list.forEach(album -> albumService.delete(album));
+
+        List<Long> userIds = new ArrayList<>();
+        artistDao.findReviewsByArtistId(id).forEach(review -> userIds.add(review.getUser().getId()));
+        artistDao.deleteReviewsFromArtist(id);
+        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
+        boolean deleted = artistDao.delete(id);
         if (deleted) {
-            LOGGER.info("Artist {} (ID: {}) deleted successfully", artist.getName(), artist.getId());
+            LOGGER.info("Artist with ID {} deleted successfully", id);
         } else {
-            LOGGER.error("Failed to delete artist {} (ID: {})", artist.getName(), artist.getId());
+            LOGGER.error("Failed to delete artist with ID {}", id);
         }
         return deleted;
     }

@@ -3,6 +3,8 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.reviews.ArtistReview;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -107,6 +109,16 @@ public class ArtistJpaDao implements ArtistDao {
                         "(SELECT ar.id FROM ArtistReview ar WHERE ar.artist.id = :artistId)");
         query.setParameter("artistId", artistId);
         return query.executeUpdate() >= 1;
+    }
+
+    @Override
+    public List<ArtistReview> findReviewsByArtistId(long artistId) {
+        final TypedQuery<ArtistReview> query = entityManager.createQuery(
+                "FROM ArtistReview review WHERE review.artist.id = :artistId AND review.isBlocked = false ORDER BY review.createdAt DESC",
+                ArtistReview.class
+        );
+        query.setParameter("artistId", artistId);
+        return query.getResultList();
     }
 
 }
