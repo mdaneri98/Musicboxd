@@ -194,7 +194,7 @@ public class UserController {
 
 
         ModelAndView mav = new ModelAndView("/users/follow_info");
-        int pageSize = 100;
+        int pageSize = 20;
 
         Optional<User> userOptional = userService.find(userId);
         if (userOptional.isEmpty()) {
@@ -202,20 +202,17 @@ public class UserController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
-        // FIXME: Get list paginated
-        List<User> followingList = userOptional.get().getFollowing();
-        List<User> followersList = userOptional.get().getFollowers();
-
         boolean showPrevious = pageNum > 1;
         Boolean showNext = null;
+
         List<User> userList = null;
         if (followersActive){
-            userList = followersList;
-            showNext = followersList.size() == pageSize;
+            userList = userService.getFollowers(userOptional.get().getId(), pageNum, pageSize);
+            showNext = userList.size() == pageSize;
         }
         if (followingActive) {
-            userList = followingList;
-            showNext = followingList.size() == pageSize;
+            userList = userService.getFollowings(userOptional.get().getId(), pageNum, pageSize);;
+            showNext = userList.size() == pageSize;
         }
 
 

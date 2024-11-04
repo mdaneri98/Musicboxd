@@ -162,3 +162,77 @@
     font-size: clamp(1rem, 2.5vw, 1.125rem);
     font-weight: normal;
 }
+
+/* Notifications */
+.notifications-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-lg);
+}
+
+.notification-item {
+    background-color: var(--color-background-secondary);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--space-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.notification-item.unread {
+    background-color: var(--color-background-elevated);
+    border-left: 3px solid var(--color-accent);
+}
+
+.notification-content {
+    flex-grow: 1;
+    padding-right: var(--space-md);
+}
+
+.notification-content p {
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.notification-time {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+.mark-read-btn {
+    padding: var(--space-xs) var(--space-sm);
+    background-color: var(--color-background-elevated);
+    color: var(--color-text-secondary);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mark-read-btn:hover {
+    background-color: var(--color-accent);
+    color: var(--button-text-color);
+}
+
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--color-danger);
+    color: var(--color-text-primary);
+    font-size: 0.75rem;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    border-radius: var(--border-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--space-xs);
+}
+
+.sidebar-icon {
+    position: relative;  /* Para posicionar el badge correctamente */
+}
