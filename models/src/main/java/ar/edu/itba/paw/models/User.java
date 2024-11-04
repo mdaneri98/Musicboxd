@@ -66,7 +66,7 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Comment> comments;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "follower",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -74,7 +74,7 @@ public class User {
     )
     private List<User> following;
 
-    @ManyToMany(mappedBy = "following")
+    @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
     private List<User> followers;
 
     @ManyToMany
@@ -197,7 +197,7 @@ public class User {
         }
         if (!this.following.contains(user)) {
             this.following.add(user);
-            user.getFollowers().add(this); // Añadir a la lista de seguidores del otro usuario
+            user.getFollowers().add(this);
             this.followingAmount++;
             user.setFollowersAmount(user.getFollowersAmount() + 1);
         }
@@ -206,7 +206,7 @@ public class User {
     public void removeFollowing(User user) {
         if (this.following != null && this.following.contains(user)) {
             this.following.remove(user);
-            user.getFollowers().remove(this); // Remover de la lista de seguidores del otro usuario
+            user.getFollowers().remove(this);
             this.followingAmount--;
             user.setFollowersAmount(user.getFollowersAmount() - 1);
         }
@@ -218,7 +218,7 @@ public class User {
         }
         if (!this.followers.contains(user)) {
             this.followers.add(user);
-            user.getFollowing().add(this); // Añadir a la lista de "following" del otro usuario
+            user.getFollowing().add(this);
             this.followersAmount++;
             user.setFollowingAmount(user.getFollowingAmount() + 1);
         }
@@ -227,7 +227,7 @@ public class User {
     public void removeFollower(User user) {
         if (this.followers != null && this.followers.contains(user)) {
             this.followers.remove(user);
-            user.getFollowing().remove(this); // Remover de la lista de "following" del otro usuario
+            user.getFollowing().remove(this);
             this.followersAmount--;
             user.setFollowingAmount(user.getFollowingAmount() - 1);
         }

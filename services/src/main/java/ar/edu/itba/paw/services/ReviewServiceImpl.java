@@ -30,15 +30,17 @@ public class ReviewServiceImpl implements ReviewService {
     private final AlbumService albumService;
     private final UserService userService;
     private final EmailService emailService;
+    private final NotificationService notificationService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService) {
+    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.userService = userService;
         this.emailService = emailService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -86,6 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review createdReview = reviewDao.create(entity);
         updateUserReviewAmount(createdReview.getUser().getId());
         LOGGER.info("Review created successfully with ID: {}", createdReview.getId());
+        notificationService.notifyNewReview(createdReview, createdReview.getUser());
         return createdReview;
     }
 
@@ -180,6 +183,7 @@ public class ReviewServiceImpl implements ReviewService {
         ArtistReview result = reviewDao.saveArtistReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateArtistRating(review.getArtist().getId());
+        notificationService.notifyNewReview(result, result.getUser());
         LOGGER.info("Artist review saved, user review amount updated, and artist rating recalculated");
         return result;
     }
@@ -254,6 +258,7 @@ public class ReviewServiceImpl implements ReviewService {
         AlbumReview result = reviewDao.saveAlbumReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateAlbumRating(review.getAlbum().getId());
+        notificationService.notifyNewReview(result, result.getUser());
         LOGGER.info("Album review saved, user review amount updated, and album rating recalculated");
         return result;
     }
@@ -293,6 +298,7 @@ public class ReviewServiceImpl implements ReviewService {
         SongReview result = reviewDao.saveSongReview(review);
         updateUserReviewAmount(review.getUser().getId());
         updateSongRating(review.getSong().getId());
+        notificationService.notifyNewReview(result, result.getUser());
         LOGGER.info("Song review saved, user review amount updated, and song rating recalculated");
         return result;
     }
@@ -329,6 +335,7 @@ public class ReviewServiceImpl implements ReviewService {
         LOGGER.info("Creating like for review ID: {} by user ID: {}", reviewId, userId);
         reviewDao.createLike(userId, reviewId);
         reviewDao.updateLikeCount(reviewId);
+        notificationService.notifyLike(find(reviewId).get(),userService.find(userId).get());
         LOGGER.info("Like created and like count incremented for review ID: {}", reviewId);
     }
 
