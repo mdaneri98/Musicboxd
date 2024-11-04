@@ -24,37 +24,36 @@
                 </h1>
 
                 <c:url var="editProfileUrl" value="/user/edit" />
-                <form:form modelAttribute="userProfileForm" action="${editProfileUrl}" method="post" enctype="multipart/form-data" class="mod-form">
-                    <div class="entity-header">
-                        <div class="entity-main-info">
-                            <c:url var="userImgURL" value="/images/${loggedUser.image.id}"/>
-                            <form:input path="profilePicture" id="userImageInput" type="file" accept=".jpg,.jpeg,.png" cssClass="hidden-input" onchange="previewImage(event)"/>
-                            <img id="imagePreview" src="${userImgURL}" class="entity-image" style="cursor: pointer;" onclick="document.getElementById('userImageInput').click();" alt="Profile Image"/>
+                <form:form modelAttribute="userProfileForm" action="${editProfileUrl}" method="post" enctype="multipart/form-data">
+                    <div class="mod-form">
+
+                        <c:url var="userImgURL" value="/images/${loggedUser.image.id}"/>
+                        <form:input path="profilePicture" id="userImageInput" type="file" accept=".jpg,.jpeg,.png" cssClass="hidden-input" onchange="previewImage(event)"/>
+                        <img id="imagePreview" src="${userImgURL}" class="entity-image mod-editable-image" style="cursor: pointer;" onclick="document.getElementById('userImageInput').click();" alt="Profile Image"/>
                             
-                            <div class="entity-details">
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <spring:message code="label.username" />
-                                    </label>
-                                    <form:errors path="username" cssClass="form-error"/>
-                                    <form:input path="username" type="text" cssClass="form-control"/>
-                                </div>
+                        <div class="mod-entity-details">
+                            <div>
+                                <label class="mod-label">
+                                    <spring:message code="label.username" />
+                                </label>
+                                <form:errors path="username" cssClass="form-error"/>
+                                <form:input path="username" type="text" cssClass="form-control"/>
+                            </div>
 
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <spring:message code="label.name"/>
-                                    </label>
-                                    <form:errors path="name" cssClass="form-error"/>
-                                    <form:input path="name" type="text" cssClass="form-control"/>
-                                </div>
+                            <div>
+                                <label class="mod-label">
+                                    <spring:message code="label.name"/>
+                                </label>
+                                <form:errors path="name" cssClass="form-error"/>
+                                <form:input path="name" type="text" cssClass="form-control"/>
+                            </div>
 
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <spring:message code="label.desc"/>
-                                    </label>
-                                    <form:errors path="bio" cssClass="form-error"/>
-                                    <form:textarea path="bio" rows="4" cssClass="form-control"/>
-                                </div>
+                            <div>
+                                <label class="mod-label">
+                                    <spring:message code="label.desc"/>
+                                </label>
+                                <form:errors path="bio" cssClass="form-error"/>
+                                <form:textarea path="bio" rows="4" cssClass="form-control"/>
                             </div>
                         </div>
                     </div>
