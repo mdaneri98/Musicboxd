@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Notification;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.reviews.Review;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,10 +17,10 @@ public class NotificationJpaDao implements NotificationDao {
     private EntityManager em;
 
     @Override
-    public Notification create(Notification.NotificationType type, Long recipientUserId, 
-                             Long triggerUserId, Long resourceId, String message) {
-        final Notification notification = new Notification(null, type, recipientUserId,
-                triggerUserId, resourceId, LocalDateTime.now(), false, message);
+    public Notification create(Notification.NotificationType type, User recipientUser,
+                               User triggerUser, Review review, String message) {
+        final Notification notification = new Notification(null, type, recipientUser,
+                triggerUser, review, LocalDateTime.now(), false, message);
         em.persist(notification);
         return notification;
     }
@@ -26,7 +28,7 @@ public class NotificationJpaDao implements NotificationDao {
     @Override
     public List<Notification> getNotificationsForUser(Long userId, int page, int pageSize) {
         final TypedQuery<Notification> query = em.createQuery(
-            "FROM Notification n WHERE n.recipientUserId = :userId " +
+            "FROM Notification n WHERE n.recipientUser.id = :userId " +
             "ORDER BY n.createdAt DESC", Notification.class);
         
         query.setParameter("userId", userId);
@@ -49,7 +51,7 @@ public class NotificationJpaDao implements NotificationDao {
     public void markAllAsRead(Long userId) {
         em.createQuery(
             "UPDATE Notification n SET n.read = true " +
-            "WHERE n.recipientUserId = :userId AND n.read = false")
+            "WHERE n.recipientUser.id = :userId AND n.read = false")
             .setParameter("userId", userId)
             .executeUpdate();
     }
@@ -58,7 +60,7 @@ public class NotificationJpaDao implements NotificationDao {
     public int getUnreadCount(Long userId) {
         return ((Number) em.createQuery(
             "SELECT COUNT(n) FROM Notification n " +
-            "WHERE n.recipientUserId = :userId AND n.read = false")
+            "WHERE n.recipientUser.id = :userId AND n.read = false")
             .setParameter("userId", userId)
             .getSingleResult()).intValue();
     }
