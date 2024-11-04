@@ -324,7 +324,7 @@ public class ModeratorController {
             return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
         songService.delete(songId);
-        return new ModelAndView("redirect:/artist/" + songOptional.get().getAlbum().getId());
+        return new ModelAndView("redirect:/album/" + songOptional.get().getAlbum().getId());
     }
 
     @RequestMapping(path = "/update-ratings", method = RequestMethod.GET)

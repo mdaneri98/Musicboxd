@@ -48,6 +48,7 @@ public class UserController {
     @RequestMapping("/profile")
     public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser,
                                 @RequestParam(name = "pageNum", required = false) Integer pageNum) {
+        if (loggedUser.getId() == 0) { return new ModelAndView("redirect:/"); }
         if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }
@@ -88,6 +89,11 @@ public class UserController {
 
         modelAndView.addObject("userProfileForm", userProfileForm);
         return modelAndView;
+    }
+
+    @RequestMapping(path = "/profile/settings", method = RequestMethod.GET)
+    public ModelAndView settings(@ModelAttribute("loggedUser") User loggedUser) {
+        return new ModelAndView("settings/settings");
     }
 
     @RequestMapping(path = "/edit", method = RequestMethod.POST)
@@ -137,14 +143,18 @@ public class UserController {
         }
 
         final ModelAndView mav = new ModelAndView("/users/user");
-        User user = userService.find(userId).orElseThrow();
+        Optional<User> userOptional = userService.find(userId);
+        if (userOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.user.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
 
         List<Review> reviews = reviewService.findReviewsByUserPaginated(userId, pageNum, pageSize, loggedUser.getId());
 
         boolean showNext = reviews.size() == pageSize;
         boolean showPrevious = pageNum > 1;
 
-        mav.addObject("user", user);
+        mav.addObject("user", userOptional.get());
         mav.addObject("isFollowing", userService.isFollowing(loggedUser.getId(), userId));
         mav.addObject("albums", userService.getFavoriteAlbums(userId));
         mav.addObject("artists", userService.getFavoriteArtists(userId));
@@ -283,14 +293,14 @@ public class UserController {
         return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
     }
 
-    @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.POST)
+    @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.GET)
     public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser,
                                @PathVariable(name = "userId") long userId) {
         userService.createFollowing(loggedUser, userId);
         return new ModelAndView("redirect:/user/" + userId);
     }
 
-    @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.POST)
+    @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.GET)
     public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser,
                                  @PathVariable(name = "userId") long userId) {
         userService.undoFollowing(loggedUser, userId);
