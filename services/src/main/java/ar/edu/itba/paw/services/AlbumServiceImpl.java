@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.services.utils.TimeUtils;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import org.springframework.stereotype.Service;
@@ -29,28 +30,40 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Album> find(long id) {
-        return albumDao.find(id);
+        Optional<Album> album = albumDao.find(id);
+        album.ifPresent(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return album;
     }
 
     @Transactional(readOnly = true)
     public List<Album> findPaginated(FilterType filterType, int page, int pageSize) {
-        return albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+        List<Album> albums = albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albums;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Album> findByArtistId(long id) {return albumDao.findByArtistId(id);}
+    public List<Album> findByArtistId(long id) {
+        List<Album> albums = albumDao.findByArtistId(id);
+        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albums;
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<Album> findAll() {
-        return albumDao.findAll();
+        List<Album> albums = albumDao.findAll();
+        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albums;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Album> findByTitleContaining(String sub) {
-        return albumDao.findByTitleContaining(sub);
+        List<Album> albums = albumDao.findByTitleContaining(sub);
+        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albums;
     }
 
     @Override

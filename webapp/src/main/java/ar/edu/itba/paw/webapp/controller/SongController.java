@@ -57,9 +57,14 @@ public class SongController {
         }
 
         final ModelAndView mav = new ModelAndView("song");
-        int pageSize = 5; 
+        int pageSize = 5;
 
-        Song song = songService.find(songId).get();
+        Optional<Song> songOptional = songService.find(songId);
+        if (songOptional.isEmpty()) {
+            String errorMessage = messageSource.getMessage("error.song.find", null, LocaleContextHolder.getLocale());
+            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+        }
+        Song song = songOptional.get();
         List<Artist> artists = artistService.findBySongId(songId);
         List<SongReview> reviews = reviewService.findSongReviewsPaginated(songId, pageNum, pageSize, loggedUser.getId());
 
@@ -162,7 +167,7 @@ public class SongController {
     @RequestMapping(value = "/{songId:\\d+}/delete-review", method = RequestMethod.GET)
     public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
         Optional<SongReview> reviewOptional = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
-        reviewService.deleteReview(reviewOptional.get(), loggedUser.getId());
+        reviewService.delete(reviewOptional.get().getId());
         return new ModelAndView("redirect:/song/" + songId);
     }
 

@@ -1,0 +1,75 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<html>
+<head>
+    <spring:message var="pageTitle" code="webpage.name"/>
+    <jsp:include page="/WEB-INF/jsp/components/head.jsp">
+        <jsp:param name="title" value="${pageTitle}"/>
+    </jsp:include>
+</head>
+<body>
+    <c:url var="loggedUserImgUrl" value="/images/${loggedUser.image.id}"/>
+
+    <div class="main-container">
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
+            <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
+            <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+        </jsp:include>
+        <div class="settings-container">
+            <div class="settings-header">
+                <h1 class="settings-title"><spring:message code="settings.title"/></h1>
+                <p class="settings-description"><spring:message code="settings.description"/></p>
+            </div>
+
+            <div class="settings-content">
+                <!-- Appearance Section -->
+                <section class="settings-section">
+                    <h2 class="section-title"><spring:message code="settings.appearance.title"/></h2>
+                    <div class="settings-card">
+                        <div class="settings-option">
+                            <div class="option-info">
+                                <h3><spring:message code="settings.theme.title"/></h3>
+                                <p><spring:message code="settings.theme.description"/></p>
+                            </div>
+                            <div class="theme-selector">
+                                <button class="theme-btn active" data-theme="dark">
+                                    <i class="fas fa-moon"></i>
+                                    <spring:message code="settings.theme.dark"/>
+                                </button>
+                                <button class="theme-btn" data-theme="light">
+                                    <i class="fas fa-sun"></i>
+                                    <spring:message code="settings.theme.light"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Language Section -->
+                <section class="settings-section">
+                    <h2 class="section-title"><spring:message code="settings.language.title"/></h2>
+                    <div class="settings-card">
+                        <div class="settings-option">
+                            <div class="option-info">
+                                <h3><spring:message code="settings.language.select"/></h3>
+                                <p><spring:message code="settings.language.description"/></p>
+                            </div>
+                            <div class="language-selector">
+                                <button class="language-btn active" data-lang="en">
+                                    <img src="/static/images/flags/en.png" alt="English">
+                                    English
+                                </button>
+                                <button class="language-btn" data-lang="es">
+                                    <img src="/static/images/flags/es.png" alt="Español">
+                                    Español
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

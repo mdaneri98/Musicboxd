@@ -1,54 +1,27 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
 <head>
-    <title>403</title>
-
-    <style>
-        /* 404.css */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            text-align: center;
-            padding: 50px;
-        }
-
-        .error-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #e74c3c;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        a:hover {
-            background-color: #2980b9;
-        }
-    </style>
-
+    <title>403 - Forbidden</title>
+    <jsp:include page="/WEB-INF/jsp/components/head.jsp"/>
 </head>
 <body>
-    <h2>Oops!</h2>
-    <p>We couldn't find that page for you!</p>
-
-    <c:url var="homeUrl" value="/" />
-    <p>Back to <a href="${homeUrl}">Home</a></p>
-
+    <div class="main-container">
+        <main class="content-wrapper">
+            <div class="error-page">
+                <div class="error-content">
+                    <h1 class="error-code">403</h1>
+                    <h2 class="error-title"><spring:message code="error.403.header"/></h2>
+                    <p class="error-message"><spring:message code="error.403.description"/></p>
+                    <c:url var="homeUrl" value="/" />
+                    <a href="${homeUrl}" class="btn btn-primary">
+                        <spring:message code="error.back.to.home"/>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>
