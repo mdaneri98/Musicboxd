@@ -28,8 +28,8 @@
             <c:url var="notificationsUrl" value="/notifications"/>
             <a href="${notificationsUrl}" class="sidebar-icon" title="Notifications">
                 <i class="fas fa-bell"></i>
-                <c:if test="${unreadNotificationsCount > 0}">
-                    <span class="notification-badge">${unreadNotificationsCount}</span>
+                <c:if test="${param.unreadNotificationCount > 0}">
+                    <span class="notification-badge">${param.unreadNotificationCount}</span>
                 </c:if>
             </a>
 

@@ -15,6 +15,7 @@
     <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp">
         <jsp:param name="loggedUserImgId" value="${loggedUser.image.id}"/>
         <jsp:param name="moderator" value="${loggedUser.moderator}"/>
+        <jsp:param name="unreadNotificationCount" value="${loggedUser.unreadNotificationCount}"/>
     </jsp:include>
 
     <main class="content-wrapper">
