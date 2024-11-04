@@ -279,6 +279,7 @@
   background-color: var(--color-background-elevated);
   border-radius: var(--border-radius-md);
   padding: var(--space-md);
+  margin: var(--space-lg);
 }
 
 .song-item {
