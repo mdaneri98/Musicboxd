@@ -37,10 +37,6 @@
                                     <i class="fas fa-moon"></i>
                                     <spring:message code="settings.theme.dark"/>
                                 </button>
-                                <button class="theme-btn" data-theme="light">
-                                    <i class="fas fa-sun"></i>
-                                    <spring:message code="settings.theme.light"/>
-                                </button>
                             </div>
                         </div>
                     </div>
