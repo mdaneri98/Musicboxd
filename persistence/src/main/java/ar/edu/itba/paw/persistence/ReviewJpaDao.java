@@ -67,7 +67,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId) {
         final TypedQuery<ArtistReview> query = em.createQuery(
-                "FROM ArtistReview ar WHERE ar.user.id = :userId AND ar.artist.id = :artistId",
+                "FROM ArtistReview ar WHERE ar.user.id = :userId AND ar.artist.id = :artistId AND ar.isBlocked = false",
                 ArtistReview.class
         );
         query.setParameter("userId", userId);
@@ -91,7 +91,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId) {
         final TypedQuery<AlbumReview> query = em.createQuery(
-                "FROM AlbumReview ar WHERE ar.user.id = :userId AND ar.album.id = :albumId",
+                "FROM AlbumReview ar WHERE ar.user.id = :userId AND ar.album.id = :albumId AND ar.isBlocked = false",
                 AlbumReview.class
         );
         query.setParameter("userId", userId);
@@ -112,7 +112,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public Optional<SongReview> findSongReviewByUserId(long userId, long songId) {
         final TypedQuery<SongReview> query = em.createQuery(
-                "FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId",
+                "FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId AND sr.isBlocked = false",
                 SongReview.class
         );
         query.setParameter("userId", userId);
