@@ -28,7 +28,7 @@ public interface ReviewDao extends CrudDao<Review> {
 
 
     // Métodos para likes
-    List<User> likedBy(int page, int pageSize);
+    List<User> likedBy(Long reviewId, int page, int pageSize);
     void createLike(long userId, long reviewId);
     void deleteLike(long userId, long reviewId);
     void updateLikeCount(long reviewId);
