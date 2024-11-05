@@ -71,6 +71,9 @@
                     </div>
                 </section>
             </div>
+        </div>         
+        <div class="footer-placeholder">
+            <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
         </div>
     </div>
 </body>

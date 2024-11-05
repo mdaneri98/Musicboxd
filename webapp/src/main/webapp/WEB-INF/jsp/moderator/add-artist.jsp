@@ -148,6 +148,11 @@
             <jsp:param name="message" value="${confirmation_text}"/>
             <jsp:param name="id" value="Album"/>
         </jsp:include>
+
+                    
+        <div class="footer-placeholder">
+            <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
+        </div>
     </main>
 </div>
 
