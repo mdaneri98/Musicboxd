@@ -2124,7 +2124,8 @@ textarea.form-control {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: var(--space-xl);
+    gap: var(--space-lg);
+    padding: var(--space-md);
 }
 
 .option-info {
@@ -2132,132 +2133,31 @@ textarea.form-control {
 }
 
 .option-info h3 {
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    margin-bottom: var(--space-xs);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
 }
 
 .option-info p {
     color: var(--color-text-secondary);
-    font-size: clamp(0.875rem, 2vw, 1rem);
-}
-
-/* Theme Selector */
-.theme-selector,
-.language-selector {
-    display: flex;
-    gap: var(--space-sm);
-}
-
-.theme-btn,
-.language-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-md);
-    background-color: var(--color-background-elevated);
-    border: 1px solid var(--color-background-highlight);
-    border-radius: var(--border-radius-md);
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.theme-btn:hover,
-.language-btn:hover {
-    background-color: var(--color-background-highlight);
-    color: var(--color-text-primary);
-}
-
-.theme-btn.active,
-.language-btn.active {
-    background-color: var(--color-accent);
-    color: var(--color-text-primary);
-    border-color: var(--color-accent);
-}
-
-.language-btn img {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-}
-
-/* Toggle Switch */
-.toggle-switch {
-    position: relative;
-    width: 60px;
-    height: 34px;
-}
-
-.toggle-input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-label {
-    position: absolute;
-    cursor: pointer;
-    inset: 0;
-    background-color: var(--color-background-elevated);
-    border-radius: 34px;
-    transition: 0.3s;
-}
-
-.toggle-label:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: var(--color-text-secondary);
-    border-radius: 50%;
-    transition: 0.3s;
-}
-
-.toggle-input:checked + .toggle-label {
-    background-color: var(--color-accent);
-}
-
-.toggle-input:checked + .toggle-label:before {
-    transform: translateX(26px);
-    background-color: var(--color-text-primary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
 }
 
 /* Responsive adjustments */
 @media (max-width: 48rem) { /* 768px */
-    .settings-container {
-        padding: var(--space-md);
-    }
-
     .settings-option {
         flex-direction: column;
         gap: var(--space-md);
         text-align: center;
     }
 
-    .theme-selector,
-    .language-selector {
-        width: 100%;
-        justify-content: center;
-    }
-
     .toggle-switch {
-        margin-top: var(--space-sm);
+        margin: 0 auto;
     }
 }
 
-@media (max-width: 36rem) { /* 576px */
-    .settings-card {
-        padding: var(--space-md);
-    }
-
-    .theme-btn,
-    .language-btn {
-        flex: 1;
-        justify-content: center;
-    }
-}
 .delete-review-container {
     display: flex;
     justify-content: center;
@@ -2459,6 +2359,138 @@ textarea.form-control {
 
     .footer-placeholder {
         margin-top: var(--space-xl);
+    }
+}
+
+/* Settings Card Spacing */
+.settings-card .settings-option + .settings-option {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-background-highlight);
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+    position: relative;
+    width: 3.5rem;  /* 56px */
+    height: 2rem;   /* 32px */
+    flex-shrink: 0;
+}
+
+.toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    position: absolute;
+}
+
+.toggle-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-background-elevated);
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.toggle-label:before {
+    content: "";
+    position: absolute;
+    width: 1.5rem;  /* 24px */
+    height: 1.5rem; /* 24px */
+    left: 0.25rem;  /* 4px */
+    bottom: 0.25rem;/* 4px */
+    background-color: var(--color-text-secondary);
+    border-radius: 50%;
+    transition: 0.3s ease;
+}
+
+.toggle-input:checked + .toggle-label {
+    background-color: var(--color-accent);
+}
+
+.toggle-input:checked + .toggle-label:before {
+    transform: translateX(1.5rem);
+    background-color: white;
+}
+
+/* Settings Option Layout */
+.settings-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-md);
+}
+
+.option-info {
+    flex: 1;
+}
+
+.option-info h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+}
+
+.option-info p {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 48rem) { /* 768px */
+    .settings-option {
+        flex-direction: column;
+        gap: var(--space-md);
+        text-align: center;
+    }
+
+    .toggle-switch {
+        margin: 0 auto;
+    }
+}
+
+/* Theme Select Styles */
+.theme-select {
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-background-highlight);
+    border-radius: var(--border-radius-md);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 8rem;
+}
+
+.theme-select:hover {
+    background-color: var(--color-background-highlight);
+}
+
+.theme-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px var(--color-accent-transparent);
+}
+
+.theme-select option {
+    background-color: var(--color-background-elevated);
+    color: var(--color-text-primary);
+    padding: var(--space-sm);
+}
+
+@media (max-width: 48rem) {
+    .theme-select {
+        width: 100%;
+        max-width: 16rem;
+        margin: 0 auto;
     }
 }
 

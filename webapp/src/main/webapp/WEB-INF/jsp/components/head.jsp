@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<title>${param.title}</title>
+<title><c:out value="${param.title}"/></title>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -29,3 +29,8 @@
 
 <!-- Mover el script de tema aquí para que se cargue en todas las páginas -->
 <script src="<c:url value='/static/js/theme.js'/>"></script>
+
+<c:if test="${loggedUser.id != 0}">
+    <c:set var="userTheme" value="${loggedUser.theme}"/>
+</c:if>
+<body data-user-theme="${userTheme}">
