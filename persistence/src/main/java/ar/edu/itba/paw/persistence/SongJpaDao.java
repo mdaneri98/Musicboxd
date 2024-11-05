@@ -28,10 +28,12 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public List<Song> findByArtistId(long artistId) {
-        String query = "SELECT s FROM Song s JOIN s.album a JOIN a.artist ar WHERE ar.id = :artistId";
+    public List<Song> findByArtistId(long artistId, int pageSize, int offset) {
+        String query = "SELECT s FROM Song s JOIN s.album a JOIN a.artist ar WHERE ar.id = :artistId ORDER BY s.avgRating DESC";
         return em.createQuery(query, Song.class)
                 .setParameter("artistId", artistId)
+                .setFirstResult(offset)
+                .setMaxResults(pageSize)
                 .getResultList();
     }
 
