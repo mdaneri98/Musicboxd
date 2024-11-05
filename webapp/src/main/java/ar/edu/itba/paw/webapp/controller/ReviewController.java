@@ -56,6 +56,7 @@ public class ReviewController {
 
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("review", review);
+        mav.addObject("isLiked", reviewService.isLiked(loggedUser.getId(), reviewId));
         mav.addObject("comments", comments);
         mav.addObject("commentForm", new CommentForm());
         return mav;
@@ -72,6 +73,7 @@ public class ReviewController {
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("review", review);
         mav.addObject("comments", comments);
+        mav.addObject("isLiked", reviewService.isLiked(loggedUser.getId(), reviewId));
         mav.addObject("commentForm", new CommentForm());
         return mav;
     }
@@ -83,7 +85,6 @@ public class ReviewController {
         SongReview review = reviewService.findSongReviewById(reviewId, loggedUser.getId());
         review.setLiked(reviewService.isLiked(loggedUser.getId(), reviewId));
         List<Comment> comments = commentService.findByReviewId(reviewId);
-
 
         mav.addObject("loggedUser", loggedUser);
         mav.addObject("review", review);
