@@ -101,6 +101,14 @@ public class User {
     )
     private List<Song> favoriteSongs;
 
+    @ManyToMany
+    @JoinTable(
+            name = "review_like",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "review_id")
+    )
+    private List<Review> likedReviews;
+
     @Transient
     private Integer unreadNotificationCount;
 
@@ -137,12 +145,12 @@ public class User {
         this.followersAmount = followersAmount != null ? followersAmount : 0;
         this.followingAmount = followingAmount != null ? followingAmount : 0;
         this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
-        this.preferredLanguage = preferredLanguage != null ? preferredLanguage : "en";
-        this.theme = theme != null ? theme : "dark";
-        this.followNotificationsEnabled = followNotificationsEnabled != null ? followNotificationsEnabled : true;
-        this.likeNotificationsEnabled = likeNotificationsEnabled != null ? likeNotificationsEnabled : true;
-        this.commentNotificationsEnabled = commentNotificationsEnabled != null ? commentNotificationsEnabled : true;
-        this.reviewNotificationsEnabled = reviewNotificationsEnabled != null ? reviewNotificationsEnabled : true;
+        this.preferredLanguage = "en";
+        this.theme = "dark";
+        this.followNotificationsEnabled = true;
+        this.likeNotificationsEnabled = true;
+        this.commentNotificationsEnabled = true;
+        this.reviewNotificationsEnabled = true;
     }
 
     public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
@@ -280,6 +288,14 @@ public class User {
 
     public List<Song> getFavoriteSongs() {
         return favoriteSongs;
+    }
+
+    public List<Review> getLikedReviews() {
+        return likedReviews;
+    }
+
+    public void setLikedReviews(List<Review> likedReviews) {
+        this.likedReviews = likedReviews;
     }
 
     public List<User> getFollowing() {

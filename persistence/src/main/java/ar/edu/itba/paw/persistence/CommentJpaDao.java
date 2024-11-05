@@ -21,12 +21,14 @@ public class CommentJpaDao implements CommentDao {
     }
 
     @Override
-    public List<Comment> findByReviewId(long reviewId) {
+    public List<Comment> findByReviewId(long reviewId, int pageSize, int offset) {
         final TypedQuery<Comment> query = em.createQuery(
                 "FROM Comment c " +
                         "WHERE c.review.id = :reviewId " +
                         "ORDER BY c.createdAt DESC", Comment.class);
         query.setParameter("reviewId", reviewId);
+        query.setMaxResults(pageSize);
+        query.setFirstResult(offset);
         return query.getResultList();
     }
 

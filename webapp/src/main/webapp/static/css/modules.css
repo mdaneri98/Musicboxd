@@ -722,7 +722,6 @@
     background-color: var(--color-background-secondary);
     border-radius: var(--border-radius-lg);
     padding: var(--space-lg);
-    max-width: 25rem;
     margin: 0 auto;
     color: var(--color-text-primary);
     text-decoration: none;
@@ -1119,6 +1118,7 @@ textarea.form-control {
     width: 100%;
     max-width: 60rem;
     margin: 0 auto;
+    margin-bottom: var(--space-xl);
 }
 
 .mod-form-title {

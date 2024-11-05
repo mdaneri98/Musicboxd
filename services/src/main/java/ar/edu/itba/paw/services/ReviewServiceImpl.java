@@ -133,8 +133,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<User> likedBy(int page, int pageSize) {
-        return reviewDao.likedBy(page, pageSize);
+    public List<User> likedBy(Long reviewId, int pageNum, int pageSize) {
+        return reviewDao.likedBy(reviewId, pageNum, pageSize);
     }
 
     @Override
