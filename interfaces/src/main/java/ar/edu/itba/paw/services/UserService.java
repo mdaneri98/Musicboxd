@@ -55,5 +55,6 @@ public interface UserService {
     boolean addFavoriteSong(long userId, long songId);
     boolean removeFavoriteSong(long userId, long songId);
     int getFavoriteSongsCount(long userId);
+    List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize);
 
 }

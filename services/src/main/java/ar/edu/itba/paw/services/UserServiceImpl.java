@@ -385,4 +385,18 @@ public class UserServiceImpl implements UserService {
     public int getFavoriteSongsCount(long userId) {
         return userDao.getFavoriteSongsCount(userId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize) {
+        LOGGER.info("Getting recommended users for user with ID: {}", userId);
+        if (userId == null || userDao.find(userId).isEmpty()) {
+            LOGGER.warn("Invalid user ID: {}", userId);
+            throw new IllegalArgumentException("No existe un usuario con el ID %d".formatted(userId));
+        }
+        
+        List<User> recommendedUsers = userDao.getRecommendedUsers(userId, pageNumber, pageSize);
+        LOGGER.info("Found {} recommended users for user with ID: {}", recommendedUsers.size(), userId);
+        return recommendedUsers;
+    }
 }

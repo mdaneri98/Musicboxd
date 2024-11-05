@@ -77,7 +77,11 @@ public class IndexController {
 
     @RequestMapping("/search")
     public ModelAndView search(@ModelAttribute("loggedUser") User loggedUser) {
-        return new ModelAndView("search");
+        ModelAndView mav = new ModelAndView("search");
+        if (loggedUser.getId() != 0) {
+            mav.addObject("recommendedUsers", userService.getRecommendedUsers(loggedUser.getId(), 1, 6));
+        }
+        return mav;
     }
 
     @RequestMapping("/music")

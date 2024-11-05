@@ -54,5 +54,7 @@ public interface UserDao {
 
     int countFollowing(Long userId);
     int countFollowers(Long userId);
+    
+    List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize);
 
 }
