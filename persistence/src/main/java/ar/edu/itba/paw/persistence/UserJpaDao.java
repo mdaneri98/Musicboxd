@@ -358,4 +358,30 @@ public class UserJpaDao implements UserDao {
                 .executeUpdate();
     }
 
+    @Override
+    public List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize) {
+        // Consulta para obtener usuarios que son seguidos por los usuarios que el usuario actual sigue,
+        // pero que no son seguidos por el usuario actual
+        String jpql = "SELECT DISTINCT u FROM User u " +
+                     "WHERE u.id IN (" +
+                     "    SELECT f2.id FROM User me " +
+                     "    JOIN me.following f1 " +
+                     "    JOIN f1.following f2 " +
+                     "    WHERE me.id = :userId " +
+                     "    AND f2.id != :userId " +
+                     "    AND f2.id NOT IN (" +
+                     "        SELECT f3.id FROM User me2 " +
+                     "        JOIN me2.following f3 " +
+                     "        WHERE me2.id = :userId" +
+                     "    )" +
+                     ")";
+
+        TypedQuery<User> query = em.createQuery(jpql, User.class)
+                .setParameter("userId", userId)
+                .setFirstResult((pageNumber - 1) * pageSize)
+                .setMaxResults(pageSize);
+
+        return query.getResultList();
+    }
+
 }
