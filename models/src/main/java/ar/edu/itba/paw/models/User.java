@@ -104,8 +104,23 @@ public class User {
     @Transient
     private Integer unreadNotificationCount;
 
+    @Column(name = "follow_notifications_enabled", nullable = false, columnDefinition = "boolean default true")
+    private Boolean followNotificationsEnabled;
 
-    public User(){}
+    @Column(name = "like_notifications_enabled", nullable = false, columnDefinition = "boolean default true")
+    private Boolean likeNotificationsEnabled;
+
+    @Column(name = "comment_notifications_enabled", nullable = false, columnDefinition = "boolean default true")
+    private Boolean commentNotificationsEnabled;
+
+    @Column(name = "review_notifications_enabled", nullable = false, columnDefinition = "boolean default true")
+    private Boolean reviewNotificationsEnabled;
+
+    @Column(name = "theme", nullable = false, columnDefinition = "varchar(20) default 'dark'")
+    private String theme;
+
+
+    public User() {}
 
     public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
@@ -122,6 +137,12 @@ public class User {
         this.followersAmount = followersAmount != null ? followersAmount : 0;
         this.followingAmount = followingAmount != null ? followingAmount : 0;
         this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
+        this.preferredLanguage = preferredLanguage != null ? preferredLanguage : "en";
+        this.theme = theme != null ? theme : "dark";
+        this.followNotificationsEnabled = followNotificationsEnabled != null ? followNotificationsEnabled : true;
+        this.likeNotificationsEnabled = likeNotificationsEnabled != null ? likeNotificationsEnabled : true;
+        this.commentNotificationsEnabled = commentNotificationsEnabled != null ? commentNotificationsEnabled : true;
+        this.reviewNotificationsEnabled = reviewNotificationsEnabled != null ? reviewNotificationsEnabled : true;
     }
 
     public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
@@ -421,6 +442,46 @@ public class User {
         this.unreadNotificationCount = unreadNotificationCount;
     }
 
+    public Boolean getFollowNotificationsEnabled() {
+        return followNotificationsEnabled != null ? followNotificationsEnabled : true;
+    }
+
+    public void setFollowNotificationsEnabled(Boolean followNotificationsEnabled) {
+        this.followNotificationsEnabled = followNotificationsEnabled;
+    }
+
+    public Boolean getLikeNotificationsEnabled() {
+        return likeNotificationsEnabled != null ? likeNotificationsEnabled : true;
+    }
+
+    public void setLikeNotificationsEnabled(Boolean likeNotificationsEnabled) {
+        this.likeNotificationsEnabled = likeNotificationsEnabled;
+    }
+
+    public Boolean getCommentNotificationsEnabled() {
+        return commentNotificationsEnabled != null ? commentNotificationsEnabled : true;
+    }
+
+    public void setCommentNotificationsEnabled(Boolean commentNotificationsEnabled) {
+        this.commentNotificationsEnabled = commentNotificationsEnabled;
+    }
+
+    public Boolean getReviewNotificationsEnabled() {
+        return reviewNotificationsEnabled != null ? reviewNotificationsEnabled : true;
+    }
+
+    public void setReviewNotificationsEnabled(Boolean reviewNotificationsEnabled) {
+        this.reviewNotificationsEnabled = reviewNotificationsEnabled;
+    }
+
+    public String getTheme() {
+        return theme != null ? theme : "dark";
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
     public static class Builder {
         private Long id;
         private String username;
@@ -436,6 +497,11 @@ public class User {
         private Integer followingAmount;
         private Integer reviewAmount;
         private Image image;
+        private Boolean followNotificationsEnabled;
+        private Boolean likeNotificationsEnabled;
+        private Boolean commentNotificationsEnabled;
+        private Boolean reviewNotificationsEnabled;
+        private String theme;
 
         public Builder() {
         }
@@ -510,6 +576,31 @@ public class User {
             return this;
         }
 
+        public Builder followNotificationsEnabled(Boolean followNotificationsEnabled) {
+            this.followNotificationsEnabled = followNotificationsEnabled;
+            return this;
+        }
+
+        public Builder likeNotificationsEnabled(Boolean likeNotificationsEnabled) {
+            this.likeNotificationsEnabled = likeNotificationsEnabled;
+            return this;
+        }
+
+        public Builder commentNotificationsEnabled(Boolean commentNotificationsEnabled) {
+            this.commentNotificationsEnabled = commentNotificationsEnabled;
+            return this;
+        }
+
+        public Builder reviewNotificationsEnabled(Boolean reviewNotificationsEnabled) {
+            this.reviewNotificationsEnabled = reviewNotificationsEnabled;
+            return this;
+        }
+
+        public Builder theme(String theme) {
+            this.theme = theme;
+            return this;
+        }
+
         public User build() {
             User user = new User();
             user.id = this.id;
@@ -526,6 +617,11 @@ public class User {
             user.followingAmount = this.followingAmount;
             user.reviewAmount = this.reviewAmount;
             user.image = this.image;
+            user.followNotificationsEnabled = this.followNotificationsEnabled != null ? this.followNotificationsEnabled : true;
+            user.likeNotificationsEnabled = this.likeNotificationsEnabled != null ? this.likeNotificationsEnabled : true;
+            user.commentNotificationsEnabled = this.commentNotificationsEnabled != null ? this.commentNotificationsEnabled : true;
+            user.reviewNotificationsEnabled = this.reviewNotificationsEnabled != null ? this.reviewNotificationsEnabled : true;
+            user.theme = this.theme != null ? this.theme : "dark";
             return user;
         }
     }
@@ -546,7 +642,12 @@ public class User {
         json.append("\"followersAmount\":\"").append(followersAmount).append("\",");
         json.append("\"followingAmount\":\"").append(followingAmount).append("\",");
         json.append("\"reviewAmount\":\"").append(reviewAmount).append("\",");
-        json.append("\"imgId\":\"").append(getImage().getId()).append("\"");
+        json.append("\"imgId\":\"").append(getImage().getId()).append("\",");
+        json.append("\"followNotificationsEnabled\":").append(followNotificationsEnabled);
+        json.append(",\"likeNotificationsEnabled\":").append(likeNotificationsEnabled);
+        json.append(",\"commentNotificationsEnabled\":").append(commentNotificationsEnabled);
+        json.append(",\"reviewNotificationsEnabled\":").append(reviewNotificationsEnabled);
+        json.append(",\"theme\":\"").append(theme).append("\"");
         json.append("}");
         return json.toString();
     }

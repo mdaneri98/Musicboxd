@@ -23,37 +23,45 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional 
     @Override
     public void notifyLike(Review review, User likedByUser) {
-        notificationDao.create(
-            Notification.NotificationType.LIKE,
-            review.getUser(),
-            likedByUser,
-            review,
-            "notification.like"
-        );
+        User targetUser = review.getUser();
+        if (targetUser.getId() != likedByUser.getId() && targetUser.getLikeNotificationsEnabled()) {
+            notificationDao.create(
+                Notification.NotificationType.LIKE,
+                targetUser,
+                likedByUser,
+                review,
+                "notification.like"
+            );
+        }
     }
 
     @Transactional
     @Override
     public void notifyComment(Review review, User commentedByUser) {
-        notificationDao.create(
-            Notification.NotificationType.COMMENT,
-            review.getUser(),
-            commentedByUser,
-            review,
-            "notification.comment"
-        );
+        User targetUser = review.getUser();
+        if (targetUser.getId() != commentedByUser.getId() && targetUser.getCommentNotificationsEnabled()) {
+            notificationDao.create(
+                Notification.NotificationType.COMMENT,
+                targetUser,
+                commentedByUser,
+                review,
+                "notification.comment"  
+            );
+        }
     }
 
     @Transactional
     @Override
     public void notifyFollow(User followedUser, User follower) {
-        notificationDao.create(
-            Notification.NotificationType.FOLLOW,
-            followedUser,
-            follower,
-            null,
-            "notification.follow"
-        );
+        if (followedUser.getFollowNotificationsEnabled()) {
+            notificationDao.create(
+                Notification.NotificationType.FOLLOW,
+                followedUser,
+                follower,
+                null,
+                "notification.follow"
+            );
+        }
     }
 
     @Transactional
@@ -62,13 +70,15 @@ public class NotificationServiceImpl implements NotificationService {
         List<User> followers = reviewer.getFollowers();
 
         for (User follower : followers) {
-            notificationDao.create(
-                Notification.NotificationType.NEW_REVIEW,
-                follower,
-                reviewer,
-                review,
-                "notification.new.review"
-            );
+            if (follower.getReviewNotificationsEnabled()) {
+                notificationDao.create(
+                    Notification.NotificationType.NEW_REVIEW,
+                    follower,
+                    reviewer,
+                    review,
+                    "notification.new.review"
+                );
+            }
         }
     }
 

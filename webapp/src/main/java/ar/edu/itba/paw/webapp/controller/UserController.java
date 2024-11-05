@@ -318,17 +318,62 @@ public class UserController {
         return new ModelAndView("redirect:/user/" + userId);
     }
 
-    @RequestMapping(path = "/language/{language}", method = RequestMethod.POST)
+    @RequestMapping(path = "/language", method = RequestMethod.POST)
     public ModelAndView updateLanguage(@ModelAttribute("loggedUser") User loggedUser,
-                                       @PathVariable("language") String language) {
-        if (!List.of("en", "es").contains(language)) {
+                                       @RequestParam("language") String language) {
+        if (!List.of("en", "es", "fr", "de", "it", "pt", "ja").contains(language)) {
             String errorMessage = messageSource.getMessage("error.user.language.invalid", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/user/profile?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+            return new ModelAndView("redirect:/user/profile/settings?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
         loggedUser.setPreferredLanguage(language);
         userService.update(loggedUser);
 
+        return new ModelAndView("redirect:/user/profile/settings");
+    }
+
+    @RequestMapping(path = "/settings/theme", method = RequestMethod.POST)
+    public ModelAndView updateTheme(@ModelAttribute("loggedUser") User loggedUser,
+                                   @RequestParam("theme") String theme) {
+        if (!List.of("dark", "kawaii", "forest", "ocean", "sepia").contains(theme)) {
+            return new ModelAndView("redirect:/user/profile/settings");
+        }
+
+        loggedUser.setTheme(theme);
+        userService.update(loggedUser);
+
+        return new ModelAndView("redirect:/user/profile/settings");
+    }
+
+    @RequestMapping(path = "/settings/notifications/follow", method = RequestMethod.POST)
+    public ModelAndView updateFollowNotifications(@ModelAttribute("loggedUser") User loggedUser,
+                                                 @RequestParam("enabled") Boolean enabled) {
+        loggedUser.setFollowNotificationsEnabled(enabled);
+        userService.update(loggedUser);
+        return new ModelAndView("redirect:/user/profile/settings");
+    }
+
+    @RequestMapping(path = "/settings/notifications/like", method = RequestMethod.POST)
+    public ModelAndView updateLikeNotifications(@ModelAttribute("loggedUser") User loggedUser,
+                                               @RequestParam("enabled") Boolean enabled) {
+        loggedUser.setLikeNotificationsEnabled(enabled);
+        userService.update(loggedUser);
+        return new ModelAndView("redirect:/user/profile/settings");
+    }
+
+    @RequestMapping(path = "/settings/notifications/comment", method = RequestMethod.POST)
+    public ModelAndView updateCommentNotifications(@ModelAttribute("loggedUser") User loggedUser,
+                                                  @RequestParam("enabled") Boolean enabled) {
+        loggedUser.setCommentNotificationsEnabled(enabled);
+        userService.update(loggedUser);
+        return new ModelAndView("redirect:/user/profile/settings");
+    }
+
+    @RequestMapping(path = "/settings/notifications/review", method = RequestMethod.POST)
+    public ModelAndView updateReviewNotifications(@ModelAttribute("loggedUser") User loggedUser,
+                                                 @RequestParam("enabled") Boolean enabled) {
+        loggedUser.setReviewNotificationsEnabled(enabled);
+        userService.update(loggedUser);
         return new ModelAndView("redirect:/user/profile/settings");
     }
 
