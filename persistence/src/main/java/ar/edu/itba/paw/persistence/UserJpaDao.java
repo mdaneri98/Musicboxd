@@ -169,12 +169,13 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> getFollowers(Long userId, int pageNumber, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("FROM relationship WHERE following_id = :userId");
+        Query nativeQuery = em.createNativeQuery("SELECT user_id FROM follower WHERE following = :userId");
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
+        nativeQuery.setParameter("userId", userId);
 
         final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> (Long)((Number)n).longValue()).collect(Collectors.toList());
+                .stream().map(n -> ((Number)n).longValue()).collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
         if (idList.isEmpty())
@@ -188,12 +189,13 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> getFollowings(Long userId, int pageNumber, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("FROM relationship WHERE user_id = :userId");
+        Query nativeQuery = em.createNativeQuery("SELECT following FROM follower WHERE user_id = :userId");
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
+        nativeQuery.setParameter("userId", userId);
 
         final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> (Long)((Number)n).longValue()).collect(Collectors.toList());
+                .stream().map(n -> ((Number)n).longValue()).collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
         if (idList.isEmpty())

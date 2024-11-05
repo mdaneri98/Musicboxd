@@ -722,7 +722,8 @@
     background-color: var(--color-background-secondary);
     border-radius: var(--border-radius-lg);
     padding: var(--space-lg);
-    width: 100%;
+    max-width: 25rem;
+    margin: 0 auto;
     color: var(--color-text-primary);
     text-decoration: none;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -1568,7 +1569,7 @@ textarea.form-control {
 /* Users Grid */
 .users-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 35rem), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
     gap: var(--space-lg);
     margin-bottom: var(--space-xl);
 }
@@ -1589,20 +1590,22 @@ textarea.form-control {
     justify-content: center;
     gap: var(--space-md);
     margin-top: var(--space-xl);
+    margin-bottom: var(--space-xl);
 }
 
 @media (max-width: 48rem) { /* 768px */
     .users-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    }
+
+    .user-card {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 36rem) { /* 576px */
+    .users-grid {
         grid-template-columns: 1fr;
-    }
-
-    .pagination {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .pagination .btn {
-        width: 100%;
     }
 }
 
@@ -2276,3 +2279,109 @@ textarea.form-control {
     display: flex;
     flex-direction: row;
 }
+
+/* Discovery Section Header */
+.discovery-section h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.view-all-link {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.view-all-link:hover {
+    color: var(--color-accent);
+}
+
+@media (max-width: 48rem) { /* 768px */
+    .view-all-link {
+        font-size: 0.875rem;
+    }
+}
+
+/* View All Music Page - Nuevas clases */
+.view-all-header {
+    background-color: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.view-all-content {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 300px);
+    margin-bottom: var(--space-xl);
+}
+
+.filters-container {
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-background-highlight);
+}
+
+.filters-form {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-label {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+.filter-select {
+    padding: var(--space-sm);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-background-highlight);
+    border-radius: var(--border-radius-sm);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.filter-select:hover {
+    background-color: var(--color-background-highlight);
+}
+
+@media (max-width: 48rem) { /* 768px */
+    .view-all-header {
+        margin: calc(-1 * var(--content-padding));
+        margin-bottom: var(--space-xl);
+        border-radius: 0;
+    }
+
+    .filters-form {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+}
+
