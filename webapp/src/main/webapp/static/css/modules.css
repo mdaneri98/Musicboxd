@@ -2385,3 +2385,80 @@ textarea.form-control {
     }
 }
 
+/* Footer Placeholder */
+.footer-placeholder {
+    margin-top: auto;
+    width: 100%;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.view-all-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--space-xl);
+}
+
+@media (max-width: 48rem) { /* 768px */
+    .footer-placeholder {
+        margin-top: var(--space-xl);
+    }
+}
+
+/* Ajustes para el layout principal y footer */
+.main-container {
+    display: flex;
+    min-height: 100vh;
+    margin-left: var(--sidebar-width);
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: var(--content-padding);
+}
+
+.view-all-content {
+    flex: 1 0 auto; /* Esto asegura que el contenido tome todo el espacio disponible */
+}
+
+.music-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.song-list {
+    margin-bottom: var(--space-xl);
+}
+
+.footer-placeholder {
+    flex-shrink: 0; /* Evita que el footer se encoja */
+    margin-top: auto; /* Empuja el footer al final */
+    width: 100%;
+}
+
+@media (max-width: 48rem) { /* 768px */
+    .main-container {
+        margin-left: 0;
+        margin-bottom: var(--sidebar-width);
+    }
+
+    .content-wrapper {
+        padding: var(--space-md);
+    }
+
+    .footer-placeholder {
+        margin-top: var(--space-xl);
+    }
+}
+
