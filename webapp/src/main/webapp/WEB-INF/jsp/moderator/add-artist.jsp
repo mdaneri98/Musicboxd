@@ -182,15 +182,15 @@
         // Labels
         var titleLabel = document.createElement("label");
         titleLabel.setAttribute("class", "mod-label");
-        titleLabel.textContent = "Title: ";
+        titleLabel.textContent = "<spring:message code="submit.album.title.label"/>: ";
 
         var genreLabel = document.createElement("label");
         genreLabel.setAttribute("class", "mod-label");
-        genreLabel.textContent = "Genre: ";
+        genreLabel.textContent = "<spring:message code="submit.album.genre.label"/>: ";
 
         var releaseDateLabel = document.createElement("label");
         releaseDateLabel.setAttribute("class", "mod-label");
-        releaseDateLabel.textContent = "Release Date: ";
+        releaseDateLabel.textContent = "<spring:message code="submit.album.release.date.label"/>: ";
 
         // Inputs
         var imageInput = document.createElement("input");
@@ -205,14 +205,14 @@
         titleInput.setAttribute("name", "albums[" + albumIndex + "].title");
         titleInput.setAttribute("type", "text");
         titleInput.setAttribute("required", "true");
-        titleInput.setAttribute("placeholder", "Title of the album");
+        titleInput.setAttribute("placeholder", "<spring:message code="submit.album.title.label"/>");
         titleInput.setAttribute("class", "mod-input");
 
         var genreInput = document.createElement("input");
         genreInput.setAttribute("name", "albums[" + albumIndex + "].genre");
         genreInput.setAttribute("type", "text");
         genreInput.setAttribute("required", "true");
-        genreInput.setAttribute("placeholder", "Genre of the album");
+        genreInput.setAttribute("placeholder", "<spring:message code="submit.album.genre.label"/>");
         genreInput.setAttribute("class", "mod-input");
 
         var releaseDateInput = document.createElement("input");
@@ -245,7 +245,7 @@
 
         // Remove Button
         var removeButton = document.createElement("button");
-        removeButton.textContent = "Remove Album";
+        removeButton.textContent = "<spring:message code="button.remove.album"/>";
         removeButton.setAttribute("type", "button");
         removeButton.setAttribute("class", "btn btn-danger");
         removeButton.onclick = function() {
@@ -268,22 +268,6 @@
 
         container.appendChild(deletedInput);
         container.appendChild(newAlbumDiv);
-
-        /* Final result looks like this
-        |<container>
-        |    |<newAlbumDiv>
-        |    |    |<imagePreview>
-        |    |    |<imageInput>
-        |    |    |<newAlbumDataDiv>
-        |    |    |    |<titleLabel>
-        |    |    |    |    <titleInput>
-        |    |    |    |<genreLabel>
-        |    |    |    |    <genreInput>
-        |    |    |    |<releaseDateLabel>
-        |    |    |    |    <releaseDateInput>
-        |    |    |<removeButton>
-        |    |<deletedInput>
-        */
 
         albumIndex++;
         albumCount++;
