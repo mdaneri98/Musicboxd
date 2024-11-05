@@ -46,7 +46,6 @@ public class Notification {
         LIKE,
         COMMENT,
         FOLLOW,
-        NEW_ALBUM,
         NEW_REVIEW
     }
 

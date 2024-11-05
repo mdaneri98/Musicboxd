@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Controller
 public class IndexController {
@@ -102,6 +103,50 @@ public class IndexController {
 
         mav.addObject("topRatedSongs", topRatedSongs);
         mav.addObject("mostPopularSongs", mostPopularSongs);
+
+        return mav;
+    }
+
+    @RequestMapping("/music/view-all")
+    public ModelAndView viewAll(@ModelAttribute("loggedUser") User loggedUser,
+                                @RequestParam(name = "page", required = false) String page,
+                                @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+                                @RequestParam(name = "filter", required = false) String filter) {
+        ModelAndView mav = new ModelAndView("view_all_music");
+
+        boolean albumsActive = page.equals("albums");
+        boolean artistsActive = page.equals("artists");
+        boolean songsActive = page.equals("songs");
+        if (filter == null) filter = "POPULAR";
+        FilterType filterType = FilterType.valueOf(filter);
+
+        int pageSize = 20;
+        boolean showNext = false;
+        List<Album> albums = new ArrayList<>();
+        List<Artist> artists = new ArrayList<>();
+        List<Song> songs = new ArrayList<>();
+
+        if (songsActive) {
+            songs = songService.findPaginated(filterType, pageNum, pageSize);
+            showNext = songs.size() == pageSize;
+        } else if (albumsActive) {
+            albums = albumService.findPaginated(filterType, pageNum, pageSize);
+            showNext = albums.size() == pageSize;
+        } else if (artistsActive) {
+            artists = artistService.findPaginated(filterType, pageNum, pageSize);
+            showNext = artists.size() == pageSize;
+        }
+
+        mav.addObject("artists", artists);
+        mav.addObject("albums", albums);
+        mav.addObject("songs", songs);
+        mav.addObject("currentPage", pageNum);
+        mav.addObject("albumsActive", albumsActive);
+        mav.addObject("artistsActive", artistsActive);
+        mav.addObject("songsActive", songsActive);
+        mav.addObject("showNext", showNext);
+        mav.addObject("showPrevious", pageNum > 1);
+        mav.addObject("filter", filter);
 
         return mav;
     }

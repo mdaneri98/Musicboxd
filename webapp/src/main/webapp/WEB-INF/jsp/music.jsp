@@ -40,7 +40,11 @@
 
                 <div id="topRatedArtistTab" class="tab-content">
                     <c:if test="${topRatedArtists.size() > 0}">
-                        <h2><spring:message code="discovery.top-rated.artist"/></h2>
+                        <h2>
+                            <spring:message code="discovery.top-rated.artist"/>
+                            <c:url var="artistsUrl" value="/music/view-all?page=artists"/>
+                            <a href="${artistsUrl}" class="view-all-link"><spring:message code="view.all"/></a>
+                        </h2>
                         <div class="carousel-container">
                             <div class="carousel">
                                 <c:forEach var="artist" items="${topRatedArtists}" varStatus="status">
@@ -67,7 +71,11 @@
 
                 <div id="popularArtistTab" class="tab-content">
                     <c:if test="${mostPopularArtists.size() > 0}">
-                        <h2><spring:message code="discovery.most-popular.artist"/></h2>
+                        <h2>
+                            <spring:message code="discovery.most-popular.artist"/>
+                            <c:url var="artistsUrl" value="/music/view-all?page=artists"/>
+                            <a href="${artistsUrl}" class="view-all-link"><spring:message code="view.all"/></a>
+                        </h2>
                         <div class="carousel-container">
                             <div class="carousel">
                                 <c:forEach var="artist" items="${mostPopularArtists}" varStatus="status">
@@ -108,7 +116,11 @@
 
                 <div id="topRatedAlbumTab" class="tab-content">
                     <c:if test="${topRatedAlbums.size() > 0}">
-                        <h2><spring:message code="discovery.top-rated.album"/></h2>
+                        <h2>
+                            <spring:message code="discovery.top-rated.album"/>
+                            <c:url var="albumsUrl" value="/music/view-all?page=albums"/>
+                            <a href="${albumsUrl}" class="view-all-link"><spring:message code="view.all"/></a>
+                        </h2>
                         <div class="carousel-container">
                             <div class="carousel">
                                 <c:forEach var="album" items="${topRatedAlbums}" varStatus="status">
@@ -135,7 +147,11 @@
 
                 <div id="popularAlbumTab" class="tab-content">
                     <c:if test="${mostPopularAlbums.size() > 0}">
-                        <h2><spring:message code="discovery.most-popular.album"/></h2>
+                        <h2>
+                            <spring:message code="discovery.most-popular.album"/>
+                            <c:url var="albumsUrl" value="/music/view-all?page=albums"/>
+                            <a href="${albumsUrl}" class="view-all-link"><spring:message code="view.all"/></a>
+                        </h2>
                         <div class="carousel-container">
                             <div class="carousel">
                                 <c:forEach var="album" items="${mostPopularAlbums}" varStatus="status">
@@ -176,7 +192,11 @@
 
                 <div id="topRatedSongTab" class="tab-content">
                     <c:if test="${topRatedSongs.size() > 0}">
-                        <h2><spring:message code="discovery.top-rated.song"/></h2>
+                        <h2>
+                            <spring:message code="discovery.top-rated.song"/>
+                            <c:url var="songsUrl" value="/music/view-all?page=songs"/>
+                            <a href="${songsUrl}" class="view-all-link"><spring:message code="view.all"/></a>
+                        </h2>
                         <ul class="song-list">
                             <c:forEach var="song" items="${topRatedSongs}" varStatus="status">
                                 <c:url var="songUrl" value="/song/${song.id}"/>
@@ -198,7 +218,11 @@
 
                 <div id="popularSongTab" class="tab-content">
                     <c:if test="${mostPopularSongs.size() > 0}">
-                        <h2><spring:message code="discovery.most-popular.song"/></h2>
+                        <h2>
+                            <spring:message code="discovery.most-popular.song"/>
+                            <c:url var="songsUrl" value="/music/view-all?page=songs"/>
+                            <a href="${songsUrl}" class="view-all-link"><spring:message code="view.all"/></a>
+                        </h2>
                         <ul class="song-list">
                             <c:forEach var="song" items="${mostPopularSongs}" varStatus="status">
                                 <c:url var="songUrl" value="/song/${song.id}"/>
