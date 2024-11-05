@@ -174,15 +174,15 @@
 
             var titleLabel = document.createElement("label");
             titleLabel.setAttribute("class", "mod-label");
-            titleLabel.textContent = "Title: ";
+            titleLabel.textContent = "<spring:message code="submit.album.title.label"/>: ";
 
             var durationLabel = document.createElement("label");
             durationLabel.setAttribute("class", "mod-label");
-            durationLabel.textContent = "Duration: ";
+            durationLabel.textContent = "<spring:message code="submit.song.duration.label"/>: ";
 
             var trackNumberLabel = document.createElement("label");
             trackNumberLabel.setAttribute("class", "mod-label");
-            trackNumberLabel.textContent = "Track Number: ";
+            trackNumberLabel.textContent = "<spring:message code="submit.song.track.number.label"/>: ";
 
             var titleInput = document.createElement("input");
             titleInput.setAttribute("type", "text");
@@ -213,7 +213,7 @@
             newSongDiv.appendChild(newAlbumDataDiv);
 
             var removeButton = document.createElement("button");
-            removeButton.textContent = "Remove Song";
+            removeButton.textContent = "<spring:message code="button.remove.song"/>";
             removeButton.setAttribute("type", "button");
             removeButton.setAttribute("class", "btn btn-danger");
             removeButton.onclick = function () {
