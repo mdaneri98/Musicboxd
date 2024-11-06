@@ -1,24 +1,26 @@
-// Función para aplicar el tema
+
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('cached-theme', theme);
 }
 
-// Aplicar el tema inicial cuando carga el documento
+function getCachedTheme() {
+    return localStorage.getItem('cached-theme') || 'dark';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificar si hay un usuario logueado (el body tendrá el atributo data-user-theme)
     const userTheme = document.body.getAttribute('data-user-theme');
+    const cachedTheme = getCachedTheme();
     
-    // Si no hay usuario logueado o no tiene tema, usar dark
-    if (!userTheme || userTheme === 'null') {
-        applyTheme('dark');
-    } else {
+    if (userTheme && userTheme !== 'null' && userTheme !== cachedTheme) {
         applyTheme(userTheme);
+    } else {
+        applyTheme(cachedTheme);
     }
 
-    // Escuchar cambios en el selector de tema
     const themeSelect = document.querySelector('.theme-select');
     if (themeSelect) {
-        themeSelect.value = userTheme || 'dark';
+        themeSelect.value = userTheme || cachedTheme;
         
         themeSelect.addEventListener('change', function() {
             applyTheme(this.value);
@@ -26,15 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Aplicar tema oscuro inmediatamente al cargar
 (function() {
-    // Verificar si hay un usuario logueado
     const userTheme = document.body.getAttribute('data-user-theme');
+    const cachedTheme = getCachedTheme();
     
-    // Si no hay usuario logueado o no tiene tema, usar dark
-    if (!userTheme || userTheme === 'null') {
-        applyTheme('dark');
-    } else {
+    if (userTheme && userTheme !== 'null' && userTheme !== cachedTheme) {
         applyTheme(userTheme);
+    } else {
+        applyTheme(cachedTheme);
     }
 })();
