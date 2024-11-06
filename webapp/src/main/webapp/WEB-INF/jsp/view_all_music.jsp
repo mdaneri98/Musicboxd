@@ -53,9 +53,20 @@
                                 <option value="RATING" ${param.filter == 'RATING' ? 'selected' : ''}>
                                     <spring:message code="discovery.top-rated"/>
                                 </option>
-                                <option value="NEWEST" ${param.filter == 'NEWEST' ? 'selected' : ''}>
+                                <option value="RECENT" ${param.filter == 'RECENT' ? 'selected' : ''}>
+                                    <spring:message code="discovery.recently.added"/>
+                                </option>
+                                <option value="FIRST" ${param.filter == 'FIRST' ? 'selected' : ''}>
+                                    <spring:message code="discovery.first.added"/>
+                                </option>
+                                <c:if test="${param.page == 'albums'}">
+                                    <option value="NEWEST" ${param.filter == 'NEWEST' ? 'selected' : ''}>
                                     <spring:message code="discovery.newest"/>
                                 </option>
+                                    <option value="OLDEST" ${param.filter == 'OLDEST' ? 'selected' : ''}>
+                                        <spring:message code="discovery.oldest"/>
+                                    </option>
+                                </c:if>
                             </select>
                         </div>
 

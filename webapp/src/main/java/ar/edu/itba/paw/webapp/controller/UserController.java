@@ -111,12 +111,6 @@ public class UserController {
         if (errors.hasErrors())
             return editProfile(upf, loggedUser);
 
-        // Optional<User> user = userService.findByUsername(upf.getUsername());
-        // if (user.isPresent()) {
-        //     String errorMessage = messageSource.getMessage("error.album.find", null, LocaleContextHolder.getLocale());
-        //     return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        // }
-
         loggedUser.setUsername(upf.getUsername());
         loggedUser.setName(upf.getName());
         loggedUser.setBio(upf.getBio());
