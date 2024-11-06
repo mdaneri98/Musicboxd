@@ -5,6 +5,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,12 +14,16 @@ import java.util.List;
 
 public class ModAlbumForm {
 
-    @Size(min = 2, max = 255, message = "The title must be between 2 and 255 characters long")
+    @Size(min = 2, max = 255, message = "{validation.album.title.size}")
     private String title;
-    @Size(min = 1, max = 50, message = "The genre must be between 1 and 50 characters long")
+
+    @Size(min = 1, max = 50, message = "{validation.album.genre.size}")
     private String genre;
+
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "{validation.album.releasedate.format}")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
+
     @Nullable
     private MultipartFile albumImage;
 

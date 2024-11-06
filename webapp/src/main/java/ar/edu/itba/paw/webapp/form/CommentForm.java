@@ -4,8 +4,8 @@ import javax.validation.constraints.Size;
 
 public class CommentForm {
     
-    @Size(max = 500, message = "Comments can not exceed 500 characters")
-    @Size(min = 2, message = "Comments must be at least 2 characters long")
+    @Size(max = 500, message = "{validation.comment.content.size}")
+    @Size(min = 2, message = "{validation.comment.content.size}")
     private String content;
 
     public CommentForm() {
