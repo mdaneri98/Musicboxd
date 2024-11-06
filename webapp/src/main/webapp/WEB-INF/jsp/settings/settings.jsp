@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <spring:message var="pageTitle" code="webpage.name"/>
+    <spring:message var="pageTitle" code="settings.title"/>
     <jsp:include page="/WEB-INF/jsp/components/head.jsp">
         <jsp:param name="title" value="${pageTitle}"/>
     </jsp:include>
