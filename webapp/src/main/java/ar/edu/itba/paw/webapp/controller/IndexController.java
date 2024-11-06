@@ -121,7 +121,7 @@ public class IndexController {
         boolean albumsActive = page.equals("albums");
         boolean artistsActive = page.equals("artists");
         boolean songsActive = page.equals("songs");
-        if (filter == null) filter = "POPULAR";
+        if (filter == null || (!filter.equals("POPULAR") && !filter.equals("RATING") && !filter.equals("OLDEST") && !filter.equals("NEWEST") && !filter.equals("RECENT") && !filter.equals("FIRST"))) filter = "POPULAR";
         FilterType filterType = FilterType.valueOf(filter);
 
         int pageSize = 20;
