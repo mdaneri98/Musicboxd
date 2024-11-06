@@ -131,12 +131,14 @@ public class IndexController {
         List<Song> songs = new ArrayList<>();
 
         if (songsActive) {
+            if(filterType == FilterType.OLDEST || filterType == FilterType.NEWEST) return new ModelAndView("redirect:/music/view-all?page=songs&filter=POPULAR");
             songs = songService.findPaginated(filterType, pageNum, pageSize);
             showNext = songs.size() == pageSize;
         } else if (albumsActive) {
             albums = albumService.findPaginated(filterType, pageNum, pageSize);
             showNext = albums.size() == pageSize;
         } else if (artistsActive) {
+            if(filterType == FilterType.OLDEST || filterType == FilterType.NEWEST) return new ModelAndView("redirect:/music/view-all?page=artists&filter=POPULAR");
             artists = artistService.findPaginated(filterType, pageNum, pageSize);
             showNext = artists.size() == pageSize;
         }

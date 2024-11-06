@@ -2,10 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
-import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.CommentForm;
 import org.springframework.stereotype.Controller;
