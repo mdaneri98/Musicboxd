@@ -11,15 +11,15 @@ import javax.validation.constraints.Size;
 public class UserProfileForm {
 
 
-    @Size(min = 4, max = 50)
-    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "Username must start with a letter and contain only letters and numbers.")
+    @Size(min = 4, max = 50, message = "{validation.profile.username.size}")
+    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.profile.username.pattern}")
     @UsernameNotInUse(message = "This username is already taken")
     private String username;
 
-    @Size(max = 100, message = "Name can be up to 100 characters.")
+    @Size(max = 100, message = "{validation.profile.name.size}")
     private String name;
 
-    @Size(max = 400, message = "Bio can be up to 400 characters.")
+    @Size(max = 400, message = "{validation.profile.bio.size}")
     private String bio;
 
     @Nullable
