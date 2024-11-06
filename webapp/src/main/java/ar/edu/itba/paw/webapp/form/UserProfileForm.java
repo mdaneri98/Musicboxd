@@ -2,6 +2,9 @@ package ar.edu.itba.paw.webapp.form;
 
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
+
+import ar.edu.itba.paw.webapp.form.validation.UsernameNotInUse;
+
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -10,6 +13,7 @@ public class UserProfileForm {
 
     @Size(min = 4, max = 50)
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "Username must start with a letter and contain only letters and numbers.")
+    @UsernameNotInUse(message = "This username is already taken")
     private String username;
 
     @Size(max = 100, message = "Name can be up to 100 characters.")
