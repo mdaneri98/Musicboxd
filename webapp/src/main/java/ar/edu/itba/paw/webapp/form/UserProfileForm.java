@@ -13,7 +13,6 @@ public class UserProfileForm {
 
     @Size(min = 4, max = 50, message = "{validation.profile.username.size}")
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.profile.username.pattern}")
-    @UsernameNotInUse(message = "This username is already taken")
     private String username;
 
     @Size(max = 100, message = "{validation.profile.name.size}")
