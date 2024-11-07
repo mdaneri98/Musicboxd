@@ -106,6 +106,11 @@ public class UserController {
     public ModelAndView submitProfile(@Valid @ModelAttribute("userProfileForm") final UserProfileForm upf,
                                       final BindingResult errors,
                                       @ModelAttribute("loggedUser") User loggedUser) {
+        userService.findByUsername(upf.getUsername()).ifPresent(user -> {
+            if (!user.getId().equals(loggedUser.getId())) {
+                errors.rejectValue("username", "validation.user.username.in.use");
+            }
+        });
 
         // Check if there are any validation errors
         if (errors.hasErrors())
