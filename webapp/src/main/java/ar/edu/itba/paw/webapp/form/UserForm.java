@@ -17,8 +17,8 @@ public class UserForm {
     @UsernameNotInUse(message = "{validation.user.username.in.use}")
     private String username;
 
-    @EmailNotInUse(message = "validation.user.email.in.use")
-    @Email(message = "validation.user.email.invalid")
+    @EmailNotInUse(message = "{validation.user.email.in.use}")
+    @Email(message = "{validation.user.email.invalid}")
     private String email;
 
     @Size(min = 8, message = "{validation.user.password.size}")
