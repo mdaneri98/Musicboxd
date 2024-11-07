@@ -17,7 +17,7 @@ public class Artist {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column
+    @Column(length = 2048)
     private String bio;
 
     @Column(name = "created_at")

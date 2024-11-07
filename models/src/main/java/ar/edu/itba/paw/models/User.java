@@ -180,6 +180,13 @@ public class User {
         this.followersAmount = 0;
         this.followingAmount = 0;
         this.reviewAmount = 0;
+
+        this.preferredLanguage = "en";
+        this.theme = "dark";
+        this.followNotificationsEnabled = true;
+        this.likeNotificationsEnabled = true;
+        this.commentNotificationsEnabled = true;
+        this.reviewNotificationsEnabled = true;
     }
 
     public User(Long id, String username, String name, Image image, Boolean verified, Boolean moderator) {
