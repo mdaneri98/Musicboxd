@@ -20,7 +20,6 @@ public class ModAlbumForm {
     @Size(min = 1, max = 50, message = "{validation.album.genre.size}")
     private String genre;
 
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "{validation.album.releasedate.format}")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
 
