@@ -35,9 +35,11 @@ public class ReviewController {
     public ModelAndView redirect() {
         return new ModelAndView("redirect:/");
     }
+
     @RequestMapping(value = "/{reviewId:\\d+}", method = RequestMethod.GET)
     public ModelAndView review(@ModelAttribute("loggedUser") User loggedUser, 
-                             @PathVariable(value = "reviewId", required = true) Long reviewId,
+                               @ModelAttribute("commentForm") CommentForm commentForm,
+                               @PathVariable(value = "reviewId") Long reviewId,
                              @RequestParam(name = "page", required = false, defaultValue = "comments") String page,
                              @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum) {
         ModelAndView mav = new ModelAndView("reviews/review");
@@ -61,7 +63,6 @@ public class ReviewController {
             showNext = comments.size() == PAGE_SIZE;
             
             mav.addObject("comments", comments);
-            mav.addObject("commentForm", new CommentForm());
         }
 
         mav.addObject("loggedUser", loggedUser);
@@ -89,9 +90,9 @@ public class ReviewController {
     }
 
     @RequestMapping(value = "/{reviewId:\\d+}/comment", method = RequestMethod.POST)
-    public ModelAndView createComment(@PathVariable long reviewId, @Valid @ModelAttribute("commentForm") CommentForm commentForm, BindingResult bindingResult, @ModelAttribute("loggedUser") User loggedUser) {
-        if (bindingResult.hasErrors()) {
-            return new ModelAndView("redirect:/review/" + reviewId);
+    public ModelAndView createComment(@PathVariable long reviewId, @Valid @ModelAttribute("commentForm") CommentForm commentForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser) {
+        if (errors.hasErrors()) {
+            return review(loggedUser, commentForm, reviewId, "1", PAGE_SIZE);
         }
         if (loggedUser.getId() == 0) return new ModelAndView("redirect:/user/login");
         Optional<Review> reviewOptional = reviewService.find(reviewId);

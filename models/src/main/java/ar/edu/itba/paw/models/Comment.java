@@ -21,7 +21,7 @@ public class Comment {
     @JoinColumn(name = "review_id", nullable = false)
     private Review review;
 
-    @Column
+    @Column(name = "content", length = 255)
     private String content;
 
     @Column(name = "created_at")
