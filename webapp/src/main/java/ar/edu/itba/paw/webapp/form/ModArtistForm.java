@@ -93,7 +93,7 @@ public class ModArtistForm {
         return albums;
     }
 
-    public void setAlbum(List<ModAlbumForm> albums) {
+    public void setAlbums(List<ModAlbumForm> albums) {
         this.albums = albums;
     }
 
