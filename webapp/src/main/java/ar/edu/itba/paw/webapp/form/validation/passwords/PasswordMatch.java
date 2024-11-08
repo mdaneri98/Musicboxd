@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.form.validation;
+package ar.edu.itba.paw.webapp.form.validation.passwords;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordMatch {
-
     String message() default "Passwords do not match";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
