@@ -5,7 +5,7 @@ import javax.validation.constraints.Size;
 
 public class ReviewForm {
 
-    @Size(min = 2, max = 255, message = "{validation.review.title.size}")
+    @Size(min = 2, max = 50, message = "{validation.review.title.size}")
     private String title;
     @Size(max = 2000, message = "{validation.review.description.size}")
     private String description;
