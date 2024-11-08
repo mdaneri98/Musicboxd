@@ -1,19 +1,18 @@
 package ar.edu.itba.paw.webapp.form;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 public class ModSongForm {
 
 
-    @Size(min = 1, max = 255, message = "{validation.song.title.size}")
+    @Size(min = 1, max = 100, message = "{validation.song.title.size}")
     private String title;
 
     @Pattern(regexp = "^(?:(?:([0-9]{1,2}):)?([0-5]?[0-9]):)?([0-5][0-9])$", message = "{validation.song.duration.format}")
     private String duration;
 
-    @Positive(message = "{validation.song.tracknumber.positive}")
+    @Min(value = 1, message = "{validation.song.tracknumber.min}")
+    @Max(value = 500, message = "{validation.song.tracknumber.max}")
     private Integer trackNumber;
 
     // Hidden inputs
