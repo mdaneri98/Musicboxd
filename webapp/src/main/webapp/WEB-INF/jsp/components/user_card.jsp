@@ -10,6 +10,20 @@
             <h3 class="user-card-username"><c:out value="${param.username}"/></h3>
             <p class="user-card-name"><c:out value="${param.name}"/></p>
         </div>
+        <c:if test="${param.verified || param.moderator}">
+            <div class="user-card-badges">
+                <c:if test="${param.verified}">
+                    <span class="badge badge-verified">
+                        <spring:message code="label.verified" />
+                    </span>
+                </c:if>
+                <c:if test="${param.moderator}">
+                    <span class="badge badge-moderator">
+                        <spring:message code="label.moderator" />
+                    </span>
+                </c:if>
+            </div>
+        </c:if>
     </div>
 
     <p class="user-card-bio"><c:out value="${param.bio}"/></p>
@@ -34,19 +48,4 @@
             </span>
         </div>
     </div>
-
-    <c:if test="${param.verified || param.moderator}">
-        <div class="user-card-badges">
-            <c:if test="${param.verified}">
-                <span class="badge badge-verified">
-                    <spring:message code="label.verified" />
-                </span>
-            </c:if>
-            <c:if test="${param.moderator}">
-                <span class="badge badge-moderator">
-                    <spring:message code="label.moderator" />
-                </span>
-            </c:if>
-        </div>
-    </c:if>
 </a>

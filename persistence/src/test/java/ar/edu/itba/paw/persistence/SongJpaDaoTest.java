@@ -9,7 +9,6 @@ import ar.edu.itba.paw.persistence.config.TestConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -93,9 +92,11 @@ public class SongJpaDaoTest {
     @Test
     public void test_findByArtistId() {
         // 1. Pre-conditions - 3 songs exist in database from artist 301
+        int offset = 0;
+        int pageSize = 10;
 
         // 2. Execute
-        List<Song> songList = songDao.findByArtistId(PRE_EXISTING_ARTIST_2_ID);
+        List<Song> songList = songDao.findByArtistId(PRE_EXISTING_ARTIST_2_ID, pageSize, offset);
 
         // 3. Post-conditions
         assertEquals(5, songList.size());
@@ -104,9 +105,11 @@ public class SongJpaDaoTest {
     @Test
     public void test_findByArtistId_NoArtist() {
         // 1. Pre-conditions - artist does not exist
+        int page = 1;
+        int pageSize = 10;
 
         // 2. Execute
-        List<Song> songList = songDao.findByArtistId(NEW_ARTIST_ID);
+        List<Song> songList = songDao.findByArtistId(NEW_ARTIST_ID, pageSize, page);
 
         // 3. Post-conditions
         assertEquals(0, songList.size());

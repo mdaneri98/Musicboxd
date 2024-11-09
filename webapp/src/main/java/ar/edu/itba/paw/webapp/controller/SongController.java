@@ -127,12 +127,12 @@ public class SongController {
     }
 
     @RequestMapping(value = "/{songId:\\d+}/edit-review", method = RequestMethod.POST)
-    public ModelAndView editSongReview(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
-        Optional<SongReview> reviewOptional = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
+    public ModelAndView editSongReview(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) {
         if (errors.hasErrors()) {
-            return createForm(loggedUser, reviewForm, songId);
+            return editSongReview(loggedUser, reviewForm, songId);
         }
 
+        Optional<SongReview> reviewOptional = reviewService.findSongReviewByUserId(loggedUser.getId(), songId, loggedUser.getId());
         SongReview review = reviewOptional.get();
         review.setTitle(reviewForm.getTitle());
         review.setDescription(reviewForm.getDescription());
@@ -144,7 +144,7 @@ public class SongController {
 
 
     @RequestMapping(value = "/{songId:\\d+}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId, Model model) throws MessagingException {
+    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long songId) {
         if (errors.hasErrors()) {
             return createForm(loggedUser, reviewForm, songId);
         }

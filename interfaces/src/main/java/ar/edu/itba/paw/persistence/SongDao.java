@@ -7,7 +7,7 @@ import ar.edu.itba.paw.models.reviews.SongReview;
 
 public interface SongDao extends CrudDao<Song> {
 
-    List<Song> findByArtistId(long id);
+    List<Song> findByArtistId(long id, int pageNum, int pageSize);
     List<Song> findByAlbumId(long id);
     List<Song> findByTitleContaining(String sub);
 

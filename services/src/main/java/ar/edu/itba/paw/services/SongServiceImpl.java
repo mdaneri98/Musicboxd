@@ -59,8 +59,8 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Song> findByArtistId(long id) {
-        List<Song> songs = songDao.findByArtistId(id);
+    public List<Song> findByArtistId(long id, int pageNum, int pageSize) {
+        List<Song> songs = songDao.findByArtistId(id, pageSize, (pageNum - 1) * pageSize);
         return songs;
     }
 

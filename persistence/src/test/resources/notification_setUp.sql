@@ -62,7 +62,7 @@ INSERT INTO notifications (notification_id, type, recipient_user_id, trigger_use
 
     /* Read notifications for user 200 */
     (903, 'NEW_REVIEW', 200, 201, 402, '2024-01-04 10:00:00', true, 'User posted a new review'),
-    (904, 'NEW_ALBUM', 200, null, 500, '2024-01-05 10:00:00', true, 'New album released'),
+    (904, 'NEW_REVIEW', 200, 202, 405, '2024-01-05 10:00:00', true, 'New album released'),
 
     /* Notifications for user 201 */
     (905, 'LIKE', 201, 200, 403, '2024-01-06 10:00:00', true, 'User liked your review'),

@@ -53,6 +53,10 @@
                     </button>
                 </div>
             </div>
+                        
+            <div class="footer-placeholder">
+                <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
+            </div>
         </main>
     </div>
 

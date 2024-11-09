@@ -68,7 +68,7 @@ public class ArtistController {
 
         Artist artist = artistOptional.get();
         List<Album> albums = albumService.findByArtistId(artistId);
-        List<Song> songs = songService.findByArtistId(artistId);
+        List<Song> songs = songService.findByArtistId(artistId, 1, 10);
         List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(artistId,pageNum,5, loggedUser.getId());
         boolean isReviewed = reviewService.hasUserReviewedArtist(loggedUser.getId(), artistId);
         Integer loggedUserRating = isReviewed ? reviewService.findArtistReviewByUserId(loggedUser.getId(), artistId, loggedUser.getId()).get().getRating() : 0;

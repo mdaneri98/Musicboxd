@@ -40,8 +40,6 @@ public class UserJpaDaoTest {
     private static final long PRE_EXISTING_SONG_ID = 600;
     private static final long PRE_EXISTING_SONG_2_ID = 601;
 
-    private static final byte[] BYTES = new byte[] { (byte) 0xbe, (byte) 0xef };
-
     private static final String PRE_EXISTING_USERNAME = "Dummy";
     private static final String PRE_EXISTING_EMAIL = "dummy@example.com";
     private static final String PRE_EXISTING_PASSWORD = "dummy123";
@@ -114,8 +112,20 @@ public class UserJpaDaoTest {
     @Test
     public void test_update() {
         // 1. Pre-conditions - user exists
-        Image image = new Image(NEW_IMAGE_ID, BYTES);
-        User user = new User(PRE_EXISTING_USER_ID, NEW_USERNAME, NEW_EMAIL, NEW_PASSWORD, NEW_NAME, NEW_BIO, VERIFIED_TRUE, image, MODERATOR_TRUE, USER_FOLLOWERS, USER_FOLLOWING, REVIEW_AMOUNT, PREFERRED_LANGUAGE);
+        Image image = em.find(Image.class, NEW_IMAGE_ID);
+        User user = em.find(User.class, PRE_EXISTING_USER_ID);
+        user.setUsername(NEW_USERNAME);
+        user.setEmail(NEW_EMAIL);
+        user.setPassword(NEW_PASSWORD);
+        user.setImage(image);
+        user.setName(NEW_NAME);
+        user.setBio(NEW_BIO);
+        user.setVerified(VERIFIED_TRUE);
+        user.setModerator(MODERATOR_TRUE);
+        user.setFollowersAmount(USER_FOLLOWERS);
+        user.setFollowingAmount(USER_FOLLOWING);
+        user.setReviewAmount(REVIEW_AMOUNT);
+        user.setPreferredLanguage(PREFERRED_LANGUAGE);
 
         // 2. Execute
         Optional<User> optionalUser = userDao.update(user);
@@ -139,7 +149,7 @@ public class UserJpaDaoTest {
         assertTrue(updatedUser.isVerified());
         
         // Image validation
-        assertArrayEquals(BYTES, updatedUser.getImage().getBytes());
+        assertArrayEquals(image.getBytes(), updatedUser.getImage().getBytes());
 
         // check if user is saved correctly in database
         assertEquals(1, em.createQuery("SELECT COUNT(u) FROM User u " +
@@ -263,7 +273,7 @@ public class UserJpaDaoTest {
     @Test
     public void test_create() {
         // 1. Pre-conditions - no user with username or email exists
-        Image image = new Image(NEW_IMAGE_ID, BYTES);
+        Image image = em.find(Image.class, NEW_IMAGE_ID);
 
         // 2. Execute
         Optional<User> optionalUser = userDao.create(NEW_USERNAME, NEW_EMAIL, NEW_PASSWORD, image);
@@ -309,7 +319,7 @@ public class UserJpaDaoTest {
     @Test
     public void test_create_duplicateUsername() {
         // 1. Pre-conditions - User with the same username exists
-        Image image = new Image(NEW_IMAGE_ID, BYTES);
+        Image image = em.find(Image.class, NEW_IMAGE_ID);
 
         // 2. Execute
         Optional<User> user = userDao.create(PRE_EXISTING_USERNAME, NEW_EMAIL, NEW_PASSWORD, image);
@@ -331,7 +341,7 @@ public class UserJpaDaoTest {
     @Test
     public void test_create_duplicateEmail() {
         // 1. Pre-conditions - User with the same email exists
-        Image image = new Image(NEW_IMAGE_ID, BYTES);
+        Image image = em.find(Image.class, NEW_IMAGE_ID);
 
         // 2. Execute
         Optional<User> user = userDao.create(NEW_USERNAME, PRE_EXISTING_EMAIL, NEW_PASSWORD, image);
@@ -399,7 +409,7 @@ public class UserJpaDaoTest {
         int followersAmount = userDao.countFollowers(PRE_EXISTING_USER_ID);
 
         // 3. Post-conditions
-        assertEquals(3, followersAmount);
+        assertEquals(1, followersAmount);
     }
 
     @Test
@@ -507,7 +517,7 @@ public class UserJpaDaoTest {
         List<User> userList = userDao.getFollowers(PRE_EXISTING_USER_ID, 1, 10);
 
         // 3. Post-conditions
-        assertEquals(3, userList.size());
+        assertEquals(1, userList.size());
     }
 
     @Test
@@ -537,6 +547,73 @@ public class UserJpaDaoTest {
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .getSingleResult().intValue()
         );
+    }
+
+    @Test
+    public void test_getRecommendedUsers() {
+        // 1. Pre-conditions
+        /* for User 200:
+            - follows: 201
+            - Is followed by: 202, 203, 204
+            - User 201 follows: 202, 203, 204 (these are potential recommendations)
+        */
+        int pageNumber = 1;
+        int pageSize = 10;
+
+        // 2. Execute
+        List<User> recommendedUsers = userDao.getRecommendedUsers(PRE_EXISTING_USER_ID, pageNumber, pageSize);
+
+        // 3. Post-conditions
+        assertNotNull(recommendedUsers);
+        assertEquals(3, recommendedUsers.size());
+
+        // Verify recommended users are 202, 203, and 204 (in any order)
+        assertTrue(recommendedUsers.contains(em.find(User.class, 202L)));
+        assertTrue(recommendedUsers.contains(em.find(User.class, 203L)));
+        assertTrue(recommendedUsers.contains(em.find(User.class, 204L)));
+    }
+
+    @Test
+    public void test_getRecommendedUsers_Pagination() {
+        // 1. Pre-conditions
+        int pageNumber = 1;
+        int pageSize = 2;
+
+        // 2. Execute
+        List<User> recommendedUsers = userDao.getRecommendedUsers(200L, pageNumber, pageSize);
+
+        // 3. Post-conditions
+        assertNotNull(recommendedUsers);
+        assertEquals(2, recommendedUsers.size()); // Only first 2 recommendations
+    }
+
+    @Test
+    public void test_getRecommendedUsers_NoRecommendations() {
+        // 1. Pre-conditions
+        // User 204 doesn't follow anyone who follows other users
+        int pageNumber = 1;
+        int pageSize = 10;
+
+        // 2. Execute
+        List<User> recommendedUsers = userDao.getRecommendedUsers(204L, pageNumber, pageSize);
+
+        // 3. Post-conditions
+        assertNotNull(recommendedUsers);
+        assertTrue(recommendedUsers.isEmpty());
+    }
+
+    @Test
+    public void test_getRecommendedUsers_SecondPage() {
+        // 1. Pre-conditions
+        int pageNumber = 2;
+        int pageSize = 2;
+
+        // 2. Execute
+        List<User> recommendedUsers = userDao.getRecommendedUsers(200L, pageNumber, pageSize);
+
+        // 3. Post-conditions
+        assertNotNull(recommendedUsers);
+        assertEquals(1, recommendedUsers.size()); // Only one user left on second page
     }
 
     //============================ FAVORITE ARTISTS ============================

@@ -15,7 +15,6 @@ import javax.mail.MessagingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -176,8 +175,9 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Following relationship already exists");
             return 0;
         }
-        int result = userDao.createFollowing(user, find(followingId).get());
-        notificationService.notifyFollow(followingId, user);
+        User following = find(followingId).get();
+        int result = userDao.createFollowing(user, following);
+        notificationService.notifyFollow(following, user);
         LOGGER.info("Following relationship created successfully");
         return result;
     }
@@ -384,5 +384,19 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public int getFavoriteSongsCount(long userId) {
         return userDao.getFavoriteSongsCount(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize) {
+        LOGGER.info("Getting recommended users for user with ID: {}", userId);
+        if (userId == null || userDao.find(userId).isEmpty()) {
+            LOGGER.warn("Invalid user ID: {}", userId);
+            throw new IllegalArgumentException("No existe un usuario con el ID %d".formatted(userId));
+        }
+        
+        List<User> recommendedUsers = userDao.getRecommendedUsers(userId, pageNumber, pageSize);
+        LOGGER.info("Found {} recommended users for user with ID: {}", recommendedUsers.size(), userId);
+        return recommendedUsers;
     }
 }

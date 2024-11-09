@@ -41,6 +41,29 @@
                     <div id="autocompleteList" class="search-results"></div>
                 </div>
             </div>
+
+            <c:if test="${recommendedUsers.size() > 0}">
+                <h1 class="page-title">
+                    <spring:message code="label.recommended.users"/>
+                </h1>
+                <!-- Users Grid -->
+                <div class="users-grid">
+                    <c:forEach var="user_item" items="${recommendedUsers}">
+                        <jsp:include page="/WEB-INF/jsp/components/user_card.jsp">
+                            <jsp:param name="imgId" value="${user_item.image.id}"/>
+                            <jsp:param name="username" value="@${user_item.username}"/>
+                            <jsp:param name="name" value="${user_item.name}"/>
+                            <jsp:param name="bio" value="${user_item.bio}"/>
+                            <jsp:param name="followersAmount" value="${user_item.followersAmount}"/>
+                            <jsp:param name="followingAmount" value="${user_item.followingAmount}"/>
+                            <jsp:param name="reviewAmount" value="${user_item.reviewAmount}"/>
+                            <jsp:param name="verified" value="${user_item.verified}"/>
+                            <jsp:param name="moderator" value="${user_item.moderator}"/>
+                            <jsp:param name="id" value="${user_item.id}"/>
+                        </jsp:include>
+                    </c:forEach>
+                </div>
+            </c:if>
             <jsp:include page="/WEB-INF/jsp/components/footer.jsp"/>
         </main>
     </div>

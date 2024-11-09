@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.persistence.config.TestConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,13 +46,16 @@ public class NotificationJpaDaoTest {
     @Test
     public void test_create() {
         // 1. Pre-conditions
+        User user = em.find(User.class, USER_ID);
+        User userTrigger = em.find(User.class, TRIGGER_USER_ID);
+        Review review = em.find(Review.class, RESOURCE_ID);
 
         // 2. Execute
         Notification notification = notificationDao.create(
                 Notification.NotificationType.LIKE,
-                USER_ID,
-                TRIGGER_USER_ID,
-                RESOURCE_ID,
+                user,
+                userTrigger,
+                review,
                 NOTIFICATION_MESSAGE
         );
 
@@ -59,9 +63,9 @@ public class NotificationJpaDaoTest {
         assertNotNull(notification);
         assertNotNull(notification.getId());
         assertEquals(Notification.NotificationType.LIKE, notification.getType());
-        assertEquals(USER_ID, notification.getRecipientUserId().longValue());
-        assertEquals(TRIGGER_USER_ID, notification.getTriggerUserId().longValue());
-        assertEquals(RESOURCE_ID, notification.getResourceId().longValue());
+        assertEquals(USER_ID, notification.getRecipientUser().getId().longValue());
+        assertEquals(TRIGGER_USER_ID, notification.getTriggerUser().getId().longValue());
+        assertEquals(RESOURCE_ID, notification.getReview().getId().longValue());
         assertEquals(NOTIFICATION_MESSAGE, notification.getMessage());
         assertFalse(notification.isRead());
 
@@ -149,7 +153,7 @@ public class NotificationJpaDaoTest {
 
         // Verify all notifications are now read
         TypedQuery<Notification> query = em.createQuery(
-                "FROM Notification n WHERE n.recipientUserId = :userId",
+                "FROM Notification n WHERE n.recipientUser.id = :userId",
                 Notification.class);
         query.setParameter("userId", USER_ID);
 

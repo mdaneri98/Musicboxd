@@ -123,7 +123,7 @@ public class ModeratorController {
 
             albumForms.add(albumForm);
         }
-        modArtistForm.setAlbum(albumForms);
+        modArtistForm.setAlbums(albumForms);
         return modelAndView;
     }
 

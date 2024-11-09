@@ -72,9 +72,11 @@ public class CommentJpaDaoTest {
     @Test
     public void test_findByReviewId() {
         // 1. Pre-conditions - comment exists
+        int offset = 0;
+        int pageSize = 10;
 
         // 2. Execute
-        List<Comment> comments = commentDao.findByReviewId(PRE_EXISTING_REVIEW_ID);
+        List<Comment> comments = commentDao.findByReviewId(PRE_EXISTING_REVIEW_ID, pageSize, offset);
 
         // 3. Post-conditions
         assertNotNull(comments);
