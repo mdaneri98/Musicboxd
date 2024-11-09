@@ -28,7 +28,7 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> findAll(int pageNumber, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM users");
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM cuser");
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
 
@@ -169,7 +169,8 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> getFollowers(Long userId, int pageNumber, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("FROM relationship WHERE following_id = :userId");
+        Query nativeQuery = em.createNativeQuery("SELECT user_id FROM follower WHERE following = :userId");
+        nativeQuery.setParameter("userId", userId);
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
 
@@ -188,7 +189,8 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> getFollowings(Long userId, int pageNumber, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("FROM relationship WHERE user_id = :userId");
+        Query nativeQuery = em.createNativeQuery("SELECT following FROM follower WHERE user_id = :userId");
+        nativeQuery.setParameter("userId", userId);
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
 
@@ -209,6 +211,8 @@ public class UserJpaDao implements UserDao {
     @Override
     public List<Artist> getFavoriteArtists(long userId) {
         User user = em.find(User.class, userId);
+        if (user == null)
+            return Collections.emptyList();
         return user.getFavoriteArtists();
     }
 
@@ -328,7 +332,7 @@ public class UserJpaDao implements UserDao {
         if (user == null)
             return 0;
         // Consideramos un maximo de 5 artistas.
-        return user.getFavoriteArtists().size();
+        return user.getFavoriteSongs().size();
     }
 
     @Override

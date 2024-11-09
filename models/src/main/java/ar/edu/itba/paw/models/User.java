@@ -60,10 +60,10 @@ public class User {
     @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
     private Image image;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<Comment> comments;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -124,6 +124,22 @@ public class User {
         this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
     }
 
+    public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount, String preferredLanguage) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.bio = bio;
+        this.verified = verified;
+        this.image = image;
+        this.moderator = moderator;
+        this.followersAmount = followersAmount != null ? followersAmount : 0;
+        this.followingAmount = followingAmount != null ? followingAmount : 0;
+        this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
+        this.preferredLanguage = preferredLanguage;
+    }
+
     public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;
@@ -137,6 +153,7 @@ public class User {
         this.followersAmount = followersAmount != null ? followersAmount : 0;
         this.followingAmount = followingAmount != null ? followingAmount : 0;
         this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
+        this.preferredLanguage = "es";
     }
 
     public User(String username, String password, String email) {
@@ -148,9 +165,9 @@ public class User {
         this.image = null;
         this.verified = false;
         this.moderator = false;
-        this.followersAmount = 0;
-        this.followingAmount = 0;
-        this.reviewAmount = 0;
+        this.followersAmount = followersAmount != null ? followersAmount : 0;
+        this.followingAmount = followingAmount != null ? followingAmount : 0;
+        this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
     }
 
     public User(Long id, String username, String name, Image image, Boolean verified, Boolean moderator) {
@@ -420,6 +437,10 @@ public class User {
     public void setUnreadNotificationCount(Integer unreadNotificationCount) {
         this.unreadNotificationCount = unreadNotificationCount;
     }
+
+    public void setComments(List<Comment> comments) { this.comments = comments; }
+
+    public List<Comment> getComments() { return comments; }
 
     public static class Builder {
         private Long id;
