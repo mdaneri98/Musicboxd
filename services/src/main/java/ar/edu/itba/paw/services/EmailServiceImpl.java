@@ -112,7 +112,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, Review review) throws MessagingException {
+    public void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, String reviewTitle, String reviewName, String reviewType) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
         Locale currentLocale = new Locale.Builder().setLanguage(to.getPreferredLanguage()).build();
@@ -132,9 +132,9 @@ public class EmailServiceImpl implements EmailService {
             }
         }
         params.put("username", to.getUsername());
-        params.put("title", review.getTitle());
-        params.put("item_name", review.getItemName());
-        params.put("item_type", review.getItemType());
+        params.put("title", reviewTitle);
+        params.put("item_name", reviewName);
+        params.put("item_type", reviewType);
 
         //params.put("verificationURL", verificationURL);
         this.sendMessageUsingThymeleafTemplate(
