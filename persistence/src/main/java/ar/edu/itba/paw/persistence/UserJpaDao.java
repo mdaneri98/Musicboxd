@@ -28,7 +28,7 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> findAll(int pageNumber, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM users");
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM cuser");
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
 
@@ -211,6 +211,8 @@ public class UserJpaDao implements UserDao {
     @Override
     public List<Artist> getFavoriteArtists(long userId) {
         User user = em.find(User.class, userId);
+        if (user == null)
+            return Collections.emptyList();
         return user.getFavoriteArtists();
     }
 
@@ -330,7 +332,7 @@ public class UserJpaDao implements UserDao {
         if (user == null)
             return 0;
         // Consideramos un maximo de 5 artistas.
-        return user.getFavoriteArtists().size();
+        return user.getFavoriteSongs().size();
     }
 
     @Override

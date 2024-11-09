@@ -87,6 +87,16 @@ public class Album {
         this.genre = genre;
     }
 
+    public Album(String title, Image image, String genre, Artist artist, LocalDate releaseDate, Integer ratingCount, Double avgRating) {
+        this.title = title;
+        this.genre = genre;
+        this.image = image;
+        this.artist = artist;
+        this.releaseDate = releaseDate;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
+    }
+
     public Album(String title, Image image, String genre, Artist artist, LocalDate releaseDate) {
         this.title = title;
         this.genre = genre;

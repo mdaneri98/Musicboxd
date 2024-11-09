@@ -7,26 +7,24 @@ INSERT INTO image (id, content) VALUES
     (104, CAST('beef' AS BYTEA)),
     (105, CAST('beef' AS BYTEA)),
     (106, CAST('beef' AS BYTEA)),
-    (107, CAST('beef' AS BYTEA)),
-    (108, CAST('beef' AS BYTEA));
+    (107, CAST('beef' AS BYTEA));
 
 /* Users */
 INSERT INTO cuser (id, username, email, password, verified, moderator, img_id) VALUES
     (200,'Dummy', 'dummy@example.com', 'dummy123',false, false, 100),
     (201,'Dummy1', 'dummy1@example.com', 'dummy123', false, false, 101),
     (202,'Dummy2', 'dummy2@example.com', 'dummy123', false, false,102),
-    (203,'Dummy3', 'dummy3@example.com', 'dummy123', false, false, 103),
-    (204,'Dumy4', 'dummy4@example.com', 'dummy456', false, false,104);
+    (203,'Dummy3', 'dummy3@example.com', 'dummy123', false, false, 103);
 
 /* Artists */
 INSERT INTO artist (id, name, bio, rating_amount, avg_rating, img_id) VALUES
-    (300,'DummyName1', 'DummyBio',0, 0,105),
-    (301,'DummyName2', 'DummyBio',0, 0,106);
+    (300,'DummyName1', 'DummyBio',0, 0,104),
+    (301,'DummyName2', 'DummyBio',0, 0,105);
 
 /* Albums */
 INSERT INTO album (id, title, genre, release_date, img_id, artist_id, rating_amount, avg_rating) VALUES
-    (500, 'DummyTitle1', 'DummyGenre', '2000-10-10', 107, 300,0,0),
-    (501, 'DummyTitle2', 'DummyGenre', '2000-10-10', 108, 301,0,0);
+    (500, 'DummyTitle1', 'DummyGenre', '2000-10-10', 106, 300,0,0),
+    (501, 'DummyTitle2', 'DummyGenre', '2000-10-10', 107, 301,0,0);
 
 /* Songs */
 INSERT INTO song (id, title, duration, track_number, album_id, rating_amount, avg_rating) VALUES
@@ -54,23 +52,6 @@ INSERT INTO album_review (review_id, album_id) VALUES
 INSERT INTO song_review (review_id, song_id) VALUES
     (402, 600),
     (405, 601);
-
-/* Review Likes */
-INSERT INTO review_like (review_id, user_id) VALUES
-    (400, 201),  /* Review 400 liked by user 201 */
-    (400, 202),  /* Review 400 liked by user 202 */
-    (400, 203),  /* Review 400 liked by user 203 */
-    (401, 201),  /* Review 401 liked by user 201 */
-    (401, 202),  /* Review 401 liked by user 202 */
-    (404, 200),  /* Review 404 liked by user 200 */
-    (404, 201),  /* Review 404 liked by user 201 */
-    (404, 202),  /* Review 404 liked by user 202 */
-    (404, 203),  /* Review 404 liked by user 203 */
-    (404, 204),  /* Review 404 liked by user 204 */
-    (405, 200),  /* Review 405 liked by user 200 */
-    (405, 201),  /* Review 405 liked by user 201 */
-    (405, 202),  /* Review 405 liked by user 202 */
-    (405, 203);  /* Review 405 liked by user 203 */
 
 /* Comments */
 INSERT INTO comment (id, user_id, review_id, content, created_at) VALUES
