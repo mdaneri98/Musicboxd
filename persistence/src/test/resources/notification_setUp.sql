@@ -7,26 +7,24 @@ INSERT INTO image (id, content) VALUES
     (104, CAST('beef' AS BYTEA)),
     (105, CAST('beef' AS BYTEA)),
     (106, CAST('beef' AS BYTEA)),
-    (107, CAST('beef' AS BYTEA)),
-    (108, CAST('beef' AS BYTEA));
+    (107, CAST('beef' AS BYTEA));
 
 /* Users */
 INSERT INTO cuser (id, username, email, password, verified, moderator, img_id) VALUES
     (200,'Dummy', 'dummy@example.com', 'dummy123',false, false, 100),
     (201,'Dummy1', 'dummy1@example.com', 'dummy123', false, false, 101),
     (202,'Dummy2', 'dummy2@example.com', 'dummy123', false, false,102),
-    (203,'Dummy3', 'dummy3@example.com', 'dummy123', false, false, 103),
-    (204,'Dumy4', 'dummy4@example.com', 'dummy456', false, false,104);
+    (203,'Dummy3', 'dummy3@example.com', 'dummy123', false, false, 103);
 
 /* Artists */
 INSERT INTO artist (id, name, bio, rating_amount, avg_rating, img_id) VALUES
-    (300,'DummyName1', 'DummyBio',0, 0,105),
-    (301,'DummyName2', 'DummyBio',0, 0,106);
+    (300,'DummyName1', 'DummyBio',0, 0,104),
+    (301,'DummyName2', 'DummyBio',0, 0,105);
 
 /* Albums */
 INSERT INTO album (id, title, genre, release_date, img_id, artist_id, rating_amount, avg_rating) VALUES
-    (500, 'DummyTitle1', 'DummyGenre', '2000-10-10', 107, 300,0,0),
-    (501, 'DummyTitle2', 'DummyGenre', '2000-10-10', 108, 301,0,0);
+    (500, 'DummyTitle1', 'DummyGenre', '2000-10-10', 106, 300,0,0),
+    (501, 'DummyTitle2', 'DummyGenre', '2000-10-10', 107, 301,0,0);
 
 /* Songs */
 INSERT INTO song (id, title, duration, track_number, album_id, rating_amount, avg_rating) VALUES
@@ -55,29 +53,17 @@ INSERT INTO song_review (review_id, song_id) VALUES
     (402, 600),
     (405, 601);
 
-/* Review Likes */
-INSERT INTO review_like (review_id, user_id) VALUES
-    (400, 201),  /* Review 400 liked by user 201 */
-    (400, 202),  /* Review 400 liked by user 202 */
-    (400, 203),  /* Review 400 liked by user 203 */
-    (401, 201),  /* Review 401 liked by user 201 */
-    (401, 202),  /* Review 401 liked by user 202 */
-    (404, 200),  /* Review 404 liked by user 200 */
-    (404, 201),  /* Review 404 liked by user 201 */
-    (404, 202),  /* Review 404 liked by user 202 */
-    (404, 203),  /* Review 404 liked by user 203 */
-    (404, 204),  /* Review 404 liked by user 204 */
-    (405, 200),  /* Review 405 liked by user 200 */
-    (405, 201),  /* Review 405 liked by user 201 */
-    (405, 202),  /* Review 405 liked by user 202 */
-    (405, 203);  /* Review 405 liked by user 203 */
+/* Notifications */
+INSERT INTO notifications (notification_id, type, recipient_user_id, trigger_user_id, resource_id, created_at, read, message) VALUES
+    /* Unread notifications for user 200 */
+    (900, 'LIKE', 200, 201, 400, '2024-01-01 10:00:00', false, 'User liked your review'),
+    (901, 'COMMENT', 200, 202, 401, '2024-01-02 10:00:00', false, 'User commented on your review'),
+    (902, 'FOLLOW', 200, 203, null, '2024-01-03 10:00:00', false, 'User started following you'),
 
-/* Comments */
-INSERT INTO comment (id, user_id, review_id, content, created_at) VALUES
-    (700, 201, 400, 'Great review!', '2024-01-01 11:00:00'),
-    (701, 202, 400, 'I agree!', '2024-01-01 12:00:00'),
-    (702, 201, 401, 'Nice perspective', '2024-01-02 11:00:00'),
-    (703, 201, 404, 'Well written', '2024-01-05 11:00:00'),
-    (704, 202, 404, 'Totally agree', '2024-01-05 12:00:00'),
-    (705, 203, 404, 'Great points', '2024-01-05 13:00:00'),
-    (706, 201, 405, 'Love this review', '2024-01-06 11:00:00');
+    /* Read notifications for user 200 */
+    (903, 'NEW_REVIEW', 200, 201, 402, '2024-01-04 10:00:00', true, 'User posted a new review'),
+    (904, 'NEW_ALBUM', 200, null, 500, '2024-01-05 10:00:00', true, 'New album released'),
+
+    /* Notifications for user 201 */
+    (905, 'LIKE', 201, 200, 403, '2024-01-06 10:00:00', true, 'User liked your review'),
+    (906, 'COMMENT', 201, 202, 404, '2024-01-07 10:00:00', true, 'User commented on your review');
