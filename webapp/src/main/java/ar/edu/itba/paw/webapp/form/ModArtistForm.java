@@ -10,10 +10,12 @@ import java.util.List;
 
 public class ModArtistForm {
 
-    @Size(min = 2, max = 50, message = "Artist name must be between 2 and 50 characters long")
+    @Size(min = 2, max = 50, message = "{validation.artist.name.size}")
     private String name;
-    @Size(min = 2, max = 2048, message = "Artist bio must be between 2 and 2048 characters long")
+
+    @Size(min = 2, max = 2048, message = "{validation.artist.bio.size}")
     private String bio;
+
     @Nullable
     private MultipartFile artistImage;
 
@@ -91,7 +93,7 @@ public class ModArtistForm {
         return albums;
     }
 
-    public void setAlbum(List<ModAlbumForm> albums) {
+    public void setAlbums(List<ModAlbumForm> albums) {
         this.albums = albums;
     }
 

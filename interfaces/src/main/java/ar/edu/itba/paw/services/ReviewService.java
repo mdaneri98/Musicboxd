@@ -24,7 +24,7 @@ public interface ReviewService extends CrudService<Review> {
     SongReview saveSongReview(SongReview review);
 
 
-    List<User> likedBy(int page, int pageSize);
+    List<User> likedBy(Long reviewId, int pageNum, int pageSize);
     void createLike(long userId, long reviewId);
     void removeLike(long userId, long reviewId);
     boolean isLiked(long userId, long reviewId);

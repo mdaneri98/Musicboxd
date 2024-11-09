@@ -170,12 +170,12 @@ public class UserJpaDao implements UserDao {
     @Override
     public List<User> getFollowers(Long userId, int pageNumber, int pageSize) {
         Query nativeQuery = em.createNativeQuery("SELECT user_id FROM follower WHERE following = :userId");
-        nativeQuery.setParameter("userId", userId);
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
+        nativeQuery.setParameter("userId", userId);
 
         final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> (Long)((Number)n).longValue()).collect(Collectors.toList());
+                .stream().map(n -> ((Number)n).longValue()).collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
         if (idList.isEmpty())
@@ -190,12 +190,12 @@ public class UserJpaDao implements UserDao {
     @Override
     public List<User> getFollowings(Long userId, int pageNumber, int pageSize) {
         Query nativeQuery = em.createNativeQuery("SELECT following FROM follower WHERE user_id = :userId");
-        nativeQuery.setParameter("userId", userId);
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
+        nativeQuery.setParameter("userId", userId);
 
         final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> (Long)((Number)n).longValue()).collect(Collectors.toList());
+                .stream().map(n -> ((Number)n).longValue()).collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
         if (idList.isEmpty())
@@ -358,6 +358,32 @@ public class UserJpaDao implements UserDao {
                 .setParameter("userId", userId)
                 .setParameter("reviewCount", reviewCount)
                 .executeUpdate();
+    }
+
+    @Override
+    public List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize) {
+        // Consulta para obtener usuarios que son seguidos por los usuarios que el usuario actual sigue,
+        // pero que no son seguidos por el usuario actual
+        String jpql = "SELECT DISTINCT u FROM User u " +
+                     "WHERE u.id IN (" +
+                     "    SELECT f2.id FROM User me " +
+                     "    JOIN me.following f1 " +
+                     "    JOIN f1.following f2 " +
+                     "    WHERE me.id = :userId " +
+                     "    AND f2.id != :userId " +
+                     "    AND f2.id NOT IN (" +
+                     "        SELECT f3.id FROM User me2 " +
+                     "        JOIN me2.following f3 " +
+                     "        WHERE me2.id = :userId" +
+                     "    )" +
+                     ")";
+
+        TypedQuery<User> query = em.createQuery(jpql, User.class)
+                .setParameter("userId", userId)
+                .setFirstResult((pageNumber - 1) * pageSize)
+                .setMaxResults(pageSize);
+
+        return query.getResultList();
     }
 
 }

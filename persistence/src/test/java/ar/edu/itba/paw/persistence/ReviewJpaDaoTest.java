@@ -636,7 +636,7 @@ public class ReviewJpaDaoTest {
         int offset = 0;
 
         // 2. Execute
-        List<Review> reviews = reviewDao.findPaginated(FilterType.NEWEST, limit, offset);
+        List<Review> reviews = reviewDao.findPaginated(FilterType.RECENT, limit, offset);
 
         // 3. Post-conditions
         assertNotNull(reviews);
@@ -683,7 +683,7 @@ public class ReviewJpaDaoTest {
         int offset = 2;
 
         // 2. Execute
-        List<Review> reviews = reviewDao.findPaginated(FilterType.NEWEST, limit, offset);
+        List<Review> reviews = reviewDao.findPaginated(FilterType.RECENT, limit, offset);
 
         // 3. Post-conditions
         assertNotNull(reviews);

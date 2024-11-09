@@ -104,7 +104,7 @@
             <!-- Songs Section -->
             <c:if test="${songs.size() > 0}">
                 <section class="entity-section">
-                    <h2><spring:message code="label.song"/></h2>
+                    <h2><spring:message code="label.songs"/></h2>
                     <ul class="song-list">
                         <c:forEach var="song" items="${songs}" varStatus="status">
                             <c:url var="songUrl" value="/song/${song.id}"/>

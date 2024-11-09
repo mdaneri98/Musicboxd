@@ -17,14 +17,12 @@ public class UserLocaleResolver extends SessionLocaleResolver {
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        // Primero intentamos obtener el locale del usuario autenticado
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof AuthCUserDetails userDetails) {
             String preferredLanguage = userDetails.getUser().getPreferredLanguage();
             if (preferredLanguage != null && !preferredLanguage.isEmpty()) {
                 Locale userLocale = Locale.forLanguageTag(preferredLanguage.replace('_', '-'));
                 logger.debug("Setting user preferred locale in session: {}", userLocale);
-                // Guardamos explícitamente en la sesión
                 setLocale(request, null, userLocale);
                 return userLocale;
             }

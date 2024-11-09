@@ -30,8 +30,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> findByReviewId(long reviewId) {
-        List<Comment> comments = commentDao.findByReviewId(reviewId);
+    public List<Comment> findByReviewId(long reviewId, int pageSize, int pageNum) {
+        int offset = (pageNum - 1) * pageSize;
+        List<Comment> comments = commentDao.findByReviewId(reviewId, pageSize, offset);
         setTimeAgo(comments);
         return comments;
     }

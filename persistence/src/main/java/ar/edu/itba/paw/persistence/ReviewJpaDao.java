@@ -162,22 +162,20 @@ public class ReviewJpaDao implements ReviewDao {
 
 
     @Override
-    public List<User> likedBy(int page, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM review.likedBy");
-        nativeQuery.setMaxResults(pageSize);
-        nativeQuery.setFirstResult((page - 1) * pageSize);
+    public List<User> likedBy(Long reviewId, int pageNum, int pageSize) {
+        TypedQuery<User> query = em.createQuery(
+            "SELECT DISTINCT u FROM User u " +
+            "JOIN u.likedReviews r " +
+            "WHERE r.id = :reviewId",
+            User.class
+        );
+        
+        query.setParameter("reviewId", reviewId);
+        query.setMaxResults(pageSize);
+        query.setFirstResult((pageNum - 1) * pageSize);
 
-        final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> (Long)((Number)n).longValue()).collect(Collectors.toList());
-
-        // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
-        if (idList.isEmpty())
-            return Collections.emptyList();
-
-        final TypedQuery<User> query = em.createQuery("FROM User WHERE id IN :ids", User.class);
-        query.setParameter("ids", idList);
-
-        return query.getResultList();
+        List<User> results = query.getResultList();
+        return results.isEmpty() ? Collections.emptyList() : results;
     }
 
     @Override

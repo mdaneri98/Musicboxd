@@ -40,8 +40,7 @@ INSERT INTO follower (user_id, following) VALUES
 /* User(id = 200) followers */
 INSERT INTO follower (user_id, following) VALUES
     (202, 200),
-    (203, 200),
-    (204, 200);
+    (203, 204);
 
 /* Artists */
 INSERT INTO artist (id, name, bio, rating_amount, avg_rating, img_id) VALUES

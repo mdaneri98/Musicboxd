@@ -1,11 +1,13 @@
 package ar.edu.itba.paw.models;
 
 public enum FilterType {
-    RATING("avgRating", "DESC"),
-    POPULAR("ratingCount", "DESC"),
+    RATING("avg_rating", "DESC"),
+    POPULAR("rating_amount", "DESC"),
     LIKES("likes", "DESC"),
-    NEWEST("createdAt", "DESC"),
-    OLDEST("createdAt", "ASC");
+    NEWEST("release_date", "DESC"),
+    OLDEST("release_date", "ASC"),
+    RECENT("created_at", "DESC"),
+    FIRST("created_at", "ASC");
 
     private final String criteria;
     private final String order;

@@ -9,7 +9,7 @@ import java.util.List;
 public interface NotificationService {
     void notifyLike(Review reviewId, User likedByUser);
     void notifyComment(Review reviewId, User commentedByUser);
-    void notifyFollow(Long followedUserId, User follower);
+    void notifyFollow(User followedUserId, User follower);
     void notifyNewReview(Review reviewId, User reviewer);
     
     List<Notification> getUserNotifications(Long userId, int page, int pageSize);

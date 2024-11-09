@@ -11,7 +11,15 @@
             </div>
             <div class="review-header-info">
                 <h3 class="review-title"><c:out value="${param.item_name}"/></h3>
-                <p class="review-type"><c:out value="${param.item_type}"/></p>
+                <c:if test="${param.item_type == 'Artist'}">
+                    <p class="review-type"><spring:message code="label.artist"/></p>
+                </c:if>
+                <c:if test="${param.item_type == 'Album'}">
+                    <p class="review-type"><spring:message code="label.album"/></p>
+                </c:if>
+                <c:if test="${param.item_type == 'Song'}">
+                    <p class="review-type"><spring:message code="label.song"/></p>
+                </c:if>
             </div>
             <div class="rating-display">
                 <div class="star-rating">
@@ -56,8 +64,9 @@
                 <!-- Like action -->
                 <div class="action-item">
                     <c:url var="likeReviewLink" value="/review/like/${param.review_id}" />
+                    <c:url var="reviewLikesUrl" value="/review/${param.review_id}?page=likes" />
                     <c:url var="removeLikeReviewLink" value="/review/remove-like/${param.review_id}" />
-                    <span class="action-count"><c:out value="${param.likes}"/></span>
+                    <a href="${reviewLikesUrl}"><span class="action-count"><c:out value="${param.likes}"/></span></a>
                     <c:choose>
                         <c:when test="${!param.isLiked}">
                             <a href="${likeReviewLink}" class="action-link">
@@ -75,8 +84,8 @@
                 <!-- Comment action -->
                 <div class="action-item">
                     <c:url var="reviewUrl" value="/review/${param.review_id}" />
-                    <span class="action-count"><c:out value="${param.commentAmount}"/></span>
                     <a href="${reviewUrl}" class="action-link">
+                        <span class="action-count"><c:out value="${param.commentAmount}"/></span>
                         <i class="fa-regular fa-comment"></i>
                     </a>
                 </div>
