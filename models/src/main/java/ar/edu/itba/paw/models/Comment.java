@@ -40,6 +40,13 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
+    public Comment(User user, Review review, String content, LocalDateTime createdAt) {
+        this.user = user;
+        this.review = review;
+        this.content = content;
+        this.createdAt = createdAt;
+    }
+
     public Comment(User user, Review review, String content) {
         this.user = user;
         this.review = review;
