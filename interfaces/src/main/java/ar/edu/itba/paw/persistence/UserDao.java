@@ -19,8 +19,8 @@ public interface UserDao {
 
     boolean isFollowing(Long userId, Long otherId);
 
-    List<User> getFollowers(Long userId, int limit, int offset);
-    List<User> getFollowings(Long userId, int limit, int offset);
+    List<User> getFollowers(Long userId, int pageNumber, int pageSize);
+    List<User> getFollowings(Long userId, int pageNumber, int pageSize);
 
     Optional<User> update(User user);
 

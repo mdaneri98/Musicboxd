@@ -4,7 +4,7 @@ import javax.validation.constraints.Size;
 
 public class CommentForm {
     
-    @Size(max = 500, message = "{validation.comment.content.size}")
+    @Size(max = 255, message = "{validation.comment.content.size}")
     @Size(min = 2, message = "{validation.comment.content.size}")
     private String content;
 

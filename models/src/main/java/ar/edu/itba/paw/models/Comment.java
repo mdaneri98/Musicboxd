@@ -21,7 +21,7 @@ public class Comment {
     @JoinColumn(name = "review_id", nullable = false)
     private Review review;
 
-    @Column
+    @Column(name = "content", length = 255)
     private String content;
 
     @Column(name = "created_at")
@@ -34,6 +34,13 @@ public class Comment {
 
     public Comment(Long id, User user, Review review, String content, LocalDateTime createdAt) {
         this.id = id;
+        this.user = user;
+        this.review = review;
+        this.content = content;
+        this.createdAt = createdAt;
+    }
+
+    public Comment(User user, Review review, String content, LocalDateTime createdAt) {
         this.user = user;
         this.review = review;
         this.content = content;

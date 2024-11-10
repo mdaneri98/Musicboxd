@@ -63,6 +63,16 @@ public class Song {
         this.avgRating = avgRating;
     }
 
+    public Song(Long id, String title, String duration, Integer trackNumber, Album album, Integer ratingCount, Double avgRating) {
+        this.id = id;
+        this.title = title;
+        this.duration = duration;
+        this.trackNumber = trackNumber;
+        this.album = album;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
+    }
+
     public Song(Long id, String title, String duration, Integer trackNumber, Album album) {
         this.id = id;
         this.title = title;
@@ -76,6 +86,15 @@ public class Song {
         this.title = title;
         this.duration = duration;
         this.album = album;
+    }
+
+    public Song(String title, String duration, Integer trackNumber, Album album, Integer ratingCount, Double avgRating) {
+        this.title = title;
+        this.duration = duration;
+        this.trackNumber = trackNumber;
+        this.album = album;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
     }
 
     public Song(String title, String duration, Integer trackNumber, Album album) {

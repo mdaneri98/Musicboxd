@@ -18,7 +18,7 @@ public class UserProfileForm {
     @Size(max = 100, message = "{validation.profile.name.size}")
     private String name;
 
-    @Size(max = 400, message = "{validation.profile.bio.size}")
+    @Size(max = 255, message = "{validation.profile.bio.size}")
     private String bio;
 
     @Nullable

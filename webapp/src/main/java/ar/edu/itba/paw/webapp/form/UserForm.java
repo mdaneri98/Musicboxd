@@ -2,15 +2,16 @@ package ar.edu.itba.paw.webapp.form;
 
 
 import ar.edu.itba.paw.webapp.form.validation.EmailNotInUse;
-import ar.edu.itba.paw.webapp.form.validation.PasswordMatch;
 import ar.edu.itba.paw.webapp.form.validation.UsernameNotInUse;
+import ar.edu.itba.paw.webapp.form.validation.passwords.PasswordConfirmation;
+import ar.edu.itba.paw.webapp.form.validation.passwords.PasswordMatch;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @PasswordMatch(message = "{validation.user.password.match}")
-public class UserForm {
+public class UserForm implements PasswordConfirmation {
 
     @Size(min = 4, max = 50, message = "{validation.user.username.size}")
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.user.username.pattern}")

@@ -1,12 +1,13 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.form.validation.ResetPasswordMatch;
+import ar.edu.itba.paw.webapp.form.validation.passwords.PasswordConfirmation;
+import ar.edu.itba.paw.webapp.form.validation.passwords.PasswordMatch;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@ResetPasswordMatch(message = "{validation.resetpassword.password.match}")
-public class ResetPasswordForm {
+@PasswordMatch(message = "{validation.user.password.match}")
+public class ResetPasswordForm implements PasswordConfirmation {
 
     @NotNull(message = "{validation.resetpassword.code.notnull}")
     private String code;

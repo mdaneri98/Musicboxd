@@ -93,7 +93,6 @@ public class UserController {
         userProfileForm.setName(loggedUser.getName());
         userProfileForm.setBio(loggedUser.getBio());
 
-        modelAndView.addObject("userProfileForm", userProfileForm);
         return modelAndView;
     }
 
