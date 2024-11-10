@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 public class UserVerification {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "verification_id_seq")
-    @SequenceGenerator(sequenceName = "verification_id_seq", name = "verification_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "verify_user_id_seq")
+    @SequenceGenerator(sequenceName = "verify_user_id_seq", name = "verify_user_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "code", nullable = false)

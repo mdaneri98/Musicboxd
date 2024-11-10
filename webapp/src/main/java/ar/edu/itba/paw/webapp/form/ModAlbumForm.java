@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ModAlbumForm {
 
-    @Size(min = 2, max = 255, message = "{validation.album.title.size}")
+    @Size(min = 2, max = 100, message = "{validation.album.title.size}")
     private String title;
 
     @Size(min = 1, max = 50, message = "{validation.album.genre.size}")

@@ -320,14 +320,14 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public List<Review> findPaginated(FilterType filterType, int limit, int offset) {
-        String queryStr = "FROM Review WHERE isBlocked = false " +
+        String queryStr = "SELECT r FROM Review r WHERE isBlocked = false " +
         "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
-         filterType.getFilter();
+        filterType.getFilter();
 
-        final TypedQuery<Review> query = em.createQuery(queryStr, Review.class);
-        query.setFirstResult(offset);
-        query.setMaxResults(limit);
-        return query.getResultList();
+        return em.createQuery(queryStr, Review.class)
+            .setFirstResult(offset)
+            .setMaxResults(limit)
+            .getResultList();
     }
 
     @Override
