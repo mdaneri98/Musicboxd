@@ -79,6 +79,14 @@ public class Artist {
         this.image = image;
     }
 
+    public Artist(String name, String bio, Image image, Integer ratingCount, Double avgRating) {
+        this.name = name;
+        this.bio = bio;
+        this.image = image;
+        this.ratingCount = ratingCount;
+        this.avgRating = avgRating;
+    }
+
     public Artist(String name, String bio, Image image) {
         this.name = name;
         this.bio = bio;

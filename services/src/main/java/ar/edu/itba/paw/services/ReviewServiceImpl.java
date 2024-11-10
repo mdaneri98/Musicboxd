@@ -431,13 +431,14 @@ public class ReviewServiceImpl implements ReviewService {
     public void block(Long reviewId) {
         LOGGER.info("Blocking review with ID: {}", reviewId);
 
-        Optional<Review> review = reviewDao.find(reviewId);
-        if (review.isEmpty())
+        Optional<Review> reviewOptional = reviewDao.find(reviewId);
+        if (reviewOptional.isEmpty())
             throw new IllegalArgumentException("Review with ID: " + reviewId + " does not exist");
 
-        User user = review.get().getUser();
+        Review review = reviewOptional.get();
+        User user = review.getUser();
         try {
-            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.get());
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.getTitle(), review.getItemName(), review.getItemType());
             LOGGER.info("Acknowledgement email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
@@ -453,13 +454,15 @@ public class ReviewServiceImpl implements ReviewService {
     public void unblock(Long reviewId) {
         LOGGER.info("Unblocking review with ID: {}", reviewId);
 
-        Optional<Review> review = reviewDao.find(reviewId);
-        if (review.isEmpty())
+        Optional<Review> reviewOptional = reviewDao.find(reviewId);
+        if (reviewOptional.isEmpty())
             throw new IllegalArgumentException("Review with ID: " + reviewId + " does not exist");
 
-        User user = review.get().getUser();
+        Review review = reviewOptional.get();
+        User user = review.getUser();
         try {
-            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.get());
+
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.getTitle(), review.getItemName(), review.getItemType());
             LOGGER.info("Acknowledgement email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
