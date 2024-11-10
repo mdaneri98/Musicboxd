@@ -27,6 +27,7 @@
 
 .review-header-info {
   flex: 1;
+  overflow-wrap: anywhere;
 }
 
 .review-title {
@@ -62,6 +63,7 @@
   padding: var(--space-md) 0;
   border-top: 1px solid var(--color-background-highlight);
   border-bottom: 1px solid var(--color-background-highlight);
+  overflow-wrap: anywhere;
 }
 
 .review-content-title {
@@ -496,6 +498,7 @@
     flex-direction: column;
     gap: var(--space-sm);
     max-width: 35rem;
+    overflow-wrap: anywhere;
 }
 
 .entity-type {
@@ -730,6 +733,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
+    overflow-wrap: anywhere;
 }
 
 .user-card:hover {
@@ -833,6 +837,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
+    overflow-wrap: anywhere;
 }
 
 .user-profile-name {
@@ -1331,6 +1336,7 @@ textarea.form-control {
     background-color: var(--color-background-secondary);
     border-radius: var(--border-radius-md);
     padding: var(--space-lg);
+    overflow-wrap: anywhere;
 }
 
 .comment-header {
