@@ -190,7 +190,6 @@ public class ReviewJpaDao implements ReviewDao {
         return count > 0;
     }
 
-    //FIXME: Realizar la paginación mediante id's.
     @Override
     public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize) {
         final TypedQuery<ArtistReview> query = em.createQuery(
@@ -203,7 +202,6 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
-    //FIXME: Realizar la paginación mediante id's.
     @Override
     public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize) {
         final TypedQuery<AlbumReview> query = em.createQuery(
@@ -216,7 +214,6 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
-    //FIXME: Realizar la paginación mediante id's.
     @Override
     public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize) {
         final TypedQuery<SongReview> query = em.createQuery(
@@ -229,7 +226,6 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
-     //FIXME: Realizar la paginación mediante id's.
      @Override
      public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
          final TypedQuery<Review> query = em.createQuery(
@@ -261,8 +257,7 @@ public class ReviewJpaDao implements ReviewDao {
         query.setMaxResults(pageSize);
         return query.getResultList();
     }
-
-    //FIXME: Realizar la paginación mediante id's.
+    
     @Override
     public List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize) {
         final TypedQuery<Review> query = em.createQuery(
