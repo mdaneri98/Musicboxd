@@ -6,7 +6,7 @@
         <c:url var="userUrl" value="/user/${param.id}"/>
         <c:url var="userImgURL" value="/images/${param.imgId}"/>
         <a href="${userUrl}" class="user-profile-image-link">
-            <img src="${userImgURL}" alt="${param.username}" class="user-profile-image">
+            <img src="${userImgURL}" alt="<c:out value="${param.username}" />" class="user-profile-image">
         </a>
         <div class="user-profile-info">
             <div class="entity-type">

@@ -24,7 +24,7 @@
             <div class="review-preview">
                 <a href="${albumUrl}" class="review-preview-link">
                     <c:url var="imgUrl" value="/images/${album.image.id}"/>
-                    <img src="${imgUrl}" alt="${album.title}" class="review-preview-image">
+                    <img src="${imgUrl}" alt="<c:out value="${album.title}" />" class="review-preview-image">
                     <div class="review-preview-info">
                         <h2 class="review-preview-title"><c:out value="${album.title}"/></h2>
                         <p class="review-preview-subtitle"><c:out value="${album.formattedReleaseDate}"/></p>

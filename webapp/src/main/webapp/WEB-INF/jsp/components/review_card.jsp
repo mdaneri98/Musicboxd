@@ -7,7 +7,7 @@
         <a href="${itemUrl}" class="review-header">
             <div class="review-image">
                 <c:url var="reviewImgUrl" value="/images/${param.item_img_id}" />
-                <img src="${reviewImgUrl}" alt="${param.item_name}" class="img-cover">
+                <img src="${reviewImgUrl}" alt="<c:out value="${param.item_name}" />" class="img-cover">
             </div>
             <div class="review-header-info">
                 <h3 class="review-title"><c:out value="${param.item_name}"/></h3>
@@ -40,7 +40,7 @@
                 <c:url var="userUrl" value="/user/${param.user_id}" />
                 <a href="${userUrl}" class="user-link">
                     <c:url var="userImgUrl" value="/images/${param.user_img_id}" />
-                    <img src="${userImgUrl}" alt="${param.user_name}" class="img-avatar">
+                    <img src="${userImgUrl}" alt="<c:out value="${param.user_name}" />" class="img-avatar">
                     <div class="user-details">
                         <span class="review-timestamp"><c:out value="${param.timeAgo}"/></span>
                         <span class="user-name"><c:out value="${param.user_name}"/></span>

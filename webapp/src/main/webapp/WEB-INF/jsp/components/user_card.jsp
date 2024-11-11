@@ -5,7 +5,7 @@
 <a href="${profileUrl}" class="user-card">
     <div class="user-card-header">
         <c:url var="userImgUrl" value="/images/${param.imgId}"/>
-        <img src="${userImgUrl}" alt="${param.username}" class="user-card-image">
+        <img src="${userImgUrl}" alt="<c:out value="${param.username}" />" class="user-card-image">
         <div class="user-card-info">
             <h3 class="user-card-username"><c:out value="${param.username}"/></h3>
             <p class="user-card-name"><c:out value="${param.name}"/></p>

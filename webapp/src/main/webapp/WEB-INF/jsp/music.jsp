@@ -53,7 +53,7 @@
                                         <a href="${artistUrl}" class="music-item-link">
                                             <div class="music-item-image-container">
                                                 <c:url var="artistImgURL" value="/images/${artist.image.id}"/>
-                                                <img src="${artistImgURL}" alt="${artist.name}" class="music-item-image">
+                                                <img src="${artistImgURL}" alt="<c:out value="${artist.name}" />" class="music-item-image">
                                                 <div class="rating-badge">
                                                     <fmt:formatNumber value="${artist.avgRating}" maxFractionDigits="1" var="formattedRating"/>
                                                     <span class="rating"><c:out value="${formattedRating}"/></span>
@@ -84,7 +84,7 @@
                                         <a href="${artistUrl}" class="music-item-link">
                                             <div class="music-item-image-container">
                                                 <c:url var="artistImgURL" value="/images/${artist.image.id}"/>
-                                                <img src="${artistImgURL}" alt="${artist.name}" class="music-item-image">
+                                                <img src="${artistImgURL}" alt="<c:out value="${artist.name}" />" class="music-item-image">
                                                 <div class="rating-badge">
                                                     <fmt:formatNumber value="${artist.avgRating}" maxFractionDigits="1" var="formattedRating"/>
                                                     <span class="rating"><c:out value="${formattedRating}"/></span>
@@ -129,7 +129,7 @@
                                         <a href="${albumUrl}" class="music-item-link">
                                             <div class="music-item-image-container">
                                                 <c:url var="albumImgURL" value="/images/${album.image.id}"/>
-                                                <img src="${albumImgURL}" alt="${album.title}" class="music-item-image">
+                                                <img src="${albumImgURL}" alt="<c:out value="${album.title}" />" class="music-item-image">
                                                 <div class="rating-badge">
                                                     <fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/>
                                                     <span class="rating"><c:out value="${formattedRating}"/></span>
@@ -160,7 +160,7 @@
                                         <a href="${albumUrl}" class="music-item-link">
                                             <div class="music-item-image-container">
                                                 <c:url var="albumImgURL" value="/images/${album.image.id}"/>
-                                                <img src="${albumImgURL}" alt="${album.title}" class="music-item-image">
+                                                <img src="${albumImgURL}" alt="<c:out value="${album.title}" />" class="music-item-image">
                                                 <div class="rating-badge">
                                                     <fmt:formatNumber value="${album.avgRating}" maxFractionDigits="1" var="formattedRating"/>
                                                     <span class="rating"><c:out value="${formattedRating}"/></span>

@@ -140,7 +140,7 @@
                                         <c:url var="profileUrl" value="/user/${comment.user.id}"/>
                                         <a href="${profileUrl}" class="comment-user">
                                             <c:url var="userImgUrl" value="/images/${comment.user.image.id}"/>
-                                            <img src="${userImgUrl}" alt="${comment.user.username}" class="comment-user-img">
+                                            <img src="${userImgUrl}" alt="<c:out value="${comment.user.username}" />" class="comment-user-img">
                                             <div class="user-details">
                                                 <span class="comment-username">@<c:out value="${comment.user.username}"/></span>
                                                 <div class="user-badges">

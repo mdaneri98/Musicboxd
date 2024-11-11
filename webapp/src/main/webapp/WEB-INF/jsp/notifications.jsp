@@ -31,7 +31,7 @@
                             <c:url var="triggerUserUrl" value="/user/${notification.triggerUser.id}" />
                             <a href="${triggerUserUrl}" class="user-details">
                                 <c:url var="userImgUrl" value="/images/${notification.triggerUser.image.id}" />
-                                <img src="${userImgUrl}" alt="${notification.triggerUser.username}" class="img-avatar">
+                                <img src="${userImgUrl}" alt="<c:out value="${notification.triggerUser.username}" />" class="img-avatar">
                             </a>
                             
                             <div class="notification-content">
