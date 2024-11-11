@@ -53,6 +53,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .loginPage("/user/login")
+                .failureUrl("/user/login?error=true")
                 .defaultSuccessUrl("/", false)
                 .and().rememberMe()
                 .rememberMeParameter("remember_me")
