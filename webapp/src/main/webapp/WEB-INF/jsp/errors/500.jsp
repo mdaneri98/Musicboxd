@@ -20,8 +20,8 @@
             <div class="error-page">
                 <div class="error-content">
                     <h1 class="error-code">500</h1>
-                    <h2 class="error-title"><spring:message code="error.500.header"/></h2>
-                    <p class="error-message"><spring:message code="error.500.description"/></p>
+                    <h2 class="error-title"><spring:message code="label.error.500.header"/></h2>
+                    <p class="error-message"><spring:message code="label.error.500.description"/></p>
                     <c:url var="homeUrl" value="/" />
                     <a href="${homeUrl}" class="btn btn-primary">
                         <spring:message code="error.back.to.home"/>
