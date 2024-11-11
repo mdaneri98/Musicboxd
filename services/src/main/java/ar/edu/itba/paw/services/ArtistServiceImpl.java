@@ -70,6 +70,7 @@ public class ArtistServiceImpl implements ArtistService {
         if (optionalImage.isEmpty())
             throw new IllegalArgumentException("La imagen default no existe.");
 
+        artist.setImage(optionalImage.get());
         Artist createdArtist = artistDao.create(artist);
         LOGGER.info("Artist created successfully with ID: {}", createdArtist.getId());
         return createdArtist;
