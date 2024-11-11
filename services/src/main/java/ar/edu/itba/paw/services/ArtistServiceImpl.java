@@ -65,6 +65,11 @@ public class ArtistServiceImpl implements ArtistService {
     @Transactional
     public Artist create(Artist artist) {
         LOGGER.info("Creating new artist: {}", artist.getName());
+
+        Optional<Image> optionalImage = imageService.findById(imageService.getDefaultImgId());
+        if (optionalImage.isEmpty())
+            throw new IllegalArgumentException("La imagen default no existe.");
+
         Artist createdArtist = artistDao.create(artist);
         LOGGER.info("Artist created successfully with ID: {}", createdArtist.getId());
         return createdArtist;
