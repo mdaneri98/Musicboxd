@@ -232,8 +232,12 @@ public class UserController {
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)
-    public ModelAndView login() {
-        return new ModelAndView("users/login");
+    public ModelAndView login(@RequestParam(required = false) String error) {
+        ModelAndView mav = new ModelAndView("users/login");
+        if (error != null) {
+            mav.addObject("error", true);
+        }
+        return mav;
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
