@@ -25,7 +25,7 @@
             <div class="review-preview">
                 <a href="${artistUrl}" class="review-preview-link">
                     <c:url var="imgUrl" value="/images/${artist.image.id}"/>
-                    <img src="${imgUrl}" alt="${artist.name}" class="review-preview-image">
+                    <img src="${imgUrl}" alt="<c:out value="${artist.name}" />" class="review-preview-image">
                     <div class="review-preview-info">
                         <h2 class="review-preview-title"><c:out value="${artist.name}"/></h2>
                         <p class="review-preview-subtitle"><c:out value="${artist.bio}"/></p>

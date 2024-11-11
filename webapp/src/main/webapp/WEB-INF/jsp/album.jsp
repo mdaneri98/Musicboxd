@@ -29,7 +29,7 @@
             <section class="entity-header">
                 <div class="entity-main-info">
                     <c:url var="albumImgUrl" value="/images/${album.image.id}"/>
-                    <img src="${albumImgUrl}" alt="${album.title}" class="entity-image album-cover">
+                    <img src="${albumImgUrl}" alt="<c:out value="${album.title}" />" class="entity-image album-cover">
                     <div class="entity-details">
                         <div class="entity-type">
                             <spring:message code="label.album"/>
@@ -46,7 +46,7 @@
                             <c:url var="artistUrl" value="/artist/${artist.id}" />
                             <a href="${artistUrl}" class="artist-link">
                                 <c:url var="artistImgUrl" value="/images/${artist.image.id}"/>
-                                <img src="${artistImgUrl}" alt="${artist.name}" class="artist-thumbnail">
+                                <img src="${artistImgUrl}" alt="<c:out value="${artist.name}" />" class="artist-thumbnail">
                                 <span class="artist-name"><c:out value="${artist.name}"/></span>
                             </a>
                             <div class="album-info">
