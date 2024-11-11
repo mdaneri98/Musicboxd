@@ -89,12 +89,12 @@
   <!-- Páginas de error -->
   <error-page>
     <error-code>404</error-code>
-    <location>/WEB-INF/jsp/errors/404.jsp</location>
+    <location>/error/404</location>
   </error-page>
 
   <error-page>
     <error-code>500</error-code>
-    <location>/WEB-INF/jsp/errors/500.jsp</location>
+    <location>/error/500</location>
   </error-page>
 
 </web-app>
