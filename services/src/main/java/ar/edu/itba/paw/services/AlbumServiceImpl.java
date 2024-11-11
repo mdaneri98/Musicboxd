@@ -101,6 +101,7 @@ public class AlbumServiceImpl implements AlbumService {
         albumDao.deleteReviewsFromAlbum(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean deleted = albumDao.delete(id);
+        imageService.delete(album.get().getImage().getId());
         if (deleted) {
             LOGGER.info("Album with ID {} deleted successfully", id);
         } else {
@@ -129,6 +130,7 @@ public class AlbumServiceImpl implements AlbumService {
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         album.getSongs().forEach(song -> songService.delete(song.getId()));
         boolean deleted = albumDao.delete(album.getId());
+        imageService.delete(album.getImage().getId());
         if (deleted) {
             LOGGER.info("Album {} (ID: {}) deleted successfully", album.getTitle(), album.getId());
         } else {
@@ -143,7 +145,7 @@ public class AlbumServiceImpl implements AlbumService {
         LOGGER.info("Creating new album from DTO: {} for artist ID: {}", albumDTO.getTitle(), artistId);
 
         Image image;
-        if (albumDTO.getImgId() == 0)
+        if (albumDTO.getImgId() == 0 && albumDTO.getImage().length == 0)
             image = imageService.findById(imageService.getDefaultImgId()).get();
         else
             image = imageService.create(albumDTO.getImage());

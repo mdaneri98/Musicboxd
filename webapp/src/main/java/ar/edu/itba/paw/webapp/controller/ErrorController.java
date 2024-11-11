@@ -4,12 +4,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+
+@RequestMapping("/error")
+@Controller()
 public class ErrorController {
 
-    @RequestMapping("/403")
+    @RequestMapping("/404")
     public ModelAndView notFound() {
-        return new ModelAndView("404");
+        return new ModelAndView("errors/404");
+    }
+
+    @RequestMapping("/500")
+    public ModelAndView general() {
+        return new ModelAndView("errors/500");
     }
 
 

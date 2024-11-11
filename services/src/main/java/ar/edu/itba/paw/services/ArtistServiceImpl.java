@@ -98,6 +98,7 @@ public class ArtistServiceImpl implements ArtistService {
         artistDao.deleteReviewsFromArtist(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean deleted = artistDao.delete(id);
+        imageService.delete(artist.get().getImage().getId());
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);
         } else {
@@ -130,6 +131,7 @@ public class ArtistServiceImpl implements ArtistService {
         artistDao.deleteReviewsFromArtist(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean deleted = artistDao.delete(id);
+        imageService.delete(artist.getImage().getId());
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);
         } else {
@@ -144,7 +146,7 @@ public class ArtistServiceImpl implements ArtistService {
         LOGGER.info("Creating new artist from DTO: {}", artistDTO.getName());
 
         Image image;
-        if (artistDTO.getImgId() == 0)
+        if (artistDTO.getImgId() == 0 && artistDTO.getImage().length == 0)
             image = imageService.findById(imageService.getDefaultImgId()).get();
         else
             image = imageService.create(artistDTO.getImage());

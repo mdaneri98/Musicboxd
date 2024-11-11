@@ -144,8 +144,8 @@ public class WebConfig implements WebMvcConfigurer {
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
 
         /* No utilizar en producción */
-        properties.setProperty("hibernate.show_sql", "true");
-        properties.setProperty("format_sql", "true");
+        //properties.setProperty("hibernate.show_sql", "true");
+        //properties.setProperty("format_sql", "true");
 
         emf.setJpaProperties(properties);
 
