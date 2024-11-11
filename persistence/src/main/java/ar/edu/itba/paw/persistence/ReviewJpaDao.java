@@ -295,16 +295,18 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public void block(Long reviewId) {
-        em.createQuery("UPDATE Review r SET r.isBlocked = true WHERE r.id = :reviewId")
-                .setParameter("reviewId", reviewId)
-                .executeUpdate();
+        Review review = em.find(Review.class, reviewId);
+        if (review != null) {
+            review.setBlocked(true);
+        }
     }
 
     @Override
     public void unblock(Long reviewId) {
-        em.createQuery("UPDATE Review r SET r.isBlocked = false WHERE r.id = :reviewId")
-                .setParameter("reviewId", reviewId)
-                .executeUpdate();
+        Review review = em.find(Review.class, reviewId);
+        if (review != null) {
+            review.setBlocked(false);
+        }
     }
 
     @Override
