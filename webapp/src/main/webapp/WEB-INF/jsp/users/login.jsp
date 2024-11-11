@@ -50,6 +50,12 @@
                     <input type="password" id="password" name="password" class="form-control" required>
                 </div>
 
+                <c:if test="${error}">
+                    <div class="form-group">
+                        <p class="form-error"><spring:message code="label.invalid.username.or.password"/></p>
+                    </div>
+                </c:if>
+
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="remember_me">

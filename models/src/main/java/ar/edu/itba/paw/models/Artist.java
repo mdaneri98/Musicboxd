@@ -26,7 +26,7 @@ public class Artist {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
     private Image image;
 
