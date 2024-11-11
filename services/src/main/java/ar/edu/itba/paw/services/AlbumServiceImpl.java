@@ -74,6 +74,11 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public Album create(Album album) {
         LOGGER.info("Creating new album: {}", album.getTitle());
+
+        Optional<Image> optionalImage = imageService.findById(imageService.getDefaultProfileImgId());
+        if (optionalImage.isEmpty())
+            throw new IllegalArgumentException("La imagen profile-default no existe.");
+
         Album createdAlbum = albumDao.create(album);
         LOGGER.info("Album created successfully with ID: {}", createdAlbum.getId());
         return createdAlbum;
