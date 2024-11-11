@@ -74,12 +74,6 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public Album create(Album album) {
         LOGGER.info("Creating new album: {}", album.getTitle());
-
-        Optional<Image> optionalImage = imageService.findById(imageService.getDefaultProfileImgId());
-        if (optionalImage.isEmpty())
-            throw new IllegalArgumentException("La imagen profile-default no existe.");
-
-        album.setImage(optionalImage.get());
         Album createdAlbum = albumDao.create(album);
         LOGGER.info("Album created successfully with ID: {}", createdAlbum.getId());
         return createdAlbum;
@@ -147,7 +141,13 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public Album create(AlbumDTO albumDTO, long artistId) {
         LOGGER.info("Creating new album from DTO: {} for artist ID: {}", albumDTO.getTitle(), artistId);
-        Image image = imageService.create(albumDTO.getImage());
+
+        Image image;
+        if (albumDTO.getImgId() == 0)
+            image = imageService.findById(imageService.getDefaultImgId()).get();
+        else
+            image = imageService.create(albumDTO.getImage());
+
         Album album = new Album(albumDTO.getTitle(), image, albumDTO.getGenre(), new Artist(artistId), albumDTO.getReleaseDate());
         album.setCreatedAt(LocalDateTime.now());
         album.setUpdatedAt(LocalDateTime.now());

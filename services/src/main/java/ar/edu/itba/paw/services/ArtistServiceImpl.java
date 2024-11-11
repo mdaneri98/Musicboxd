@@ -65,12 +65,6 @@ public class ArtistServiceImpl implements ArtistService {
     @Transactional
     public Artist create(Artist artist) {
         LOGGER.info("Creating new artist: {}", artist.getName());
-
-        Optional<Image> optionalImage = imageService.findById(imageService.getDefaultImgId());
-        if (optionalImage.isEmpty())
-            throw new IllegalArgumentException("La imagen default no existe.");
-
-        artist.setImage(optionalImage.get());
         Artist createdArtist = artistDao.create(artist);
         LOGGER.info("Artist created successfully with ID: {}", createdArtist.getId());
         return createdArtist;
@@ -148,9 +142,14 @@ public class ArtistServiceImpl implements ArtistService {
     @Transactional
     public Artist create(ArtistDTO artistDTO) {
         LOGGER.info("Creating new artist from DTO: {}", artistDTO.getName());
-        Image image = imageService.create(artistDTO.getImage());
-        Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(), image);
 
+        Image image;
+        if (artistDTO.getImgId() == 0)
+            image = imageService.findById(imageService.getDefaultImgId()).get();
+        else
+            image = imageService.create(artistDTO.getImage());
+
+        Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(), image);
         artist.setCreatedAt(LocalDateTime.now());
         artist.setUpdatedAt(LocalDateTime.now());
         artist.setRatingCount(0);
