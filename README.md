@@ -36,7 +36,7 @@ Want to run this locally? Here's how:
 2. **Clone & Configure**
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/music-review-app.git
+git clone https://github.com/mdaneri/musicboxd.git
 
 # Set up your config
 cp application.properties.example application.properties
@@ -102,16 +102,6 @@ musicboxd/
 ├── .gitignore
 └── pom.xml              # Parent POM file
 ```
-
-### Local Development
-1. Copy the example config:
-```bash
-cp application.properties.example application.properties
-```
-
-2. Update with your local settings (database, email, etc.)
-
-3. Never commit `application.properties` - it's in `.gitignore` for a reason! 😉
 
 ## 📜 License
 
