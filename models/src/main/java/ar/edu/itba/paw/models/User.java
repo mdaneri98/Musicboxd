@@ -151,6 +151,13 @@ public class User {
         this.likeNotificationsEnabled = true;
         this.commentNotificationsEnabled = true;
         this.reviewNotificationsEnabled = true;
+        this.comments = new ArrayList<>();
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+        this.favoriteArtists = new ArrayList<>();
+        this.favoriteAlbums = new ArrayList<>();
+        this.favoriteSongs = new ArrayList<>();
+        this.likedReviews = new ArrayList<>();
     }
 
     public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount, String preferredLanguage) {
@@ -167,6 +174,13 @@ public class User {
         this.followingAmount = followingAmount != null ? followingAmount : 0;
         this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
         this.preferredLanguage = preferredLanguage;
+        this.comments = new ArrayList<>();
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+        this.favoriteArtists = new ArrayList<>();
+        this.favoriteAlbums = new ArrayList<>();
+        this.favoriteSongs = new ArrayList<>();
+        this.likedReviews = new ArrayList<>();
     }
 
     public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
@@ -183,6 +197,13 @@ public class User {
         this.followingAmount = followingAmount != null ? followingAmount : 0;
         this.reviewAmount = reviewAmount != null ? reviewAmount : 0;
         this.preferredLanguage = "es";
+        this.comments = new ArrayList<>();
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+        this.favoriteArtists = new ArrayList<>();
+        this.favoriteAlbums = new ArrayList<>();
+        this.favoriteSongs = new ArrayList<>();
+        this.likedReviews = new ArrayList<>();
     }
 
     public User(String username, String password, String email) {
@@ -204,6 +225,13 @@ public class User {
         this.likeNotificationsEnabled = true;
         this.commentNotificationsEnabled = true;
         this.reviewNotificationsEnabled = true;
+        this.comments = new ArrayList<>();
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+        this.favoriteArtists = new ArrayList<>();
+        this.favoriteAlbums = new ArrayList<>();
+        this.favoriteSongs = new ArrayList<>();
+        this.likedReviews = new ArrayList<>();
     }
 
     public User(Long id, String username, String name, Image image, Boolean verified, Boolean moderator) {
@@ -213,6 +241,13 @@ public class User {
         this.image = image;
         this.verified = verified;
         this.moderator = moderator;
+        this.comments = new ArrayList<>();
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+        this.favoriteArtists = new ArrayList<>();
+        this.favoriteAlbums = new ArrayList<>();
+        this.favoriteSongs = new ArrayList<>();
+        this.likedReviews = new ArrayList<>();
     }
 
     public User(Long id, String username, String email, String password) {
@@ -220,6 +255,13 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.comments = new ArrayList<>();
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+        this.favoriteArtists = new ArrayList<>();
+        this.favoriteAlbums = new ArrayList<>();
+        this.favoriteSongs = new ArrayList<>();
+        this.likedReviews = new ArrayList<>();
     }
 
     public static User createAnonymous() {
