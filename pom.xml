@@ -21,6 +21,9 @@
     <!-- Jersey -->
     <jersey.version>2.43</jersey.version>
 
+    <!-- Jackson -->
+    <jackson.version>2.15.2</jackson.version>
+
     <!-- Security dependencies -->
     <spring-security.version>4.2.0.RELEASE</spring-security.version>
     <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>
@@ -127,6 +130,18 @@
         <groupId>org.glassfish.jersey.media</groupId>
         <artifactId>jersey-media-jaxb</artifactId>
         <version>${jersey.version}</version>
+      </dependency>
+
+      <!-- Jackson for JSON processing -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
 
       <!-- AOP -->
@@ -297,6 +312,7 @@
     <module>interfaces</module>
     <module>persistence</module>
     <module>models</module>
+    <module>webapp</module>
   </modules>
 
   <build>
