@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.mapper;
+package ar.edu.itba.api.mapper;
 
 import java.util.List;
 

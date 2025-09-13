@@ -1,12 +1,11 @@
-package ar.edu.itba.paw.utils;
+package ar.edu.itba.api.utils;
 
-import ar.edu.itba.paw.models.Link;
-import ar.edu.itba.paw.models.Resource;
+import ar.edu.itba.api.models.Link;
+import ar.edu.itba.api.models.Resource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.List;
 
 /**
  * Utility class for HATEOAS operations

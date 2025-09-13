@@ -1,7 +1,7 @@
-package ar.edu.itba.paw.mapper;
+package ar.edu.itba.api.mapper;
 
-import ar.edu.itba.paw.models.CollectionResource;
-import ar.edu.itba.paw.utils.HATEOASUtils;
+import ar.edu.itba.api.models.CollectionResource;
+import ar.edu.itba.api.utils.HATEOASUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
