@@ -395,15 +395,13 @@ public class UserJpaDao implements UserDao {
         Query nativeQuery = em.createNativeQuery(
                 "SELECT DISTINCT u.id FROM cuser u " +
                 "WHERE u.id IN (" +
-                "    SELECT f2.following FROM follower f1 " +
+                "   SELECT f2.following FROM follower f1 " +
                 "    JOIN follower f2 ON f1.following = f2.user_id " +
                 "    WHERE f1.user_id = :userId " +
                 "    AND f2.following != :userId " +
                 "    AND f2.following NOT IN (" +
                 "        SELECT f3.following FROM follower f3 " +
-                "        WHERE f3.user_id = :userId" +
-                "    )" +
-                ") ORDER BY u.username"
+                "        WHERE f3.user_id = :userId))"
         );
         nativeQuery.setParameter("userId", userId);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
