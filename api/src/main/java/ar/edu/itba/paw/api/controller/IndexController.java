@@ -1,8 +1,8 @@
-package ar.edu.itba.api.controller;
+package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.api.models.Link;
-import ar.edu.itba.api.models.Resource;
-import ar.edu.itba.api.utils.HATEOASUtils;
+import ar.edu.itba.paw.api.models.Link;
+import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.api.utils.HATEOASUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -15,7 +15,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/")
+@Path("")
 @Produces(MediaType.APPLICATION_JSON)
 public class IndexController {
     
@@ -34,19 +34,25 @@ public class IndexController {
             }
         };
 
-        apiResource.addSelfLink(baseUrl + "/");
-        apiResource.addLink(Link.collection(baseUrl + "/users", "users", "User management"));
-        apiResource.addLink(Link.collection(baseUrl + "/artists", "artists", "Artist catalog"));
-        apiResource.addLink(Link.collection(baseUrl + "/albums", "albums", "Album catalog"));
-        apiResource.addLink(Link.collection(baseUrl + "/songs", "songs", "Song catalog"));
-        apiResource.addLink(Link.collection(baseUrl + "/reviews", "reviews", "Review system"));
-        apiResource.addLink(Link.collection(baseUrl + "/notifications", "notifications", "User notifications"));
+        apiResource.addSelfLink(baseUrl + "/api/");
+        apiResource.addLink(Link.collection(baseUrl + "/api/users", "users", "User management"));
+        apiResource.addLink(Link.collection(baseUrl + "/api/artists", "artists", "Artist catalog"));
+        apiResource.addLink(Link.collection(baseUrl + "/api/albums", "albums", "Album catalog"));
+        apiResource.addLink(Link.collection(baseUrl + "/api/songs", "songs", "Song catalog"));
+        apiResource.addLink(Link.collection(baseUrl + "/api/reviews", "reviews", "Review system"));
+        apiResource.addLink(Link.collection(baseUrl + "/api/notifications", "notifications", "User notifications"));
         
         // Add authentication links
-        apiResource.addLink(new Link(baseUrl + "/auth/login", "login", "User authentication", "application/json", "POST"));
-        apiResource.addLink(new Link(baseUrl + "/auth/register", "register", "User registration", "application/json", "POST"));
-        apiResource.addLink(new Link(baseUrl + "/auth/logout", "logout", "User logout", null, "POST"));
+        apiResource.addLink(new Link(baseUrl + "/api/auth/login", "login", "User authentication", "application/json", "POST"));
+        apiResource.addLink(new Link(baseUrl + "/api/auth/register", "register", "User registration", "application/json", "POST"));
+        apiResource.addLink(new Link(baseUrl + "/api/auth/logout", "logout", "User logout", null, "POST"));
         
         return Response.ok(apiResource).build();
+    }
+    
+    @GET
+    @Path("/test")
+    public Response test() {
+        return Response.ok("Jersey is working!").build();
     }
 }

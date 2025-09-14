@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.api.config;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,21 +25,35 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Properties;
 
 @EnableScheduling
 @EnableAsync(proxyTargetClass = true)
 @EnableTransactionManagement
 @ComponentScan({"ar.edu.itba.paw.api.controller", "ar.edu.itba.paw.services", "ar.edu.itba.paw.persistence"})
-@PropertySource("classpath:application-prod.properties")
+@PropertySource("classpath:application.properties")
 @Configuration
 public class ApiConfig {
 
     @Autowired
     private Environment environment;
 
-    @Value("classpath:schema.sql")
+    @Value("classpath:schemas.sql")
     private Resource schemaSql;
+
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames(
+                "i18n/messages",     // Para mensajes generales de la aplicación
+                "i18n/mail_messages" // Para mensajes de email
+        );
+        messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        messageSource.setDefaultLocale(Locale.ENGLISH);
+        return messageSource;
+    }
 
     @Bean
     public DataSource dataSource() {
