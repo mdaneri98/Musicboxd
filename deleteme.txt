@@ -1,0 +1,119 @@
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/controller/UserController.java b/api/src/main/java/ar/edu/itba/paw/api/controller/UserController.java
+index 87a371c..fdf8d7a 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/controller/UserController.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/controller/UserController.java
+@@ -1,12 +1,12 @@
+-package ar.edu.itba.api.controller;
++package ar.edu.itba.paw.api.controller;
+ 
+-import ar.edu.itba.api.mapper.CollectionResourceMapper;
+-import ar.edu.itba.api.mapper.UserResourceMapper;
+-import ar.edu.itba.api.models.CollectionResource;
++import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
++import ar.edu.itba.paw.api.mapper.UserResourceMapper;
++import ar.edu.itba.paw.api.models.CollectionResource;
+ import ar.edu.itba.paw.models.User;
+-import ar.edu.itba.api.models.UserResource;
++import ar.edu.itba.paw.api.models.UserResource;
+ import ar.edu.itba.paw.services.UserService;
+-import ar.edu.itba.api.utils.HATEOASUtils;
++import ar.edu.itba.paw.api.utils.HATEOASUtils;
+ import org.springframework.beans.factory.annotation.Autowired;
+ 
+ import javax.servlet.http.HttpServletRequest;
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/mapper/CollectionResourceMapper.java b/api/src/main/java/ar/edu/itba/paw/api/mapper/CollectionResourceMapper.java
+index c27bdf0..87f8d67 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/mapper/CollectionResourceMapper.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/mapper/CollectionResourceMapper.java
+@@ -1,7 +1,7 @@
+-package ar.edu.itba.api.mapper;
++package ar.edu.itba.paw.api.mapper;
+ 
+-import ar.edu.itba.api.models.CollectionResource;
+-import ar.edu.itba.api.utils.HATEOASUtils;
++import ar.edu.itba.paw.api.models.CollectionResource;
++import ar.edu.itba.paw.api.utils.HATEOASUtils;
+ import org.springframework.stereotype.Component;
+ 
+ import java.util.List;
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/mapper/ResourceMapper.java b/api/src/main/java/ar/edu/itba/paw/api/mapper/ResourceMapper.java
+index b379a87..5469627 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/mapper/ResourceMapper.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/mapper/ResourceMapper.java
+@@ -1,4 +1,4 @@
+-package ar.edu.itba.api.mapper;
++package ar.edu.itba.paw.api.mapper;
+ 
+ import java.util.List;
+ 
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/mapper/UserResourceMapper.java b/api/src/main/java/ar/edu/itba/paw/api/mapper/UserResourceMapper.java
+index 15d7fa9..6ce7c43 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/mapper/UserResourceMapper.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/mapper/UserResourceMapper.java
+@@ -1,7 +1,7 @@
+-package ar.edu.itba.api.mapper;
++package ar.edu.itba.paw.api.mapper;
+ 
+ import ar.edu.itba.paw.models.User;
+-import ar.edu.itba.api.models.UserResource;
++import ar.edu.itba.paw.api.models.UserResource;
+ import org.springframework.stereotype.Component;
+ 
+ import java.util.List;
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/models/CollectionResource.java b/api/src/main/java/ar/edu/itba/paw/api/models/CollectionResource.java
+index f88ac91..aff9801 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/models/CollectionResource.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/models/CollectionResource.java
+@@ -1,4 +1,4 @@
+-package ar.edu.itba.api.models;
++package ar.edu.itba.paw.api.models;
+ 
+ import com.fasterxml.jackson.annotation.JsonProperty;
+ 
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/models/Link.java b/api/src/main/java/ar/edu/itba/paw/api/models/Link.java
+index 1809995..b387e83 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/models/Link.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/models/Link.java
+@@ -1,4 +1,4 @@
+-package ar.edu.itba.api.models;
++package ar.edu.itba.paw.api.models;
+ 
+ import com.fasterxml.jackson.annotation.JsonProperty;
+ 
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/models/Resource.java b/api/src/main/java/ar/edu/itba/paw/api/models/Resource.java
+index 584e68d..44bd103 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/models/Resource.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/models/Resource.java
+@@ -1,4 +1,4 @@
+-package ar.edu.itba.api.models;
++package ar.edu.itba.paw.api.models;
+ 
+ import com.fasterxml.jackson.annotation.JsonProperty;
+ 
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/models/UserResource.java b/api/src/main/java/ar/edu/itba/paw/api/models/UserResource.java
+index c07d2d9..cc8b1a2 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/models/UserResource.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/models/UserResource.java
+@@ -1,5 +1,6 @@
+-package ar.edu.itba.api.models;
++package ar.edu.itba.paw.api.models;
+ 
++import ar.edu.itba.paw.models.User;
+ import com.fasterxml.jackson.annotation.JsonProperty;
+ 
+ /**
+diff --git a/api/src/main/java/ar/edu/itba/paw/api/utils/HATEOASUtils.java b/api/src/main/java/ar/edu/itba/paw/api/utils/HATEOASUtils.java
+index 8faf3f2..4744bd7 100644
+--- a/api/src/main/java/ar/edu/itba/paw/api/utils/HATEOASUtils.java
++++ b/api/src/main/java/ar/edu/itba/paw/api/utils/HATEOASUtils.java
+@@ -1,7 +1,7 @@
+-package ar.edu.itba.api.utils;
++package ar.edu.itba.paw.api.utils;
+ 
+-import ar.edu.itba.api.models.Link;
+-import ar.edu.itba.api.models.Resource;
++import ar.edu.itba.paw.api.models.Link;
++import ar.edu.itba.paw.api.models.Resource;
+ 
+ import javax.servlet.http.HttpServletRequest;
+ import javax.ws.rs.core.UriInfo;

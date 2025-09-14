@@ -1,12 +1,12 @@
-package ar.edu.itba.api.controller;
+package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.api.mapper.CollectionResourceMapper;
-import ar.edu.itba.api.mapper.UserResourceMapper;
-import ar.edu.itba.api.models.CollectionResource;
+import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
+import ar.edu.itba.paw.api.mapper.UserResourceMapper;
+import ar.edu.itba.paw.api.models.CollectionResource;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.api.models.UserResource;
+import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.api.utils.HATEOASUtils;
+import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;

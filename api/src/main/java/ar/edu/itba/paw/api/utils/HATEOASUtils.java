@@ -1,7 +1,7 @@
-package ar.edu.itba.api.utils;
+package ar.edu.itba.paw.api.utils;
 
-import ar.edu.itba.api.models.Link;
-import ar.edu.itba.api.models.Resource;
+import ar.edu.itba.paw.api.models.Link;
+import ar.edu.itba.paw.api.models.Resource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;

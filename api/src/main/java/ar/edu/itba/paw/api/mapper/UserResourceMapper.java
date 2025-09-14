@@ -1,7 +1,7 @@
-package ar.edu.itba.api.mapper;
+package ar.edu.itba.paw.api.mapper;
 
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.api.models.UserResource;
+import ar.edu.itba.paw.api.models.UserResource;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
