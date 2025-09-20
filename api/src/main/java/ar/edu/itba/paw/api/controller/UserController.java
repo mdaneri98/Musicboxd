@@ -4,10 +4,11 @@ import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
 import ar.edu.itba.paw.api.models.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.HATEOASUtils;
+import ar.edu.itba.paw.api.utils.UriBuilder;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.api.utils.UserLinkManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
@@ -41,9 +42,18 @@ public class UserController extends BaseController {
         return buildResponse(collection);
     }
 
+    @GET
+    @Path("/{userId:\\d+}")
+    public Response getUser(@PathParam("userId") Long id) {
+        UserDTO user = userService.findUserById(id);
+        UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
+        
+        return buildResponse(userResource);
+    }
+
     @DELETE
-    @Path("/{id}")
-    public Response deleteUser(@PathParam("id") Long id) {
+    @Path("/{userId:\\d+}")
+    public Response deleteUser(@PathParam("userId") Long id) {
         userService.deleteById(id);
         return buildNoContentResponse();
     }
