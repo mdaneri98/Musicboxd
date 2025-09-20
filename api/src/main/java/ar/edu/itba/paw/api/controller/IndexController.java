@@ -5,6 +5,7 @@ import ar.edu.itba.paw.api.models.Resource;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -17,7 +18,8 @@ import java.util.Map;
 
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-public class IndexController {
+@Consumes(MediaType.APPLICATION_JSON)
+public class IndexController extends BaseController {
     
     @GET
     public Response getApiInfo(@Context HttpServletRequest request, @Context UriInfo uriInfo) {
@@ -47,12 +49,12 @@ public class IndexController {
         apiResource.addLink(new Link(baseUrl + "/api/auth/register", "register", "User registration", "application/json", "POST"));
         apiResource.addLink(new Link(baseUrl + "/api/auth/logout", "logout", "User logout", null, "POST"));
         
-        return Response.ok(apiResource).build();
+        return buildResponse(apiResource);
     }
     
     @GET
     @Path("/test")
     public Response test() {
-        return Response.ok("Jersey is working!").build();
+        return buildResponse("Jersey is working!");
     }
 }

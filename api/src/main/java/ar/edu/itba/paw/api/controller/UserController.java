@@ -6,19 +6,17 @@ import ar.edu.itba.paw.api.models.CollectionResource;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.api.utils.HATEOASUtils;
+import ar.edu.itba.paw.api.utils.UserLinkManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/users")
 @Produces("application/json")
 @Consumes("application/json")
-public class UserController {
+public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
@@ -29,26 +27,26 @@ public class UserController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    @Context
-    private HttpServletRequest request;
+    @Autowired
+    private UserLinkManager userLinkManager;
 
-    /**
-     * GET /users - Get all users with pagination and HATEOAS links
-     */
     @GET
     public Response getAllUsers(
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("search") String search) {
-
-        String baseUrl = HATEOASUtils.getBaseUrl(request);
         List<User> users = userService.findAll(page, size);
-
-        List<UserResource> userResources = userResourceMapper.toResourceList(users, baseUrl);
+        List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, 100L, page, size, baseUrl, "/users");
+                userResources, 100L, page, size, getBaseUrl(), "/users");
+        return buildResponse(collection);
+    }
 
-        return Response.ok(collection).build();
+    @DELETE
+    @Path("/{id}")
+    public Response deleteUser(@PathParam("id") Long id) {
+        userService.deleteById(id);
+        return buildNoContentResponse();
     }
 
 }
