@@ -10,8 +10,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Primary
 @Repository
@@ -35,11 +37,27 @@ public class AlbumJpaDao implements AlbumDao {
 
     @Override
     public List<Album> findPaginated(FilterType filterType, int limit, int offset) {
-        // Aplicar filtros dinámicos y paginar los resultados
-        String baseQuery = "SELECT a FROM Album a " + filterType.getFilter();
-        TypedQuery<Album> query = entityManager.createQuery(baseQuery, Album.class);
-        query.setFirstResult(offset);
-        query.setMaxResults(limit);
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        String nativeSQL = "SELECT a.id FROM album a " + filterType.getFilter();
+        Query nativeQuery = entityManager.createNativeQuery(nativeSQL);
+        nativeQuery.setFirstResult(offset);
+        nativeQuery.setMaxResults(limit);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> albumIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (albumIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
+        String entityQuery = "SELECT a FROM Album a WHERE a.id IN :ids " + filterType.getFilter();
+        TypedQuery<Album> query = entityManager.createQuery(entityQuery, Album.class);
+        query.setParameter("ids", albumIds);
+        
         return query.getResultList();
     }
 

@@ -163,19 +163,35 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public List<User> likedBy(Long reviewId, int pageNum, int pageSize) {
-        TypedQuery<User> query = em.createQuery(
-            "SELECT DISTINCT u FROM User u " +
-            "JOIN u.likedReviews r " +
-            "WHERE r.id = :reviewId",
-            User.class
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+            "SELECT DISTINCT u.id FROM cuser u " +
+            "JOIN review_like rl ON u.id = rl.user_id " +
+            "WHERE rl.review_id = :reviewId"
         );
         
-        query.setParameter("reviewId", reviewId);
-        query.setMaxResults(pageSize);
-        query.setFirstResult((pageNum - 1) * pageSize);
+        nativeQuery.setParameter("reviewId", reviewId);
+        nativeQuery.setMaxResults(pageSize);
+        nativeQuery.setFirstResult((pageNum - 1) * pageSize);
 
-        List<User> results = query.getResultList();
-        return results.isEmpty() ? Collections.emptyList() : results;
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> userIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (userIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<User> query = em.createQuery(
+            "FROM User u WHERE u.id IN :ids ORDER BY u.username",
+            User.class
+        );
+        query.setParameter("ids", userIds);
+        
+        return query.getResultList();
     }
 
     @Override
@@ -192,84 +208,199 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT ar.review_id FROM artist_review ar " +
+                "JOIN review r ON ar.review_id = r.id " +
+                "WHERE ar.artist_id = :artistId " +
+                "ORDER BY r.created_at DESC"
+        );
+        nativeQuery.setParameter("artistId", artistId);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> reviewIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (reviewIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
         final TypedQuery<ArtistReview> query = em.createQuery(
-                "FROM ArtistReview ar WHERE ar.artist.id = :artistId ORDER BY ar.createdAt DESC",
+                "FROM ArtistReview ar WHERE ar.id IN :ids ORDER BY ar.createdAt DESC",
                 ArtistReview.class
         );
-        query.setParameter("artistId", artistId);
-        query.setFirstResult((page - 1) * pageSize);
-        query.setMaxResults(pageSize);
+        query.setParameter("ids", reviewIds);
+        
         return query.getResultList();
     }
 
     @Override
     public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT ar.review_id FROM album_review ar " +
+                "JOIN review r ON ar.review_id = r.id " +
+                "WHERE ar.album_id = :albumId " +
+                "ORDER BY r.created_at DESC"
+        );
+        nativeQuery.setParameter("albumId", albumId);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> reviewIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (reviewIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
         final TypedQuery<AlbumReview> query = em.createQuery(
-                "FROM AlbumReview ar WHERE ar.album.id = :albumId ORDER BY ar.createdAt DESC",
+                "FROM AlbumReview ar WHERE ar.id IN :ids ORDER BY ar.createdAt DESC",
                 AlbumReview.class
         );
-        query.setParameter("albumId", albumId);
-        query.setFirstResult((page - 1) * pageSize);
-        query.setMaxResults(pageSize);
+        query.setParameter("ids", reviewIds);
+        
         return query.getResultList();
     }
 
     @Override
     public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT sr.review_id FROM song_review sr " +
+                "JOIN review r ON sr.review_id = r.id " +
+                "WHERE sr.song_id = :songId " +
+                "ORDER BY r.created_at DESC"
+        );
+        nativeQuery.setParameter("songId", songId);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> reviewIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (reviewIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
         final TypedQuery<SongReview> query = em.createQuery(
-                "FROM SongReview sr WHERE sr.song.id = :songId ORDER BY sr.createdAt DESC",
+                "FROM SongReview sr WHERE sr.id IN :ids ORDER BY sr.createdAt DESC",
                 SongReview.class
         );
-        query.setParameter("songId", songId);
-        query.setFirstResult((page - 1) * pageSize);
-        query.setMaxResults(pageSize);
+        query.setParameter("ids", reviewIds);
+        
         return query.getResultList();
     }
 
      @Override
      public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
+         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+         Query nativeQuery = em.createNativeQuery(
+                 "SELECT r.id FROM review r " +
+                 "WHERE r.isblocked = false " +
+                 "ORDER BY r.likes DESC, r.created_at DESC"
+         );
+         nativeQuery.setFirstResult((page - 1) * pageSize);
+         nativeQuery.setMaxResults(pageSize);
+         
+         @SuppressWarnings("unchecked")
+         List<Object> rawResults = nativeQuery.getResultList();
+         List<Long> reviewIds = rawResults.stream()
+                 .map(n -> ((Number)n).longValue())
+                 .collect(Collectors.toList());
+         
+         if (reviewIds.isEmpty()) {
+             return Collections.emptyList();
+         }
+         
+         // Query 2: JPQL para obtener entidades completas
          final TypedQuery<Review> query = em.createQuery(
-                 "SELECT r FROM Review r " +
-                 "WHERE r.isBlocked = false " +
-                 "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
-                 "ORDER BY r.likes DESC, r.createdAt DESC",
+                 "FROM Review r WHERE r.id IN :ids ORDER BY r.likes DESC, r.createdAt DESC",
                  Review.class
          );
-         query.setFirstResult((page - 1) * pageSize);
-         query.setMaxResults(pageSize);
+         query.setParameter("ids", reviewIds);
+         
          return query.getResultList();
      }
 
     @Override
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+            "SELECT DISTINCT r.id " +
+            "FROM review r " +
+            "JOIN cuser u ON r.user_id = u.id " +
+            "JOIN follower f ON u.id = f.following " +
+            "WHERE f.user_id = :userId " +
+            "AND r.isblocked = false"
+        );
+        
+        nativeQuery.setParameter("userId", userId);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> reviewIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (reviewIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
         final TypedQuery<Review> query = em.createQuery(
-                "SELECT DISTINCT r FROM User u " +
-                        "JOIN u.following f " +
-                        "JOIN Review r ON r.user = f " +
-                        "WHERE u.id = :userId " +
-                        "AND r.isBlocked = false " +
-                        "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
-                        "ORDER BY r.createdAt DESC",
+                "FROM Review r WHERE r.id IN :ids ORDER BY r.createdAt DESC",
                 Review.class
         );
-        query.setParameter("userId", userId);
-        query.setFirstResult((page - 1) * pageSize);
-        query.setMaxResults(pageSize);
+        query.setParameter("ids", reviewIds);
+        
         return query.getResultList();
     }
     
     @Override
     public List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT r.id FROM review r " +
+                "WHERE r.user_id = :userId " +
+                "ORDER BY r.created_at DESC"
+        );
+        nativeQuery.setParameter("userId", userId);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> reviewIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (reviewIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
         final TypedQuery<Review> query = em.createQuery(
-                "FROM Review r " +
-                "WHERE r.user.id = :userId " +
-                "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
-                "ORDER BY r.createdAt DESC",
+                "FROM Review r WHERE r.id IN :ids ORDER BY r.createdAt DESC",
                 Review.class
         );
-        query.setParameter("userId", userId);
-        query.setFirstResult((page - 1) * pageSize);
-        query.setMaxResults(pageSize);
+        query.setParameter("ids", reviewIds);
+        
         return query.getResultList();
     }
 
@@ -317,13 +448,30 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public List<Review> findPaginated(FilterType filterType, int limit, int offset) {
-        String queryStr = "SELECT r FROM Review r WHERE isBlocked = false " +
-        "AND (TYPE(r) = ArtistReview OR TYPE(r) = AlbumReview OR TYPE(r) = SongReview) " +
-        filterType.getFilter();
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        String nativeSQL = "SELECT r.id FROM review r WHERE isblocked = false " +
+                          filterType.getFilter();
 
-        return em.createQuery(queryStr, Review.class)
+        Query nativeQuery = em.createNativeQuery(nativeSQL)
             .setFirstResult(offset)
-            .setMaxResults(limit)
+            .setMaxResults(limit);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> reviewIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (reviewIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
+        String entityQueryStr = "SELECT r FROM Review r WHERE r.id IN :ids AND isBlocked = false " +
+        filterType.getFilter();
+        
+        return em.createQuery(entityQueryStr, Review.class)
+            .setParameter("ids", reviewIds)
             .getResultList();
     }
 

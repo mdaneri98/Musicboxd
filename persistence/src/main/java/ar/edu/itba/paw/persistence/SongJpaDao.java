@@ -12,8 +12,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Primary
 @Repository
@@ -29,12 +31,35 @@ public class SongJpaDao implements SongDao {
 
     @Override
     public List<Song> findByArtistId(long artistId, int pageSize, int offset) {
-        String query = "SELECT s FROM Song s JOIN s.album a JOIN a.artist ar WHERE ar.id = :artistId ORDER BY s.avgRating DESC";
-        return em.createQuery(query, Song.class)
-                .setParameter("artistId", artistId)
-                .setFirstResult(offset)
-                .setMaxResults(pageSize)
-                .getResultList();
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT s.id FROM song s " +
+                "JOIN album a ON s.album_id = a.id " +
+                "WHERE a.artist_id = :artistId " +
+                "ORDER BY s.avg_rating DESC"
+        );
+        nativeQuery.setParameter("artistId", artistId);
+        nativeQuery.setFirstResult(offset);
+        nativeQuery.setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> songIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (songIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<Song> query = em.createQuery(
+                "FROM Song s WHERE s.id IN :ids ORDER BY s.avgRating DESC",
+                Song.class
+        );
+        query.setParameter("ids", songIds);
+        
+        return query.getResultList();
     }
 
     @Override
@@ -62,10 +87,27 @@ public class SongJpaDao implements SongDao {
 
     @Override
     public List<Song> findPaginated(FilterType filterType, int limit, int offset) {
-        String baseQuery = "SELECT s FROM Song s " + filterType.getFilter();
-        TypedQuery<Song> query = em.createQuery(baseQuery, Song.class)
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        String nativeSQL = "SELECT s.id FROM song s " + filterType.getFilter();
+        Query nativeQuery = em.createNativeQuery(nativeSQL)
                 .setFirstResult(offset)
                 .setMaxResults(limit);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> songIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (songIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
+        String entityQuery = "SELECT s FROM Song s WHERE s.id IN :ids " + filterType.getFilter();
+        TypedQuery<Song> query = em.createQuery(entityQuery, Song.class)
+                .setParameter("ids", songIds);
+        
         return query.getResultList();
     }
 

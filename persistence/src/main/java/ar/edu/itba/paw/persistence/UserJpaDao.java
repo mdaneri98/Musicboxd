@@ -32,8 +32,11 @@ public class UserJpaDao implements UserDao {
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
 
-        final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> (Long)((Number)n).longValue()).collect(Collectors.toList());
+        @SuppressWarnings("unchecked")
+        final List<Object> rawResults = nativeQuery.getResultList();
+        final List<Long> idList = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
         if (idList.isEmpty())
@@ -91,11 +94,31 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize) {
-        String jpql = "FROM User u WHERE LOWER(u.username) LIKE LOWER(:substring)";
-        TypedQuery<User> query = em.createQuery(jpql, User.class)
-                .setParameter("substring", "%" + sub + "%")
-                .setMaxResults(pageSize)
-                .setFirstResult((pageNumber - 1) * pageSize);
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT id FROM cuser WHERE LOWER(username) LIKE LOWER(:substring) ORDER BY username"
+        );
+        nativeQuery.setParameter("substring", "%" + sub + "%");
+        nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> userIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (userIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<User> query = em.createQuery(
+                "FROM User u WHERE u.id IN :ids ORDER BY u.username",
+                User.class
+        );
+        query.setParameter("ids", userIds);
+        
         return query.getResultList();
     }
 
@@ -174,8 +197,11 @@ public class UserJpaDao implements UserDao {
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
         nativeQuery.setParameter("userId", userId);
 
-        final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> ((Number)n).longValue()).collect(Collectors.toList());
+        @SuppressWarnings("unchecked")
+        final List<Object> rawResults = nativeQuery.getResultList();
+        final List<Long> idList = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
         if (idList.isEmpty())
@@ -194,8 +220,11 @@ public class UserJpaDao implements UserDao {
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
         nativeQuery.setParameter("userId", userId);
 
-        final List<Long> idList = (List<Long>) nativeQuery.getResultList()
-                .stream().map(n -> ((Number)n).longValue()).collect(Collectors.toList());
+        @SuppressWarnings("unchecked")
+        final List<Object> rawResults = nativeQuery.getResultList();
+        final List<Long> idList = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
         if (idList.isEmpty())
@@ -362,26 +391,38 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize) {
-        // Consulta para obtener usuarios que son seguidos por los usuarios que el usuario actual sigue,
-        // pero que no son seguidos por el usuario actual
-        String jpql = "SELECT DISTINCT u FROM User u " +
-                     "WHERE u.id IN (" +
-                     "    SELECT f2.id FROM User me " +
-                     "    JOIN me.following f1 " +
-                     "    JOIN f1.following f2 " +
-                     "    WHERE me.id = :userId " +
-                     "    AND f2.id != :userId " +
-                     "    AND f2.id NOT IN (" +
-                     "        SELECT f3.id FROM User me2 " +
-                     "        JOIN me2.following f3 " +
-                     "        WHERE me2.id = :userId" +
-                     "    )" +
-                     ")";
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT DISTINCT u.id FROM cuser u " +
+                "WHERE u.id IN (" +
+                "   SELECT f2.following FROM follower f1 " +
+                "    JOIN follower f2 ON f1.following = f2.user_id " +
+                "    WHERE f1.user_id = :userId " +
+                "    AND f2.following != :userId " +
+                "    AND f2.following NOT IN (" +
+                "        SELECT f3.following FROM follower f3 " +
+                "        WHERE f3.user_id = :userId))"
+        );
+        nativeQuery.setParameter("userId", userId);
+        nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
 
-        TypedQuery<User> query = em.createQuery(jpql, User.class)
-                .setParameter("userId", userId)
-                .setFirstResult((pageNumber - 1) * pageSize)
-                .setMaxResults(pageSize);
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> userIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (userIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<User> query = em.createQuery(
+                "FROM User u WHERE u.id IN :ids ORDER BY u.username",
+                User.class
+        );
+        query.setParameter("ids", userIds);
 
         return query.getResultList();
     }

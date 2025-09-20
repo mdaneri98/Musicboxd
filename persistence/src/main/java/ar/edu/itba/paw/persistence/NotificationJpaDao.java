@@ -6,9 +6,12 @@ import ar.edu.itba.paw.models.reviews.Review;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class NotificationJpaDao implements NotificationDao {
@@ -27,13 +30,31 @@ public class NotificationJpaDao implements NotificationDao {
 
     @Override
     public List<Notification> getNotificationsForUser(Long userId, int page, int pageSize) {
-        final TypedQuery<Notification> query = em.createQuery(
-            "FROM Notification n WHERE n.recipientUser.id = :userId " +
-            "ORDER BY n.createdAt DESC", Notification.class);
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+            "SELECT notification_id FROM notifications " +
+            "WHERE recipient_user_id = :userId " +
+            "ORDER BY created_at DESC");
         
-        query.setParameter("userId", userId);
-        query.setFirstResult((page - 1) * pageSize);
-        query.setMaxResults(pageSize);
+        nativeQuery.setParameter("userId", userId);
+        nativeQuery.setFirstResult((page - 1) * pageSize);
+        nativeQuery.setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> notificationIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (notificationIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        final TypedQuery<Notification> query = em.createQuery(
+            "FROM Notification n WHERE n.id IN :ids ORDER BY n.createdAt DESC", 
+            Notification.class);
+        query.setParameter("ids", notificationIds);
         
         return query.getResultList();
     }
