@@ -12,8 +12,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Primary
 @Repository
@@ -35,10 +37,27 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public List<Artist> findPaginated(FilterType filterType, int limit, int offset) {
-        String jpql = "FROM Artist " + filterType.getFilter();
-        TypedQuery<Artist> query = entityManager.createQuery(jpql, Artist.class)
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        String nativeSQL = "SELECT a.id FROM artist a " + filterType.getFilter();
+        Query nativeQuery = entityManager.createNativeQuery(nativeSQL)
                 .setFirstResult(offset)
                 .setMaxResults(limit);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> artistIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (artistIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
+        String entityJpql = "SELECT a FROM Artist a WHERE a.id IN :ids " + filterType.getFilter();
+        TypedQuery<Artist> query = entityManager.createQuery(entityJpql, Artist.class)
+                .setParameter("ids", artistIds);
+        
         return query.getResultList();
     }
 
