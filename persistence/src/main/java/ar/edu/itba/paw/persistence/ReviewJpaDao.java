@@ -167,7 +167,7 @@ public class ReviewJpaDao implements ReviewDao {
         Query nativeQuery = em.createNativeQuery(
             "SELECT DISTINCT u.id FROM cuser u " +
             "JOIN review_like rl ON u.id = rl.user_id " +
-            "WHERE rl.review_id = :reviewId ORDER BY u.username"
+            "WHERE rl.review_id = :reviewId"
         );
         
         nativeQuery.setParameter("reviewId", reviewId);
@@ -340,13 +340,14 @@ public class ReviewJpaDao implements ReviewDao {
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
-                "SELECT DISTINCT r.id FROM review r " +
-                "JOIN cuser u ON r.user_id = u.id " +
-                "JOIN follower f ON u.id = f.following " +
-                "WHERE f.user_id = :userId " +
-                "AND r.isblocked = false " +
-                "ORDER BY r.created_at DESC"
+            "SELECT DISTINCT r.id " +
+            "FROM review r " +
+            "JOIN cuser u ON r.user_id = u.id " +
+            "JOIN follower f ON u.id = f.following " +
+            "WHERE f.user_id = :userId " +
+            "AND r.isblocked = false"
         );
+        
         nativeQuery.setParameter("userId", userId);
         nativeQuery.setFirstResult((page - 1) * pageSize);
         nativeQuery.setMaxResults(pageSize);
