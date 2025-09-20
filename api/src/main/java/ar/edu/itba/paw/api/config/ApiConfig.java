@@ -78,15 +78,15 @@ public class ApiConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
-        factoryBean.setPackagesToScan("ar.edu.itba.paw.model");
+        factoryBean.setPackagesToScan("ar.edu.itba.paw.models");
         factoryBean.setDataSource(dataSource());
 
         final JpaVendorAdapter jpaAdapter = new HibernateJpaVendorAdapter();
         factoryBean.setJpaVendorAdapter(jpaAdapter);
 
         final Properties properties = new Properties();
+        properties.setProperty("hibernate.hbm2ddl.auto", "update");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
-        properties.setProperty("hibernate.hbm2ddl.auto", "none");
 
         factoryBean.setJpaProperties(properties);
 
