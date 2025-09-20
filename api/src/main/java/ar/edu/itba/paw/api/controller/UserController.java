@@ -29,9 +29,6 @@ public class UserController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    @Autowired
-    private UserLinkManager userLinkManager;
-
     @GET
     public Response getAllUsers(
             @QueryParam("page") @DefaultValue("1") int page,

@@ -32,7 +32,11 @@ import java.util.Properties;
 @EnableScheduling
 @EnableAsync(proxyTargetClass = true)
 @EnableTransactionManagement
-@ComponentScan({"ar.edu.itba.paw.api.controller", "ar.edu.itba.paw.services", "ar.edu.itba.paw.persistence"})
+@ComponentScan({
+        "ar.edu.itba.paw.api",
+        "ar.edu.itba.paw.services",
+        "ar.edu.itba.paw.persistence",
+})
 @PropertySource("classpath:application.properties")
 @Configuration
 public class ApiConfig {
