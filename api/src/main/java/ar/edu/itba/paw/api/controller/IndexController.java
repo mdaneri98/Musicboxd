@@ -2,6 +2,7 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.models.Link;
 import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("")
+@Path(ApiUriConstants.API_BASE)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class IndexController extends BaseController {
@@ -36,7 +37,7 @@ public class IndexController extends BaseController {
             }
         };
 
-        apiResource.addSelfLink(baseUrl + "/api/");
+        apiResource.addSelfLink(baseUrl + "/");
         apiResource.addLink(Link.collection(baseUrl + "/api/users", "users", "User management"));
         apiResource.addLink(Link.collection(baseUrl + "/api/artists", "artists", "Artist catalog"));
         apiResource.addLink(Link.collection(baseUrl + "/api/albums", "albums", "Album catalog"));
@@ -51,10 +52,5 @@ public class IndexController extends BaseController {
         
         return buildResponse(apiResource);
     }
-    
-    @GET
-    @Path("/test")
-    public Response test() {
-        return buildResponse("Jersey is working!");
-    }
+
 }
