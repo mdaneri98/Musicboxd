@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.persistence.*;
 import ar.edu.itba.paw.services.exception.AcknowledgementEmailException;
+import ar.edu.itba.paw.services.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewDao reviewDao;
     private final SongService songService;
+    private final UserDao userDao;
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final UserService userService;
@@ -33,7 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final NotificationService notificationService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService) {
+    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, UserDao userDao) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
@@ -41,6 +43,7 @@ public class ReviewServiceImpl implements ReviewService {
         this.userService = userService;
         this.emailService = emailService;
         this.notificationService = notificationService;
+        this.userDao = userDao;
     }
 
     @Override
@@ -333,9 +336,17 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void createLike(long userId, long reviewId) {
         LOGGER.info("Creating like for review ID: {} by user ID: {}", reviewId, userId);
+
+        User user = userDao.find(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+
+        Review review = reviewDao.find(reviewId)
+                .orElseThrow(() -> new UserNotFoundException("Review with ID " + reviewId + " not found"));
+
         reviewDao.createLike(userId, reviewId);
         reviewDao.updateLikeCount(reviewId);
-        notificationService.notifyLike(find(reviewId).get(),userService.find(userId).get());
+        notificationService.notifyLike(review, user);
+
         LOGGER.info("Like created and like count incremented for review ID: {}", reviewId);
     }
 

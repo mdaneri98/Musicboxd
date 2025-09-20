@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface UserDao {
 
     Optional<User> find(long id);
+    Long countUsers();
     List<User> findAll(int pageNumber, int pageSize);
     List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize);
 

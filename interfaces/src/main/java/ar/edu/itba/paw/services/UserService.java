@@ -1,36 +1,36 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
+    UserDTO findUserById(Long id);
+    Long countUsers();
+    List<UserDTO> findAll(int pageNumber, int pageSize);
+    List<UserDTO> findByUsernameContaining(String sub, int pageNumber, int pageSize);
 
-    Optional<User> find(long id);
-    List<User> findAll(int pageNumber, int pageSize);
-    List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize);
-
-    Optional<User> create(String username, String email, String password);
+    UserDTO create(String username, String email, String password);
 
     int createFollowing(User loggedUser, long followingUserId);
     int undoFollowing(User loggedUser, long followingUserId);
-    List<User> getFollowers(Long userId, int pageNumber, int pageSize);
-    List<User> getFollowings(Long userId, int pageNumber, int pageSize);
+    List<UserDTO> getFollowers(Long userId, int pageNumber, int pageSize);
+    List<UserDTO> getFollowings(Long userId, int pageNumber, int pageSize);
 
     boolean isFollowing(Long userId, Long otherId);
     boolean isAlbumFavorite(Long userId, Long albumId);
     boolean isArtistFavorite(Long userId, Long albumId);
     boolean isSongFavorite(Long userId, Long albumId);
 
-    Optional<User> update(User user);
+    UserDTO update(User user);
     boolean changePassword(Long userId, String newPassword);
 
     int deleteById(long id);
 
-    Optional<User> findByEmail(String email);
+    UserDTO findByEmail(String email);
 
-    Optional<User> findByUsername(String email);
+    UserDTO findByUsername(String email);
     boolean usernameExists(String username);
 
     void updateUserReviewAmount(Long userId);
@@ -55,6 +55,6 @@ public interface UserService {
     boolean addFavoriteSong(long userId, long songId);
     boolean removeFavoriteSong(long userId, long songId);
     int getFavoriteSongsCount(long userId);
-    List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize);
+    List<UserDTO> getRecommendedUsers(Long userId, int pageNumber, int pageSize);
 
 }

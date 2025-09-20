@@ -26,6 +26,11 @@ public class UserJpaDao implements UserDao {
         return Optional.ofNullable(em.find(User.class, id));
     }
 
+    public Long countUsers() {
+        TypedQuery<Long> query = em.createQuery("SELECT COUNT(u) FROM User u", Long.class);
+        return query.getSingleResult();
+    }
+
     @Override
     public List<User> findAll(int pageNumber, int pageSize) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM cuser");

@@ -4,7 +4,7 @@ import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
 import ar.edu.itba.paw.api.models.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.api.utils.UserLinkManager;
@@ -34,10 +34,10 @@ public class UserController extends BaseController {
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("search") String search) {
-        List<User> users = userService.findAll(page, size);
+        List<UserDTO> users = userService.findAll(page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, 100L, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+                userResources, userService.countUsers(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
         return buildResponse(collection);
     }
 
