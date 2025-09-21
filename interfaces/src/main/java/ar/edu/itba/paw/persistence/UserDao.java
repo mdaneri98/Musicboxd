@@ -8,10 +8,11 @@ import java.util.Optional;
 public interface UserDao {
 
     Optional<User> find(long id);
+    Long countUsers();
     List<User> findAll(int pageNumber, int pageSize);
     List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize);
 
-    Optional<User> create(String username, String email, String password, Image image);
+    Optional<User> create(String username, String email, String password);
 
     int createFollowing(User loggedUser, User following);
 
@@ -22,7 +23,7 @@ public interface UserDao {
     List<User> getFollowers(Long userId, int pageNumber, int pageSize);
     List<User> getFollowings(Long userId, int pageNumber, int pageSize);
 
-    Optional<User> update(User user);
+    Optional<User> updateUser(Long userId, User user);
 
     int deleteById(long id);
 

@@ -26,6 +26,11 @@ public class UserJpaDao implements UserDao {
         return Optional.ofNullable(em.find(User.class, id));
     }
 
+    public Long countUsers() {
+        TypedQuery<Long> query = em.createQuery("SELECT COUNT(u) FROM User u", Long.class);
+        return query.getSingleResult();
+    }
+
     @Override
     public List<User> findAll(int pageNumber, int pageSize) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM cuser");
@@ -48,10 +53,9 @@ public class UserJpaDao implements UserDao {
         return query.getResultList();
     }
 
-
     @Override
-    public Optional<User> update(User user) {
-        if (em.find(User.class, user.getId()) == null) {
+    public Optional<User> updateUser(Long userId, User user) {
+        if (em.find(User.class, userId) == null) {
             return Optional.empty();
         }
         return Optional.of(em.merge(user));
@@ -123,9 +127,8 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public Optional<User> create(String username, String email, String password, Image image) {
+    public Optional<User> create(String username, String email, String password) {
         final User user = new User(username, password, email);
-        user.setImage(image);
         user.setPreferredLanguage("es");
         em.persist(user);
         return Optional.of(user);

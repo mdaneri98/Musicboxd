@@ -4,12 +4,14 @@ import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
 import ar.edu.itba.paw.api.models.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.api.utils.HATEOASUtils;
+import ar.edu.itba.paw.api.utils.UriBuilder;
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.api.utils.UserLinkManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,17 +36,36 @@ public class UserController extends BaseController {
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("search") String search) {
-        List<User> users = userService.findAll(page, size);
+        List<UserDTO> users = userService.findAll(page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, 100L, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+                userResources, userService.countUsers(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
         return buildResponse(collection);
     }
 
+    @GET
+    @Path("/{userId:\\d+}")
+    public Response getUser(@PathParam("userId") Long id) {
+        UserDTO user = userService.findUserById(id);
+        UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
+        
+        return buildResponse(userResource);
+    }
+
+    @PUT
+    @Path("/{userId:\\d+}")
+    public Response updateUser(@PathParam("userId") Long userId, @Valid UserDTO userDTO) {
+        UserDTO user = userService.updateUser(userId, userDTO);
+        UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
+
+        return buildResponse(userResource);
+    }
+
     @DELETE
-    @Path("/{id}")
-    public Response deleteUser(@PathParam("id") Long id) {
+    @Path("/{userId:\\d+}")
+    public Response deleteUser(@PathParam("userId") Long id) {
         userService.deleteById(id);
+        
         return buildNoContentResponse();
     }
 

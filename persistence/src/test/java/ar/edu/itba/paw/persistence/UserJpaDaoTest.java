@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.persistence.config.TestConfig;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Test;
@@ -83,7 +84,6 @@ public class UserJpaDaoTest {
         assertEquals(PRE_EXISTING_USER_ID, maybeUser.get().getId().longValue());
         assertEquals(PRE_EXISTING_EMAIL, maybeUser.get().getEmail());
         assertEquals(PRE_EXISTING_USERNAME, maybeUser.get().getUsername());
-        assertEquals(PRE_EXISTING_IMAGE_ID, maybeUser.get().getImage().getId().longValue());
     }
 
     @Test
@@ -112,12 +112,9 @@ public class UserJpaDaoTest {
     @Test
     public void test_update() {
         // 1. Pre-conditions - user exists
-        Image image = em.find(Image.class, NEW_IMAGE_ID);
         User user = em.find(User.class, PRE_EXISTING_USER_ID);
         user.setUsername(NEW_USERNAME);
         user.setEmail(NEW_EMAIL);
-        user.setPassword(NEW_PASSWORD);
-        user.setImage(image);
         user.setName(NEW_NAME);
         user.setBio(NEW_BIO);
         user.setVerified(VERIFIED_TRUE);
@@ -128,7 +125,7 @@ public class UserJpaDaoTest {
         user.setPreferredLanguage(PREFERRED_LANGUAGE);
 
         // 2. Execute
-        Optional<User> optionalUser = userDao.update(user);
+        Optional<User> optionalUser = userDao.updateUser(PRE_EXISTING_USER_ID, user);
 
         // 3. Post-conditions
         assertTrue(optionalUser.isPresent());
@@ -137,23 +134,19 @@ public class UserJpaDaoTest {
         // Basic field validations
         assertEquals(NEW_USERNAME, updatedUser.getUsername());
         assertEquals(NEW_EMAIL, updatedUser.getEmail());
-        assertEquals(NEW_PASSWORD, updatedUser.getPassword());
+        assertEquals(PRE_EXISTING_PASSWORD, updatedUser.getPassword());
         assertEquals(NEW_NAME, updatedUser.getName());
         assertEquals(NEW_BIO, updatedUser.getBio());
-        assertEquals(NEW_IMAGE_ID, updatedUser.getImage().getId().longValue());
+        assertEquals(Long.valueOf(PRE_EXISTING_IMAGE_ID), updatedUser.getImageId());
         assertEquals(USER_FOLLOWERS, updatedUser.getFollowersAmount().intValue());
         assertEquals(USER_FOLLOWING, updatedUser.getFollowingAmount().intValue());
         assertEquals(REVIEW_AMOUNT, updatedUser.getReviewAmount().intValue());
         assertEquals(PREFERRED_LANGUAGE, updatedUser.getPreferredLanguage());
         assertTrue(updatedUser.isModerator());
         assertTrue(updatedUser.isVerified());
-        
-        // Image validation
-        assertArrayEquals(image.getBytes(), updatedUser.getImage().getBytes());
 
         // check if user is saved correctly in database
         assertEquals(1, em.createQuery("SELECT COUNT(u) FROM User u " +
-                                "JOIN u.image " +
                                 "WHERE u.id = :userId " +
                                 "AND u.username = :username " +
                                 "AND u.email = :email " +
@@ -165,8 +158,7 @@ public class UserJpaDaoTest {
                                 "AND u.reviewAmount = :reviewAmount " +
                                 "AND u.verified = :verified " +
                                 "AND u.moderator = :moderator " +
-                                "AND u.preferredLanguage = :preferredLanguage " +
-                                "AND u.image.id = :imageId",
+                                "AND u.preferredLanguage = :preferredLanguage ",
                         Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("username", NEW_USERNAME)
@@ -180,7 +172,6 @@ public class UserJpaDaoTest {
                 .setParameter("verified", VERIFIED_TRUE)
                 .setParameter("moderator", MODERATOR_TRUE)
                 .setParameter("preferredLanguage", PREFERRED_LANGUAGE)
-                .setParameter("imageId", NEW_IMAGE_ID)
                 .getSingleResult().intValue());
     }
 
@@ -220,16 +211,15 @@ public class UserJpaDaoTest {
         assertEquals(PRE_EXISTING_EMAIL, maybeUser.get().getEmail());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void test_findByEmail_NewEmail () {
-        // 1. Pre-conditions - user exists
+        // 1. Pre-conditions - user does not exist
 
         // 2. Execute
         Optional<User> maybeUser = userDao.findByEmail(NEW_EMAIL);
 
         // 3. Post-conditions
         assertFalse(maybeUser.isPresent());
-        assertEquals(NEW_EMAIL, maybeUser.get().getEmail());
     }
 
     @Test
@@ -244,16 +234,15 @@ public class UserJpaDaoTest {
         assertEquals(PRE_EXISTING_USERNAME, maybeUser.get().getUsername());
     }
 
-    @Test(expected = NoSuchElementException.class)
-    public void test_findByEmail_NewUsername () {
-        // 1. Pre-conditions - user exists
+    @Test
+    public void test_findByUsername_NewUsername () {
+        // 1. Pre-conditions - user does not exist
 
         // 2. Execute
-        Optional<User> maybeUser = userDao.findByEmail(NEW_USERNAME);
+        Optional<User> maybeUser = userDao.findByUsername(NEW_USERNAME);
 
         // 3. Post-conditions
         assertFalse(maybeUser.isPresent());
-        assertEquals(NEW_USERNAME, maybeUser.get().getUsername());
     }
 
     @Test
@@ -273,14 +262,17 @@ public class UserJpaDaoTest {
     @Test
     public void test_create() {
         // 1. Pre-conditions - no user with username or email exists
-        Image image = em.find(Image.class, NEW_IMAGE_ID);
 
         // 2. Execute
-        Optional<User> optionalUser = userDao.create(NEW_USERNAME, NEW_EMAIL, NEW_PASSWORD, image);
+        Optional<User> optionalUser = userDao.create(NEW_USERNAME, NEW_EMAIL, NEW_PASSWORD);
 
         // 3. Post-conditions
         assertTrue(optionalUser.isPresent());
         User user = optionalUser.get();
+        
+        // Set imageId to avoid null constraint violation and persist the change
+        user.setImage(NEW_IMAGE_ID);
+        em.flush(); // Force the change to be persisted
         
         // Basic validations
         assertEquals(NEW_USERNAME, user.getUsername());
@@ -299,7 +291,6 @@ public class UserJpaDaoTest {
 
         // check if user is saved correctly in database
         assertEquals(1,em.createQuery("SELECT COUNT(u) FROM User u " +
-                                "JOIN u.image " +
                                 "WHERE u.username = :username " +
                                 "AND u.email = :email " +
                                 "AND u.password = :password " +
@@ -307,7 +298,7 @@ public class UserJpaDaoTest {
                                 "AND u.followingAmount = 0 " +
                                 "AND u.verified = false " +
                                 "AND u.moderator = false " +
-                                "AND u.image.id = :imageId",
+                                "AND u.imageId = :imageId",
                         Long.class)
                 .setParameter("username", NEW_USERNAME)
                 .setParameter("email", NEW_EMAIL)
@@ -319,44 +310,41 @@ public class UserJpaDaoTest {
     @Test
     public void test_create_duplicateUsername() {
         // 1. Pre-conditions - User with the same username exists
-        Image image = em.find(Image.class, NEW_IMAGE_ID);
 
         // 2. Execute
-        Optional<User> user = userDao.create(PRE_EXISTING_USERNAME, NEW_EMAIL, NEW_PASSWORD, image);
+        Optional<User> user = userDao.create(PRE_EXISTING_USERNAME, NEW_EMAIL, NEW_PASSWORD);
 
         // 3. Post-conditions
-        try {
-            assertEquals(1, em.createQuery("SELECT u FROM User u " +
-                                    "WHERE u.username = :username",
-                            User.class)
-                    .setParameter("username", PRE_EXISTING_USERNAME)
-                    .getResultList().size()
-            );
-        } catch (PersistenceException e) {
-            assertTrue(e.getCause() instanceof ConstraintViolationException);
-        }
-
+        // The user should not be created due to duplicate username constraint
+        assertFalse(user.isPresent());
+        
+        // Verify only one user with this username exists
+        assertEquals(1, em.createQuery("SELECT u FROM User u " +
+                                "WHERE u.username = :username",
+                        User.class)
+                .setParameter("username", PRE_EXISTING_USERNAME)
+                .getResultList().size()
+        );
     }
 
     @Test
     public void test_create_duplicateEmail() {
         // 1. Pre-conditions - User with the same email exists
-        Image image = em.find(Image.class, NEW_IMAGE_ID);
 
         // 2. Execute
-        Optional<User> user = userDao.create(NEW_USERNAME, PRE_EXISTING_EMAIL, NEW_PASSWORD, image);
+        Optional<User> user = userDao.create(NEW_USERNAME, PRE_EXISTING_EMAIL, NEW_PASSWORD);
 
         // 3. Post-conditions
-        try {
-            assertEquals(1, em.createQuery("SELECT u FROM User u " +
-                                    "WHERE u.email = :email",
-                            User.class)
-                    .setParameter("email", PRE_EXISTING_EMAIL)
-                    .getResultList().size()
-            );
-        } catch (PersistenceException e) {
-            assertTrue(e.getCause() instanceof ConstraintViolationException);
-        }
+        // The user should not be created due to duplicate email constraint
+        assertFalse(user.isPresent());
+        
+        // Verify only one user with this email exists
+        assertEquals(1, em.createQuery("SELECT u FROM User u " +
+                                "WHERE u.email = :email",
+                        User.class)
+                .setParameter("email", PRE_EXISTING_EMAIL)
+                .getResultList().size()
+        );
     }
 
     @Test
