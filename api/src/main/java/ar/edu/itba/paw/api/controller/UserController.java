@@ -65,6 +65,7 @@ public class UserController extends BaseController {
     @Path("/{userId:\\d+}")
     public Response deleteUser(@PathParam("userId") Long id) {
         userService.deleteById(id);
+        
         return buildNoContentResponse();
     }
 
