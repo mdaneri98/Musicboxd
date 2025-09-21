@@ -72,11 +72,32 @@ public class SongJpaDao implements SongDao {
 
     @Override
     public List<Song> findByTitleContaining(String sub) {
-        String query = "SELECT s FROM Song s WHERE LOWER(s.title) LIKE LOWER(:sub)";
-        return em.createQuery(query, Song.class)
-                .setParameter("sub", "%" + sub + "%")
-                .setMaxResults(10)
-                .getResultList();
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT s.id FROM song s " +
+                "WHERE LOWER(s.title) LIKE LOWER(:sub) " +
+                "ORDER BY s.title"
+        );
+        nativeQuery.setParameter("sub", "%" + sub + "%");
+        nativeQuery.setMaxResults(10); // Límite de resultados
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> songIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (songIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<Song> query = em.createQuery(
+                "FROM Song s WHERE s.id IN :ids ORDER BY s.title", 
+                Song.class);
+        query.setParameter("ids", songIds);
+        
+        return query.getResultList();
     }
 
     @Override

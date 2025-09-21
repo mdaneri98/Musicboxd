@@ -71,10 +71,31 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public List<Artist> findByNameContaining(String sub) {
-        String jpql = "FROM Artist a WHERE LOWER(a.name) LIKE LOWER(:name)";
-        TypedQuery<Artist> query = entityManager.createQuery(jpql, Artist.class)
-                .setParameter("name", "%" + sub + "%")
-                .setMaxResults(10);
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = entityManager.createNativeQuery(
+                "SELECT a.id FROM artist a " +
+                "WHERE LOWER(a.name) LIKE LOWER(:name) " +
+                "ORDER BY a.name"
+        );
+        nativeQuery.setParameter("name", "%" + sub + "%");
+        nativeQuery.setMaxResults(10); // Límite de resultados
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> artistIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (artistIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<Artist> query = entityManager.createQuery(
+                "FROM Artist a WHERE a.id IN :ids ORDER BY a.name", 
+                Artist.class);
+        query.setParameter("ids", artistIds);
+        
         return query.getResultList();
     }
 

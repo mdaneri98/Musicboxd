@@ -63,11 +63,31 @@ public class AlbumJpaDao implements AlbumDao {
 
     @Override
     public List<Album> findByTitleContaining(String sub) {
-        // Buscar álbumes cuyo título contenga una subcadena
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = entityManager.createNativeQuery(
+                "SELECT a.id FROM album a " +
+                "WHERE LOWER(a.title) LIKE LOWER(:sub) " +
+                "ORDER BY a.title"
+        );
+        nativeQuery.setParameter("sub", "%" + sub + "%");
+        nativeQuery.setMaxResults(10); // Límite de resultados
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> albumIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (albumIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
         TypedQuery<Album> query = entityManager.createQuery(
-                "SELECT a FROM Album a JOIN FETCH a.artist WHERE LOWER(a.title) LIKE LOWER(:sub)", Album.class);
-        query.setParameter("sub", "%" + sub + "%");
-        query.setMaxResults(10); // Límite de resultados
+                "SELECT a FROM Album a JOIN FETCH a.artist WHERE a.id IN :ids ORDER BY a.title", 
+                Album.class);
+        query.setParameter("ids", albumIds);
+        
         return query.getResultList();
     }
 
