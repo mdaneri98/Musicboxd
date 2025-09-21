@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -114,7 +115,7 @@ public class UserServiceImpl implements UserService {
                 user.setUsername(username);
                 user.setPassword(password);
                 user.setEmail(email);
-                userDao.update(user);
+                userDao.updateUser(user.getId(), user);
                 LOGGER.info("Updated existing user with email: {}", email);
                 return userMapper.toDTO(user);
             } else {
@@ -131,7 +132,7 @@ public class UserServiceImpl implements UserService {
         if (optionalImage.isEmpty())
             throw new IllegalArgumentException("La imagen profile-default no existe.");
 
-        Optional<User> userOpt = userDao.create(username, email, hashedPassword, optionalImage.get());
+        Optional<User> userOpt = userDao.create(username, email, hashedPassword);
         if (userOpt.isPresent()) {
             User createdUser = userOpt.get();
             createdUser.setPreferredLanguage(LocaleContextHolder.getLocale().getLanguage());
@@ -251,15 +252,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO update(User user) {
-        LOGGER.info("Updating user with ID: {}", user.getId());
-        Optional<User> optionalUser = userDao.update(user);
-        if (optionalUser.isPresent()) {
-            LOGGER.info("User updated successfully");
-            return userMapper.toDTO(optionalUser.get());
-        } else {
-            throw new UserNotFoundException("User with ID " + user.getId() + " not found");
-        }
+    public UserDTO updateUser(Long userId, UserDTO userDTO) {
+        LOGGER.info("Updating user with ID: {}", userId);
+        
+        User existingUser = userDao.find(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        validateEmailUniqueness(userId, userDTO.getEmail());
+        validateUsernameUniqueness(userId, userDTO.getUsername());
+        mergeUserFields(existingUser, userDTO);
+        
+        User updatedUser = saveUser(existingUser);
+        LOGGER.info("User with ID {} updated successfully", userId);
+        
+        return userMapper.toDTO(updatedUser);
     }
 
     @Override
@@ -430,4 +434,57 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("Found {} recommended users for user with ID: {}", recommendedUsers.size(), userId);
         return userMapper.toDTOList(recommendedUsers);
     }
+
+    private void validateUsernameUniqueness(Long userId, String username) {
+        if (username == null) return;
+
+        Optional<User> existingUser = userDao.findByUsername(username);
+        if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
+            throw new UserAlreadyExistsException("Username " + username + " is already in use");
+        }
+    }
+
+    private void validateEmailUniqueness(Long userId, String email) {
+        if (email == null) return;
+
+        Optional<User> existingUser = userDao.findByEmail(email);
+        if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
+            throw new UserAlreadyExistsException("Email " + email + " is already in use");
+        }
+    }
+
+    private void mergeUserFields(User existingUser, UserDTO userDTO) {
+        mergeBasicFields(existingUser, userDTO);
+        mergeNotificationSettings(existingUser, userDTO);
+        existingUser.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private void mergeBasicFields(User existingUser, UserDTO userDTO) {
+        setFieldIfNotNull(existingUser::setUsername, userDTO.getUsername());
+        setFieldIfNotNull(existingUser::setEmail, userDTO.getEmail());
+        setFieldIfNotNull(existingUser::setName, userDTO.getName());
+        setFieldIfNotNull(existingUser::setBio, userDTO.getBio());
+        setFieldIfNotNull(existingUser::setImage, userDTO.getImageId());
+        setFieldIfNotNull(existingUser::setPreferredLanguage, userDTO.getPreferredLanguage());
+        setFieldIfNotNull(existingUser::setTheme, userDTO.getPreferredTheme());
+    }
+
+    private void mergeNotificationSettings(User existingUser, UserDTO userDTO) {
+        setFieldIfNotNull(existingUser::setFollowNotificationsEnabled, userDTO.getHasFollowNotificationsEnabled());
+        setFieldIfNotNull(existingUser::setLikeNotificationsEnabled, userDTO.getHasLikeNotificationsEnabled());
+        setFieldIfNotNull(existingUser::setCommentNotificationsEnabled, userDTO.getHasCommentsNotificationsEnabled());
+        setFieldIfNotNull(existingUser::setReviewNotificationsEnabled, userDTO.getHasReviewsNotificationsEnabled());
+    }
+
+    private <T> void setFieldIfNotNull(java.util.function.Consumer<T> setter, T value) {
+        if (value != null) {
+            setter.accept(value);
+        }
+    }
+
+    private User saveUser(User user) {
+        return userDao.updateUser(user.getId(), user)
+                .orElseThrow(() -> new UserNotFoundException("User with ID " + user.getId() + " not found"));
+    }
+
 }

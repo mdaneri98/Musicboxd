@@ -11,6 +11,7 @@ import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -48,6 +49,15 @@ public class UserController extends BaseController {
         UserDTO user = userService.findUserById(id);
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
         
+        return buildResponse(userResource);
+    }
+
+    @PUT
+    @Path("/{userId:\\d+}")
+    public Response updateUser(@PathParam("userId") Long userId, @Valid UserDTO userDTO) {
+        UserDTO user = userService.updateUser(userId, userDTO);
+        UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
+
         return buildResponse(userResource);
     }
 
