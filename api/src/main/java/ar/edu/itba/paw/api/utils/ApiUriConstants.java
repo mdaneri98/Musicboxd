@@ -6,7 +6,7 @@ public class ApiUriConstants {
     public static final String EMPTY = "";
 
     /* Base */
-    public static final String API_BASE = EMPTY + "/api";
+    public static final String API_BASE = EMPTY;
 
     /* AUTH */
     public static final String AUTH_BASE = API_BASE + "/auth";

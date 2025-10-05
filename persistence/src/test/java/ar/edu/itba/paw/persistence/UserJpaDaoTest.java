@@ -271,7 +271,7 @@ public class UserJpaDaoTest {
         User user = optionalUser.get();
         
         // Set imageId to avoid null constraint violation and persist the change
-        user.setImage(NEW_IMAGE_ID);
+        user.setImageId(NEW_IMAGE_ID);
         em.flush(); // Force the change to be persisted
         
         // Basic validations

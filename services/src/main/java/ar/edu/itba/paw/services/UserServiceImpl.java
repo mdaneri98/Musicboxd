@@ -464,7 +464,7 @@ public class UserServiceImpl implements UserService {
         setFieldIfNotNull(existingUser::setEmail, userDTO.getEmail());
         setFieldIfNotNull(existingUser::setName, userDTO.getName());
         setFieldIfNotNull(existingUser::setBio, userDTO.getBio());
-        setFieldIfNotNull(existingUser::setImage, userDTO.getImageId());
+        setFieldIfNotNull(existingUser::setImageId, userDTO.getImageId());
         setFieldIfNotNull(existingUser::setPreferredLanguage, userDTO.getPreferredLanguage());
         setFieldIfNotNull(existingUser::setTheme, userDTO.getPreferredTheme());
     }
