@@ -38,17 +38,17 @@ public class IndexController extends BaseController {
         };
 
         apiResource.addSelfLink(baseUrl + "/");
-        apiResource.addLink(Link.collection(baseUrl + "/api/users", "users", "User management"));
-        apiResource.addLink(Link.collection(baseUrl + "/api/artists", "artists", "Artist catalog"));
-        apiResource.addLink(Link.collection(baseUrl + "/api/albums", "albums", "Album catalog"));
-        apiResource.addLink(Link.collection(baseUrl + "/api/songs", "songs", "Song catalog"));
-        apiResource.addLink(Link.collection(baseUrl + "/api/reviews", "reviews", "Review system"));
-        apiResource.addLink(Link.collection(baseUrl + "/api/notifications", "notifications", "User notifications"));
+        apiResource.addLink(Link.collection(baseUrl + "/users", "users", "User management"));
+        apiResource.addLink(Link.collection(baseUrl + "/artists", "artists", "Artist catalog"));
+        apiResource.addLink(Link.collection(baseUrl + "/albums", "albums", "Album catalog"));
+        apiResource.addLink(Link.collection(baseUrl + "/songs", "songs", "Song catalog"));
+        apiResource.addLink(Link.collection(baseUrl + "/reviews", "reviews", "Review system"));
+        apiResource.addLink(Link.collection(baseUrl + "/notifications", "notifications", "User notifications"));
         
         // Add authentication links
-        apiResource.addLink(new Link(baseUrl + "/api/auth/login", "login", "User authentication", "application/json", "POST"));
-        apiResource.addLink(new Link(baseUrl + "/api/auth/register", "register", "User registration", "application/json", "POST"));
-        apiResource.addLink(new Link(baseUrl + "/api/auth/logout", "logout", "User logout", null, "POST"));
+        apiResource.addLink(new Link(baseUrl + "/auth/login", "login", "User authentication", "application/json", "POST"));
+        apiResource.addLink(new Link(baseUrl + "/auth/register", "register", "User registration", "application/json", "POST"));
+        apiResource.addLink(new Link(baseUrl + "/auth/logout", "logout", "User logout", null, "POST"));
         
         return buildResponse(apiResource);
     }

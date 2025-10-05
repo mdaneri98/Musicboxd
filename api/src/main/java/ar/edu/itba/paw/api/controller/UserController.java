@@ -6,6 +6,7 @@ import ar.edu.itba.paw.api.models.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;
+import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.services.UserService;
@@ -50,6 +51,18 @@ public class UserController extends BaseController {
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
         
         return buildResponse(userResource);
+    }
+
+    @POST
+    public Response createUser(@Valid CreateUserDTO createUserDTO) {
+        UserDTO user = userService.create(
+                createUserDTO.getUsername(),
+                createUserDTO.getEmail(),
+                createUserDTO.getPassword()
+        );
+        UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
+
+        return buildCreatedResponse(userResource);
     }
 
     @PUT
