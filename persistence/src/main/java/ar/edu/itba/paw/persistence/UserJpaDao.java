@@ -385,7 +385,7 @@ public class UserJpaDao implements UserDao {
 
     //============================ Reviews ============================
     @Override
-    public void updateUserReviewAmount(Long userId) {
+    public Void updateUserReviewAmount(Long userId) {
         Query countQuery = em.createQuery(
                 "SELECT COUNT(r) FROM Review r WHERE r.user.id = :userId AND r.isBlocked = false"
         );
@@ -396,6 +396,7 @@ public class UserJpaDao implements UserDao {
                 .setParameter("userId", userId)
                 .setParameter("reviewCount", reviewCount)
                 .executeUpdate();
+        return null;
     }
 
     @Override

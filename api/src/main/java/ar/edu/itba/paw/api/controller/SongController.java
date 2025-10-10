@@ -59,7 +59,7 @@ public class SongController extends BaseController {
     }
 
     @GET
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ID)
     public Response getSong(@PathParam("id") Long id) {
         SongDTO songDTO = songService.findById(id);
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
@@ -82,7 +82,7 @@ public class SongController extends BaseController {
     }
 
     @PUT
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ID)
     public Response updateSong(
             @PathParam("id") Long id,
             @Valid SongDTO songDTO,
@@ -100,14 +100,14 @@ public class SongController extends BaseController {
     }
 
     @DELETE
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ID)
     public Response deleteSong(@PathParam("id") Long id) {
         songService.delete(id);
         return buildNoContentResponse();
     }
 
     @GET
-    @Path("/{id:\\d+}/reviews")
+    @Path(ApiUriConstants.SONG_REVIEWS)
     public Response getSongReviews(
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,

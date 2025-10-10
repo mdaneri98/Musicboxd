@@ -7,6 +7,7 @@ public class ApiUriConstants {
 
     /* Base */
     public static final String API_BASE = EMPTY + "/api";
+    public static final String ID = "/{id:\\d+}";
 
     /* AUTH */
     public static final String AUTH_BASE = API_BASE + "/auth";
@@ -16,39 +17,34 @@ public class ApiUriConstants {
 
     /* USERS */
     public static final String USERS_BASE = API_BASE + "/users";
-    public static final String USER_BY_ID = USERS_BASE + "/{id}";
-    public static final String USER_REVIEWS = USER_BY_ID + "/reviews";
-    public static final String USER_FOLLOWERS = USER_BY_ID + "/followers";
-    public static final String USER_FOLLOWING = USER_BY_ID + "/following";
+    public static final String USER_REVIEWS = ID + "/reviews";
+    public static final String USER_FOLLOWERS = ID + "/followers";
+    public static final String USER_FOLLOWING = ID + "/following";
 
     /* ARTISTS */
     public static final String ARTISTS_BASE = API_BASE + "/artists";
-    public static final String ARTIST_BY_ID = ARTISTS_BASE + "/{id:\\d+}";
-    public static final String ARTIST_REVIEWS = ARTIST_BY_ID + "/reviews";
+    public static final String ARTIST_REVIEWS = ID + "/reviews";
 
     /* ALBUMS */
     public static final String ALBUMS_BASE = API_BASE + "/albums";
-    public static final String ALBUM_BY_ID = ALBUMS_BASE + "/{id:\\d+}";
-    public static final String ALBUM_REVIEWS = ALBUM_BY_ID + "/reviews";
-    public static final String ALBUM_SONGS = ALBUM_BY_ID + "/songs";
+    public static final String ALBUM_REVIEWS = ID + "/reviews";
+    public static final String ALBUM_SONGS = ID + "/songs";
 
     /* SONGS */
     public static final String SONGS_BASE = API_BASE + "/songs";
-    public static final String SONG_BY_ID = SONGS_BASE + "/{id:\\d+}";
-    public static final String SONG_REVIEWS = SONG_BY_ID + "/reviews";
+    public static final String SONG_REVIEWS = ID + "/reviews";
 
     /* REVIEWS */
     public static final String REVIEWS_BASE = API_BASE + "/reviews";
-    public static final String REVIEW_BY_ID = REVIEWS_BASE + "/{id:\\d+}";
-    public static final String REVIEW_COMMENTS = REVIEW_BY_ID + "/comments";
-    public static final String REVIEW_LIKES = REVIEW_BY_ID + "/likes";
+    public static final String REVIEW_COMMENTS = ID + "/comments";
+    public static final String REVIEW_LIKES = ID + "/likes";
+    public static final String REVIEW_BLOCK = ID + "/block";
+    public static final String REVIEW_UNBLOCK = ID + "/unblock";
 
     /* COMMENTS */
     public static final String COMMENTS_BASE = API_BASE + "/comments";
-    public static final String COMMENT_BY_ID = COMMENTS_BASE + "/{id:\\d+}";
 
     /* IMAGES */
     public static final String IMAGES_BASE = API_BASE + "/images";
-    public static final String IMAGE_BY_ID = IMAGES_BASE + "/{id:\\d+}";
 
 }

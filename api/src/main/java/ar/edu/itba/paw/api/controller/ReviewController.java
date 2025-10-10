@@ -9,15 +9,12 @@ import ar.edu.itba.paw.api.models.ReviewResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
-import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.models.reviews.ArtistReview;
-import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.models.FilterType;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -62,18 +59,26 @@ public class ReviewController extends BaseController {
     }
 
     @GET
-    @Path(ApiUriConstants.REVIEW_BY_ID)
-    public Response getReview(@PathParam("id") Long id, @QueryParam("loggedUserId") Long loggedUserId) {
+    @Path(ApiUriConstants.ID)
+    public Response getReview(@PathParam("id") Long id, @QueryParam("loggedUserId") @DefaultValue("23") Long loggedUserId) {
         // TODO: Obtener loggedUserId del contexto de seguridad
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(id), getBaseUrl());
         return buildResponse(reviewResource);
     }
 
     @DELETE
-    @Path(ApiUriConstants.REVIEW_BY_ID)
+    @Path(ApiUriConstants.ID)
     public Response deleteReview(@PathParam("id") Long id) {
         reviewService.delete(id);
         return buildNoContentResponse();
+    }
+
+    @PUT
+    @Path(ApiUriConstants.ID)
+    public Response updateReview(@Valid ReviewDTO reviewDTO) {
+        ReviewDTO responseDTO = reviewService.update(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
     }
 
     @GET

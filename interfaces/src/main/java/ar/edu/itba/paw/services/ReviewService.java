@@ -2,9 +2,6 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import ar.edu.itba.paw.models.reviews.ArtistReview;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
-import ar.edu.itba.paw.models.reviews.SongReview;
 import java.util.List;
 
 
@@ -52,7 +49,10 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     Void updateSongRating(Long songId);
     Void updateAlbumRating(Long albumId);
     Void updateArtistRating(Long artistId);
-    ReviewDTO updateSongReview(ReviewDTO review);
-    ReviewDTO updateArtistReview(ReviewDTO review);
-    ReviewDTO updateAlbumReview(ReviewDTO review);
+    // ReviewDTO updateSongReview(ReviewDTO review);
+    // ReviewDTO updateArtistReview(ReviewDTO review);
+    // ReviewDTO updateAlbumReview(ReviewDTO review);
+    ReviewDTO createArtistReview(ReviewDTO review);
+    ReviewDTO createAlbumReview(ReviewDTO review);
+    ReviewDTO createSongReview(ReviewDTO review);
 }

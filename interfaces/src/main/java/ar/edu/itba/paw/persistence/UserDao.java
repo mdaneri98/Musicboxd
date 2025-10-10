@@ -52,7 +52,7 @@ public interface UserDao {
     Integer getFavoriteSongsCount(Long userId);
     Boolean isSongFavorite(Long userId, Long songId);
 
-    void updateUserReviewAmount(Long userId);
+    Void updateUserReviewAmount(Long userId);
 
     Integer countFollowing(Long userId);
     Integer countFollowers(Long userId);

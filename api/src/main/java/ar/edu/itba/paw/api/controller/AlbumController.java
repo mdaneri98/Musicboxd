@@ -68,7 +68,7 @@ public class AlbumController extends BaseController {
     }
 
     @GET
-    @Path(ApiUriConstants.ALBUM_BY_ID)
+    @Path(ApiUriConstants.ID)
     public Response getAlbum(@PathParam("id") Long id) {
         AlbumDTO albumDTO = albumService.findById(id);
         AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
@@ -91,7 +91,7 @@ public class AlbumController extends BaseController {
     }
 
     @PUT
-    @Path(ApiUriConstants.ALBUM_BY_ID)
+    @Path(ApiUriConstants.ID)
     public Response updateAlbum(@PathParam("id") Long id, @Valid AlbumDTO albumDTO) {
         albumDTO.setId(id);
         AlbumDTO responseDTO = albumService.update(albumDTO);
@@ -100,7 +100,7 @@ public class AlbumController extends BaseController {
     }
 
     @DELETE
-    @Path(ApiUriConstants.ALBUM_BY_ID)
+    @Path(ApiUriConstants.ID)
     public Response deleteAlbum(@PathParam("id") Long id) {
         albumService.delete(id);
         return buildNoContentResponse();

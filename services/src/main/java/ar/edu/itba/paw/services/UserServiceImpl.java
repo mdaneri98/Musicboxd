@@ -269,8 +269,6 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("Updating user with ID: {}", userId);
         
         User existingUser = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
-        validateEmailUniqueness(userId, userDTO.getEmail());
-        validateUsernameUniqueness(userId, userDTO.getUsername());
         MergeUtils.mergeUserFields(existingUser, userDTO);
         
         User updatedUser = saveUser(existingUser);

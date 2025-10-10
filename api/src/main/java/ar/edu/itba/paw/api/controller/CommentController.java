@@ -24,7 +24,7 @@ public class CommentController extends BaseController {
     private CommentResourceMapper commentResourceMapper;
 
     @GET
-    @Path(ApiUriConstants.COMMENT_BY_ID)
+    @Path(ApiUriConstants.ID)
     public Response getComment(@PathParam("id") Long id) {
         CommentDTO commentDTO = commentService.findById(id);
         CommentResource commentResource = commentResourceMapper.toResource(commentDTO, getBaseUrl());
@@ -46,7 +46,7 @@ public class CommentController extends BaseController {
     }
 
     @PUT
-    @Path(ApiUriConstants.COMMENT_BY_ID)
+    @Path(ApiUriConstants.ID)
     public Response updateComment(@PathParam("id") Long id, @Valid CommentDTO commentDTO) {
         // TODO: Verificar que el usuario logueado sea el dueño del comentario
         commentDTO.setId(id);
@@ -56,7 +56,7 @@ public class CommentController extends BaseController {
     }
 
     @DELETE
-    @Path(ApiUriConstants.COMMENT_BY_ID)
+    @Path(ApiUriConstants.ID)
     public Response deleteComment(@PathParam("id") Long id) {
         // TODO: Verificar que el usuario logueado sea el dueño del comentario o moderador
         commentService.delete(id);

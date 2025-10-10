@@ -57,7 +57,7 @@ public class ArtistController extends BaseController {
     }
 
     @GET
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ID)
     public Response getArtist(@PathParam("id") Long id) {
         ArtistDTO artistDTO = artistService.findById(id);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
@@ -72,7 +72,7 @@ public class ArtistController extends BaseController {
     }
 
     @PUT
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ID)
     public Response updateArtist(@PathParam("id") Long id, @Valid ArtistDTO artistDTO) {
         artistDTO.setId(id);
         ArtistDTO responseDTO = artistService.update(artistDTO);
@@ -81,14 +81,14 @@ public class ArtistController extends BaseController {
     }
 
     @DELETE
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ID)
     public Response deleteArtist(@PathParam("id") Long id) {
         artistService.delete(id);
         return buildNoContentResponse();
     }
 
     @GET
-    @Path("/{id:\\d+}/reviews")
+    @Path(ApiUriConstants.ARTIST_REVIEWS)
     public Response getArtistReviews(
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
