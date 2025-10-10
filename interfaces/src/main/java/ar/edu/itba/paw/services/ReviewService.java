@@ -1,11 +1,11 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.User;
+
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.models.FilterType;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +56,4 @@ public interface ReviewService extends CrudService<Review> {
     Review updateSongReview(SongReview review);
     Review updateArtistReview(ArtistReview review);
     Review updateAlbumReview(AlbumReview review);
-
-    List<Review> findPaginated(FilterType filterType, int page, int pageSize);
 }

@@ -4,8 +4,7 @@ import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
 import ar.edu.itba.paw.api.models.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
-import ar.edu.itba.paw.api.utils.HATEOASUtils;
-import ar.edu.itba.paw.api.utils.UriBuilder;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.UserResource;
@@ -36,8 +35,9 @@ public class UserController extends BaseController {
     public Response getAllUsers(
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("search") String search) {
-        List<UserDTO> users = userService.findAll(page, size);
+            @QueryParam("search") String search,
+            @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+        List<UserDTO> users = userService.findPaginated(filter, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, userService.countUsers(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
@@ -55,11 +55,7 @@ public class UserController extends BaseController {
 
     @POST
     public Response createUser(@Valid CreateUserDTO createUserDTO) {
-        UserDTO user = userService.create(
-                createUserDTO.getUsername(),
-                createUserDTO.getEmail(),
-                createUserDTO.getPassword()
-        );
+        UserDTO user = userService.create(createUserDTO);
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
 
         return buildCreatedResponse(userResource);

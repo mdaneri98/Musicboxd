@@ -72,7 +72,7 @@ public class AlbumJpaDaoTest {
         // 1. Pre-conditions - the album exist
 
         // 2. Execute
-        Optional<Album> maybeAlbum = albumDao.find(PRE_EXISTING_ALBUM_ID);
+        Optional<Album> maybeAlbum = albumDao.findById(PRE_EXISTING_ALBUM_ID);
 
         // 3. Post-conditions
         assertTrue(maybeAlbum.isPresent());
@@ -88,7 +88,7 @@ public class AlbumJpaDaoTest {
         // 1. Pre-conditions - the album does not exist
 
         // 2. Execute
-        Optional<Album> maybeAlbum = albumDao.find(NEW_ALBUM_ID);
+        Optional<Album> maybeAlbum = albumDao.findById(NEW_ALBUM_ID);
 
         // 3. Post-conditions
         assertFalse(maybeAlbum.isPresent());

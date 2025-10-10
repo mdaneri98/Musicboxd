@@ -67,7 +67,7 @@ public class SongJpaDaoTest {
         // 1. Pre-conditions - the song exist
 
         // 2. Execute
-        Optional<Song> maybeSong = songDao.find(PRE_EXISTING_SONG_ID);
+        Optional<Song> maybeSong = songDao.findById(PRE_EXISTING_SONG_ID);
 
         // 3. Post-conditions
         assertTrue(maybeSong.isPresent());
@@ -82,7 +82,7 @@ public class SongJpaDaoTest {
         // 1. Pre-conditions - the song does not exist
 
         // 2. Execute
-        Optional<Song> maybeSong = songDao.find(NEW_SONG_ID);
+        Optional<Song> maybeSong = songDao.findById(NEW_SONG_ID);
 
         // 3. Post-conditions
         assertFalse(maybeSong.isPresent());

@@ -10,11 +10,11 @@ public interface NotificationDao {
     Notification create(Notification.NotificationType type, User recipientUser,
                         User triggerUser, Review review, String message);
     
-    List<Notification> getNotificationsForUser(Long userId, int page, int pageSize);
+    List<Notification> getNotificationsForUser(Long userId, Integer page, Integer pageSize);
     
-    void markAsRead(Long notificationId);
+    Void markAsRead(Long notificationId);
     
-    void markAllAsRead(Long userId);
+    Void markAllAsRead(Long userId);
     
-    int getUnreadCount(Long userId);
+    Integer getUnreadCount(Long userId);
 } 

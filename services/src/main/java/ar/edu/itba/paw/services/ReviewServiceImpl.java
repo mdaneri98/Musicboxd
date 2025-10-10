@@ -5,8 +5,12 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
+import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.persistence.*;
 import ar.edu.itba.paw.services.exception.AcknowledgementEmailException;
+import ar.edu.itba.paw.services.exception.ReviewNotFoundException;
 import ar.edu.itba.paw.services.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,16 +54,16 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public int updateAvgRatingForAll(){
         LOGGER.info("Updating average ratings for all songs, albums, and artists");
-        List<Song> songs = songService.findAll();
-        List<Album> albums = albumService.findAll();
-        List<Artist> artists = artistService.findAll();
-        for (Song song : songs) {
+        List<SongDTO> songs = songService.findAll();
+        List<AlbumDTO> albums = albumService.findAll();
+        List<ArtistDTO> artists = artistService.findAll();
+        for (SongDTO song : songs) {
             updateSongRating(song.getId());
         }
-        for (Album album : albums) {
+        for (AlbumDTO album : albums) {
             updateAlbumRating(album.getId());
         }
-        for (Artist artist : artists) {
+        for (ArtistDTO artist : artists) {
             updateArtistRating(artist.getId());
         }
         LOGGER.info("Finished updating average ratings for all songs, albums, and artists");
@@ -68,8 +72,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Review> find(long id) {
-        return reviewDao.find(id);
+    public Review findById(Long id) {
+        return reviewDao.findById(id).orElseThrow(() -> new ReviewNotFoundException("Review with id " + id + " not found"));
     }
 
     @Override
@@ -106,11 +110,11 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public boolean delete(long id) {
+    public Boolean delete(Long id) {
         LOGGER.info("Attempting to delete review with ID: {}", id);
         boolean res = false;
         if (isArtistReview(id)) {
-            ArtistReview r = reviewDao.findArtistReviewById(id).get();
+            ArtistReview r = reviewDao.findArtistReviewById(id).orElseThrow(() -> new ReviewNotFoundException("Review with id " + id + " not found"));
             res = reviewDao.delete(id);
             updateUserReviewAmount(r.getUser().getId());
             updateArtistRating(r.getArtist().getId());
@@ -337,10 +341,10 @@ public class ReviewServiceImpl implements ReviewService {
     public void createLike(long userId, long reviewId) {
         LOGGER.info("Creating like for review ID: {} by user ID: {}", reviewId, userId);
 
-        User user = userDao.find(userId)
+        User user = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
 
-        Review review = reviewDao.find(reviewId)
+        Review review = reviewDao.findById(reviewId)
                 .orElseThrow(() -> new UserNotFoundException("Review with ID " + reviewId + " not found"));
 
         reviewDao.createLike(userId, reviewId);
@@ -442,7 +446,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void block(Long reviewId) {
         LOGGER.info("Blocking review with ID: {}", reviewId);
 
-        Optional<Review> reviewOptional = reviewDao.find(reviewId);
+        Optional<Review> reviewOptional = reviewDao.findById(reviewId);
         if (reviewOptional.isEmpty())
             throw new IllegalArgumentException("Review with ID: " + reviewId + " does not exist");
 
@@ -465,7 +469,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void unblock(Long reviewId) {
         LOGGER.info("Unblocking review with ID: {}", reviewId);
 
-        Optional<Review> reviewOptional = reviewDao.find(reviewId);
+        Optional<Review> reviewOptional = reviewDao.findById(reviewId);
         if (reviewOptional.isEmpty())
             throw new IllegalArgumentException("Review with ID: " + reviewId + " does not exist");
 

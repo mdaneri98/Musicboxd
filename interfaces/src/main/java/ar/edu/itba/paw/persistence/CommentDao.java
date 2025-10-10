@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentDao {
-    Optional<Comment> findById(long id);
-    List<Comment> findByReviewId(long reviewId, int pageSize, int offset);
+    Optional<Comment> findById(Long id);
+    List<Comment> findByReviewId(Long reviewId, Integer pageSize, Integer offset);
     Comment save(Comment comment);
-    void deleteById(long id);
+    Void deleteById(Long id);
 }

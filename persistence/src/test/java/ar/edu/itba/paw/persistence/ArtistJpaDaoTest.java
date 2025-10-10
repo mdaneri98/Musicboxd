@@ -63,7 +63,7 @@ public class ArtistJpaDaoTest {
         // 1. Pre-conditions - the artist exist
 
         // 2. Execute
-        Optional<Artist> maybeArtist = artistDao.find(PRE_EXISTING_ARTIST_ID);
+        Optional<Artist> maybeArtist = artistDao.findById(PRE_EXISTING_ARTIST_ID);
 
         // 3. Post-conditions
         assertTrue(maybeArtist.isPresent());
@@ -77,7 +77,7 @@ public class ArtistJpaDaoTest {
         // 1. Pre-conditions - the artist does not exist
 
         // 2. Execute
-        Optional<Artist> maybeArtist = artistDao.find(NEW_ARTIST_ID);
+        Optional<Artist> maybeArtist = artistDao.findById(NEW_ARTIST_ID);
 
         // 3. Post-conditions
         assertFalse(maybeArtist.isPresent());

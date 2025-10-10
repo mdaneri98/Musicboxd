@@ -6,12 +6,12 @@ import java.util.List;
 
 public interface AlbumDao extends CrudDao<Album> {
 
-    List<Album> findByArtistId(long id);
+    List<Album> findByArtistId(Long id);
     List<Album> findByTitleContaining(String sub);
 
-    boolean updateRating(long albumId, Double newRating, int newRatingAmount);
-    boolean hasUserReviewed(long userId, long albumId);
+    Boolean updateRating(Long albumId, Double newRating, Integer newRatingAmount);
+    Boolean hasUserReviewed(Long userId, Long albumId);
 
-    boolean deleteReviewsFromAlbum(long albumId);
-    List<AlbumReview> findReviewsByAlbumId(long albumId);
+    Boolean deleteReviewsFromAlbum(Long albumId);
+    List<AlbumReview> findReviewsByAlbumId(Long albumId);
 }

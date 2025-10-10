@@ -1,13 +1,9 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Comment;
 import java.util.List;
-import java.util.Optional;
+import ar.edu.itba.paw.models.dtos.CommentDTO;
 
-public interface CommentService {
-    Optional<Comment> findById(long id);
-    List<Comment> findByReviewId(long reviewId, int pageSize, int pageNum);
-    Comment save(Comment comment);
-    void deleteById(long id);
+public interface CommentService extends CrudService<CommentDTO> {
+    List<CommentDTO> findByReviewId(long reviewId, int pageSize, int pageNum);
     void updateReviewCommentAmount(long reviewId);
 }

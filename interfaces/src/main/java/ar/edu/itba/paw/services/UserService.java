@@ -1,22 +1,24 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import java.util.List;
 
-public interface UserService {
+public interface UserService{
 
     UserDTO findUserById(Long id);
     Long countUsers();
-    List<UserDTO> findAll(int pageNumber, int pageSize);
+    List<UserDTO> findAll();
+    List<UserDTO> findPaginated(FilterType filterType, int pageNumber, int pageSize);
     List<UserDTO> findByUsernameContaining(String sub, int pageNumber, int pageSize);
 
-    UserDTO create(String username, String email, String password);
+    UserDTO create(CreateUserDTO createUserDTO);
 
-    int createFollowing(User loggedUser, long followingUserId);
-    int undoFollowing(User loggedUser, long followingUserId);
-    List<UserDTO> getFollowers(Long userId, int pageNumber, int pageSize);
-    List<UserDTO> getFollowings(Long userId, int pageNumber, int pageSize);
+    int createFollowing(Long loggedUser, Long followingUserId);
+    int undoFollowing(Long loggedUser, Long followingUserId);
+    List<UserDTO> getFollowers(Long userId, Integer pageNumber, Integer pageSize);
+    List<UserDTO> getFollowings(Long userId, Integer pageNumber, Integer pageSize);
 
     boolean isFollowing(Long userId, Long otherId);
     boolean isAlbumFavorite(Long userId, Long albumId);

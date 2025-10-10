@@ -1,10 +1,10 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import ar.edu.itba.paw.services.exception.ArtistNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import ar.edu.itba.paw.services.mappers.ArtistMapper;
+import ar.edu.itba.paw.services.mappers.ReviewMapper;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -23,75 +26,61 @@ public class ArtistServiceImpl implements ArtistService {
     private final ImageService imageService;
     private final AlbumService albumService;
     private final UserService userService;
+    private final ArtistMapper artistMapper;
+    private final ReviewMapper reviewMapper;
 
-    public ArtistServiceImpl(ArtistDao artistDao, ImageService imageService, AlbumService albumService, UserService userService) {
+    public ArtistServiceImpl(ArtistDao artistDao, ImageService imageService, AlbumService albumService, UserService userService, ArtistMapper artistMapper, ReviewMapper reviewMapper) {
         this.artistDao = artistDao;
         this.imageService = imageService;
         this.albumService = albumService;
         this.userService = userService;
+        this.artistMapper = artistMapper;
+        this.reviewMapper = reviewMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Artist> find(long id) {
-        return artistDao.find(id);
+    public ArtistDTO findById(Long id) {
+        return artistDao.findById(id).map(artistMapper::toDTO).orElseThrow(() -> new ArtistNotFoundException("Artist with id " + id + " not found"));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Artist> findAll() {
-        return artistDao.findAll();
+    public List<ArtistDTO> findAll() {
+        return artistMapper.toDTOList(artistDao.findAll());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Artist> findPaginated(FilterType filterType, int page, int pageSize) {
-        return artistDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
+    public List<ArtistDTO> findPaginated(FilterType filterType, int page, int pageSize) {
+        return artistMapper.toDTOList(artistDao.findPaginated(filterType, pageSize, (page - 1) * pageSize));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Artist> findByNameContaining(String sub) {
-        return artistDao.findByNameContaining(sub);
+    public List<ArtistDTO> findByNameContaining(String sub) {
+        return artistMapper.toDTOList(artistDao.findByNameContaining(sub));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Artist> findBySongId(long id) {
-        return artistDao.findBySongId(id);
+    public List<ArtistDTO> findBySongId(long id) {
+        return artistMapper.toDTOList(artistDao.findBySongId(id));
     }
 
     @Override
     @Transactional
-    public Artist create(Artist artist) {
-        LOGGER.info("Creating new artist: {}", artist.getName());
-        Artist createdArtist = artistDao.create(artist);
-        LOGGER.info("Artist created successfully with ID: {}", createdArtist.getId());
-        return createdArtist;
-    }
-
-    @Override
-    @Transactional
-    public Artist update(Artist artist) {
-        LOGGER.info("Updating artist with ID: {}", artist.getId());
-        Artist updatedArtist = artistDao.update(artist);
-        LOGGER.info("Artist updated successfully");
-        return updatedArtist;
-    }
-
-    @Override
-    @Transactional
-    public boolean delete(long id) {
+    public Boolean delete(Long id) {
         LOGGER.info("Attempting to delete artist with ID: {}", id);
-        Optional<Artist> artist = artistDao.find(id);
+        Optional<Artist> artist = artistDao.findById(id);
         if (artist.isEmpty()) {
             LOGGER.warn("Artist with ID {} not found for deletion", id);
             return false;
         }
 
         // Delete Images
-        List<Album> list = albumService.findByArtistId(id);
-        list.forEach(album -> albumService.delete(album));
+        List<AlbumDTO> list = albumService.findByArtistId(id);
+        list.forEach(album -> albumService.delete(album.getId()));
 
         List<Long> userIds = new ArrayList<>();
         artistDao.findReviewsByArtistId(id).forEach(review -> userIds.add(review.getUser().getId()));
@@ -115,23 +104,23 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     @Transactional
-    public boolean delete(Artist artist) {
-        if (artist.getId() == null || artist.getImage() == null || artist.getId() < 1 || artist.getImage().getId() < 1) {
-            LOGGER.warn("Invalid artist data for deletion: {}", artist);
+    public boolean delete(ArtistDTO artistDTO) {
+        if (artistDTO.getId() == null || artistDTO.getImage().getId() == null || artistDTO.getId() < 1 || artistDTO.getImage().getId() < 1) {
+            LOGGER.warn("Invalid artist data for deletion: {}", artistDTO);
             return false;
         }
-        Long id = artist.getId();
+        Long id = artistDTO.getId();
 
         // Delete Images
-        List<Album> list = albumService.findByArtistId(id);
-        list.forEach(album -> albumService.delete(album));
+        List<AlbumDTO> list = albumService.findByArtistId(id);
+        list.forEach(album -> albumService.delete(album.getId()));
 
         List<Long> userIds = new ArrayList<>();
         artistDao.findReviewsByArtistId(id).forEach(review -> userIds.add(review.getUser().getId()));
         artistDao.deleteReviewsFromArtist(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean deleted = artistDao.delete(id);
-        imageService.delete(artist.getImage().getId());
+        imageService.delete(artistDTO.getImage().getId());
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);
         } else {
@@ -142,14 +131,14 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     @Transactional
-    public Artist create(ArtistDTO artistDTO) {
+    public ArtistDTO create(ArtistDTO artistDTO) {
         LOGGER.info("Creating new artist from DTO: {}", artistDTO.getName());
 
         Image image;
-        if (artistDTO.getImgId() == 0 && artistDTO.getImage().length == 0)
+        if (artistDTO.getImage().getId() == 0 && artistDTO.getImage().getImage().getBytes().length == 0)
             image = imageService.findById(imageService.getDefaultImgId()).get();
         else
-            image = imageService.create(artistDTO.getImage());
+            image = imageService.create(artistDTO.getImage().getImage().getBytes());
 
         Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(), image);
         artist.setCreatedAt(LocalDateTime.now());
@@ -163,16 +152,16 @@ public class ArtistServiceImpl implements ArtistService {
             LOGGER.info("Creating albums for artist: {} (ID: {})", artist.getName(), artist.getId());
             albumService.createAll(artistDTO.getAlbums(), artist.getId());
         }
-        return artist;
+        return artistMapper.toDTO(artist);
     }
 
     @Override
     @Transactional
-    public Artist update(ArtistDTO artistDTO) {
+    public ArtistDTO update(ArtistDTO artistDTO) {
         LOGGER.info("Updating artist from DTO: {} (ID: {})", artistDTO.getName(), artistDTO.getId());
 
-        Optional<Image> optionalImage = imageService.update(new Image(artistDTO.getImgId(), artistDTO.getImage()));
-        Artist artist = artistDao.find(artistDTO.getId()).get();
+        Optional<Image> optionalImage = imageService.update(new Image(artistDTO.getImage().getId(), artistDTO.getImage().getImage().getBytes()));
+        Artist artist = artistDao.findById(artistDTO.getId()).get();
         artist.setName(artistDTO.getName());
         artist.setBio(artistDTO.getBio());
         artist.setImage(optionalImage.get());
@@ -184,7 +173,7 @@ public class ArtistServiceImpl implements ArtistService {
             LOGGER.info("Updating albums for artist: {} (ID: {})", artist.getName(), artist.getId());
             albumService.updateAll(artistDTO.getAlbums(), artist.getId());
         }
-        return artist;
+        return artistMapper.toDTO(artist);
     }
 
     @Override

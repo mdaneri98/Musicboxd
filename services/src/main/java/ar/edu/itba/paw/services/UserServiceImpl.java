@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.persistence.UserVerificationDao;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserDTO findUserById(Long id) {
-        return userDao.find(id)
+        return userDao.findById(id)
                 .map(userMapper::toDTO)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
     }
@@ -95,44 +96,50 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> findAll(int pageNumber, int pageSize) {
-        return userMapper.toDTOList(userDao.findAll(pageNumber, pageSize));
+    public List<UserDTO> findAll() {
+        return userMapper.toDTOList(userDao.findAll());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> findPaginated(FilterType filterType, int page, int pageSize) {
+        return userMapper.toDTOList(userDao.findPaginated(filterType, page, pageSize));
     }
 
     @Override
     @Transactional
-    public UserDTO create(String username, String email, String password) {
-        LOGGER.info("Creating new user with username: {} and email: {}", username, email);
-        String hashedPassword = passwordEncoder.encode(password);
+    public UserDTO create(CreateUserDTO createUserDTO) {
+        LOGGER.info("Creating new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
+        String hashedPassword = passwordEncoder.encode(createUserDTO.getPassword());
 
         /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
-        Optional<User> emailOptUser = userDao.findByEmail(email);
-        Optional<User> usernameOptUser = userDao.findByUsername(username);
+        Optional<User> emailOptUser = userDao.findByEmail(createUserDTO.getEmail());
+        Optional<User> usernameOptUser = userDao.findByUsername(createUserDTO.getUsername());
 
         if (emailOptUser.isPresent()) {
             if (emailOptUser.get().getUsername() == null){
                 User user = emailOptUser.get();
-                user.setUsername(username);
-                user.setPassword(password);
-                user.setEmail(email);
+                user.setUsername(createUserDTO.getUsername());
+                user.setPassword(createUserDTO.getPassword());
+                user.setEmail(createUserDTO.getEmail());
                 userDao.updateUser(user.getId(), user);
-                LOGGER.info("Updated existing user with email: {}", email);
+                LOGGER.info("Updated existing user with email: {}", createUserDTO.getEmail());
                 return userMapper.toDTO(user);
             } else {
-                LOGGER.warn("Attempt to create user with existing email: {}", email);
-                throw new UserAlreadyExistsException("El correo " + email + " ya está en uso.");
+                LOGGER.warn("Attempt to create user with existing email: {}", createUserDTO.getEmail());
+                throw new UserAlreadyExistsException("El correo " + createUserDTO.getEmail() + " ya está en uso.");
             }
         }
         if (usernameOptUser.isPresent()) {
-            LOGGER.warn("Attempt to create user with existing username: {}", username);
-            throw new UserAlreadyExistsException("El usuario " + username + " ya está en uso.");
+            LOGGER.warn("Attempt to create user with existing username: {}", createUserDTO.getUsername());
+            throw new UserAlreadyExistsException("El usuario " + createUserDTO.getUsername() + " ya está en uso.");
         }
 
         Optional<Image> optionalImage = imageService.findById(imageService.getDefaultProfileImgId());
         if (optionalImage.isEmpty())
             throw new IllegalArgumentException("La imagen profile-default no existe.");
 
-        Optional<User> userOpt = userDao.create(username, email, hashedPassword);
+        Optional<User> userOpt = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword);
         if (userOpt.isPresent()) {
             User createdUser = userOpt.get();
             createdUser.setPreferredLanguage(LocaleContextHolder.getLocale().getLanguage());
@@ -140,15 +147,15 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Successfully created new user with ID: {}", createdUser.getId());
             return userMapper.toDTO(createdUser);
         } else {
-            LOGGER.error("Failed to create new user with username: {} and email: {}", username, email);
+            LOGGER.error("Failed to create new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
             throw new RuntimeException("Failed to create user");
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getFollowers(Long userId, int pageNumber, int pageSize) {
-        if (userId == null || userDao.find(userId).isEmpty()) {
+    public List<UserDTO> getFollowers(Long userId, Integer pageNumber, Integer pageSize) {
+        if (userId == null || userDao.findById(userId).isEmpty()) {
             throw new UserNotFoundException("User with ID " + userId + " not found");
         }
         return userMapper.toDTOList(userDao.getFollowers(userId, pageNumber, pageSize));
@@ -156,8 +163,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getFollowings(Long userId, int pageNumber, int pageSize) {
-        if (userId == null || userDao.find(userId).isEmpty()) {
+    public List<UserDTO> getFollowings(Long userId, Integer pageNumber, Integer pageSize) {
+        if (userId == null || userDao.findById(userId).isEmpty()) {
             throw new UserNotFoundException("User with ID " + userId + " not found");
         }
         return userMapper.toDTOList(userDao.getFollowings(userId, pageNumber, pageSize));
@@ -189,16 +196,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public int createFollowing(User user, long followingId) {
-        LOGGER.info("Creating following relationship: User {} following User {}", user.getId(), followingId);
-        if (this.isFollowing(user.getId(), followingId)) {
+    public int createFollowing(Long userId, Long followingId) {
+        LOGGER.info("Creating following relationship: User {} following User {}", userId, followingId);
+        if (this.isFollowing(userId, followingId)) {
             LOGGER.info("Following relationship already exists");
             return 0;
         }
-        Optional<User> followingOpt = userDao.find(followingId);
+        Optional<User> userOpt = userDao.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new UserNotFoundException("User with ID " + userId + " not found");
+        }
+        Optional<User> followingOpt = userDao.findById(followingId);
         if (followingOpt.isEmpty()) {
             throw new UserNotFoundException("User with ID " + followingId + " not found");
         }
+        User user = userOpt.get();
         User following = followingOpt.get();
         int result = userDao.createFollowing(user, following);
         notificationService.notifyFollow(following, user);
@@ -208,14 +220,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public int undoFollowing(User userId, long followingId) {
-        LOGGER.info("Removing following relationship: User {} unfollowing User {}", userId.getId(), followingId);
-        Optional<User> followingOpt = userDao.find(followingId);
+    public int undoFollowing(Long userId, Long followingId) {
+        LOGGER.info("Removing following relationship: User {} unfollowing User {}", userId, followingId);
+        Optional<User> followingOpt = userDao.findById(followingId);
+        Optional<User> userOpt = userDao.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new UserNotFoundException("User with ID " + userId + " not found");
+        }
         if (followingOpt.isEmpty()) {
             throw new UserNotFoundException("User with ID " + followingId + " not found");
         }
+        User user = userOpt.get();
         User following = followingOpt.get();
-        int result = userDao.undoFollowing(userId, following);
+        int result = userDao.undoFollowing(user, following);
         LOGGER.info("Following relationship removed successfully");
         return result;
     }
@@ -255,7 +272,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
         LOGGER.info("Updating user with ID: {}", userId);
         
-        User existingUser = userDao.find(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        User existingUser = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
         validateEmailUniqueness(userId, userDTO.getEmail());
         validateUsernameUniqueness(userId, userDTO.getUsername());
         mergeUserFields(existingUser, userDTO);
@@ -270,7 +287,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public boolean changePassword(Long userId, String newPassword) {
         LOGGER.info("Changing password for user with ID: {}", userId);
-        Optional<User> userOpt = userDao.find(userId);
+        Optional<User> userOpt = userDao.findById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             user.setPassword(passwordEncoder.encode(newPassword));
@@ -425,7 +442,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<UserDTO> getRecommendedUsers(Long userId, int pageNumber, int pageSize) {
         LOGGER.info("Getting recommended users for user with ID: {}", userId);
-        if (userId == null || userDao.find(userId).isEmpty()) {
+        if (userId == null || userDao.findById(userId).isEmpty()) {
             LOGGER.warn("Invalid user ID: {}", userId);
             throw new UserNotFoundException("User with ID " + userId + " not found");
         }
