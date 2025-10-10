@@ -1,31 +1,20 @@
 package ar.edu.itba.paw.api.models;
 
-import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
-import ar.edu.itba.paw.models.reviews.ArtistReview;
+import ar.edu.itba.paw.models.dtos.ReviewDTO;
 
 /**
- * HATEOAS resource wrapper for Review entities
+ * HATEOAS resource wrapper for Review DTOs
  */
-public class ReviewResource extends Resource<Review> {
+public class ReviewResource extends Resource<ReviewDTO> {
 
-    private final Review item;
+    private final ReviewDTO data;
 
-    public ReviewResource(SongReview item) {
-        this.item = item;
-    }
-
-    public ReviewResource(AlbumReview item) {
-        this.item = item;
-    }
-
-    public ReviewResource(ArtistReview item) {
-        this.item = item;
+    public ReviewResource(ReviewDTO data) {
+        this.data = data;
     }
 
     @Override
-    public Review getData() {
-        return item;
+    public ReviewDTO getData() {
+        return data;
     }
 }

@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDTO> findPaginated(FilterType filterType, int page, int pageSize) {
+    public List<CommentDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         throw new RuntimeException("Method not allowed");
     }
 
@@ -57,7 +57,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDTO> findByReviewId(long reviewId, int pageSize, int pageNum) {
+    public List<CommentDTO> findByReviewId(Long reviewId, Integer pageSize, Integer pageNum) {
         int offset = (pageNum - 1) * pageSize;
         List<Comment> comments = commentDao.findByReviewId(reviewId, pageSize, offset);
         setTimeAgo(comments);
@@ -86,7 +86,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void updateReviewCommentAmount(long reviewId) {
+    public void updateReviewCommentAmount(Long reviewId) {
         reviewDao.updateCommentAmount(reviewId);
     }
 

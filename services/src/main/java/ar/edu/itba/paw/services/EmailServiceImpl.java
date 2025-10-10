@@ -68,7 +68,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void sendVerification(VerificationType type, User to, String code) throws MessagingException {
+    public Void sendVerification(VerificationType type, User to, String code) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
         Locale currentLocale = new Locale.Builder().setLanguage(to.getPreferredLanguage()).build();
@@ -108,11 +108,12 @@ public class EmailServiceImpl implements EmailService {
                 params,
                 currentLocale
         );
+        return null;
     }
 
     @Override
     @Async
-    public void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, String reviewTitle, String reviewName, String reviewType) throws MessagingException {
+    public Void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, String reviewTitle, String reviewName, String reviewType) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
         Locale currentLocale = new Locale.Builder().setLanguage(to.getPreferredLanguage()).build();
@@ -144,6 +145,7 @@ public class EmailServiceImpl implements EmailService {
                 params,
                 currentLocale
         );
+        return null;
     }
 
 }

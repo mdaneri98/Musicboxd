@@ -8,10 +8,8 @@ import ar.edu.itba.paw.api.models.ReviewResource;
 import ar.edu.itba.paw.api.models.SongResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
-import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +115,8 @@ public class SongController extends BaseController {
             @QueryParam("loggedUserId") @DefaultValue("23") Long loggedUserId) {
         // TODO: Obtener loggedUserId del contexto de seguridad
         
-        List<SongReview> reviews = reviewService.findSongReviewsPaginated(id, page, size, loggedUserId);
+        List<ReviewDTO> reviews = reviewService.findSongReviewsPaginated(id, page, size, loggedUserId);
+
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(

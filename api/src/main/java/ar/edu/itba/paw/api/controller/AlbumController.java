@@ -10,8 +10,8 @@ import ar.edu.itba.paw.api.models.ReviewResource;
 import ar.edu.itba.paw.api.models.SongResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
@@ -68,7 +68,7 @@ public class AlbumController extends BaseController {
     }
 
     @GET
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ALBUM_BY_ID)
     public Response getAlbum(@PathParam("id") Long id) {
         AlbumDTO albumDTO = albumService.findById(id);
         AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
@@ -91,7 +91,7 @@ public class AlbumController extends BaseController {
     }
 
     @PUT
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ALBUM_BY_ID)
     public Response updateAlbum(@PathParam("id") Long id, @Valid AlbumDTO albumDTO) {
         albumDTO.setId(id);
         AlbumDTO responseDTO = albumService.update(albumDTO);
@@ -100,14 +100,14 @@ public class AlbumController extends BaseController {
     }
 
     @DELETE
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.ALBUM_BY_ID)
     public Response deleteAlbum(@PathParam("id") Long id) {
         albumService.delete(id);
         return buildNoContentResponse();
     }
 
     @GET
-    @Path("/{id:\\d+}/reviews")
+    @Path(ApiUriConstants.ALBUM_REVIEWS)
     public Response getAlbumReviews(
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
@@ -115,7 +115,7 @@ public class AlbumController extends BaseController {
             @QueryParam("loggedUserId") Long loggedUserId) {
         // TODO: Obtener loggedUserId del contexto de seguridad
         
-        List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(id, page, size, loggedUserId);
+        List<ReviewDTO> reviews = reviewService.findAlbumReviewsPaginated(id, page, size, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
@@ -125,7 +125,7 @@ public class AlbumController extends BaseController {
     }
 
     @GET
-    @Path("/{id:\\d+}/songs")
+    @Path(ApiUriConstants.ALBUM_SONGS)
     public Response getAlbumSongs(@PathParam("id") Long id) {
         List<SongDTO> songDTOs = songService.findByAlbumId(id);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());

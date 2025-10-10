@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.persistence.UserDao;
@@ -9,6 +12,9 @@ import ar.edu.itba.paw.services.exception.UserAlreadyExistsException;
 import ar.edu.itba.paw.services.exception.UserNotFoundException;
 import ar.edu.itba.paw.services.exception.VerificationEmailException;
 import ar.edu.itba.paw.services.mappers.UserMapper;
+import ar.edu.itba.paw.services.mappers.ArtistMapper;
+import ar.edu.itba.paw.services.mappers.AlbumMapper;
+import ar.edu.itba.paw.services.mappers.SongMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -18,10 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,18 +38,22 @@ public class UserServiceImpl implements UserService {
     private final UserVerificationDao userVerificationDao;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final ArtistMapper artistMapper;
+    private final AlbumMapper albumMapper;
+    private final SongMapper songMapper;
 
     private final EmailService emailService;
-    private final ImageService imageService;
     private final NotificationService notificationService;
 
-    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, UserMapper userMapper, EmailService emailService, ImageService imageService, NotificationService notificationService) {
+    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, UserMapper userMapper, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, EmailService emailService, NotificationService notificationService) {
         this.userDao = userDao;
         this.userVerificationDao = userVerificationDao;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+        this.artistMapper = artistMapper;
+        this.albumMapper = albumMapper;
+        this.songMapper = songMapper;
         this.emailService = emailService;
-        this.imageService = imageService;
         this.notificationService = notificationService;
     }
 
@@ -77,20 +88,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean usernameExists(String username) {
+    public Boolean usernameExists(String username) {
         return userDao.findByUsername(username).isPresent();
     }
 
     @Override
     @Transactional
-    public void updateUserReviewAmount(Long userId) {
+    public Void updateUserReviewAmount(Long userId) {
         LOGGER.info("Updating review amount for user with ID: {}", userId);
         userDao.updateUserReviewAmount(userId);
+        return null;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> findByUsernameContaining(String sub, int pageNumber, int pageSize) {
+    public List<UserDTO> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize) {
         return userMapper.toDTOList(userDao.findByUsernameContaining(sub, pageNumber, pageSize));
     }
 
@@ -102,13 +114,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> findPaginated(FilterType filterType, int page, int pageSize) {
+    public List<UserDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         return userMapper.toDTOList(userDao.findPaginated(filterType, page, pageSize));
     }
 
     @Override
     @Transactional
     public UserDTO create(CreateUserDTO createUserDTO) {
+        //TODO: arregar este metodo. sacar el caso en el que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email.
         LOGGER.info("Creating new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
         String hashedPassword = passwordEncoder.encode(createUserDTO.getPassword());
 
@@ -134,10 +147,6 @@ public class UserServiceImpl implements UserService {
             LOGGER.warn("Attempt to create user with existing username: {}", createUserDTO.getUsername());
             throw new UserAlreadyExistsException("El usuario " + createUserDTO.getUsername() + " ya está en uso.");
         }
-
-        Optional<Image> optionalImage = imageService.findById(imageService.getDefaultProfileImgId());
-        if (optionalImage.isEmpty())
-            throw new IllegalArgumentException("La imagen profile-default no existe.");
 
         Optional<User> userOpt = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword);
         if (userOpt.isPresent()) {
@@ -172,46 +181,39 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isFollowing(Long userId, Long otherId) {
+    public Boolean isFollowing(Long userId, Long otherId) {
         return userDao.isFollowing(userId, otherId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isAlbumFavorite(Long userId, Long albumId) {
+    public Boolean isAlbumFavorite(Long userId, Long albumId) {
         return userDao.isAlbumFavorite(userId, albumId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isArtistFavorite(Long userId, Long artistId) {
+    public Boolean isArtistFavorite(Long userId, Long artistId) {
         return userDao.isArtistFavorite(userId, artistId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isSongFavorite(Long userId, Long songId) {
+    public Boolean isSongFavorite(Long userId, Long songId) {
         return userDao.isSongFavorite(userId, songId);
     }
 
     @Override
     @Transactional
-    public int createFollowing(Long userId, Long followingId) {
+    public Integer createFollowing(Long userId, Long followingId) {
         LOGGER.info("Creating following relationship: User {} following User {}", userId, followingId);
         if (this.isFollowing(userId, followingId)) {
             LOGGER.info("Following relationship already exists");
             return 0;
         }
-        Optional<User> userOpt = userDao.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new UserNotFoundException("User with ID " + userId + " not found");
-        }
-        Optional<User> followingOpt = userDao.findById(followingId);
-        if (followingOpt.isEmpty()) {
-            throw new UserNotFoundException("User with ID " + followingId + " not found");
-        }
-        User user = userOpt.get();
-        User following = followingOpt.get();
+        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        User following = userDao.findById(followingId).orElseThrow(() -> new UserNotFoundException("User with ID " + followingId + " not found"));
+
         int result = userDao.createFollowing(user, following);
         notificationService.notifyFollow(following, user);
         LOGGER.info("Following relationship created successfully");
@@ -220,18 +222,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public int undoFollowing(Long userId, Long followingId) {
+    public Integer undoFollowing(Long userId, Long followingId) {
         LOGGER.info("Removing following relationship: User {} unfollowing User {}", userId, followingId);
-        Optional<User> followingOpt = userDao.findById(followingId);
-        Optional<User> userOpt = userDao.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new UserNotFoundException("User with ID " + userId + " not found");
-        }
-        if (followingOpt.isEmpty()) {
-            throw new UserNotFoundException("User with ID " + followingId + " not found");
-        }
-        User user = userOpt.get();
-        User following = followingOpt.get();
+        User following = userDao.findById(followingId).orElseThrow(() -> new UserNotFoundException("User with ID " + followingId + " not found"));
+        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
         int result = userDao.undoFollowing(user, following);
         LOGGER.info("Following relationship removed successfully");
         return result;
@@ -239,7 +233,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void createVerification(VerificationType type, User user) {
+    public Void createVerification(VerificationType type, User user) {
         LOGGER.info("Creating verification for user: {} with type: {}", user.getId(), type);
         try {
             String verificationCode = UUID.randomUUID().toString();
@@ -252,6 +246,7 @@ public class UserServiceImpl implements UserService {
             LOGGER.error("Failed to send verification email to user: {}", user.getEmail(), e);
             throw new VerificationEmailException("No se pudo enviar la verificación del email al usuario " + user.getEmail(), e);
         }
+        return null;
     }
 
     @Override
@@ -270,12 +265,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
+        // TODO: checkear si el parametro userId es necesario o si se puede usar el id que viene en el userDTO
         LOGGER.info("Updating user with ID: {}", userId);
         
         User existingUser = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
         validateEmailUniqueness(userId, userDTO.getEmail());
         validateUsernameUniqueness(userId, userDTO.getUsername());
-        mergeUserFields(existingUser, userDTO);
+        MergeUtils.mergeUserFields(existingUser, userDTO);
         
         User updatedUser = saveUser(existingUser);
         LOGGER.info("User with ID {} updated successfully", userId);
@@ -285,23 +281,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean changePassword(Long userId, String newPassword) {
+    public Boolean changePassword(Long userId, String newPassword) {
         LOGGER.info("Changing password for user with ID: {}", userId);
-        Optional<User> userOpt = userDao.findById(userId);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            user.setPassword(passwordEncoder.encode(newPassword));
-            LOGGER.info("Password changed successfully for user with ID: {}", userId);
-            return true;
-        } else {
-            LOGGER.warn("Failed to change password for user with ID: {}", userId);
-            throw new UserNotFoundException("User with ID " + userId + " not found");
-        }
+        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        LOGGER.info("Password changed successfully for user with ID: {}", userId);
+        return true;
     }
 
     @Override
     @Transactional
-    public int deleteById(long id) {
+    public Integer deleteById(Long id) {
         LOGGER.info("Deleting user with ID: {}", id);
         int result = userDao.deleteById(id);
         if (result > 0) {
@@ -314,13 +304,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Artist> getFavoriteArtists(long userId) {
-        return userDao.getFavoriteArtists(userId);
+    public List<ArtistDTO> getFavoriteArtists(Long userId) {
+        return userDao.getFavoriteArtists(userId).stream().map(artistMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public boolean addFavoriteArtist(long userId, long artistId) {
+    public Boolean addFavoriteArtist(Long userId, Long artistId) {
         LOGGER.info("Adding favorite artist with ID: {} for user with ID: {}", artistId, userId);
         if (getFavoriteArtistsCount(userId) >= 5) {
             LOGGER.warn("User with ID: {} has reached the maximum number of favorite artists", userId);
@@ -337,7 +327,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean removeFavoriteArtist(long userId, long artistId) {
+    public Boolean removeFavoriteArtist(Long userId, Long artistId) {
         LOGGER.info("Removing favorite artist with ID: {} for user with ID: {}", artistId, userId);
         boolean result = userDao.removeFavoriteArtist(userId, artistId);
         if (result) {
@@ -350,19 +340,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public int getFavoriteArtistsCount(long userId) {
+    public Integer getFavoriteArtistsCount(Long userId) {
         return userDao.getFavoriteArtistsCount(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Album> getFavoriteAlbums(long userId) {
-        return userDao.getFavoriteAlbums(userId);
+    public List<AlbumDTO> getFavoriteAlbums(Long userId) {
+        return userDao.getFavoriteAlbums(userId).stream().map(albumMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public boolean addFavoriteAlbum(long userId, long albumId) {
+    public Boolean addFavoriteAlbum(Long userId, Long albumId) {
         LOGGER.info("Adding favorite album with ID: {} for user with ID: {}", albumId, userId);
         if (getFavoriteAlbumsCount(userId) >= 5) {
             LOGGER.warn("User with ID: {} has reached the maximum number of favorite albums", userId);
@@ -379,7 +369,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean removeFavoriteAlbum(long userId, long albumId) {
+    public Boolean removeFavoriteAlbum(Long userId, Long albumId) {
         LOGGER.info("Removing favorite album with ID: {} for user with ID: {}", albumId, userId);
         boolean result = userDao.removeFavoriteAlbum(userId, albumId);
         if (result) {
@@ -392,19 +382,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public int getFavoriteAlbumsCount(long userId) {
+    public Integer getFavoriteAlbumsCount(Long userId) {
         return userDao.getFavoriteAlbumsCount(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Song> getFavoriteSongs(long userId) {
-        return userDao.getFavoriteSongs(userId);
+    public List<SongDTO> getFavoriteSongs(Long userId) {
+        return userDao.getFavoriteSongs(userId).stream().map(songMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public boolean addFavoriteSong(long userId, long songId) {
+    public Boolean addFavoriteSong(Long userId, Long songId) {
         LOGGER.info("Adding favorite song with ID: {} for user with ID: {}", songId, userId);
         if (getFavoriteSongsCount(userId) >= 5) {
             LOGGER.warn("User with ID: {} has reached the maximum number of favorite songs", userId);
@@ -421,7 +411,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean removeFavoriteSong(long userId, long songId) {
+    public Boolean removeFavoriteSong(Long userId, Long songId) {
         LOGGER.info("Removing favorite song with ID: {} for user with ID: {}", songId, userId);
         boolean result = userDao.removeFavoriteSong(userId, songId);
         if (result) {
@@ -434,13 +424,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public int getFavoriteSongsCount(long userId) {
+    public Integer getFavoriteSongsCount(Long userId) {
         return userDao.getFavoriteSongsCount(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getRecommendedUsers(Long userId, int pageNumber, int pageSize) {
+    public List<UserDTO> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize) {
         LOGGER.info("Getting recommended users for user with ID: {}", userId);
         if (userId == null || userDao.findById(userId).isEmpty()) {
             LOGGER.warn("Invalid user ID: {}", userId);
@@ -455,8 +445,8 @@ public class UserServiceImpl implements UserService {
     private void validateUsernameUniqueness(Long userId, String username) {
         if (username == null) return;
 
-        Optional<User> existingUser = userDao.findByUsername(username);
-        if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
+        User existingUser = userDao.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User with username " + username + " not found"));
+        if (!existingUser.getId().equals(userId)) {
             throw new UserAlreadyExistsException("Username " + username + " is already in use");
         }
     }
@@ -464,38 +454,9 @@ public class UserServiceImpl implements UserService {
     private void validateEmailUniqueness(Long userId, String email) {
         if (email == null) return;
 
-        Optional<User> existingUser = userDao.findByEmail(email);
-        if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
+        User existingUser = userDao.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+        if (existingUser.getId().equals(userId)) {
             throw new UserAlreadyExistsException("Email " + email + " is already in use");
-        }
-    }
-
-    private void mergeUserFields(User existingUser, UserDTO userDTO) {
-        mergeBasicFields(existingUser, userDTO);
-        mergeNotificationSettings(existingUser, userDTO);
-        existingUser.setUpdatedAt(LocalDateTime.now());
-    }
-
-    private void mergeBasicFields(User existingUser, UserDTO userDTO) {
-        setFieldIfNotNull(existingUser::setUsername, userDTO.getUsername());
-        setFieldIfNotNull(existingUser::setEmail, userDTO.getEmail());
-        setFieldIfNotNull(existingUser::setName, userDTO.getName());
-        setFieldIfNotNull(existingUser::setBio, userDTO.getBio());
-        setFieldIfNotNull(existingUser::setImageId, userDTO.getImageId());
-        setFieldIfNotNull(existingUser::setPreferredLanguage, userDTO.getPreferredLanguage());
-        setFieldIfNotNull(existingUser::setTheme, userDTO.getPreferredTheme());
-    }
-
-    private void mergeNotificationSettings(User existingUser, UserDTO userDTO) {
-        setFieldIfNotNull(existingUser::setFollowNotificationsEnabled, userDTO.getHasFollowNotificationsEnabled());
-        setFieldIfNotNull(existingUser::setLikeNotificationsEnabled, userDTO.getHasLikeNotificationsEnabled());
-        setFieldIfNotNull(existingUser::setCommentNotificationsEnabled, userDTO.getHasCommentsNotificationsEnabled());
-        setFieldIfNotNull(existingUser::setReviewNotificationsEnabled, userDTO.getHasReviewsNotificationsEnabled());
-    }
-
-    private <T> void setFieldIfNotNull(java.util.function.Consumer<T> setter, T value) {
-        if (value != null) {
-            setter.accept(value);
         }
     }
 
@@ -503,5 +464,4 @@ public class UserServiceImpl implements UserService {
         return userDao.updateUser(user.getId(), user)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + user.getId() + " not found"));
     }
-
 }

@@ -2,21 +2,21 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import java.util.List;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
+import ar.edu.itba.paw.models.dtos.ReviewDTO;
 
 public interface AlbumService extends CrudService<AlbumDTO> {
 
-    List<AlbumDTO> findByArtistId(long id);
+    List<AlbumDTO> findByArtistId(Long id);
 
     List<AlbumDTO> findByTitleContaining(String sub);
 
-    boolean createAll(List<AlbumDTO> albumsDTO, long artistId);
+    Boolean createAll(List<AlbumDTO> albumsDTO, Long artistId);
 
-    boolean updateAll(List<AlbumDTO> albumsDTO, long artistId);
+    Boolean updateAll(List<AlbumDTO> albumsDTO, Long artistId);
 
-    boolean updateRating(long albumId, Double newRating, int newRatingAmount);
+    Boolean updateRating(Long albumId, Double newRating, Integer newRatingAmount);
 
-    boolean hasUserReviewed(long userId, long albumId);
+    Boolean hasUserReviewed(Long userId, Long albumId);
 
-    List<AlbumReview> findReviewsByAlbumId(long albumId);
+    List<ReviewDTO> findReviewsByAlbumId(Long albumId);
 }

@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import ar.edu.itba.paw.services.exception.AlbumNotFoundException;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;
-import java.util.Optional;
+import java.util.stream.Collectors;
+import ar.edu.itba.paw.models.dtos.ReviewDTO;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -44,7 +45,7 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Transactional(readOnly = true)
-    public List<AlbumDTO> findPaginated(FilterType filterType, int page, int pageSize) {
+    public List<AlbumDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         List<Album> albums = albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
         albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
         return albumMapper.toDTOList(albums);
@@ -52,7 +53,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AlbumDTO> findByArtistId(long id) {
+    public List<AlbumDTO> findByArtistId(Long id) {
         List<Album> albums = albumDao.findByArtistId(id);
         albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
         return albumMapper.toDTOList(albums);
@@ -77,17 +78,13 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public boolean delete(long id) {
         LOGGER.info("Attempting to delete album with ID: {}", id);
-        Optional<Album> album = albumDao.findById(id);
-        if (album.isEmpty()) {
-            LOGGER.warn("Album with ID {} not found for deletion", id);
-            return false;
-        }
+        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException("Album with id " + id + " not found"));
         List<Long> userIds = new ArrayList<>();
         albumDao.findReviewsByAlbumId(id).forEach(review -> userIds.add(review.getUser().getId()));
         albumDao.deleteReviewsFromAlbum(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean deleted = albumDao.delete(id);
-        imageService.delete(album.get().getImage().getId());
+        imageService.delete(album.getImage().getId());
         if (deleted) {
             LOGGER.info("Album with ID {} deleted successfully", id);
         } else {
@@ -98,8 +95,8 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AlbumReview> findReviewsByAlbumId(long albumId) {
-        return albumDao.findReviewsByAlbumId(albumId);
+    public List<ReviewDTO> findReviewsByAlbumId(Long albumId) {
+        return albumDao.findReviewsByAlbumId(albumId).stream().map(AlbumReview::toDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -128,7 +125,7 @@ public class AlbumServiceImpl implements AlbumService {
         
         Image image;
         if (albumDTO.getImageId() == 0 && albumDTO.getImage().getImage().getBytes().length == 0)
-            image = imageService.findById(imageService.getDefaultImgId()).get();
+            image = imageService.findById(imageService.getDefaultImgId());
         else
             image = imageService.create(albumDTO.getImage().getImage().getBytes());
 
@@ -150,7 +147,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional
-    public boolean createAll(List<AlbumDTO> albumsDTO, long artistId) {
+    public Boolean createAll(List<AlbumDTO> albumsDTO, Long artistId) {
         LOGGER.info("Creating multiple albums for artist ID: {}", artistId);
         for (AlbumDTO albumDTO : albumsDTO) {
             if (!albumDTO.isDeleted()) {
@@ -165,11 +162,11 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public AlbumDTO update(AlbumDTO albumDTO) {
         LOGGER.info("Updating album with ID: {}", albumDTO.getId());
-        Optional<Image> optionalImage = imageService.update(new Image(albumDTO.getImage().getId(), albumDTO.getImage().getImage().getBytes()));
+        Image image = imageService.update(new Image(albumDTO.getImage().getId(), albumDTO.getImage().getImage().getBytes()));
 
-        Album album = albumDao.findById(albumDTO.getId()).get();
+        Album album = albumDao.findById(albumDTO.getId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + albumDTO.getId() + " not found"));
         album.setTitle(albumDTO.getTitle());
-        album.setImage(optionalImage.get());
+        album.setImage(image);
         album.setGenre(albumDTO.getGenre());
         album.setReleaseDate(albumDTO.getReleaseDate());
 
@@ -185,7 +182,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional
-    public boolean updateAll(List<AlbumDTO> albumsDTO, long artistId) {
+    public Boolean updateAll(List<AlbumDTO> albumsDTO, Long artistId) {
         LOGGER.info("Updating multiple albums for artist ID: {}", artistId);
         for (AlbumDTO albumDTO : albumsDTO) {
             if (albumDTO.getId() != 0) {
@@ -206,7 +203,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional
-    public boolean updateRating(long albumId, Double newRating, int newRatingAmount) {
+    public Boolean updateRating(Long albumId, Double newRating, Integer newRatingAmount) {
         LOGGER.info("Updating rating for album ID: {} to {} with {} ratings", albumId, newRating, newRatingAmount);
         boolean updated = albumDao.updateRating(albumId, newRating, newRatingAmount);
         if (updated) {
@@ -219,7 +216,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean hasUserReviewed(long userId, long albumId) {
+    public Boolean hasUserReviewed(Long userId, Long albumId) {
         return albumDao.hasUserReviewed(userId, albumId);
     }
 

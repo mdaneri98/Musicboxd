@@ -3,7 +3,9 @@ package ar.edu.itba.paw.services.mappers;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.reviews.Review;
 import org.springframework.stereotype.Component;
-
+import ar.edu.itba.paw.models.reviews.AlbumReview;
+import ar.edu.itba.paw.models.reviews.ArtistReview;
+import ar.edu.itba.paw.models.reviews.SongReview;
 import java.util.List;
 import java.util.stream.Collectors;
 

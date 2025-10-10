@@ -14,13 +14,13 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import ar.edu.itba.paw.services.mappers.SongMapper;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import ar.edu.itba.paw.services.exception.AlbumNotFoundException;
 import ar.edu.itba.paw.services.exception.SongNotFoundException;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
+import java.util.stream.Collectors;
 
 @Service 
 public class SongServiceImpl implements SongService {
@@ -40,9 +40,9 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional(readOnly = true)
     public SongDTO findById(Long id) {
-        Optional<Song> song = songDao.findById(id);
-        song.ifPresent(s -> s.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(s.getAlbum().getReleaseDate())));
-        SongDTO songDTO = songMapper.toDTO(song.get());
+        Song song = songDao.findById(id).orElseThrow(() -> new SongNotFoundException("Song with id " + id + " not found"));
+        song.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(song.getAlbum().getReleaseDate()));
+        SongDTO songDTO = songMapper.toDTO(song);
         return songDTO;
     }
 
@@ -63,7 +63,7 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findPaginated(FilterType filterType, int page, int pageSize) {
+    public List<SongDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         List<Song> songs = songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
         return songMapper.toDTOList(songs);
     }
@@ -101,8 +101,8 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongReview> findReviewsBySongId(Long songId) {
-        return songDao.findReviewsBySongId(songId);
+    public List<ReviewDTO> findReviewsBySongId(Long songId) {
+        return songDao.findReviewsBySongId(songId).stream().map(SongReview::toDTO).collect(Collectors.toList());
     }
 
     @Override

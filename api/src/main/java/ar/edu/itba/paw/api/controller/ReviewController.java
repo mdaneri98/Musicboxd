@@ -8,6 +8,7 @@ import ar.edu.itba.paw.api.models.CommentResource;
 import ar.edu.itba.paw.api.models.ReviewResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
+import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
@@ -51,7 +52,7 @@ public class ReviewController extends BaseController {
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
         
-        List<Review> reviewDTOs = reviewService.findPaginated(filter, page, size);
+        List<ReviewDTO> reviewDTOs = reviewService.findPaginated(filter, page, size);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
@@ -61,31 +62,22 @@ public class ReviewController extends BaseController {
     }
 
     @GET
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.REVIEW_BY_ID)
     public Response getReview(@PathParam("id") Long id, @QueryParam("loggedUserId") Long loggedUserId) {
-        ReviewResource reviewResource;
-        if (reviewService.isAlbumReview(id)) {
-            AlbumReview review = reviewService.findAlbumReviewById(id, loggedUserId);
-            reviewResource = reviewResourceMapper.toResource(review, getBaseUrl());
-        } else if (reviewService.isSongReview(id)) {
-            SongReview review = reviewService.findSongReviewById(id, loggedUserId);
-            reviewResource = reviewResourceMapper.toResource(review, getBaseUrl());
-        } else {
-            ArtistReview review = reviewService.findArtistReviewById(id, loggedUserId);
-            reviewResource = reviewResourceMapper.toResource(review, getBaseUrl());
-        }
+        // TODO: Obtener loggedUserId del contexto de seguridad
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(id), getBaseUrl());
         return buildResponse(reviewResource);
     }
 
     @DELETE
-    @Path("/{id:\\d+}")
+    @Path(ApiUriConstants.REVIEW_BY_ID)
     public Response deleteReview(@PathParam("id") Long id) {
         reviewService.delete(id);
         return buildNoContentResponse();
     }
 
     @GET
-    @Path("/{id:\\d+}/comments")
+    @Path(ApiUriConstants.REVIEW_COMMENTS)
     public Response getReviewComments(
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
@@ -101,7 +93,7 @@ public class ReviewController extends BaseController {
     }
 
     @POST
-    @Path("/{id:\\d+}/likes")
+    @Path(ApiUriConstants.REVIEW_LIKES)
     public Response likeReview(@PathParam("id") Long reviewId) {
         // TODO: Obtener userId del contexto de seguridad
         long userId = 1L;
@@ -111,7 +103,7 @@ public class ReviewController extends BaseController {
     }
 
     @DELETE
-    @Path("/{id:\\d+}/likes")
+    @Path(ApiUriConstants.REVIEW_LIKES)
     public Response unlikeReview(@PathParam("id") Long reviewId) {
         // TODO: Obtener userId del contexto de seguridad
         long userId = 1L;
@@ -121,7 +113,7 @@ public class ReviewController extends BaseController {
     }
 
     @POST
-    @Path("/{id:\\d+}/block")
+    @Path(ApiUriConstants.REVIEW_BLOCK)
     public Response blockReview(@PathParam("id") Long reviewId) {
         // TODO: Verificar que el usuario sea moderador
         reviewService.block(reviewId);
@@ -129,7 +121,7 @@ public class ReviewController extends BaseController {
     }
 
     @POST
-    @Path("/{id:\\d+}/unblock")
+    @Path(ApiUriConstants.REVIEW_UNBLOCK)
     public Response unblockReview(@PathParam("id") Long reviewId) {
         // TODO: Verificar que el usuario sea moderador
         reviewService.unblock(reviewId);

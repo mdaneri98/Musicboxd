@@ -39,7 +39,7 @@ public class ReviewDTO {
     private Integer commentAmount;
 
     // Campos polimórficos para el item relacionado
-    private String itemType; // "Artist", "Album", "Song"
+    private String itemType; 
     private Long itemId;
     private String itemName;
     private Long itemImageId;

@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.api.mapper;
 
 import ar.edu.itba.paw.api.models.CommentResource;
-import ar.edu.itba.paw.api.utils.ApiUriConstants;
-import ar.edu.itba.paw.api.utils.HATEOASUtils;
+import ar.edu.itba.paw.api.utils.linkManagers.CommentLinkManager;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,29 +12,13 @@ import java.util.stream.Collectors;
 @Component
 public class CommentResourceMapper implements ResourceMapper<CommentDTO, CommentResource> {
 
+    @Autowired
+    private CommentLinkManager commentLinkManager;
+
     @Override
     public CommentResource toResource(CommentDTO commentDTO, String baseUrl) {
         CommentResource resource = new CommentResource(commentDTO);
-        
-        // Add CRUD links
-        HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.COMMENTS_BASE, commentDTO.getId());
-        
-        // Add related resources links
-        if (commentDTO.getUserId() != null) {
-            resource.addLink(baseUrl + ApiUriConstants.USERS_BASE + "/" + commentDTO.getUserId(), 
-                            "user", "Comment author");
-        }
-        
-        if (commentDTO.getReviewId() != null) {
-            resource.addLink(baseUrl + ApiUriConstants.REVIEWS_BASE + "/" + commentDTO.getReviewId(), 
-                            "review", "Parent review");
-        }
-        
-        if (commentDTO.getUserImageId() != null) {
-            resource.addLink(baseUrl + ApiUriConstants.IMAGES_BASE + "/" + commentDTO.getUserImageId(), 
-                            "userImage", "Author image");
-        }
-        
+        commentLinkManager.addCommentLinks(resource, baseUrl, commentDTO.getId());
         return resource;
     }
 

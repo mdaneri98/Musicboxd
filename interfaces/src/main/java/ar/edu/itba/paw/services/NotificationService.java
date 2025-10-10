@@ -7,13 +7,13 @@ import ar.edu.itba.paw.models.reviews.Review;
 import java.util.List;
 
 public interface NotificationService {
-    void notifyLike(Review reviewId, User likedByUser);
-    void notifyComment(Review reviewId, User commentedByUser);
-    void notifyFollow(User followedUserId, User follower);
-    void notifyNewReview(Review reviewId, User reviewer);
+    Void notifyLike(Review reviewId, User likedByUser);
+    Void notifyComment(Review reviewId, User commentedByUser);
+    Void notifyFollow(User followedUserId, User follower);
+    Void notifyNewReview(Review reviewId, User reviewer);
     
-    List<Notification> getUserNotifications(Long userId, int page, int pageSize);
-    void markAsRead(Long notificationId);
-    void markAllAsRead(Long userId);
-    int getUnreadCount(Long userId);
+    List<Notification> getUserNotifications(Long userId, Integer page, Integer pageSize);
+    Void markAsRead(Long notificationId);
+    Void markAllAsRead(Long userId);
+    Integer getUnreadCount(Long userId);
 } 

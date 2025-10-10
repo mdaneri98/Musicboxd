@@ -1,59 +1,58 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.User;
-
-import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.models.dtos.UserDTO;
+import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import java.util.List;
-import java.util.Optional;
-
-public interface ReviewService extends CrudService<Review> {
-
-    ArtistReview findArtistReviewById(long id, long loggedUserId);
-    Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId, long loggedUserId);
-    ArtistReview saveArtistReview(ArtistReview review);
-
-    AlbumReview findAlbumReviewById(long id, long loggedUserId);
-    Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId, long loggedUserId);
-    AlbumReview saveAlbumReview(AlbumReview review);
-
-    SongReview findSongReviewById(long id, long loggedUserId);
-    Optional<SongReview> findSongReviewByUserId(long userId, long songId, long loggedUserId);
-    SongReview saveSongReview(SongReview review);
 
 
-    List<User> likedBy(Long reviewId, int pageNum, int pageSize);
-    void createLike(long userId, long reviewId);
-    void removeLike(long userId, long reviewId);
-    boolean isLiked(long userId, long reviewId);
+public interface ReviewService extends CrudService<ReviewDTO> {
 
-    List<Review> findReviewsByUserPaginated(long userId, int page, int pageSize, long loggedUserId);
-    List<Review> getPopularReviewsPaginated(int page, int pageSize, long loggedUserId);
-    List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize, long loggedUserId);
+    ReviewDTO findArtistReviewById(Long id, Long loggedUserId);
+    ReviewDTO findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId);
+    ReviewDTO saveArtistReview(ReviewDTO review);
 
-    List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize, long loggedUserId);
-    List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize, long loggedUserId);
-    List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize, long loggedUserId);
+    ReviewDTO findAlbumReviewById(Long id, Long loggedUserId);
+    ReviewDTO findAlbumReviewByUserId(Long userId, Long albumId, Long loggedUserId);
+    ReviewDTO saveAlbumReview(ReviewDTO review);
 
-    boolean hasUserReviewedArtist(long userId, long artistId);
-    boolean hasUserReviewedAlbum(long userId, long albumId);
-    boolean hasUserReviewedSong(long userId, long songId);
-    int updateAvgRatingForAll();
+    ReviewDTO findSongReviewById(Long id, Long loggedUserId);
+    ReviewDTO findSongReviewByUserId(Long userId, Long songId, Long loggedUserId);
+    ReviewDTO saveSongReview(ReviewDTO review);
 
-    boolean isArtistReview(long reviewId);
-    boolean isAlbumReview(long reviewId);
-    boolean isSongReview(long reviewId);
 
-    void block(Long reviewId);
-    void unblock(Long reviewId);
+    List<UserDTO> likedBy(Long reviewId, Integer pageNum, Integer pageSize);
+    Void createLike(Long userId, Long reviewId);
+    Void removeLike(Long userId, Long reviewId);
+    Boolean isLiked(Long userId, Long reviewId);
 
-    void updateUserReviewAmount(long userId);
-    void updateSongRating(long songId);
-    void updateAlbumRating(long albumId);
-    void updateArtistRating(long artistId);
-    Review updateSongReview(SongReview review);
-    Review updateArtistReview(ArtistReview review);
-    Review updateAlbumReview(AlbumReview review);
+    List<ReviewDTO> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);
+    List<ReviewDTO> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId);
+    List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);
+
+    List<ReviewDTO> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId);
+    List<ReviewDTO> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId);
+    List<ReviewDTO> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId);
+
+    Boolean hasUserReviewedArtist(Long userId, Long artistId);
+    Boolean hasUserReviewedAlbum(Long userId, Long albumId);
+    Boolean hasUserReviewedSong(Long userId, Long songId);
+    Integer updateAvgRatingForAll();
+
+    Boolean isArtistReview(Long reviewId);
+    Boolean isAlbumReview(Long reviewId);
+    Boolean isSongReview(Long reviewId);
+
+    Void block(Long reviewId);
+    Void unblock(Long reviewId);
+
+    Void updateUserReviewAmount(Long userId);
+    Void updateSongRating(Long songId);
+    Void updateAlbumRating(Long albumId);
+    Void updateArtistRating(Long artistId);
+    ReviewDTO updateSongReview(ReviewDTO review);
+    ReviewDTO updateArtistReview(ReviewDTO review);
+    ReviewDTO updateAlbumReview(ReviewDTO review);
 }

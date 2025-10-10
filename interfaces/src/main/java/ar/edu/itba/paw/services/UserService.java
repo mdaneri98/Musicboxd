@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.models.dtos.CreateUserDTO;
+import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import java.util.List;
 
@@ -10,53 +13,53 @@ public interface UserService{
     UserDTO findUserById(Long id);
     Long countUsers();
     List<UserDTO> findAll();
-    List<UserDTO> findPaginated(FilterType filterType, int pageNumber, int pageSize);
-    List<UserDTO> findByUsernameContaining(String sub, int pageNumber, int pageSize);
+    List<UserDTO> findPaginated(FilterType filterType, Integer pageNumber, Integer pageSize);
+    List<UserDTO> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize);
 
     UserDTO create(CreateUserDTO createUserDTO);
 
-    int createFollowing(Long loggedUser, Long followingUserId);
-    int undoFollowing(Long loggedUser, Long followingUserId);
+    Integer createFollowing(Long loggedUser, Long followingUserId);
+    Integer undoFollowing(Long loggedUser, Long followingUserId);
     List<UserDTO> getFollowers(Long userId, Integer pageNumber, Integer pageSize);
     List<UserDTO> getFollowings(Long userId, Integer pageNumber, Integer pageSize);
 
-    boolean isFollowing(Long userId, Long otherId);
-    boolean isAlbumFavorite(Long userId, Long albumId);
-    boolean isArtistFavorite(Long userId, Long albumId);
-    boolean isSongFavorite(Long userId, Long albumId);
+    Boolean isFollowing(Long userId, Long otherId);
+    Boolean isAlbumFavorite(Long userId, Long albumId);
+    Boolean isArtistFavorite(Long userId, Long albumId);
+    Boolean isSongFavorite(Long userId, Long albumId);
 
     UserDTO updateUser(Long userId, UserDTO user);
-    boolean changePassword(Long userId, String newPassword);
+    Boolean changePassword(Long userId, String newPassword);
 
-    int deleteById(long id);
+    Integer deleteById(Long id);
 
     UserDTO findByEmail(String email);
 
     UserDTO findByUsername(String email);
-    boolean usernameExists(String username);
+    Boolean usernameExists(String username);
 
-    void updateUserReviewAmount(Long userId);
+    Void updateUserReviewAmount(Long userId);
 
-    void createVerification(VerificationType type, User user);
+    Void createVerification(VerificationType type, User user);
     Long verify(VerificationType type, String code);
 
     // Artistas favoritos
-    List<Artist> getFavoriteArtists(long userId);
-    boolean addFavoriteArtist(long userId, long artistId);
-    boolean removeFavoriteArtist(long userId, long artistId);
-    int getFavoriteArtistsCount(long userId);
+    List<ArtistDTO> getFavoriteArtists(Long userId);
+    Boolean addFavoriteArtist(Long userId, Long artistId);
+    Boolean removeFavoriteArtist(Long userId, Long artistId);
+    Integer getFavoriteArtistsCount(Long userId);
 
     // Álbumes favoritos
-    List<Album> getFavoriteAlbums(long userId);
-    boolean addFavoriteAlbum(long userId, long albumId);
-    boolean removeFavoriteAlbum(long userId, long albumId);
-    int getFavoriteAlbumsCount(long userId);
+    List<AlbumDTO> getFavoriteAlbums(Long userId);
+    Boolean addFavoriteAlbum(Long userId, Long albumId);
+    Boolean removeFavoriteAlbum(Long userId, Long albumId);
+    Integer getFavoriteAlbumsCount(Long userId);
 
     // Canciones favoritas
-    List<Song> getFavoriteSongs(long userId);
-    boolean addFavoriteSong(long userId, long songId);
-    boolean removeFavoriteSong(long userId, long songId);
-    int getFavoriteSongsCount(long userId);
-    List<UserDTO> getRecommendedUsers(Long userId, int pageNumber, int pageSize);
+    List<SongDTO> getFavoriteSongs(Long userId);
+    Boolean addFavoriteSong(Long userId, Long songId);
+    Boolean removeFavoriteSong(Long userId, Long songId);
+    Integer getFavoriteSongsCount(Long userId);
+    List<UserDTO> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize);
 
 }

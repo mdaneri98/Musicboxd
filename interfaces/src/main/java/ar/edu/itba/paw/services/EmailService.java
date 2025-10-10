@@ -9,7 +9,7 @@ import javax.mail.MessagingException;
 
 public interface EmailService {
 
-    void sendVerification(VerificationType type, User to, String code) throws MessagingException;
-    void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, String reviewTitle, String reviewName, String reviewType) throws MessagingException;
+    Void sendVerification(VerificationType type, User to, String code) throws MessagingException;
+    Void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, String reviewTitle, String reviewName, String reviewType) throws MessagingException;
 
 }

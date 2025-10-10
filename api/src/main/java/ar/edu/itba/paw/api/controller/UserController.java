@@ -45,7 +45,7 @@ public class UserController extends BaseController {
     }
 
     @GET
-    @Path("/{userId:\\d+}")
+    @Path(ApiUriConstants.USER_BY_ID)
     public Response getUser(@PathParam("userId") Long id) {
         UserDTO user = userService.findUserById(id);
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
@@ -62,7 +62,7 @@ public class UserController extends BaseController {
     }
 
     @PUT
-    @Path("/{userId:\\d+}")
+    @Path(ApiUriConstants.USER_BY_ID)
     public Response updateUser(@PathParam("userId") Long userId, @Valid UserDTO userDTO) {
         UserDTO user = userService.updateUser(userId, userDTO);
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
@@ -71,7 +71,7 @@ public class UserController extends BaseController {
     }
 
     @DELETE
-    @Path("/{userId:\\d+}")
+    @Path(ApiUriConstants.USER_BY_ID)
     public Response deleteUser(@PathParam("userId") Long id) {
         userService.deleteById(id);
         

@@ -9,7 +9,7 @@ public interface CrudService<T> {
 
     List<T> findAll();
 
-    List<T> findPaginated(FilterType filterType, int page, int pageSize);
+    List<T> findPaginated(FilterType filterType, Integer page, Integer pageSize);
 
     T create(T entity);
 

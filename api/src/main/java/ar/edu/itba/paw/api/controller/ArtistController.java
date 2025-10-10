@@ -9,7 +9,7 @@ import ar.edu.itba.paw.api.models.ReviewResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.reviews.ArtistReview;
+import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.services.ArtistService;
 import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +96,7 @@ public class ArtistController extends BaseController {
             @QueryParam("loggedUserId") Long loggedUserId) {
         // TODO: Obtener loggedUserId del contexto de seguridad
         
-        List<ArtistReview> reviews = reviewService.findArtistReviewsPaginated(id, page, size, loggedUserId);
+        List<ReviewDTO> reviews = reviewService.findArtistReviewsPaginated(id, page, size, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
