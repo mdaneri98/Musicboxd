@@ -77,7 +77,7 @@ public class UserJpaDaoTest {
         // 1. Pre-conditions - the user exist
 
         // 2. Execute
-        Optional<User> maybeUser = userDao.find(PRE_EXISTING_USER_ID);
+        Optional<User> maybeUser = userDao.findById(PRE_EXISTING_USER_ID);
 
         // 3. Post-conditions
         assertTrue(maybeUser.isPresent());
@@ -91,7 +91,7 @@ public class UserJpaDaoTest {
         // 1. Pre-conditions - the user does not exist
 
         // 2. Execute
-        Optional<User> maybeUser = userDao.find(NEW_USER_ID);
+        Optional<User> maybeUser = userDao.findById(NEW_USER_ID);
 
         // 3. Post-conditions
         assertFalse(maybeUser.isPresent());
@@ -103,7 +103,7 @@ public class UserJpaDaoTest {
         // 1. Pre-conditions - Only 5 user exist in database
 
         // 2. Execute
-        List<User> userList = userDao.findAll(1, 100);
+        List<User> userList = userDao.findPaginated(FilterType.FIRST, 1, 100);
 
         // 3. Post-conditions
         assertEquals(5, userList.size());

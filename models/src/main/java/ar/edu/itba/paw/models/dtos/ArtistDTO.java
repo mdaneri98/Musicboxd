@@ -1,36 +1,40 @@
 package ar.edu.itba.paw.models.dtos;
 
-import java.util.ArrayList;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ArtistDTO {
-    private long id;
+
+    private Long id;
+
+    @NotNull(message = "Artist name is required")
+    @Size(min = 1, max = 100, message = "Artist name must be between 1 and 100 characters")
     private String name;
+
+    @Size(max = 2048, message = "Bio must not exceed 2048 characters")
     private String bio;
-    private long imgId;
-    private byte[] Image;
-    private List<AlbumDTO> albums = new ArrayList<>();
-    private boolean deleted;
 
-    public ArtistDTO() {
+    private Integer ratingCount;
 
-    }
+    private Double avgRating;
 
-    public ArtistDTO(long id, String name, String bio, long imgId, byte[] Image, List<AlbumDTO> albums, boolean deleted) {
-        this.id = id;
-        this.name = name;
-        this.bio = bio;
-        this.imgId = imgId;
-        this.Image = Image;
-        this.albums = albums;
-        this.deleted = deleted;
-    }
+    private LocalDateTime createdAt;
 
-    public long getId() {
+    private LocalDateTime updatedAt;
+
+    private List<AlbumDTO> albums;
+
+    private ImageDTO image;
+
+    public ArtistDTO() {}
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -50,35 +54,51 @@ public class ArtistDTO {
         this.bio = bio;
     }
 
-    public long getImgId() {
-        return imgId;
+    public Integer getRatingCount() {
+        return ratingCount;
     }
 
-    public void setImgId(long imgId) {
-        this.imgId = imgId;
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
     }
 
-    public byte[] getImage() {
-        return Image;
+    public Double getAvgRating() {
+        return avgRating;
     }
 
-    public void setImage(byte[] Image) {
-        this.Image = Image;
+    public void setAvgRating(Double avgRating) {
+        this.avgRating = avgRating;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public List<AlbumDTO> getAlbums() {
         return albums;
     }
 
-    public void setAlbum(List<AlbumDTO> albums) {
+    public void setAlbums(List<AlbumDTO> albums) {
         this.albums = albums;
+    }
+
+    public ImageDTO getImage() {
+        return image;
+    }
+
+    public void setImage(ImageDTO image) {
+        this.image = image;
     }
 }

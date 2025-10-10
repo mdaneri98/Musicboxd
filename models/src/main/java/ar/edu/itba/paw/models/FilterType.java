@@ -7,7 +7,17 @@ public enum FilterType {
     NEWEST("release_date", "DESC"),
     OLDEST("release_date", "ASC"),
     RECENT("created_at", "DESC"),
-    FIRST("created_at", "ASC");
+    FIRST("created_at", "ASC"),
+    USERNAME("username", "ASC"),
+    EMAIL("email", "ASC"),
+    NAME("name", "ASC"),
+    BIO("bio", "ASC"),
+    IMAGE_ID("image_id", "ASC"),
+    FOLLOWERS_AMOUNT("followers_amount", "ASC"),
+    FOLLOWING_AMOUNT("following_amount", "ASC"),
+    REVIEW_AMOUNT("review_amount", "ASC"),
+    CREATED_AT("created_at", "ASC"),
+    UPDATED_AT("updated_at", "ASC");
 
     private final String criteria;
     private final String order;

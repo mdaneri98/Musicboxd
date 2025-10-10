@@ -7,15 +7,15 @@ import ar.edu.itba.paw.models.reviews.SongReview;
 
 public interface SongDao extends CrudDao<Song> {
 
-    List<Song> findByArtistId(long id, int pageNum, int pageSize);
-    List<Song> findByAlbumId(long id);
+    List<Song> findByArtistId(Long id, Integer pageNum, Integer pageSize);
+    List<Song> findByAlbumId(Long id);
     List<Song> findByTitleContaining(String sub);
 
-    int saveSongArtist(Song song, Artist artist);
-    boolean updateRating(long songId, Double newRating, int newRatingAmount);
-    boolean hasUserReviewed(long userId, long songId);
+    Integer saveSongArtist(Song song, Artist artist);
+    Boolean updateRating(Long songId, Double newRating, Integer newRatingAmount);
+    Boolean hasUserReviewed(Long userId, Long songId);
 
-    boolean deleteReviewsFromSong(long songId);
-    List<SongReview> findReviewsBySongId(long songId);
+    Boolean deleteReviewsFromSong(Long songId);
+    List<SongReview> findReviewsBySongId(Long songId);
 }
 

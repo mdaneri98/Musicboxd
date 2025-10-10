@@ -7,14 +7,14 @@ import java.util.Optional;
 
 public interface ImageDao {
 
-    Optional<Image> findById(long imageId);
+    Optional<Image> findById(Long imageId);
 
     Image create(Image image);
 
     Optional<Image> update(Image image);
 
-    boolean delete(long imageId);
+    Boolean delete(Long imageId);
 
-    boolean exists(long imageId);
+    Boolean exists(Long imageId);
 
 }

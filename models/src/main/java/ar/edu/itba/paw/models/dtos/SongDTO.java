@@ -1,26 +1,46 @@
 package ar.edu.itba.paw.models.dtos;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+
 public class SongDTO {
 
-    private long id;
+    private Long id;
+
+    @NotNull(message = "Song title is required")
+    @Size(min = 1, max = 100, message = "Song title must be between 1 and 100 characters")
     private String title;
+
+    @NotNull(message = "Duration is required")
+    @Size(max = 10, message = "Duration must not exceed 10 characters")
     private String duration;
+
     private Integer trackNumber;
-    private boolean deleted = false;
+
+    private Long albumId;
+    private String albumTitle;
+
+    private Long albumImageId;
+
+    private Integer ratingCount;
+
+    private Double avgRating;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+    private boolean deleted;
 
     public SongDTO() {}
 
-    public SongDTO(long id, String title, String duration, Integer trackNumber, boolean deleted) {
-        this.id = id;
-        this.title = title;
-        this.duration = duration;
-        this.trackNumber = trackNumber;
-        this.deleted = deleted;
+    public Long getId() {
+        return id;
     }
 
-    public long getId() {return id;}
-
-    public void setId(long id) {this.id = id;}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -46,7 +66,67 @@ public class SongDTO {
         this.trackNumber = trackNumber;
     }
 
-    public boolean isDeleted() {return deleted;}
+    public Long getAlbumId() {
+        return albumId;
+    }
 
-    public void setDeleted(boolean deleted) {this.deleted = deleted;}
+    public void setAlbumId(Long albumId) {
+        this.albumId = albumId;
+    }
+
+    public String getAlbumTitle() {
+        return albumTitle;
+    }
+
+    public void setAlbumTitle(String albumTitle) {
+        this.albumTitle = albumTitle;
+    }
+
+    public Long getAlbumImageId() {
+        return albumImageId;
+    }
+
+    public void setAlbumImageId(Long albumImageId) {
+        this.albumImageId = albumImageId;
+    }
+
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
+    public Double getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(Double avgRating) {
+        this.avgRating = avgRating;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 }

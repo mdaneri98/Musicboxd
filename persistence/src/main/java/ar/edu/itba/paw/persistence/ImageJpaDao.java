@@ -17,7 +17,7 @@ public class ImageJpaDao implements ImageDao {
     private EntityManager em;
 
     @Override
-    public Optional<Image> findById(long imageId) {
+    public Optional<Image> findById(Long imageId) {
         return Optional.ofNullable(em.find(Image.class, imageId));
     } 
 
@@ -36,7 +36,7 @@ public class ImageJpaDao implements ImageDao {
     }
 
     @Override
-    public boolean delete(long imageId) {
+    public Boolean delete(Long imageId) {
         Optional<Image> maybeImage = findById(imageId);
         if (maybeImage.isPresent()) {
             em.remove(maybeImage.get());
@@ -46,7 +46,7 @@ public class ImageJpaDao implements ImageDao {
     }
 
     @Override
-    public boolean exists(long imageId) {
+    public Boolean exists(Long imageId) {
         return findById(imageId).isPresent();
     }
 }

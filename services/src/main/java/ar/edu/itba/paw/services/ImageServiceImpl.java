@@ -2,12 +2,12 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.persistence.ImageDao;
+import ar.edu.itba.paw.services.exception.ImageNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -15,16 +15,16 @@ public class ImageServiceImpl implements ImageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageServiceImpl.class);
 
-    private final long DEFAULT_IMAGE_ID = 1;
-    private final long DEFAULT_PROFILE_IMAGE_ID = 2;
+    private final Long DEFAULT_IMAGE_ID = 1L;
+    private final Long DEFAULT_PROFILE_IMAGE_ID = 2L;
 
     public ImageServiceImpl(ImageDao imageDao) {
         this.imageDao = imageDao;
     }
 
     @Transactional(readOnly = true)
-    public Optional<Image> findById(long id) {
-        return imageDao.findById(id);
+    public Image findById(Long id) {
+        return imageDao.findById(id).orElseThrow(() -> new ImageNotFoundException("Image with id " + id + " not found"));
     }
 
     @Transactional
@@ -36,7 +36,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Transactional
-    public Optional<Image> update(Image image) {
+    public Image update(Image image) {
         if(image.getBytes() == null || image.getBytes().length == 0) {
             LOGGER.debug("Image {} not updated. File empty", image.getId());
             return findById(image.getId());
@@ -44,20 +44,16 @@ public class ImageServiceImpl implements ImageService {
 
         if(image.getId() == DEFAULT_IMAGE_ID || image.getId() == DEFAULT_PROFILE_IMAGE_ID) {
             LOGGER.debug("Image {} not updated. Cannot update default image", image.getId());
-            return Optional.of(create(image.getBytes()));
+            return create(image.getBytes());
         }
 
-        Optional<Image> imageOptional = imageDao.update(image);
-        if (imageOptional.isPresent())
-            LOGGER.debug("Image {} updated", image.getId());
-        else
-            LOGGER.debug("Image {} could not update", image.getId());
+        Image imageUpdated = imageDao.update(image).orElseThrow(() -> new ImageNotFoundException("Image with id " + image.getId() + " not found"));
 
-        return imageOptional;
+        return imageUpdated;
     }
 
     @Transactional
-    public boolean delete(long imageId) {
+    public Boolean delete(Long imageId) {
         if(imageId == DEFAULT_IMAGE_ID || imageId == DEFAULT_PROFILE_IMAGE_ID) {
             LOGGER.debug("Image {} not deleted. Image is default", imageId);
             return false;
@@ -65,16 +61,16 @@ public class ImageServiceImpl implements ImageService {
         return imageDao.delete(imageId);
     }
 
-    public long getDefaultImgId() {
+    public Long getDefaultImgId() {
         return DEFAULT_IMAGE_ID;
     }
 
-    public long getDefaultProfileImgId() {
+    public Long getDefaultProfileImgId() {
         return DEFAULT_PROFILE_IMAGE_ID;
     }
 
     @Transactional(readOnly = true)
-    public boolean exists(long imageId) {
+    public Boolean exists(Long imageId) {
         return imageDao.exists(imageId);
     }
 }

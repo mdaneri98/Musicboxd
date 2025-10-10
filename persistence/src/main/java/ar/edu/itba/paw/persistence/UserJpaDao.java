@@ -22,7 +22,7 @@ public class UserJpaDao implements UserDao {
 
     //============================ C.R.U.D ============================
     @Override
-    public Optional<User> find(long id) {
+    public Optional<User> findById(Long id) {
         return Optional.ofNullable(em.find(User.class, id));
     }
 
@@ -32,8 +32,14 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public List<User> findAll(int pageNumber, int pageSize) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM cuser");
+    public List<User> findAll() {
+        return em.createQuery("FROM User", User.class).getResultList();
+    }
+
+    @Override
+    public List<User> findPaginated(FilterType filterType, Integer pageNumber, Integer pageSize) {
+        String nativeSQL = "SELECT id FROM cuser " + filterType.getFilter();
+        Query nativeQuery = em.createNativeQuery(nativeSQL);
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
 
@@ -62,7 +68,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public int deleteById(long id) {
+    public Integer deleteById(Long id) {
         User user = em.find(User.class, id);
         if (user == null) {
             return 0;
@@ -97,7 +103,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public List<User> findByUsernameContaining(String sub, int pageNumber, int pageSize) {
+    public List<User> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT id FROM cuser WHERE LOWER(username) LIKE LOWER(:substring) ORDER BY username"
@@ -136,7 +142,7 @@ public class UserJpaDao implements UserDao {
 
     //============================ FOLLOWERS & FOLLOWINGS ============================
     @Override
-    public int createFollowing(User loggedUser, User following) {
+    public Integer createFollowing(User loggedUser, User following) {
         User user = em.find(User.class, loggedUser.getId());
         User userToFollow = em.find(User.class, following.getId());
 
@@ -152,21 +158,21 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public int countFollowers(Long userId) {
+    public Integer countFollowers(Long userId) {
         Query query = em.createQuery("SELECT COUNT(u) FROM User u JOIN u.following f WHERE f.id = :userId");
         query.setParameter("userId", userId);
         return ((Long) query.getSingleResult()).intValue();
     }
 
     @Override
-    public int countFollowing(Long userId) {
+    public Integer countFollowing(Long userId) {
         Query query = em.createQuery("SELECT COUNT(f) FROM User u JOIN u.following f WHERE u.id = :userId");
         query.setParameter("userId", userId);
         return ((Long) query.getSingleResult()).intValue();
     }
 
     @Override
-    public int undoFollowing(User loggedUser, User following) {
+    public Integer undoFollowing(User loggedUser, User following) {
         User user = em.find(User.class, loggedUser.getId());
         User userToFollow = em.find(User.class, following.getId());
 
@@ -183,7 +189,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean isFollowing(Long userId, Long otherId) {
+    public Boolean isFollowing(Long userId, Long otherId) {
         User user = em.find(User.class, userId);
         User userToFollow = em.find(User.class, otherId);
 
@@ -194,7 +200,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public List<User> getFollowers(Long userId, int pageNumber, int pageSize) {
+    public List<User> getFollowers(Long userId, Integer pageNumber, Integer pageSize) {
         Query nativeQuery = em.createNativeQuery("SELECT user_id FROM follower WHERE following = :userId");
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
@@ -217,7 +223,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public List<User> getFollowings(Long userId, int pageNumber, int pageSize) {
+    public List<User> getFollowings(Long userId, Integer pageNumber, Integer pageSize) {
         Query nativeQuery = em.createNativeQuery("SELECT following FROM follower WHERE user_id = :userId");
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
@@ -241,7 +247,7 @@ public class UserJpaDao implements UserDao {
 
     //============================ FAVORITE ARTISTS ============================
     @Override
-    public List<Artist> getFavoriteArtists(long userId) {
+    public List<Artist> getFavoriteArtists(Long userId) {
         User user = em.find(User.class, userId);
         if (user == null)
             return Collections.emptyList();
@@ -249,7 +255,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean addFavoriteArtist(long userId, long artistId) {
+    public Boolean addFavoriteArtist(Long userId, Long artistId) {
         User user = em.find(User.class, userId);
         Artist artist = em.find(Artist.class, artistId);
         if (user == null || artist == null)
@@ -258,7 +264,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean removeFavoriteArtist(long userId, long artistId) {
+    public Boolean removeFavoriteArtist(Long userId, Long artistId) {
         User user = em.find(User.class, userId);
         Artist artist = em.find(Artist.class, artistId);
         if (user == null || artist == null)
@@ -267,7 +273,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public int getFavoriteArtistsCount(long userId) {
+    public Integer getFavoriteArtistsCount(Long userId) {
         User user = em.find(User.class, userId);
         if (user == null)
             return 0;
@@ -276,7 +282,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean isArtistFavorite(Long userId, Long artistId) {
+    public Boolean isArtistFavorite(Long userId, Long artistId) {
         User user = em.find(User.class, userId);
         Artist artist = em.find(Artist.class, artistId);
         if (user == null || artist == null)
@@ -287,7 +293,7 @@ public class UserJpaDao implements UserDao {
 
     //============================ FAVORITE ALBUMS ============================
     @Override
-    public List<Album> getFavoriteAlbums(long userId) {
+    public List<Album> getFavoriteAlbums(Long userId) {
         User user = em.find(User.class, userId);
         if (user == null)
             return Collections.emptyList();
@@ -295,7 +301,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean addFavoriteAlbum(long userId, long albumId) {
+    public Boolean addFavoriteAlbum(Long userId, Long albumId) {
         User user = em.find(User.class, userId);
         Album album = em.find(Album.class, albumId);
         if (user == null || album == null)
@@ -304,7 +310,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean removeFavoriteAlbum(long userId, long albumId) {
+    public Boolean removeFavoriteAlbum(Long userId, Long albumId) {
         User user = em.find(User.class, userId);
         Album album = em.find(Album.class, albumId);
         if (user == null || album == null)
@@ -313,7 +319,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public int getFavoriteAlbumsCount(long userId) {
+    public Integer getFavoriteAlbumsCount(Long userId) {
         User user = em.find(User.class, userId);
         if (user == null)
             return 0;
@@ -322,7 +328,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean isAlbumFavorite(Long userId, Long albumId) {
+    public Boolean isAlbumFavorite(Long userId, Long albumId) {
         User user = em.find(User.class, userId);
         Album album = em.find(Album.class, albumId);
         if (user == null || album == null)
@@ -333,7 +339,7 @@ public class UserJpaDao implements UserDao {
 
     //============================ FAVORITE SONGS ============================
     @Override
-    public List<Song> getFavoriteSongs(long userId) {
+    public List<Song> getFavoriteSongs(Long userId) {
         User user = em.find(User.class, userId);
         if (user == null)
             return Collections.emptyList();
@@ -341,7 +347,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean addFavoriteSong(long userId, long songId) {
+    public Boolean addFavoriteSong(Long userId, Long songId) {
         User user = em.find(User.class, userId);
         Song Song = em.find(Song.class, songId);
         if (user == null || Song == null)
@@ -350,7 +356,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean removeFavoriteSong(long userId, long songId) {
+    public Boolean removeFavoriteSong(Long userId, Long songId) {
         User user = em.find(User.class, userId);
         Song song = em.find(Song.class, songId);
         if (user == null || song == null)
@@ -359,7 +365,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public int getFavoriteSongsCount(long userId) {
+    public Integer getFavoriteSongsCount(Long userId) {
         User user = em.find(User.class, userId);
         if (user == null)
             return 0;
@@ -368,7 +374,7 @@ public class UserJpaDao implements UserDao {
     }
 
     @Override
-    public boolean isSongFavorite(Long userId, Long songId) {
+    public Boolean isSongFavorite(Long userId, Long songId) {
         User user = em.find(User.class, userId);
         Song song = em.find(Song.class, songId);
         if (user == null || song == null)
@@ -379,7 +385,7 @@ public class UserJpaDao implements UserDao {
 
     //============================ Reviews ============================
     @Override
-    public void updateUserReviewAmount(Long userId) {
+    public Void updateUserReviewAmount(Long userId) {
         Query countQuery = em.createQuery(
                 "SELECT COUNT(r) FROM Review r WHERE r.user.id = :userId AND r.isBlocked = false"
         );
@@ -390,10 +396,11 @@ public class UserJpaDao implements UserDao {
                 .setParameter("userId", userId)
                 .setParameter("reviewCount", reviewCount)
                 .executeUpdate();
+        return null;
     }
 
     @Override
-    public List<User> getRecommendedUsers(Long userId, int pageNumber, int pageSize) {
+    public List<User> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT DISTINCT u.id FROM cuser u " +

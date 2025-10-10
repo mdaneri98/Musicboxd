@@ -35,7 +35,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public boolean delete(long id) {
+    public Boolean delete(Long id) {
         Review review = em.find(Review.class, id);
         if (review != null) {
             em.remove(review);
@@ -50,22 +50,22 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public Optional<ArtistReview> findArtistReviewById(long id) {
+    public Optional<ArtistReview> findArtistReviewById(Long id) {
         return Optional.ofNullable(em.find(ArtistReview.class, id));
     }
 
     @Override
-    public Optional<AlbumReview> findAlbumReviewById(long id) {
+    public Optional<AlbumReview> findAlbumReviewById(Long id) {
         return Optional.ofNullable(em.find(AlbumReview.class, id));
     }
 
     @Override
-    public Optional<SongReview> findSongReviewById(long id) {
+    public Optional<SongReview> findSongReviewById(Long id) {
         return Optional.ofNullable(em.find(SongReview.class, id));
     }
 
     @Override
-    public Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId) {
+    public Optional<ArtistReview> findArtistReviewByUserId(Long userId, Long artistId) {
         final TypedQuery<ArtistReview> query = em.createQuery(
                 "FROM ArtistReview ar WHERE ar.user.id = :userId AND ar.artist.id = :artistId AND ar.isBlocked = false",
                 ArtistReview.class
@@ -89,7 +89,7 @@ public class ReviewJpaDao implements ReviewDao {
 
 
     @Override
-    public Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId) {
+    public Optional<AlbumReview> findAlbumReviewByUserId(Long userId, Long albumId) {
         final TypedQuery<AlbumReview> query = em.createQuery(
                 "FROM AlbumReview ar WHERE ar.user.id = :userId AND ar.album.id = :albumId AND ar.isBlocked = false",
                 AlbumReview.class
@@ -110,7 +110,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public Optional<SongReview> findSongReviewByUserId(long userId, long songId) {
+    public Optional<SongReview> findSongReviewByUserId(Long userId, Long songId) {
         final TypedQuery<SongReview> query = em.createQuery(
                 "FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId",
                 SongReview.class
@@ -131,23 +131,25 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public void createLike(long userId, long reviewId) {
+    public Void createLike(Long userId, Long reviewId) {
         em.createNativeQuery("INSERT INTO review_like (user_id, review_id) VALUES (:userId, :reviewId)")
                 .setParameter("userId", userId)
                 .setParameter("reviewId", reviewId)
                 .executeUpdate();
+        return null;
     }
 
     @Override
-    public void deleteLike(long userId, long reviewId) {
+    public Void deleteLike(Long userId, Long reviewId) {
         em.createNativeQuery("DELETE FROM review_like WHERE user_id = :userId AND review_id = :reviewId")
                 .setParameter("userId", userId)
                 .setParameter("reviewId", reviewId)
                 .executeUpdate();
+        return null;
     }
 
     @Override
-    public void updateLikeCount(long reviewId) {
+    public Void updateLikeCount(Long reviewId) {
         Query countQuery = em.createNativeQuery(
                 "SELECT COUNT(*) FROM review_like WHERE review_id = :reviewId"
         );
@@ -158,11 +160,12 @@ public class ReviewJpaDao implements ReviewDao {
                 .setParameter("reviewId", reviewId)
                 .setParameter("likes", likes)
                 .executeUpdate();
+        return null;
     }
 
 
     @Override
-    public List<User> likedBy(Long reviewId, int pageNum, int pageSize) {
+        public List<User> likedBy(Long reviewId, Integer pageNum, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
             "SELECT DISTINCT u.id FROM cuser u " +
@@ -195,7 +198,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public boolean isLiked(Long userId, Long reviewId) {
+    public Boolean isLiked(Long userId, Long reviewId) {
         Query query = em.createQuery(
                 "SELECT COUNT(u) FROM Review r JOIN r.likedBy u WHERE r.id = :reviewId AND u.id = :userId"
         );
@@ -207,7 +210,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize) {
+    public List<ArtistReview> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT ar.review_id FROM artist_review ar " +
@@ -240,7 +243,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize) {
+    public List<AlbumReview> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT ar.review_id FROM album_review ar " +
@@ -273,7 +276,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize) {
+    public List<SongReview> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT sr.review_id FROM song_review sr " +
@@ -306,7 +309,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
      @Override
-     public List<Review> getPopularReviewsPaginated(int page, int pageSize) {
+     public List<Review> getPopularReviewsPaginated(Integer page, Integer pageSize) {
          // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
          Query nativeQuery = em.createNativeQuery(
                  "SELECT r.id FROM review r " +
@@ -337,7 +340,7 @@ public class ReviewJpaDao implements ReviewDao {
      }
 
     @Override
-    public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize) {
+    public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
             "SELECT DISTINCT r.id " +
@@ -373,7 +376,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
     
     @Override
-    public List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize) {
+    public List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT r.id FROM review r " +
@@ -405,38 +408,40 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public boolean isArtistReview(long reviewId) {
+    public Boolean isArtistReview(Long reviewId) {
         return em.find(ArtistReview.class, reviewId) != null;
     }
 
     @Override
-    public boolean isAlbumReview(long reviewId) {
+    public Boolean isAlbumReview(Long reviewId) {
         return em.find(AlbumReview.class, reviewId) != null;
     }
 
     @Override
-    public boolean isSongReview(long reviewId) {
+    public Boolean isSongReview(Long reviewId) {
         return em.find(SongReview.class, reviewId) != null;
     }
 
     @Override
-    public void block(Long reviewId) {
+    public Void block(Long reviewId) {
         Review review = em.find(Review.class, reviewId);
         if (review != null) {
             review.setBlocked(true);
         }
+        return null;
     }
 
     @Override
-    public void unblock(Long reviewId) {
+    public Void unblock(Long reviewId) {
         Review review = em.find(Review.class, reviewId);
         if (review != null) {
             review.setBlocked(false);
         }
+        return null;
     }
 
     @Override
-    public Optional<Review> find(long id) {
+    public Optional<Review> findById(Long id) {
         return Optional.ofNullable(em.find(Review.class, id));
     }
 
@@ -447,7 +452,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public List<Review> findPaginated(FilterType filterType, int limit, int offset) {
+    public List<Review> findPaginated(FilterType filterType, Integer limit, Integer offset) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         String nativeSQL = "SELECT r.id FROM review r WHERE isblocked = false " +
                           filterType.getFilter();
@@ -476,7 +481,7 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public void updateCommentAmount(long reviewId) {
+    public Void updateCommentAmount(Long reviewId) {
         Query countQuery = em.createQuery(
                 "SELECT COUNT(c) FROM Comment c WHERE c.review.id = :reviewId"
         );
@@ -490,6 +495,7 @@ public class ReviewJpaDao implements ReviewDao {
         updateQuery.setParameter("count", count.intValue());
         updateQuery.setParameter("reviewId", reviewId);
         updateQuery.executeUpdate();
+        return null;
     }
 
 }
