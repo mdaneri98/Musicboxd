@@ -25,7 +25,7 @@ public class ArtistJpaDao implements ArtistDao {
     private EntityManager entityManager;
 
     @Override
-    public Optional<Artist> find(long id) {
+    public Optional<Artist> findById(Long id) {
         return Optional.ofNullable(entityManager.find(Artist.class, id));
     }
 
@@ -36,7 +36,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public List<Artist> findPaginated(FilterType filterType, int limit, int offset) {
+    public List<Artist> findPaginated(FilterType filterType, Integer limit, Integer offset) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         String nativeSQL = "SELECT a.id FROM artist a " + filterType.getFilter();
         Query nativeQuery = entityManager.createNativeQuery(nativeSQL)
@@ -62,7 +62,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public List<Artist> findBySongId(long id) {
+    public List<Artist> findBySongId(Long id) {
         String jpql = "SELECT DISTINCT a FROM Artist a JOIN a.songs s WHERE s.id = :songId";
         TypedQuery<Artist> query = entityManager.createQuery(jpql, Artist.class)
                 .setParameter("songId", id);
@@ -112,7 +112,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public boolean updateRating(long artistId, Double newRating, int newRatingAmount) {
+    public Boolean updateRating(Long artistId, Double newRating, Integer newRatingAmount) {
         String jpql = "UPDATE Artist a SET a.avgRating = :avgRating, a.ratingCount = :ratingCount WHERE a.id = :id";
         int updatedCount = entityManager.createQuery(jpql)
                 .setParameter("avgRating", newRating)
@@ -123,7 +123,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public boolean hasUserReviewed(long userId, long artistId) {
+    public Boolean hasUserReviewed(Long userId, Long artistId) {
         String jpql = "SELECT COUNT(r) FROM ArtistReview r WHERE r.user.id = :userId AND r.artist.id = :artistId AND r.isBlocked = false";
         Long count = entityManager.createQuery(jpql, Long.class)
                 .setParameter("userId", userId)
@@ -133,7 +133,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public boolean delete(long id) {
+    public Boolean delete(Long id) {
         Artist artist = entityManager.find(Artist.class, id);
         if (artist != null) {
             entityManager.remove(artist);
@@ -143,7 +143,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public boolean deleteReviewsFromArtist(long artistId) {
+    public Boolean deleteReviewsFromArtist(Long artistId) {
         Query query = entityManager.createQuery(
                 "DELETE FROM Review r WHERE r.id IN " +
                         "(SELECT ar.id FROM ArtistReview ar WHERE ar.artist.id = :artistId)");
@@ -152,7 +152,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public List<ArtistReview> findReviewsByArtistId(long artistId) {
+        public List<ArtistReview> findReviewsByArtistId(Long artistId) {
         final TypedQuery<ArtistReview> query = entityManager.createQuery(
                 "FROM ArtistReview review WHERE review.artist.id = :artistId AND review.isBlocked = false ORDER BY review.createdAt DESC",
                 ArtistReview.class

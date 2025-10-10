@@ -29,7 +29,7 @@ public class NotificationJpaDao implements NotificationDao {
     }
 
     @Override
-    public List<Notification> getNotificationsForUser(Long userId, int page, int pageSize) {
+    public List<Notification> getNotificationsForUser(Long userId, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
             "SELECT notification_id FROM notifications " +
@@ -60,25 +60,27 @@ public class NotificationJpaDao implements NotificationDao {
     }
 
     @Override
-    public void markAsRead(Long notificationId) {
+    public Void markAsRead(Long notificationId) {
         Notification notification = em.find(Notification.class, notificationId);
         if (notification != null) {
             notification.setRead(true);
             em.merge(notification);
         }
+        return null;
     }
 
     @Override
-    public void markAllAsRead(Long userId) {
+    public Void markAllAsRead(Long userId) {
         em.createQuery(
             "UPDATE Notification n SET n.read = true " +
             "WHERE n.recipientUser.id = :userId AND n.read = false")
             .setParameter("userId", userId)
             .executeUpdate();
+        return null;
     }
 
     @Override
-    public int getUnreadCount(Long userId) {
+    public Integer getUnreadCount(Long userId) {
         return ((Number) em.createQuery(
             "SELECT COUNT(n) FROM Notification n " +
             "WHERE n.recipientUser.id = :userId AND n.read = false")

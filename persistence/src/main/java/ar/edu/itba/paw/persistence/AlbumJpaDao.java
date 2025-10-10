@@ -23,7 +23,7 @@ public class AlbumJpaDao implements AlbumDao {
     private EntityManager entityManager;
 
     @Override
-    public Optional<Album> find(long id) {
+    public Optional<Album> findById(Long id) {
         // Buscar una entidad por su clave primaria
         return Optional.ofNullable(entityManager.find(Album.class, id));
     }
@@ -36,7 +36,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public List<Album> findPaginated(FilterType filterType, int limit, int offset) {
+    public List<Album> findPaginated(FilterType filterType, Integer limit, Integer offset) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         String nativeSQL = "SELECT a.id FROM album a " + filterType.getFilter();
         Query nativeQuery = entityManager.createNativeQuery(nativeSQL);
@@ -92,7 +92,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public List<Album> findByArtistId(long artistId) {
+    public List<Album> findByArtistId(Long artistId) {
         // Buscar álbumes por el ID del artista
         TypedQuery<Album> query = entityManager.createQuery(
                 "SELECT a FROM Album a JOIN FETCH a.artist WHERE a.artist.id = :artistId", Album.class);
@@ -114,7 +114,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public boolean updateRating(long albumId, Double newRating, int newRatingAmount) {
+    public Boolean updateRating(Long albumId, Double newRating, Integer newRatingAmount) {
         // Actualizar la calificación del álbum
         Album album = entityManager.find(Album.class, albumId);
         if (album != null) {
@@ -126,7 +126,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public boolean hasUserReviewed(long userId, long albumId) {
+    public Boolean hasUserReviewed(Long userId, Long albumId) {
         // Comprobar si un usuario ha revisado un álbum
         TypedQuery<Long> query = entityManager.createQuery(
                 "SELECT COUNT(ar) FROM AlbumReview ar WHERE ar.user.id = :userId AND ar.album.id = :albumId AND ar.isBlocked = false",
@@ -139,7 +139,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public boolean delete(long id) {
+    public Boolean delete(Long id) {
         // Eliminar un álbum por su ID
         Album album = entityManager.find(Album.class, id);
         if (album != null) {
@@ -150,7 +150,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public boolean deleteReviewsFromAlbum(long albumId) {
+    public Boolean deleteReviewsFromAlbum(Long albumId) {
         Query query = entityManager.createQuery(
                 "DELETE FROM Review r WHERE r.id IN " +
                         "(SELECT ar.id FROM AlbumReview ar WHERE ar.album.id = :albumId)");
@@ -159,7 +159,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public List<AlbumReview> findReviewsByAlbumId(long albumId) {
+    public List<AlbumReview> findReviewsByAlbumId(Long albumId) {
         final TypedQuery<AlbumReview> query = entityManager.createQuery(
                 "FROM AlbumReview ar WHERE ar.album.id = :albumId AND ar.isBlocked = false ORDER BY ar.createdAt DESC",
                 AlbumReview.class

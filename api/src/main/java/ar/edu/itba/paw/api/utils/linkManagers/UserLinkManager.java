@@ -1,6 +1,8 @@
-package ar.edu.itba.paw.api.utils;
+package ar.edu.itba.paw.api.utils.linkManagers;
 
 import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.api.utils.UriBuilder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

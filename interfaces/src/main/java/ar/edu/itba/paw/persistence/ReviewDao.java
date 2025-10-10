@@ -12,43 +12,43 @@ import java.util.Optional;
 public interface ReviewDao extends CrudDao<Review> {
 
     // Métodos específicos para ArtistReview
-    Optional<ArtistReview> findArtistReviewById(long id);
-    Optional<ArtistReview> findArtistReviewByUserId(long userId, long artistId);
+    Optional<ArtistReview> findArtistReviewById(Long id);
+    Optional<ArtistReview> findArtistReviewByUserId(Long userId, Long artistId);
     ArtistReview saveArtistReview(ArtistReview review);
 
     // Métodos específicos para AlbumReview
-    Optional<AlbumReview> findAlbumReviewById(long id);
-    Optional<AlbumReview> findAlbumReviewByUserId(long userId, long albumId);
+    Optional<AlbumReview> findAlbumReviewById(Long id);
+    Optional<AlbumReview> findAlbumReviewByUserId(Long userId, Long albumId);
     AlbumReview saveAlbumReview(AlbumReview review);
 
     // Métodos específicos para SongReview
-    Optional<SongReview> findSongReviewById(long id);
-    Optional<SongReview> findSongReviewByUserId(long userId, long songId);
+    Optional<SongReview> findSongReviewById(Long id);
+    Optional<SongReview> findSongReviewByUserId(Long userId, Long songId);
     SongReview saveSongReview(SongReview review);
 
 
     // Métodos para likes
-    List<User> likedBy(Long reviewId, int page, int pageSize);
-    void createLike(long userId, long reviewId);
-    void deleteLike(long userId, long reviewId);
-    void updateLikeCount(long reviewId);
-    boolean isLiked(Long userId, Long reviewId);
+    List<User> likedBy(Long reviewId, Integer page, Integer pageSize);
+    Void createLike(Long userId, Long reviewId);
+    Void deleteLike(Long userId, Long reviewId);
+    Void updateLikeCount(Long reviewId);
+    Boolean isLiked(Long userId, Long reviewId);
 
     // Métodos de paginación
-    List<ArtistReview> findArtistReviewsPaginated(long artistId, int page, int pageSize);
-    List<AlbumReview> findAlbumReviewsPaginated(long albumId, int page, int pageSize);
-    List<SongReview> findSongReviewsPaginated(long songId, int page, int pageSize);
+    List<ArtistReview> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize);
+    List<AlbumReview> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize);
+    List<SongReview> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize);
 
-    List<Review> getPopularReviewsPaginated(int page, int pageSize);
-    List<Review> getReviewsFromFollowedUsersPaginated(Long userId, int page, int pageSize);
-    List<Review> findReviewsByUserPaginated(Long userId, int page, int pageSize);
+    List<Review> getPopularReviewsPaginated(Integer page, Integer pageSize);
+    List<Review> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize);
+    List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize);
 
-    boolean isArtistReview(long reviewId);
-    boolean isAlbumReview(long reviewId);
-    boolean isSongReview(long reviewId);
+    Boolean isArtistReview(Long reviewId);
+    Boolean isAlbumReview(Long reviewId);
+    Boolean isSongReview(Long reviewId);
 
-    void block(Long reviewId);
-    void unblock(Long reviewId);
+    Void block(Long reviewId);
+    Void unblock(Long reviewId);
 
-    void updateCommentAmount(long reviewId);
+    Void updateCommentAmount(Long reviewId);
 }

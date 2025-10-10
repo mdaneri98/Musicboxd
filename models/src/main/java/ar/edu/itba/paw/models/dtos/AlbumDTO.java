@@ -1,40 +1,50 @@
 package ar.edu.itba.paw.models.dtos;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class AlbumDTO {
 
-    private long id;
+    private Long id;
+
+    @NotNull(message = "Album title is required")
+    @Size(min = 1, max = 100, message = "Album title must be between 1 and 100 characters")
     private String title;
+
+    @Size(max = 50, message = "Genre must not exceed 50 characters")
     private String genre;
+
     private LocalDate releaseDate;
-    private long imgId;
-    private byte[] Image;
 
-    private List<SongDTO> songs = new ArrayList<>();
+    private Long imageId;
 
-    private boolean deleted = false;
+    private Long artistId;
+    private String artistName;
+
+    private Integer ratingCount;
+
+    private Double avgRating;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    private List<SongDTO> songs;
+
+    private ImageDTO image;
+
+    private boolean deleted;
 
     public AlbumDTO() {}
 
-    public AlbumDTO(long id, String title, String genre, LocalDate releaseDate, long imgId, byte[] Image, List<SongDTO> songs, boolean deleted) {
-        this.id = id;
-        this.title = title;
-        this.genre = genre;
-        this.releaseDate = releaseDate;
-        this.imgId = imgId;
-        this.Image = Image;
-        this.songs = songs;
-        this.deleted = deleted;
-    }
-
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -54,24 +64,68 @@ public class AlbumDTO {
         this.genre = genre;
     }
 
-    public LocalDate getReleaseDate() { return releaseDate; }
-
-    public void setReleaseDate(LocalDate releaseDate) { this.releaseDate = releaseDate; }
-
-    public long getImgId() {
-        return imgId;
+    public LocalDate getReleaseDate() {
+        return releaseDate;
     }
 
-    public void setImgId(long imgId) {
-        this.imgId = imgId;
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
-    public byte[] getImage() {
-        return Image;
+    public Long getImageId() {
+        return imageId;
     }
 
-    public void setImage(byte[] Image) {
-        this.Image = Image;
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
+    }
+
+    public Long getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(Long artistId) {
+        this.artistId = artistId;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
+    public Double getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(Double avgRating) {
+        this.avgRating = avgRating;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public List<SongDTO> getSongs() {
@@ -80,6 +134,14 @@ public class AlbumDTO {
 
     public void setSongs(List<SongDTO> songs) {
         this.songs = songs;
+    }
+
+    public ImageDTO getImage() {
+        return image;
+    }
+
+    public void setImage(ImageDTO image) {
+        this.image = image;
     }
 
     public boolean isDeleted() {

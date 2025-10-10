@@ -18,12 +18,12 @@ public class CommentJpaDao implements CommentDao {
     private EntityManager em;
 
     @Override
-    public Optional<Comment> findById(long id) {
+    public Optional<Comment> findById(Long id) {
         return Optional.ofNullable(em.find(Comment.class, id));
     }
 
     @Override
-    public List<Comment> findByReviewId(long reviewId, int pageSize, int offset) {
+    public List<Comment> findByReviewId(Long reviewId, Integer pageSize, Integer offset) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT id FROM comment " +
@@ -62,10 +62,11 @@ public class CommentJpaDao implements CommentDao {
     }
 
     @Override
-    public void deleteById(long id) {
+    public Void deleteById(Long id) {
         Comment comment = em.find(Comment.class, id);
         if (comment != null) {
             em.remove(comment);
         }
+        return null;
     }
 }

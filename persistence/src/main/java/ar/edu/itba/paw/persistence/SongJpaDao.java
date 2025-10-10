@@ -25,12 +25,12 @@ public class SongJpaDao implements SongDao {
     private EntityManager em;
 
     @Override
-    public Optional<Song> find(long id) {
+    public Optional<Song> findById(Long id) {
         return Optional.ofNullable(em.find(Song.class, id));
     }
 
     @Override
-    public List<Song> findByArtistId(long artistId, int pageSize, int offset) {
+    public List<Song> findByArtistId(Long artistId, Integer pageSize, Integer offset) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT s.id FROM song s " +
@@ -63,7 +63,7 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public List<Song> findByAlbumId(long albumId) {
+    public List<Song> findByAlbumId(Long albumId) {
         String query = "SELECT s FROM Song s WHERE s.album.id = :albumId";
         return em.createQuery(query, Song.class)
                 .setParameter("albumId", albumId)
@@ -107,7 +107,7 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public List<Song> findPaginated(FilterType filterType, int limit, int offset) {
+    public List<Song> findPaginated(FilterType filterType, Integer limit, Integer offset) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         String nativeSQL = "SELECT s.id FROM song s " + filterType.getFilter();
         Query nativeQuery = em.createNativeQuery(nativeSQL)
@@ -140,7 +140,7 @@ public class SongJpaDao implements SongDao {
 
     @Override
     @Transactional
-    public int saveSongArtist(Song song, Artist artist) {
+    public Integer saveSongArtist(Song song, Artist artist) {
         try {
             song = em.find(Song.class, song.getId());
             artist = em.find(Artist.class, artist.getId());
@@ -167,8 +167,8 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public boolean updateRating(long songId, Double newRating, int newRatingAmount) {
-        Optional<Song> maybeSong = find(songId);
+    public Boolean updateRating(Long songId, Double newRating, Integer newRatingAmount) {
+        Optional<Song> maybeSong = findById(songId);
         if (maybeSong.isPresent()) {
             Song song = maybeSong.get();
             song.setAvgRating(newRating);
@@ -180,7 +180,7 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public boolean hasUserReviewed(long userId, long songId) {
+    public Boolean hasUserReviewed(Long userId, Long songId) {
         String query = "SELECT COUNT(sr) FROM SongReview sr WHERE sr.user.id = :userId AND sr.song.id = :songId AND sr.isBlocked = false";
         Long count = em.createQuery(query, Long.class)
                 .setParameter("userId", userId)
@@ -190,8 +190,8 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public boolean delete(long id) {
-        Optional<Song> maybeSong = find(id);
+    public Boolean delete(Long id) {
+        Optional<Song> maybeSong = findById(id);
         if (maybeSong.isPresent()) {
             em.remove(maybeSong.get());
             return true;
@@ -200,7 +200,7 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public boolean deleteReviewsFromSong(long songId) {
+    public Boolean deleteReviewsFromSong(Long songId) {
         Query query = em.createQuery(
                 "DELETE FROM Review r WHERE r.id IN " +
                         "(SELECT ar.id FROM SongReview ar WHERE ar.song.id = :songId)");
@@ -210,7 +210,7 @@ public class SongJpaDao implements SongDao {
 
 
     @Override
-    public List<SongReview> findReviewsBySongId(long songId) {
+    public List<SongReview> findReviewsBySongId(Long songId) {
         final TypedQuery<SongReview> query = em.createQuery(
                 "FROM SongReview sr WHERE sr.song.id = :songId AND sr.isBlocked = false ORDER BY sr.createdAt DESC",
                 SongReview.class

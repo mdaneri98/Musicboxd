@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.auth;
 
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.services.NotificationService;
 import ar.edu.itba.paw.services.UserService;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class CUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = us.findByUsername(username).orElseThrow(() -> {
+        UserDTO user = us.findByUsername(username).orElseThrow(() -> {
             LOGGER.info("Intento de acceso con usuario no existente: " + username);
             return new UsernameNotFoundException("User not found");
         });

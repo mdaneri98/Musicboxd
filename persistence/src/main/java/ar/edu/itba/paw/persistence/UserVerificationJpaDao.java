@@ -23,11 +23,11 @@ public class UserVerificationJpaDao implements UserVerificationDao {
 
 
     @Override
-    public void startVerification(VerificationType type, User user, String code) {
+    public Void startVerification(VerificationType type, User user, String code) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expireDateTime = now.plusHours(6);
 
-        Optional<User> optionalUser = userDao.find(user.getId());
+        Optional<User> optionalUser = userDao.findById(user.getId());
         if (optionalUser.isPresent()) {
             final UserVerification vf = new UserVerification();
             vf.setCode(code);
@@ -37,6 +37,7 @@ public class UserVerificationJpaDao implements UserVerificationDao {
 
             em.persist(vf);
         }
+        return null;
     }
 
     @Override
