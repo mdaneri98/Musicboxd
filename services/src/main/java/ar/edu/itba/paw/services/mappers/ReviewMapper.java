@@ -31,7 +31,7 @@ public class ReviewMapper {
         dto.setItemType(review.getItemType());
         dto.setItemId(review.getItemId());
         dto.setItemName(review.getItemName());
-        dto.setItemImageId(review.getItemImage() != null ? review.getItemImage().getId() : null);
+        dto.setItemImageId(review.getItemImage().getId());
 
         return dto;
     }

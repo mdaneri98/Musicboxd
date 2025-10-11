@@ -39,6 +39,7 @@ public class ReviewJpaDao implements ReviewDao {
         Review review = em.find(Review.class, id);
         if (review != null) {
             em.remove(review);
+            em.flush();
             return true;
         }
         return false;

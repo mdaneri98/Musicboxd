@@ -65,6 +65,12 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<Comment> comments;
 
+    @OneToMany(mappedBy = "recipientUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Notification> receivedNotifications;
+
+    @OneToMany(mappedBy = "triggerUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Notification> triggeredNotifications;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "follower",

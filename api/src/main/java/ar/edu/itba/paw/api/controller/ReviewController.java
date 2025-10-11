@@ -58,6 +58,13 @@ public class ReviewController extends BaseController {
         return buildResponse(collection);
     }
 
+    @POST
+    public Response createReview(ReviewDTO reviewDTO) {
+        ReviewDTO responseDTO = reviewService.create(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
+    }
+
     @GET
     @Path(ApiUriConstants.ID)
     public Response getReview(@PathParam("id") Long id, @QueryParam("loggedUserId") @DefaultValue("23") Long loggedUserId) {
@@ -75,7 +82,8 @@ public class ReviewController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateReview(@Valid ReviewDTO reviewDTO) {
+    public Response updateReview(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
+        reviewDTO.setId(id);
         ReviewDTO responseDTO = reviewService.update(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
