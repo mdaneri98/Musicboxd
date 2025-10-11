@@ -16,6 +16,7 @@ import ar.edu.itba.paw.services.exception.AlbumNotFoundException;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;
 import java.util.stream.Collectors;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.services.mappers.ReviewMapper;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -27,13 +28,15 @@ public class AlbumServiceImpl implements AlbumService {
     private final SongService songService;
     private final UserService userService;
     private final AlbumMapper albumMapper;
+    private final ReviewMapper reviewMapper;
 
-    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UserService userService, AlbumMapper albumMapper) {
+    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UserService userService, AlbumMapper albumMapper, ReviewMapper reviewMapper) {
         this.albumDao = albumDao;
         this.imageService = imageService;
         this.songService = songService;
         this.userService = userService;
         this.albumMapper = albumMapper;
+        this.reviewMapper = reviewMapper;
     }
 
     @Override
@@ -96,7 +99,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> findReviewsByAlbumId(Long albumId) {
-        return albumDao.findReviewsByAlbumId(albumId).stream().map(AlbumReview::toDTO).collect(Collectors.toList());
+        return albumDao.findReviewsByAlbumId(albumId).stream().map(reviewMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override

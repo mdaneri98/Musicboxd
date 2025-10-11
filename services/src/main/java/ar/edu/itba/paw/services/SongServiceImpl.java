@@ -3,7 +3,6 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.persistence.SongDao;
 import ar.edu.itba.paw.services.utils.TimeUtils;
@@ -29,12 +28,14 @@ public class SongServiceImpl implements SongService {
     private final AlbumDao albumDao;
     private final UserService userService;
     private final SongMapper songMapper;
+    private final ReviewMapper reviewMapper;
 
-    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService, SongMapper songMapper) {
+    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService, SongMapper songMapper, ReviewMapper reviewMapper) {
         this.songDao = songDao;
         this.albumDao = albumDao;
         this.userService = userService;
         this.songMapper = songMapper;
+        this.reviewMapper = reviewMapper;
     }
 
     @Override
@@ -102,7 +103,7 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> findReviewsBySongId(Long songId) {
-        return songDao.findReviewsBySongId(songId).stream().map(SongReview::toDTO).collect(Collectors.toList());
+        return songDao.findReviewsBySongId(songId).stream().map(reviewMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
