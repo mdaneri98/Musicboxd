@@ -5,7 +5,6 @@ import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
-import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,7 +95,7 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> findReviewsByArtistId(Long artistId) {
-        return artistDao.findReviewsByArtistId(artistId).stream().map(ArtistReview::toDTO).collect(Collectors.toList());
+        return artistDao.findReviewsByArtistId(artistId).stream().map(reviewMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override

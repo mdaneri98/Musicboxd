@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "song")
@@ -188,14 +187,4 @@ public class Song {
     public void setArtists(List<Artist> artists) {
         this.artists = artists;
     }
-
-    // @Override
-    // public boolean equals(Object o) {
-    //     if (this == o) return true;
-    //     if (o == null || getClass() != o.getClass()) return false;
-    //     Song song = (Song) o;
-    //     if (!Objects.equals(title, song.title)) return false;
-    //     if (!Objects.equals(duration, song.duration)) return false;
-    //     return Objects.equals(trackNumber, song.trackNumber);
-    // }
 }

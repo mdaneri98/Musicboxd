@@ -3,7 +3,6 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.utils.TimeUtils;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

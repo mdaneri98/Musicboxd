@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import ar.edu.itba.paw.services.mappers.UserMapper;
 import ar.edu.itba.paw.services.mappers.ArtistMapper;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;
-import ar.edu.itba.paw.services.mappers.SongMapper;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
 
 import javax.mail.MessagingException;
@@ -51,12 +50,11 @@ public class ReviewServiceImpl implements ReviewService {
     private final NotificationService notificationService;
     private final ArtistMapper artistMapper;
     private final AlbumMapper albumMapper;
-    private final SongMapper songMapper;
     private final UserMapper userMapper;   
     private final ReviewMapper reviewMapper;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, UserDao userDao, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, UserMapper userMapper, ReviewMapper reviewMapper, SongDao songDao) {
+    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, UserDao userDao, ArtistMapper artistMapper, AlbumMapper albumMapper, UserMapper userMapper, ReviewMapper reviewMapper, SongDao songDao) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
@@ -67,7 +65,6 @@ public class ReviewServiceImpl implements ReviewService {
         this.userDao = userDao;
         this.artistMapper = artistMapper;
         this.albumMapper = albumMapper;
-        this.songMapper = songMapper;
         this.userMapper = userMapper;
         this.reviewMapper = reviewMapper;
         this.songDao = songDao;

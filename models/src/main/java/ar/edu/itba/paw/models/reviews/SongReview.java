@@ -1,12 +1,9 @@
 package ar.edu.itba.paw.models.reviews;
 
-import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
 
-import java.util.List;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
