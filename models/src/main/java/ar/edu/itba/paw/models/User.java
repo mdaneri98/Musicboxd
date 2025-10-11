@@ -573,174 +573,19 @@ public class User {
         this.theme = theme;
     }
 
-    public static class Builder {
-        private Long id;
-        private String username;
-        private String email;
-        private String password;
-        private String name;
-        private String bio;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-        private Boolean verified;
-        private Boolean moderator;
-        private Integer followersAmount;
-        private Integer followingAmount;
-        private Integer reviewAmount;
-        private Long imageId;
-        private Boolean followNotificationsEnabled;
-        private Boolean likeNotificationsEnabled;
-        private Boolean commentNotificationsEnabled;
-        private Boolean reviewNotificationsEnabled;
-        private String theme;
-
-        public Builder() {
-        }
-
-        public Builder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder username(String username) {
-            this.username = username;
-            return this;
-        }
-
-        public Builder email(String email) {
-            this.email = email;
-            return this;
-        }
-
-        public Builder password(String password) {
-            this.password = password;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder bio(String bio) {
-            this.bio = bio;
-            return this;
-        }
-
-        public Builder createdAt(LocalDateTime createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder updatedAt(LocalDateTime updatedAt) {
-            this.updatedAt = updatedAt;
-            return this;
-        }
-
-        public Builder verified(Boolean verified) {
-            this.verified = verified;
-            return this;
-        }
-
-        public Builder moderator(Boolean moderator) {
-            this.moderator = moderator;
-            return this;
-        }
-
-        public Builder followersAmount(Integer followersAmount) {
-            this.followersAmount = followersAmount;
-            return this;
-        }
-
-        public Builder followingAmount(Integer followingAmount) {
-            this.followingAmount = followingAmount;
-            return this;
-        }
-
-        public Builder reviewAmount(Integer reviewAmount) {
-            this.reviewAmount = reviewAmount;
-            return this;
-        }
-
-        public Builder imageId(Long imageId) {
-            this.imageId = imageId;
-            return this;
-        }
-
-        public Builder followNotificationsEnabled(Boolean followNotificationsEnabled) {
-            this.followNotificationsEnabled = followNotificationsEnabled;
-            return this;
-        }
-
-        public Builder likeNotificationsEnabled(Boolean likeNotificationsEnabled) {
-            this.likeNotificationsEnabled = likeNotificationsEnabled;
-            return this;
-        }
-
-        public Builder commentNotificationsEnabled(Boolean commentNotificationsEnabled) {
-            this.commentNotificationsEnabled = commentNotificationsEnabled;
-            return this;
-        }
-
-        public Builder reviewNotificationsEnabled(Boolean reviewNotificationsEnabled) {
-            this.reviewNotificationsEnabled = reviewNotificationsEnabled;
-            return this;
-        }
-
-        public Builder theme(String theme) {
-            this.theme = theme;
-            return this;
-        }
-
-        public User build() {
-            User user = new User();
-            user.id = this.id;
-            user.username = this.username;
-            user.email = this.email;
-            user.password = this.password;
-            user.name = this.name;
-            user.bio = this.bio;
-            user.createdAt = this.createdAt;
-            user.updatedAt = this.updatedAt;
-            user.verified = this.verified;
-            user.moderator = this.moderator;
-            user.followersAmount = this.followersAmount;
-            user.followingAmount = this.followingAmount;
-            user.reviewAmount = this.reviewAmount;
-            user.imageId = this.imageId;
-            user.followNotificationsEnabled = this.followNotificationsEnabled != null ? this.followNotificationsEnabled : true;
-            user.likeNotificationsEnabled = this.likeNotificationsEnabled != null ? this.likeNotificationsEnabled : true;
-            user.commentNotificationsEnabled = this.commentNotificationsEnabled != null ? this.commentNotificationsEnabled : true;
-            user.reviewNotificationsEnabled = this.reviewNotificationsEnabled != null ? this.reviewNotificationsEnabled : true;
-            user.theme = this.theme != null ? this.theme : "dark";
-            return user;
-        }
+    public List<Notification> getReceivedNotifications() {
+        return receivedNotifications;
     }
 
-    // Método para convertir a JSON
-    public String toJson() {
-        StringBuilder json = new StringBuilder();
-        json.append("{");
-        json.append("\"type\":\"").append("user").append("\",");
-        json.append("\"id\":").append(id).append(",");
-        json.append("\"name\":\"").append(username).append("\",");
-        json.append("\"email\":\"").append(email).append("\",");
-        json.append("\"bio\":\"").append(bio).append("\",");
-        json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
-        json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"verified\":\"").append(verified).append("\",");
-        json.append("\"moderator\":\"").append(moderator).append("\",");
-        json.append("\"followersAmount\":\"").append(followersAmount).append("\",");
-        json.append("\"followingAmount\":\"").append(followingAmount).append("\",");
-        json.append("\"reviewAmount\":\"").append(reviewAmount).append("\",");
-        json.append("\"imgId\":\"").append(getImageId()).append("\",");
-        json.append("\"followNotificationsEnabled\":").append(followNotificationsEnabled);
-        json.append(",\"likeNotificationsEnabled\":").append(likeNotificationsEnabled);
-        json.append(",\"commentNotificationsEnabled\":").append(commentNotificationsEnabled);
-        json.append(",\"reviewNotificationsEnabled\":").append(reviewNotificationsEnabled);
-        json.append(",\"theme\":\"").append(theme).append("\"");
-        json.append("}");
-        return json.toString();
+    public void setReceivedNotifications(List<Notification> receivedNotifications) {
+        this.receivedNotifications = receivedNotifications;
+    }
+    
+    public List<Notification> getTriggeredNotifications() {
+        return triggeredNotifications;
     }
 
+    public void setTriggeredNotifications(List<Notification> triggeredNotifications) {
+        this.triggeredNotifications = triggeredNotifications;
+    }
 }

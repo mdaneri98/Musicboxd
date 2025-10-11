@@ -189,33 +189,13 @@ public class Song {
         this.artists = artists;
     }
 
-    // Método para convertir a JSON
-    public String toJson() {
-        StringBuilder json = new StringBuilder();
-        json.append("{");
-        json.append("\"type\":\"").append("song").append("\",");
-        json.append("\"id\":").append(id).append(",");
-        json.append("\"name\":\"").append(title).append("\",");
-        json.append("\"duration\":\"").append(duration).append("\",");
-        json.append("\"trackNumber\":").append(trackNumber).append(",");
-        json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
-        json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"imgId\":\"").append(getAlbum().getImage().getId()).append("\",");
-
-        // Convertir el álbum a JSON si no es nulo
-        json.append("\"album\":").append(album != null ? album.toJson() : null);
-
-        json.append("}");
-        return json.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Song song = (Song) o;
-        if (!Objects.equals(title, song.title)) return false;
-        if (!Objects.equals(duration, song.duration)) return false;
-        return Objects.equals(trackNumber, song.trackNumber);
-    }
+    // @Override
+    // public boolean equals(Object o) {
+    //     if (this == o) return true;
+    //     if (o == null || getClass() != o.getClass()) return false;
+    //     Song song = (Song) o;
+    //     if (!Objects.equals(title, song.title)) return false;
+    //     if (!Objects.equals(duration, song.duration)) return false;
+    //     return Objects.equals(trackNumber, song.trackNumber);
+    // }
 }
