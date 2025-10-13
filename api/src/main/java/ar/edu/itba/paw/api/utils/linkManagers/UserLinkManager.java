@@ -1,11 +1,15 @@
 package ar.edu.itba.paw.api.utils.linkManagers;
 
 import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Link manager for User resources using HATEOASUtils for common operations
+ */
 @Component
 public class UserLinkManager {
     
@@ -13,17 +17,9 @@ public class UserLinkManager {
     private UriBuilder uriBuilder;
     
     public void addUserLinks(Resource<?> resource, String baseUrl, Long userId) {
-        resource.addSelfLink(uriBuilder.buildUserUri(baseUrl, userId));
-        resource.addEditLink(uriBuilder.buildUserUri(baseUrl, userId));
-        resource.addDeleteLink(uriBuilder.buildUserUri(baseUrl, userId));
-        resource.addLink("reviews", uriBuilder.buildUserReviewsUri(baseUrl, userId));
-        resource.addLink("followers", uriBuilder.buildUserFollowersUri(baseUrl, userId));
-        resource.addLink("following", uriBuilder.buildUserFollowingUri(baseUrl, userId));
-    }
-    
-    public void addUserCollectionLinks(Resource<?> resource, String baseUrl) {
-        resource.addSelfLink(uriBuilder.buildCollectionUri(baseUrl, "users"));
-        resource.addCreateLink(uriBuilder.buildCollectionUri(baseUrl, "users"));
-        resource.addLink("search", uriBuilder.buildSearchUri(baseUrl, "users", ""));
+        HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.USERS_BASE, userId);
+        resource.addLink(uriBuilder.buildUserReviewsUri(baseUrl, userId), "reviews", "User reviews", "GET");
+        resource.addLink(uriBuilder.buildUserFollowersUri(baseUrl, userId), "followers", "User followers", "GET");
+        resource.addLink(uriBuilder.buildUserFollowingUri(baseUrl, userId), "following", "User following", "GET");
     }
 }

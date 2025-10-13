@@ -453,14 +453,14 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public List<Review> findPaginated(FilterType filterType, Integer limit, Integer offset) {
+    public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         String nativeSQL = "SELECT r.id FROM review r WHERE isblocked = false " +
                           filterType.getFilter();
 
         Query nativeQuery = em.createNativeQuery(nativeSQL)
-            .setFirstResult(offset)
-            .setMaxResults(limit);
+            .setFirstResult((page - 1) * pageSize)
+            .setMaxResults(pageSize);
         
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
@@ -497,6 +497,12 @@ public class ReviewJpaDao implements ReviewDao {
         updateQuery.setParameter("reviewId", reviewId);
         updateQuery.executeUpdate();
         return null;
+    }
+
+    @Override
+    public Long countAll() {
+        Query query = em.createQuery("SELECT COUNT(r) FROM Review r WHERE r.isBlocked = false");
+        return (Long) query.getSingleResult();
     }
 
 }

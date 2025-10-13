@@ -161,4 +161,10 @@ public class ArtistJpaDao implements ArtistDao {
         return query.getResultList();
     }
 
+    @Override
+    public Long countAll() {
+        Query query = entityManager.createQuery("SELECT COUNT(a) FROM Artist a");
+        return (Long) query.getSingleResult();
+    }
+
 }

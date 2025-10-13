@@ -222,4 +222,10 @@ public class AlbumServiceImpl implements AlbumService {
         return albumDao.hasUserReviewed(userId, albumId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Long countAll() {
+        return albumDao.countAll();
+    }
+
 }

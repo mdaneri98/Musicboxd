@@ -51,4 +51,7 @@ public interface ReviewDao extends CrudDao<Review> {
     Void unblock(Long reviewId);
 
     Void updateCommentAmount(Long reviewId);
+    
+    // Count methods for pagination
+    Long countAll();
 }

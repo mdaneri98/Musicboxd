@@ -42,24 +42,24 @@ public class ReviewController extends BaseController {
 
     @GET
     public Response getAllReviews(
-            @QueryParam("userId") Long userId,
             @QueryParam("popular") @DefaultValue("false") boolean popular,
             @QueryParam("following") @DefaultValue("false") boolean following,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
-        
+
         List<ReviewDTO> reviewDTOs = reviewService.findPaginated(filter, page, size);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
+        Long totalCount = reviewService.countAll();
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
         
         return buildResponse(collection);
     }
 
     @POST
-    public Response createReview(ReviewDTO reviewDTO) {
+    public Response createReview(@Valid ReviewDTO reviewDTO) {
         ReviewDTO responseDTO = reviewService.create(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
@@ -98,9 +98,9 @@ public class ReviewController extends BaseController {
         
         List<CommentDTO> commentDTOs = commentService.findByReviewId(id, page, size);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
-        
+        Long totalCount = commentService.countByReviewId(id);
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, getBaseUrl(), ApiUriConstants.COMMENTS_BASE);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE);
         
         return buildResponse(collection);
     }
@@ -141,4 +141,3 @@ public class ReviewController extends BaseController {
         return Response.ok().entity("{\"message\": \"Review unblocked successfully\"}").build();
     }
 }
-

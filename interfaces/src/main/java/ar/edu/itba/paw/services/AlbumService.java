@@ -19,4 +19,7 @@ public interface AlbumService extends CrudService<AlbumDTO> {
     Boolean hasUserReviewed(Long userId, Long albumId);
 
     List<ReviewDTO> findReviewsByAlbumId(Long albumId);
+    
+    // Count methods for pagination
+    Long countAll();
 }

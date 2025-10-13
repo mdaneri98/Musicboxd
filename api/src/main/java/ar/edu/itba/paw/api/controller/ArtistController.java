@@ -49,9 +49,10 @@ public class ArtistController extends BaseController {
         
         List<ArtistDTO> artistDTOs = artistService.findPaginated(FilterType.FIRST, page, size);
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
+        Long totalCount = artistService.countAll();
         
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
-                artistResources, getBaseUrl(), ApiUriConstants.ARTISTS_BASE);
+                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE);
         
         return buildResponse(collection);
     }
@@ -98,9 +99,10 @@ public class ArtistController extends BaseController {
         
         List<ReviewDTO> reviews = reviewService.findArtistReviewsPaginated(id, page, size, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
+        Long totalCount = reviewService.countAll();
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTIST_REVIEWS);
         
         return buildResponse(collection);
     }

@@ -69,4 +69,11 @@ public class CommentJpaDao implements CommentDao {
         }
         return null;
     }
+
+    @Override
+    public Long countByReviewId(Long reviewId) {
+        Query query = em.createQuery("SELECT COUNT(c) FROM Comment c WHERE c.review.id = :reviewId");
+        query.setParameter("reviewId", reviewId);
+        return (Long) query.getSingleResult();
+    }
 }

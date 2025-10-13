@@ -168,4 +168,10 @@ public class AlbumJpaDao implements AlbumDao {
         return query.getResultList();
     }
 
+    @Override
+    public Long countAll() {
+        Query query = entityManager.createQuery("SELECT COUNT(a) FROM Album a");
+        return (Long) query.getSingleResult();
+    }
+
 }

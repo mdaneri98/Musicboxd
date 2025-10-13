@@ -60,9 +60,10 @@ public class AlbumController extends BaseController {
         
         List<AlbumDTO> albumDTOs = albumService.findPaginated(filter, page, size);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
+        Long totalCount = albumService.countAll();
         
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, getBaseUrl(), ApiUriConstants.ALBUMS_BASE);
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE);
         
         return buildResponse(collection);
     }
@@ -119,19 +120,19 @@ public class AlbumController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                reviewResources, reviewService.countAll(), page, size, getBaseUrl(), ApiUriConstants.ALBUM_REVIEWS);
         
         return buildResponse(collection);
     }
 
     @GET
     @Path(ApiUriConstants.ALBUM_SONGS)
-    public Response getAlbumSongs(@PathParam("id") Long id) {
+    public Response getAlbumSongs(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") int page, @QueryParam("size") @DefaultValue("20") int size) {
         List<SongDTO> songDTOs = songService.findByAlbumId(id);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, getBaseUrl(), ApiUriConstants.SONGS_BASE);
+                songResources, songService.countAll(), page, size, getBaseUrl(), ApiUriConstants.ALBUM_SONGS);
         
         return buildResponse(collection);
     }

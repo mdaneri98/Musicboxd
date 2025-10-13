@@ -14,4 +14,7 @@ public interface AlbumDao extends CrudDao<Album> {
 
     Boolean deleteReviewsFromAlbum(Long albumId);
     List<AlbumReview> findReviewsByAlbumId(Long albumId);
+    
+    // Count methods for pagination
+    Long countAll();
 }

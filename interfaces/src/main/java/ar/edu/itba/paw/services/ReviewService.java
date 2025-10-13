@@ -56,4 +56,7 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     ReviewDTO createArtistReview(ReviewDTO review);
     ReviewDTO createAlbumReview(ReviewDTO review);
     ReviewDTO createSongReview(ReviewDTO review);
+    
+    // Count methods for pagination
+    Long countAll();
 }

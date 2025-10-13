@@ -20,5 +20,8 @@ public interface ArtistService extends CrudService<ArtistDTO> {
 
     Boolean updateRating(Long artistId, Double roundedAvgRating, Integer ratingAmount);
     Boolean hasUserReviewed(Long userId, Long artistId);
+    
+    // Count methods for pagination
+    Long countAll();
 
 }

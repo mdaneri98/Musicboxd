@@ -1,10 +1,15 @@
 package ar.edu.itba.paw.api.utils.linkManagers;
 
 import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Link manager for Artist resources using HATEOASUtils for common operations
+ */
 @Component
 public class ArtistLinkManager {
     
@@ -12,17 +17,9 @@ public class ArtistLinkManager {
     private UriBuilder uriBuilder;
     
     public void addArtistLinks(Resource<?> resource, String baseUrl, Long artistId) {
-        resource.addSelfLink(uriBuilder.buildArtistUri(baseUrl, artistId));
-        resource.addEditLink(uriBuilder.buildArtistUri(baseUrl, artistId));
-        resource.addDeleteLink(uriBuilder.buildArtistUri(baseUrl, artistId));
-        resource.addLink("reviews", uriBuilder.buildArtistReviewsUri(baseUrl, artistId));
-        resource.addCollectionLink(uriBuilder.buildCollectionUri(baseUrl, "artists"));
-    }
-    
-    public void addArtistCollectionLinks(Resource<?> resource, String baseUrl) {
-        resource.addSelfLink(uriBuilder.buildCollectionUri(baseUrl, "artists"));
-        resource.addCreateLink(uriBuilder.buildCollectionUri(baseUrl, "artists"));
-        resource.addLink("search", uriBuilder.buildSearchUri(baseUrl, "artists", ""));
+        HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.ARTISTS_BASE, artistId);
+        resource.addLink(uriBuilder.buildArtistReviewsUri(baseUrl, artistId), "reviews", "Artist reviews", "GET");
+        resource.addLink(uriBuilder.buildArtistAlbumsUri(baseUrl, artistId), "albums", "Artist albums", "GET");
     }
 }
 

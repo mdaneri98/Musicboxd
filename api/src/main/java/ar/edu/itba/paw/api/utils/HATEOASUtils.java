@@ -2,84 +2,94 @@ package ar.edu.itba.paw.api.utils;
 
 import ar.edu.itba.paw.api.models.Link;
 import ar.edu.itba.paw.api.models.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Utility class for HATEOAS operations
+ * Utility class for HATEOAS operations using UriBuilder to avoid code duplication
  */
+@Component
 public class HATEOASUtils {
     
-    /**
-     * Creates a self link for a resource
-     */
-    public static Link createSelfLink(String baseUrl, String resourcePath, Long id) {
-        return Link.self(baseUrl + resourcePath + "/" + id);
-    }
+    private static UriBuilder uriBuilder;
     
-    /**
-     * Creates a self link for a collection
-     */
-    public static Link createCollectionSelfLink(String baseUrl, String resourcePath) {
-        return Link.self(baseUrl + resourcePath);
+    @Autowired
+    public HATEOASUtils(UriBuilder uriBuilder) {
+        HATEOASUtils.uriBuilder = uriBuilder;
     }
-    
     /**
-     * Creates CRUD links for a resource
+     * Creates CRUD links for a resource using UriBuilder
      */
     public static void addCrudLinks(Resource<?> resource, String baseUrl, String resourcePath, Long id) {
-        resource.addSelfLink(baseUrl + resourcePath + "/" + id);
-        resource.addEditLink(baseUrl + resourcePath + "/" + id);
-        resource.addDeleteLink(baseUrl + resourcePath + "/" + id);
-        resource.addCollectionLink(baseUrl + resourcePath);
+        String uri = uriBuilder.buildResourceUri(baseUrl, resourcePath, id);
+        
+        resource.addSelfLink(uri);
+        resource.addEditLink(uri);
+        resource.addDeleteLink(uri);
+        
+        String collectionUri = uriBuilder.buildCollectionUri(baseUrl, resourcePath);
+        resource.addCollectionLink(collectionUri);
     }
     
     /**
-     * Creates CRUD links for a collection
+     * Creates CRUD links for a collection using UriBuilder
      */
     public static void addCollectionCrudLinks(Resource<?> resource, String baseUrl, String resourcePath) {
-        resource.addSelfLink(baseUrl + resourcePath);
-        resource.addCreateLink(baseUrl + resourcePath);
+        String uri = uriBuilder.buildCollectionUri(baseUrl, resourcePath);
+        
+        resource.addSelfLink(uri);
+        resource.addCreateLink(uri);
     }
     
     /**
-     * Creates pagination links for a collection
+     * Creates pagination links for a collection using UriBuilder
      */
     public static void addPaginationLinks(Resource<?> resource, String baseUrl, String resourcePath, 
                                         Integer currentPage, Integer totalPages, Integer pageSize) {
-        if (currentPage != null && totalPages != null) {
-            // First page
-            if (currentPage > 1) {
-                resource.addLink(Link.first(baseUrl + resourcePath + "?page=1&size=" + pageSize));
-            }
-            
-            // Previous page
-            if (currentPage > 1) {
-                resource.addLink(Link.prev(baseUrl + resourcePath + "?page=" + (currentPage - 1) + "&size=" + pageSize));
-            }
-            
-            // Next page
-            if (currentPage < totalPages) {
-                resource.addLink(Link.next(baseUrl + resourcePath + "?page=" + (currentPage + 1) + "&size=" + pageSize));
-            }
-            
-            // Last page
-            if (currentPage < totalPages) {
-                resource.addLink(Link.last(baseUrl + resourcePath + "?page=" + totalPages + "&size=" + pageSize));
-            }
+        if (currentPage == null || totalPages == null || pageSize == null) {
+            return;
+        }
+        
+        // First page link
+        if (currentPage > 1) {
+            String firstUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, 1, pageSize);
+            resource.addLink(Link.createLink(firstUri, "first", "First Page", "GET"));
+        }
+        
+        // Previous page link
+        if (currentPage > 1) {
+            String prevUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, currentPage - 1, pageSize);
+            resource.addLink(Link.createLink(prevUri, "prev", "Previous Page", "GET"));
+        }
+        
+        // Next page link
+        if (currentPage < totalPages) {
+            String nextUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, currentPage + 1, pageSize);
+            resource.addLink(Link.createLink(nextUri, "next", "Next Page", "GET"));
+        }
+        
+        // Last page link
+        if (currentPage < totalPages) {
+            String lastUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, totalPages, pageSize);
+            resource.addLink(Link.createLink(lastUri, "last", "Last Page", "GET"));
         }
     }
     
     /**
-     * Creates relationship links for related resources
+     * Creates relationship links for related resources using UriBuilder
      */
     public static void addRelationshipLinks(Resource<?> resource, String baseUrl, String resourcePath, Long id, 
                                          String relatedResource, Long relatedId) {
         if (relatedId != null) {
-            resource.addLink(Link.item(baseUrl + "/" + relatedResource + "/" + relatedId, 
-                                     "item", "View " + relatedResource));
+            String uri = uriBuilder.buildResourceUri(baseUrl, relatedResource, relatedId);
+            resource.addLink(Link.createLink(uri, "item", "View " + relatedResource, "GET"));
         }
     }
     
@@ -92,17 +102,13 @@ public class HATEOASUtils {
         int serverPort = request.getServerPort();
         String contextPath = request.getContextPath();
         
-        StringBuilder url = new StringBuilder();
-        url.append(scheme).append("://").append(serverName);
-        
-        if ((scheme.equals("http") && serverPort != 80) || 
-            (scheme.equals("https") && serverPort != 443)) {
-            url.append(":").append(serverPort);
-        }
-        
-        url.append(contextPath);
-        
-        return url.toString();
+        return UriComponentsBuilder.newInstance()
+                .scheme(scheme)
+                .host(serverName)
+                .port(serverPort)
+                .path(contextPath)
+                .build()
+                .toUriString();
     }
     
     /**
@@ -114,32 +120,31 @@ public class HATEOASUtils {
     }
     
     /**
-     * Creates a link with query parameters
+     * Creates a link with query parameters using UriComponentsBuilder
      */
-    public static Link createLinkWithQuery(String href, String rel, String queryParams) {
-        String fullHref = href;
-        if (queryParams != null && !queryParams.isEmpty()) {
-            fullHref += (href.contains("?") ? "&" : "?") + queryParams;
+    public static Link createLinkWithQuery(String baseUrl, String path, String rel, String title, 
+                                          String method, Map<String, String> queryParams) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(path);
+        
+        // Add query parameters in pairs (key, value)
+        if (queryParams != null && queryParams.size() > 0) {
+            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+                builder.queryParam(entry.getKey(), entry.getValue());
+            }
         }
-        return new Link(fullHref, rel);
+        
+        return Link.createLink(builder.toUriString(), rel, title, method);
     }
     
     /**
-     * Creates search/filter links
+     * Creates search/filter links using UriComponentsBuilder
      */
     public static void addSearchLinks(Resource<?> resource, String baseUrl, String resourcePath) {
-        resource.addLink(new Link(baseUrl + resourcePath + "/search", "search", "Search resources"));
-        resource.addLink(new Link(baseUrl + resourcePath + "/filter", "filter", "Filter resources"));
-    }
-    
-    /**
-     * Creates action links for specific operations
-     */
-    public static void addActionLinks(Resource<?> resource, String baseUrl, String resourcePath, Long id) {
-        // Example action links - customize based on your domain
-        resource.addLink(new Link(baseUrl + resourcePath + "/" + id + "/follow", "follow", "Follow this resource", null, "POST"));
-        resource.addLink(new Link(baseUrl + resourcePath + "/" + id + "/unfollow", "unfollow", "Unfollow this resource", null, "DELETE"));
-        resource.addLink(new Link(baseUrl + resourcePath + "/" + id + "/like", "like", "Like this resource", null, "POST"));
-        resource.addLink(new Link(baseUrl + resourcePath + "/" + id + "/unlike", "unlike", "Unlike this resource", null, "DELETE"));
+        Map<String, String> sortParams = new HashMap<>(Map.of("filter", "FIRST"));
+        Map<String, String> searchParams = new HashMap<>(Map.of("search", ""));
+
+        resource.addLink(createLinkWithQuery(baseUrl, resourcePath, "search", "Search resources", "GET", searchParams));
+        resource.addLink(createLinkWithQuery(baseUrl, resourcePath, "sort", "Sort resources", "GET", sortParams));
     }
 }

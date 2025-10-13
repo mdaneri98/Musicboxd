@@ -188,4 +188,10 @@ public class SongServiceImpl implements SongService {
     public Boolean hasUserReviewed(Long userId, Long songId) {
         return songDao.hasUserReviewed(userId, songId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long countAll() {
+        return songDao.countAll();
+    }
 }

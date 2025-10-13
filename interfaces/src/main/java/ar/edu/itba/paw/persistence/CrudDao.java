@@ -10,7 +10,7 @@ public interface CrudDao<T> {
 
     List<T> findAll();
 
-    List<T> findPaginated(FilterType filterType, Integer limit, Integer offset);
+    List<T> findPaginated(FilterType filterType, Integer page, Integer pageSize);
 
     T create(T entity);
 

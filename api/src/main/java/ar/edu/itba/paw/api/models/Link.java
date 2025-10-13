@@ -26,80 +26,27 @@ public class Link {
     
     public Link() {}
     
-    public Link(String href, String rel) {
+    private Link(String href, String title, String type, String method) {
         this.href = href;
-        this.rel = rel;
-    }
-    
-    public Link(String href, String rel, String title) {
-        this.href = href;
-        this.rel = rel;
         this.title = title;
+        this.method = method;
+        this.type = type;
     }
     
-    public Link(String href, String rel, String title, String type, String method) {
+    private Link(String href, String rel, String title, String type, String method) {
         this.href = href;
         this.rel = rel;
         this.title = title;
         this.type = type;
         this.method = method;
     }
-    
-    // Static factory methods for common link types
-    public static Link self(String href) {
-        return new Link(href, "self");
+
+
+    public static Link createLink(String href, String rel, String title, String method) {
+        return new Link(href, rel, title, "application/json", method);
     }
-    
-    public static Link next(String href) {
-        return new Link(href, "next");
-    }
-    
-    public static Link prev(String href) {
-        return new Link(href, "prev");
-    }
-    
-    public static Link first(String href) {
-        return new Link(href, "first");
-    }
-    
-    public static Link last(String href) {
-        return new Link(href, "last");
-    }
-    
-    public static Link collection(String href) {
-        return new Link(href, "collection");
-    }
-    
-    public static Link collection(String href, String title) {
-        return new Link(href, "collection", title);
-    }
-    
-    public static Link collection(String href, String rel, String title) {
-        return new Link(href, rel, title);
-    }
-    
-    public static Link item(String href) {
-        return new Link(href, "item");
-    }
-    
-    public static Link item(String href, String title) {
-        return new Link(href, "item", title);
-    }
-    
-    public static Link item(String href, String rel, String title) {
-        return new Link(href, rel, title);
-    }
-    
-    public static Link edit(String href) {
-        return new Link(href, "edit", "Edit this resource", "application/json", "PUT");
-    }
-    
-    public static Link delete(String href) {
-        return new Link(href, "delete", "Delete this resource", null, "DELETE");
-    }
-    
-    public static Link create(String href) {
-        return new Link(href, "create", "Create new resource", "application/json", "POST");
+    public static Link createLink(String href, String title, String method) {
+        return new Link(href, title, "application/json", method);
     }
     
     // Getters and setters
@@ -154,16 +101,5 @@ public class Link {
     @Override
     public int hashCode() {
         return Objects.hash(href, rel);
-    }
-    
-    @Override
-    public String toString() {
-        return "Link{" +
-                "href='" + href + '\'' +
-                ", rel='" + rel + '\'' +
-                ", title='" + title + '\'' +
-                ", type='" + type + '\'' +
-                ", method='" + method + '\'' +
-                '}';
     }
 }

@@ -34,40 +34,28 @@ public abstract class Resource<T> {
         links.add(link);
     }
     
-    public void addLink(String href, String rel) {
-        addLink(new Link(href, rel));
-    }
-    
-    public void addLink(String href, String rel, String title) {
-        addLink(new Link(href, rel, title));
-    }
-    
-    public void addLink(String href, String rel, String title, String type, String method) {
-        addLink(new Link(href, rel, title, type, method));
+    public void addLink(String href, String rel, String title, String method) {
+        addLink(Link.createLink(href, rel, title, method));
     }
     
     public void addSelfLink(String href) {
-        addLink(Link.self(href));
+        addLink(Link.createLink(href, "self", "Self Link", "GET"));
     }
     
     public void addEditLink(String href) {
-        addLink(Link.edit(href));
+        addLink(Link.createLink(href, "edit", "Edit Link", "PUT"));
     }
     
     public void addDeleteLink(String href) {
-        addLink(Link.delete(href));
+        addLink(Link.createLink(href, "delete", "Delete Link", "DELETE"));
     }
     
     public void addCollectionLink(String href) {
-        addLink(Link.collection(href));
+        addLink(Link.createLink(href, "collection", "Collection Link", "GET"));
     }
-    
-    public void addItemLink(String href) {
-        addLink(Link.item(href));
-    }
-    
+
     public void addCreateLink(String href) {
-        addLink(Link.create(href));
+        addLink(Link.createLink(href, "create", "Create Link", "POST"));
     }
     
     // Getters and setters

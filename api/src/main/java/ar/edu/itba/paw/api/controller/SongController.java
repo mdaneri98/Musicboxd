@@ -51,9 +51,10 @@ public class SongController extends BaseController {
         
         List<SongDTO> songDTOs = songService.findPaginated(filter, page, size);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
+        Long totalCount = songService.countAll();
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, getBaseUrl(), ApiUriConstants.SONGS_BASE);
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
         
         return buildResponse(collection);
     }
@@ -118,9 +119,10 @@ public class SongController extends BaseController {
         List<ReviewDTO> reviews = reviewService.findSongReviewsPaginated(id, page, size, loggedUserId);
 
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
-        
+        Long totalCount = reviewService.countAll();
+                
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                    reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONG_REVIEWS);
         
         return buildResponse(collection);
     }

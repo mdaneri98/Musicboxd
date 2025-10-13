@@ -190,4 +190,10 @@ public class ArtistServiceImpl implements ArtistService {
     public Boolean hasUserReviewed(Long userId, Long artistId) {
         return artistDao.hasUserReviewed(userId, artistId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long countAll() {
+        return artistDao.countAll();
+    }
 }

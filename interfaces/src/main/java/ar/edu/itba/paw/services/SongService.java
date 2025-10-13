@@ -17,4 +17,7 @@ public interface SongService extends CrudService<SongDTO> {
     Boolean updateRating(Long songId, Double newRating, Integer newRatingAmount);
     Boolean hasUserReviewed(Long userId, Long songId);
     Boolean deleteReviewsFromSong(Long id);
+    
+    // Count methods for pagination
+    Long countAll();
 }

@@ -502,6 +502,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Long countAll() {
+        return reviewDao.countAll();
+    }
+
+    @Override
     @Transactional
     public Void block(Long reviewId) {
         LOGGER.info("Blocking review with ID: {}", reviewId);

@@ -219,5 +219,11 @@ public class SongJpaDao implements SongDao {
         return query.getResultList();
     }
 
+    @Override
+    public Long countAll() {
+        Query query = em.createQuery("SELECT COUNT(s) FROM Song s WHERE s.deleted = false");
+        return (Long) query.getSingleResult();
+    }
+
 }
 

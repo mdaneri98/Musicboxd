@@ -17,5 +17,8 @@ public interface ArtistDao extends CrudDao<Artist> {
     Boolean deleteReviewsFromArtist(Long artistId);
 
     List<ArtistReview> findReviewsByArtistId(Long artistId);
+    
+    // Count methods for pagination
+    Long countAll();
 }
 

@@ -9,4 +9,5 @@ public interface CommentDao {
     List<Comment> findByReviewId(Long reviewId, Integer pageSize, Integer offset);
     Comment save(Comment comment);
     Void deleteById(Long id);
+    Long countByReviewId(Long reviewId);
 }

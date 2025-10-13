@@ -95,4 +95,9 @@ public class CommentServiceImpl implements CommentService {
             comment.setTimeAgo(TimeUtils.formatTimeAgo(comment.getCreatedAt()));
         }
     }
+
+    @Override
+    public Long countByReviewId(Long reviewId) {
+        return commentDao.countByReviewId(reviewId);
+    }
 }
