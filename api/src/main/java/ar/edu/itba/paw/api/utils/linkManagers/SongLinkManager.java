@@ -22,6 +22,8 @@ public class SongLinkManager {
         resource.addLink(uriBuilder.buildSongAlbumUri(baseUrl, resource.getData().getAlbumId()), "album", "Song album", "GET");
         resource.addLink(uriBuilder.buildSongArtistUri(baseUrl, resource.getData().getArtistId()), "artist", "Song artist", "GET");
         resource.addLink(uriBuilder.buildSongReviewsUri(baseUrl, songId), "reviews", "Song reviews", "GET");
+        resource.addLink(uriBuilder.buildSongReviewsUri(baseUrl, songId), "reviews", "Create Song review", "POST");
+        resource.addLink(uriBuilder.buildSongReviewsUri(baseUrl, songId), "reviews", "Update Song review", "PUT");
     }
 }
 

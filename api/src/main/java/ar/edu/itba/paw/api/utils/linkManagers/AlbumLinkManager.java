@@ -22,7 +22,10 @@ public class AlbumLinkManager {
         HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.ALBUMS_BASE, resource.getData().getImageId());
         resource.addLink(uriBuilder.buildAlbumReviewsUri(baseUrl, albumId), "reviews", "Album reviews", "GET");
         resource.addLink(uriBuilder.buildAlbumArtistUri(baseUrl, resource.getData().getArtistId()), "artist", "Album artist", "GET");
+        resource.addLink(uriBuilder.buildAlbumReviewsUri(baseUrl, albumId), "reviews", "Create Album review", "POST");
+        resource.addLink(uriBuilder.buildAlbumReviewsUri(baseUrl, albumId), "reviews", "Update Album review", "PUT");
         resource.addLink(uriBuilder.buildAlbumSongsUri(baseUrl, albumId), "songs", "Album songs", "GET" );
+        resource.addLink(uriBuilder.buildAlbumSongsUri(baseUrl, albumId), "songs", "Create Album song", "POST");
     }
 }
 
