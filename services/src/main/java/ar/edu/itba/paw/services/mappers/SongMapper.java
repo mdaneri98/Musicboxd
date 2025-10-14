@@ -3,7 +3,6 @@ package ar.edu.itba.paw.services.mappers;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.dtos.SongDTO;
-import ar.edu.itba.paw.models.Artist;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

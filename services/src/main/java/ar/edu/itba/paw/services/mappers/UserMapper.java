@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services.mappers;
 
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import org.springframework.stereotype.Component;
 

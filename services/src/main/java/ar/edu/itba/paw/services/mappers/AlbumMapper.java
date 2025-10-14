@@ -1,20 +1,13 @@
 package ar.edu.itba.paw.services.mappers;
 
 import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class AlbumMapper {
-
-    @Autowired
-    private SongMapper songMapper;
-
 
     public AlbumDTO toDTO(Album album) {
         if (album == null) {

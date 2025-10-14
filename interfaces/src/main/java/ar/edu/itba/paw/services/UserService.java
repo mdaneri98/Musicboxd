@@ -62,4 +62,7 @@ public interface UserService{
     Integer getFavoriteSongsCount(Long userId);
     List<UserDTO> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize);
 
+    Void validateUsernameUniqueness(Long userId, String username);
+    Void validateEmailUniqueness(Long userId, String email);
+
 }

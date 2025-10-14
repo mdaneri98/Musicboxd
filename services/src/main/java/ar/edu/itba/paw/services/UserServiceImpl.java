@@ -440,22 +440,26 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDTOList(recommendedUsers);
     }
 
-    private void validateUsernameUniqueness(Long userId, String username) {
-        if (username == null) return;
+    @Override
+    public Void validateUsernameUniqueness(Long userId, String username) {
+        if (username == null) return null;
 
         User existingUser = userDao.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User with username " + username + " not found"));
         if (!existingUser.getId().equals(userId)) {
             throw new UserAlreadyExistsException("Username " + username + " is already in use");
         }
+        return null;
     }
 
-    private void validateEmailUniqueness(Long userId, String email) {
-        if (email == null) return;
+    @Override
+    public Void validateEmailUniqueness(Long userId, String email) {
+        if (email == null) return null;
 
         User existingUser = userDao.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
         if (existingUser.getId().equals(userId)) {
             throw new UserAlreadyExistsException("Email " + email + " is already in use");
         }
+        return null;
     }
 
     private User saveUser(User user) {
