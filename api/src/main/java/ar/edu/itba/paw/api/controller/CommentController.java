@@ -45,16 +45,6 @@ public class CommentController extends BaseController {
         return buildCreatedResponse(commentResource);
     }
 
-    @PUT
-    @Path(ApiUriConstants.ID)
-    public Response updateComment(@PathParam("id") Long id, @Valid CommentDTO commentDTO) {
-        // TODO: Verificar que el usuario logueado sea el dueño del comentario
-        commentDTO.setId(id);
-        CommentDTO responseDTO = commentService.update(commentDTO);
-        CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildResponse(commentResource);
-    }
-
     @DELETE
     @Path(ApiUriConstants.ID)
     public Response deleteComment(@PathParam("id") Long id) {

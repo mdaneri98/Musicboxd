@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class CollectionResource<T> extends Resource<List<T>> {
     }
     
     @Override
+    @JsonIgnore 
     public List<T> getData() {
         return items;
     }
