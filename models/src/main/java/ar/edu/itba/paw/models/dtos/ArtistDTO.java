@@ -26,7 +26,7 @@ public class ArtistDTO {
 
     private List<AlbumDTO> albums;
 
-    private ImageDTO image;
+    private Long imageId;
 
     public ArtistDTO() {}
 
@@ -94,11 +94,11 @@ public class ArtistDTO {
         this.albums = albums;
     }
 
-    public ImageDTO getImage() {
-        return image;
+    public Long getImageId() {
+        return imageId;
     }
 
-    public void setImage(ImageDTO image) {
-        this.image = image;
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
     }
 }

@@ -19,6 +19,7 @@ public class SongDTO {
     private Integer trackNumber;
 
     private Long albumId;
+    private Long artistId;
     private String albumTitle;
 
     private Long albumImageId;
@@ -30,7 +31,8 @@ public class SongDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-    private boolean deleted;
+
+    private Boolean isDeleted;
 
     public SongDTO() {}
 
@@ -72,6 +74,14 @@ public class SongDTO {
 
     public void setAlbumId(Long albumId) {
         this.albumId = albumId;
+    }
+
+    public Long getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(Long artistId) {
+        this.artistId = artistId;
     }
 
     public String getAlbumTitle() {
@@ -122,11 +132,12 @@ public class SongDTO {
         this.updatedAt = updatedAt;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public Boolean isDeleted() {
+        return isDeleted;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
+
 }

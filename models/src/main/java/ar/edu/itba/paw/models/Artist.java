@@ -185,4 +185,5 @@ public class Artist {
     public List<Song> getSongs() {
         return songs;
     }
+
 }

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.api.utils.linkManagers;
 
 import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;
@@ -16,8 +17,9 @@ public class ArtistLinkManager {
     @Autowired
     private UriBuilder uriBuilder;
     
-    public void addArtistLinks(Resource<?> resource, String baseUrl, Long artistId) {
+    public void addArtistLinks(Resource<ArtistDTO> resource, String baseUrl, Long artistId) {
         HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.ARTISTS_BASE, artistId);
+        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.ARTISTS_BASE, resource.getData().getImageId());
         resource.addLink(uriBuilder.buildArtistReviewsUri(baseUrl, artistId), "reviews", "Artist reviews", "GET");
         resource.addLink(uriBuilder.buildArtistAlbumsUri(baseUrl, artistId), "albums", "Artist albums", "GET");
     }

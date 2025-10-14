@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.api.utils.linkManagers;
 
 import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;
@@ -16,8 +17,9 @@ public class UserLinkManager {
     @Autowired
     private UriBuilder uriBuilder;
     
-    public void addUserLinks(Resource<?> resource, String baseUrl, Long userId) {
+    public void addUserLinks(Resource<UserDTO> resource, String baseUrl, Long userId) {
         HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.USERS_BASE, userId);
+        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.USERS_BASE, resource.getData().getImageId());
         resource.addLink(uriBuilder.buildUserReviewsUri(baseUrl, userId), "reviews", "User reviews", "GET");
         resource.addLink(uriBuilder.buildUserFollowersUri(baseUrl, userId), "followers", "User followers", "GET");
         resource.addLink(uriBuilder.buildUserFollowingUri(baseUrl, userId), "following", "User following", "GET");

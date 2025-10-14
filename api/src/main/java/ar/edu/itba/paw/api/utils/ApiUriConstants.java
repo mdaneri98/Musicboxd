@@ -24,6 +24,7 @@ public class ApiUriConstants {
     /* ARTISTS */
     public static final String ARTISTS_BASE = API_BASE + "/artists";
     public static final String ARTIST_REVIEWS = ID + "/reviews";
+    public static final String ARTIST_ALBUMS = ID + "/albums";
 
     /* ALBUMS */
     public static final String ALBUMS_BASE = API_BASE + "/albums";

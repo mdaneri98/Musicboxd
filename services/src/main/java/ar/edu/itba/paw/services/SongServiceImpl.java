@@ -134,7 +134,7 @@ public class SongServiceImpl implements SongService {
         for (SongDTO songDTO : songsDTO) {
             if (!songDTO.isDeleted()) {
                 create(songDTO);
-            }
+            } 
         }
         LOGGER.info("All songs created successfully for album: {}", album.getTitle());
         return true;

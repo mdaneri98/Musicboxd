@@ -101,10 +101,11 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     @Transactional
     public Boolean delete(ArtistDTO artistDTO) {
-        if (artistDTO.getId() == null || artistDTO.getImage().getId() == null || artistDTO.getId() < 1 || artistDTO.getImage().getId() < 1) {
+        if (artistDTO.getId() == null || artistDTO.getImageId() == null || artistDTO.getId() < 1 || artistDTO.getImageId() < 1) {
             LOGGER.warn("Invalid artist data for deletion: {}", artistDTO);
             return false;
         }
+        
         Long id = artistDTO.getId();
 
         // Delete Images
@@ -116,7 +117,7 @@ public class ArtistServiceImpl implements ArtistService {
         artistDao.deleteReviewsFromArtist(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean deleted = artistDao.delete(id);
-        imageService.delete(artistDTO.getImage().getId());
+        imageService.delete(artistDTO.getImageId());
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);
         } else {
@@ -131,10 +132,10 @@ public class ArtistServiceImpl implements ArtistService {
         LOGGER.info("Creating new artist from DTO: {}", artistDTO.getName());
 
         Image image;
-        if (artistDTO.getImage().getId() == 0 && artistDTO.getImage().getImage().getBytes().length == 0)
+        if (artistDTO.getImageId() == 0)
             image = imageService.findById(imageService.getDefaultImgId());
         else
-            image = imageService.create(artistDTO.getImage().getImage().getBytes());
+            image = imageService.findById(artistDTO.getImageId());
 
         Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(), image);
         artist.setCreatedAt(LocalDateTime.now());
@@ -156,11 +157,11 @@ public class ArtistServiceImpl implements ArtistService {
     public ArtistDTO update(ArtistDTO artistDTO) {
         LOGGER.info("Updating artist from DTO: {} (ID: {})", artistDTO.getName(), artistDTO.getId());
 
-        Image optionalImage = imageService.update(new Image(artistDTO.getImage().getId(), artistDTO.getImage().getImage().getBytes()));
+        Image image = imageService.findById(artistDTO.getImageId());
         Artist artist = artistDao.findById(artistDTO.getId()).get();
         artist.setName(artistDTO.getName());
         artist.setBio(artistDTO.getBio());
-        artist.setImage(optionalImage);
+        artist.setImage(image);
 
         artist = artistDao.update(artist);
         LOGGER.info("Artist updated successfully");

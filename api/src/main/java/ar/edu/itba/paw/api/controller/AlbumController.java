@@ -113,7 +113,7 @@ public class AlbumController extends BaseController {
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("loggedUserId") Long loggedUserId) {
+            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
         // TODO: Obtener loggedUserId del contexto de seguridad
         
         List<ReviewDTO> reviews = reviewService.findAlbumReviewsPaginated(id, page, size, loggedUserId);

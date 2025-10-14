@@ -1,10 +1,9 @@
 package ar.edu.itba.paw.services.mappers;
 
 import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
-import ar.edu.itba.paw.models.dtos.ImageDTO;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,12 +19,7 @@ public class ArtistMapper {
         dto.setId(artist.getId());
         dto.setName(artist.getName());
         dto.setBio(artist.getBio());
-        ImageDTO imageDTO = new ImageDTO();
-        if (artist.getImage() != null) {
-            imageDTO.setImage(artist.getImage());
-            imageDTO.setId(artist.getImage().getId());
-        }
-        dto.setImage(imageDTO);
+        dto.setImageId(artist.getImage() != null ? artist.getImage().getId() : null);
         dto.setRatingCount(artist.getRatingCount());
         dto.setAvgRating(artist.getAvgRating());
         dto.setCreatedAt(artist.getCreatedAt());
@@ -70,5 +64,6 @@ public class ArtistMapper {
                 .map(this::toEntity)
                 .collect(Collectors.toList());
     }
+
 }
 

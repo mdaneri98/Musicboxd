@@ -13,6 +13,10 @@ import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.services.ArtistService;
 import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.services.AlbumService;
+import ar.edu.itba.paw.api.mapper.AlbumResourceMapper;
+import ar.edu.itba.paw.api.models.AlbumResource;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -27,6 +31,12 @@ public class ArtistController extends BaseController {
 
     @Autowired
     private ArtistService artistService;
+
+    @Autowired
+    private AlbumService albumService;
+
+    @Autowired
+    private AlbumResourceMapper albumResourceMapper;
 
     @Autowired
     private ReviewService reviewService;
@@ -94,7 +104,7 @@ public class ArtistController extends BaseController {
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("loggedUserId") Long loggedUserId) {
+            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
         // TODO: Obtener loggedUserId del contexto de seguridad
         
         List<ReviewDTO> reviews = reviewService.findArtistReviewsPaginated(id, page, size, loggedUserId);
@@ -105,6 +115,61 @@ public class ArtistController extends BaseController {
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTIST_REVIEWS);
         
         return buildResponse(collection);
+    }
+
+
+    @POST
+    @Path(ApiUriConstants.ARTIST_REVIEWS)
+    public Response createArtistReview(
+            @PathParam("id") Long id,
+            @Valid ReviewDTO reviewDTO) {
+        reviewDTO.setItemId(id);
+        reviewDTO.setItemType("Artist");
+        ReviewDTO responseDTO = reviewService.create(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
+    }
+
+    @PUT
+    @Path(ApiUriConstants.ARTIST_REVIEWS)
+    public Response updateArtistReview(
+            @PathParam("id") Long id,
+            @Valid ReviewDTO reviewDTO) {
+        reviewDTO.setId(id);
+        reviewDTO.setItemType("Artist");
+        ReviewDTO responseDTO = reviewService.update(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
+    }
+
+    @GET
+    @Path(ApiUriConstants.ARTIST_ALBUMS)
+    public Response getArtistAlbums(
+            @PathParam("id") Long id,
+            @QueryParam("page") @DefaultValue("1") int page,
+            @QueryParam("size") @DefaultValue("20") int size,
+            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
+        // TODO: Obtener loggedUserId del contexto de seguridad
+
+        List<AlbumDTO> albums = albumService.findByArtistId(id);
+        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
+        Long totalCount = albumService.countAll();
+        
+        CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTIST_ALBUMS);
+        
+        return buildResponse(collection);
+    }
+
+    @POST
+    @Path(ApiUriConstants.ARTIST_ALBUMS)
+    public Response createArtistAlbum(
+            @PathParam("id") Long id,
+            @Valid AlbumDTO albumDTO) {
+        albumDTO.setArtistId(id);
+        AlbumDTO responseDTO = albumService.create(albumDTO);
+        AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(albumResource);
     }
 }
 

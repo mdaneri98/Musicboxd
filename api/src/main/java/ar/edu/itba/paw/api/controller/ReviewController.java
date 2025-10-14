@@ -3,12 +3,15 @@ package ar.edu.itba.paw.api.controller;
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.CommentResourceMapper;
 import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
+import ar.edu.itba.paw.api.mapper.UserResourceMapper;
 import ar.edu.itba.paw.api.models.CollectionResource;
 import ar.edu.itba.paw.api.models.CommentResource;
 import ar.edu.itba.paw.api.models.ReviewResource;
+import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.models.FilterType;
@@ -36,6 +39,9 @@ public class ReviewController extends BaseController {
 
     @Autowired
     private CommentResourceMapper commentResourceMapper;
+
+    @Autowired
+    private UserResourceMapper userResourceMapper;
 
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
@@ -101,6 +107,21 @@ public class ReviewController extends BaseController {
         Long totalCount = commentService.countByReviewId(id);
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
                 commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE);
+        
+        return buildResponse(collection);
+    }
+
+    @GET
+    @Path(ApiUriConstants.REVIEW_LIKES)
+    public Response getReviewLikes(@PathParam("id") Long reviewId, @QueryParam("page") @DefaultValue("1") int page, @QueryParam("size") @DefaultValue("20") int size) {
+        // TODO: Obtener userId del contexto de seguridad
+        
+        ReviewDTO reviewDTO = reviewService.findById(reviewId);
+        List<UserDTO> userDTOs = reviewService.likedBy(reviewId, page, size);
+        List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
+        Long totalCount = reviewDTO.getLikes().longValue();
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEW_LIKES);
         
         return buildResponse(collection);
     }

@@ -126,10 +126,10 @@ public class AlbumServiceImpl implements AlbumService {
         LOGGER.info("Creating new album from DTO: {} for artist ID: {}", albumDTO.getTitle(), albumDTO.getArtistId());
         
         Image image;
-        if (albumDTO.getImageId() == 0 && albumDTO.getImage().getImage().getBytes().length == 0)
+        if (albumDTO.getImageId() == 0)
             image = imageService.findById(imageService.getDefaultImgId());
         else
-            image = imageService.create(albumDTO.getImage().getImage().getBytes());
+            image = imageService.findById(albumDTO.getImageId());
 
         Album album = new Album(albumDTO.getTitle(), image, albumDTO.getGenre(), new Artist(albumDTO.getArtistId()), albumDTO.getReleaseDate());
         album.setCreatedAt(LocalDateTime.now());
@@ -164,7 +164,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public AlbumDTO update(AlbumDTO albumDTO) {
         LOGGER.info("Updating album with ID: {}", albumDTO.getId());
-        Image image = imageService.update(new Image(albumDTO.getImage().getId(), albumDTO.getImage().getImage().getBytes()));
+        Image image = imageService.findById(albumDTO.getImageId());
 
         Album album = albumDao.findById(albumDTO.getId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + albumDTO.getId() + " not found"));
         album.setTitle(albumDTO.getTitle());

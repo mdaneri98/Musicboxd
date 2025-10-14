@@ -109,8 +109,7 @@ public class AlbumJpaDao implements AlbumDao {
     @Override
     public Album update(Album album) {
         // Actualizar una entidad existente
-        entityManager.merge(album);
-        return album;
+        return entityManager.merge(album);
     }
 
     @Override

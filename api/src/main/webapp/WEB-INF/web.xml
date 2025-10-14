@@ -18,6 +18,7 @@
             ar.edu.itba.paw.api.config.ApiConfig
             ar.edu.itba.paw.api.config.ApiAuthConfig
             ar.edu.itba.paw.api.config.EmailConfig
+            ar.edu.itba.paw.api.config.JacksonConfig
         </param-value>
     </context-param>
 
@@ -72,7 +73,8 @@
             <param-value>
                 ar.edu.itba.paw.api.controller,
                 ar.edu.itba.paw.api.mapper,
-                ar.edu.itba.paw.api.filter
+                ar.edu.itba.paw.api.filter,
+                ar.edu.itba.paw.api.config
             </param-value>
         </init-param>
         <init-param>

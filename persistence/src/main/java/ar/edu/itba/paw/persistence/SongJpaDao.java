@@ -162,8 +162,7 @@ public class SongJpaDao implements SongDao {
 
     @Override
     public Song update(Song song) {
-        em.merge(song);
-        return song;
+        return em.merge(song);
     }
 
     @Override

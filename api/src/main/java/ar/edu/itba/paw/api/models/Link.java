@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import org.springframework.http.MediaType;
 import java.util.Objects;
 
 /**
@@ -33,7 +33,7 @@ public class Link {
         this.type = type;
     }
     
-    private Link(String href, String rel, String title, String type, String method) {
+    public Link(String href, String rel, String title, String type, String method) {
         this.href = href;
         this.rel = rel;
         this.title = title;
@@ -43,10 +43,10 @@ public class Link {
 
 
     public static Link createLink(String href, String rel, String title, String method) {
-        return new Link(href, rel, title, "application/json", method);
+        return new Link(href, rel, title, MediaType.APPLICATION_JSON_VALUE, method);
     }
     public static Link createLink(String href, String title, String method) {
-        return new Link(href, title, "application/json", method);
+        return new Link(href, title, MediaType.APPLICATION_JSON_VALUE, method);
     }
     
     // Getters and setters

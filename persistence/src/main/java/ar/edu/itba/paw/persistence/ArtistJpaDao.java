@@ -107,8 +107,7 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public Artist update(Artist artist) {
-        entityManager.merge(artist);  // Updates the existing entity
-        return artist;
+        return entityManager.merge(artist);  // Updates the existing entity
     }
 
     @Override

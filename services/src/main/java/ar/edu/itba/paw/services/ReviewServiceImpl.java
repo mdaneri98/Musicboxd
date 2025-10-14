@@ -40,9 +40,10 @@ public class ReviewServiceImpl implements ReviewService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
     private final ReviewDao reviewDao;
-    private final SongService songService;
     private final SongDao songDao;
     private final UserDao userDao;
+    private final AlbumDao albumDao;
+    private final SongService songService;
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final UserService userService;
@@ -54,7 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMapper reviewMapper;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, UserDao userDao, ArtistMapper artistMapper, AlbumMapper albumMapper, UserMapper userMapper, ReviewMapper reviewMapper, SongDao songDao) {
+    public ReviewServiceImpl(ReviewDao reviewDao, SongDao songDao, UserDao userDao, AlbumDao albumDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, ArtistMapper artistMapper, AlbumMapper albumMapper, UserMapper userMapper, ReviewMapper reviewMapper) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
@@ -63,11 +64,12 @@ public class ReviewServiceImpl implements ReviewService {
         this.emailService = emailService;
         this.notificationService = notificationService;
         this.userDao = userDao;
+        this.songDao = songDao;
+        this.albumDao = albumDao;
         this.artistMapper = artistMapper;
         this.albumMapper = albumMapper;
         this.userMapper = userMapper;
         this.reviewMapper = reviewMapper;
-        this.songDao = songDao;
     }
 
     @Override

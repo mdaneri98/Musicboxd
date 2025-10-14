@@ -113,7 +113,7 @@ public class SongController extends BaseController {
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("loggedUserId") @DefaultValue("23") Long loggedUserId) {
+            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
         // TODO: Obtener loggedUserId del contexto de seguridad
         
         List<ReviewDTO> reviews = reviewService.findSongReviewsPaginated(id, page, size, loggedUserId);
@@ -125,6 +125,30 @@ public class SongController extends BaseController {
                     reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONG_REVIEWS);
         
         return buildResponse(collection);
+    }
+
+    @POST
+    @Path(ApiUriConstants.SONG_REVIEWS)
+    public Response createSongReview(
+            @PathParam("id") Long id,
+            @Valid ReviewDTO reviewDTO) {
+        reviewDTO.setItemId(id);
+        reviewDTO.setItemType("Song");
+        ReviewDTO responseDTO = reviewService.create(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
+    }
+
+    @PUT
+    @Path(ApiUriConstants.SONG_REVIEWS)
+    public Response updateSongReview(
+            @PathParam("id") Long id,
+            @Valid ReviewDTO reviewDTO) {
+        reviewDTO.setId(id);
+        reviewDTO.setItemType("Song");
+        ReviewDTO responseDTO = reviewService.update(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
     }
 }
 

@@ -51,6 +51,7 @@ public class UriBuilder {
                 .toUriString();
     }
     
+    
     // Album URIs
     public String buildAlbumReviewsUri(String baseUrl, Long albumId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
@@ -65,12 +66,33 @@ public class UriBuilder {
                 .pathSegment(albumId.toString(), "songs")
                 .toUriString();
     }
+
+    public String buildAlbumArtistUri(String baseUrl, Long artistId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ARTISTS_BASE)
+                .pathSegment(artistId.toString())
+                .toUriString();
+    }
     
     // Song URIs
     public String buildSongReviewsUri(String baseUrl, Long songId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.SONGS_BASE)
                 .pathSegment(songId.toString(), "reviews")
+                .toUriString();
+    }
+
+    public String buildSongAlbumUri(String baseUrl, Long albumId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ALBUMS_BASE)
+                .pathSegment(albumId.toString())
+                .toUriString();
+    }
+
+    public String buildSongArtistUri(String baseUrl, Long artistId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ARTISTS_BASE)
+                .pathSegment(artistId.toString())
                 .toUriString();
     }
     
@@ -108,14 +130,6 @@ public class UriBuilder {
     }
     
     // Generic URIs for HATEOAS
-    
-    /**
-     * Builds a URI for a specific resource by ID
-     * @param baseUrl The base URL
-     * @param resourcePath The resource path (e.g., "/api/users")
-     * @param id The resource ID
-     * @return The full URI
-     */
     public String buildResourceUri(String baseUrl, String resourcePath, Long id) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(resourcePath)
@@ -123,26 +137,12 @@ public class UriBuilder {
                 .toUriString();
     }
     
-    /**
-     * Builds a URI for a collection
-     * @param baseUrl The base URL
-     * @param resourcePath The resource path (e.g., "/api/users")
-     * @return The full URI
-     */
     public String buildCollectionUri(String baseUrl, String resourcePath) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(resourcePath)
                 .toUriString();
     }
     
-    /**
-     * Builds a paginated URI for a collection
-     * @param baseUrl The base URL
-     * @param resourcePath The resource path
-     * @param page The page number
-     * @param size The page size
-     * @return The full URI with pagination query parameters
-     */
     public String buildPaginatedUri(String baseUrl, String resourcePath, int page, int size) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(resourcePath)

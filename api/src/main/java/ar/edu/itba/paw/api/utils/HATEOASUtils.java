@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.http.MediaType;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.HashMap;
@@ -91,6 +92,12 @@ public class HATEOASUtils {
             String uri = uriBuilder.buildResourceUri(baseUrl, relatedResource, relatedId);
             resource.addLink(Link.createLink(uri, "item", "View " + relatedResource, "GET"));
         }
+    }
+
+    public static void addImageLinks(Resource<?> resource, String baseUrl, String resourcePath, Long id) {
+        String uri = uriBuilder.buildImageUri(baseUrl, id);
+        Link link = new Link(uri, "image", "Image", MediaType.IMAGE_JPEG_VALUE, "GET");
+        resource.addLink(link);
     }
     
     /**

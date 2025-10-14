@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services.mappers;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.models.Artist;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class SongMapper {
         dto.setAvgRating(song.getAvgRating());
         dto.setCreatedAt(song.getCreatedAt());
         dto.setUpdatedAt(song.getUpdatedAt());
+        dto.setArtistId(song.getArtists().getFirst().getId());
 
         return dto;
     }
@@ -43,7 +45,7 @@ public class SongMapper {
                 .collect(Collectors.toList());
     }
 
-    public Song toEntity(SongDTO dto, Album album) {
+    public Song toEntity(SongDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -57,7 +59,6 @@ public class SongMapper {
         song.setAvgRating(dto.getAvgRating());
         song.setCreatedAt(dto.getCreatedAt());
         song.setUpdatedAt(dto.getUpdatedAt());
-        song.setAlbum(album);
         return song;
     }
 
@@ -67,7 +68,7 @@ public class SongMapper {
         }
 
         return dtos.stream()
-                .map(dto -> toEntity(dto, album))
+                .map(dto -> toEntity(dto))
                 .collect(Collectors.toList());
     }
 }

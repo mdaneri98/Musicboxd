@@ -50,9 +50,7 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     Void updateAlbumRating(Long albumId);
     Void updateArtistRating(Long artistId);
     Void updateRatingForItem(ReviewDTO review);
-    // ReviewDTO updateSongReview(ReviewDTO review);
-    // ReviewDTO updateArtistReview(ReviewDTO review);
-    // ReviewDTO updateAlbumReview(ReviewDTO review);
+    
     ReviewDTO createArtistReview(ReviewDTO review);
     ReviewDTO createAlbumReview(ReviewDTO review);
     ReviewDTO createSongReview(ReviewDTO review);
