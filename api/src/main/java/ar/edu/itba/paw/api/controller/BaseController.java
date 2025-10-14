@@ -8,17 +8,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 public abstract class BaseController {
     
     @Context
     protected HttpServletRequest request;
+    
+    @Context
+    protected UriInfo uriInfo;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     protected String getBaseUrl() {
-        return HATEOASUtils.getBaseUrl(request);
+        return HATEOASUtils.getBaseUrl(uriInfo);
     }
 
     protected Response buildResponse(Object resource) {

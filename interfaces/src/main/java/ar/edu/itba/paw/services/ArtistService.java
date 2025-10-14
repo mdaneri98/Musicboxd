@@ -11,7 +11,7 @@ public interface ArtistService extends CrudService<ArtistDTO> {
 
     List<ArtistDTO> findBySongId(Long id);
 
-    List<ArtistDTO> findByNameContaining(String sub);
+    List<ArtistDTO> findByNameContaining(String sub, Integer page, Integer size);
 
     ArtistDTO create(ArtistDTO artistDTO);
     ArtistDTO update(ArtistDTO artistDTO);

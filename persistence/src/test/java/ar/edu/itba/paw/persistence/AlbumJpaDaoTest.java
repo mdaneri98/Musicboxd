@@ -134,7 +134,7 @@ public class AlbumJpaDaoTest {
         // 1. Pre-conditions - album exists containing substring
 
         // 2 . Execute
-        List<Album> albumList = albumDao.findByTitleContaining(PRE_EXISTING_ALBUM_TITLE.substring(3,7)); //myTi
+        List<Album> albumList = albumDao.findByTitleContaining(PRE_EXISTING_ALBUM_TITLE.substring(3,7),10,1); //myTi
 
         // 3. Post-conditions
         assertEquals(4, albumList.size());
@@ -149,7 +149,7 @@ public class AlbumJpaDaoTest {
         // 1. Pre-conditions - album does not exist with substring
 
         // 2 . Execute
-        List<Album> albumList = albumDao.findByTitleContaining("Nothing");
+        List<Album> albumList = albumDao.findByTitleContaining("Nothing",10,1);
 
         // 3. Post-conditions
         assertEquals(0, albumList.size());

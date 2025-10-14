@@ -7,7 +7,7 @@ import java.util.List;
 public interface AlbumDao extends CrudDao<Album> {
 
     List<Album> findByArtistId(Long id);
-    List<Album> findByTitleContaining(String sub);
+    List<Album> findByTitleContaining(String sub, Integer page, Integer size);
 
     Boolean updateRating(Long albumId, Double newRating, Integer newRatingAmount);
     Boolean hasUserReviewed(Long userId, Long albumId);

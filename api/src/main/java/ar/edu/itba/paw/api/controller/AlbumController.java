@@ -57,7 +57,7 @@ public class AlbumController extends BaseController {
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
-        
+        if (search != null && !search.isEmpty()) return getAlbumBySubstring(search, page, size);
         List<AlbumDTO> albumDTOs = albumService.findPaginated(filter, page, size);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
         Long totalCount = albumService.countAll();
@@ -65,6 +65,15 @@ public class AlbumController extends BaseController {
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
                 albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE);
         
+        return buildResponse(collection);
+    }
+
+    private Response getAlbumBySubstring(String substring, int page, int size) {
+        List<AlbumDTO> albums = albumService.findByTitleContaining(substring, page, size);
+        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
+        Long totalCount = albumService.countAll();
+        CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE);
         return buildResponse(collection);
     }
 
@@ -120,9 +129,33 @@ public class AlbumController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, reviewService.countAll(), page, size, getBaseUrl(), ApiUriConstants.ALBUM_REVIEWS);
+                reviewResources, reviewService.countAll(), page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
         
         return buildResponse(collection);
+    }
+
+    @POST
+    @Path(ApiUriConstants.ALBUM_REVIEWS)
+    public Response createAlbumReview(
+            @PathParam("id") Long id,
+            @Valid ReviewDTO reviewDTO) {
+        reviewDTO.setItemId(id);
+        reviewDTO.setItemType("Album");
+        ReviewDTO responseDTO = reviewService.create(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
+    }
+
+    @PUT
+    @Path(ApiUriConstants.ALBUM_REVIEWS)
+    public Response updateAlbumReview(
+            @PathParam("id") Long id,
+            @Valid ReviewDTO reviewDTO) {
+        reviewDTO.setId(id);
+        reviewDTO.setItemType("Album");
+        ReviewDTO responseDTO = reviewService.update(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
     }
 
     @GET
@@ -132,9 +165,20 @@ public class AlbumController extends BaseController {
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, songService.countAll(), page, size, getBaseUrl(), ApiUriConstants.ALBUM_SONGS);
+                songResources, songService.countAll(), page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
         
         return buildResponse(collection);
+    }
+
+    @POST
+    @Path(ApiUriConstants.ALBUM_SONGS)
+    public Response createAlbumSong(
+            @PathParam("id") Long id,
+            @Valid SongDTO songDTO) {
+        songDTO.setAlbumId(id);
+        SongDTO responseDTO = songService.create(songDTO);
+        SongResource songResource = songResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(songResource);
     }
 }
 

@@ -48,7 +48,7 @@ public class SongController extends BaseController {
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
-        
+        if (search != null && !search.isEmpty()) return getSongBySubstring(search, page, size);
         List<SongDTO> songDTOs = songService.findPaginated(filter, page, size);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         Long totalCount = songService.countAll();
@@ -56,6 +56,15 @@ public class SongController extends BaseController {
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                 songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
         
+        return buildResponse(collection);
+    }
+
+    private Response getSongBySubstring(String substring, int page, int size) {
+        List<SongDTO> songDTOs = songService.findByTitleContaining(substring, page, size);
+        List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
+        Long totalCount = songService.countAll();
+        CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
         return buildResponse(collection);
     }
 
@@ -122,7 +131,7 @@ public class SongController extends BaseController {
         Long totalCount = reviewService.countAll();
                 
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                    reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONG_REVIEWS);
+                    reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
         
         return buildResponse(collection);
     }

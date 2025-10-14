@@ -145,7 +145,7 @@ public class ArtistJpaDaoTest {
         // 1. Pre-conditions - artist exists containing substring
 
         // 2. Execute
-        List<Artist> artistList = artistDao.findByNameContaining(PRE_EXISTING_ARTIST_NAME.substring(3,7)); // myNa
+        List<Artist> artistList = artistDao.findByNameContaining(PRE_EXISTING_ARTIST_NAME.substring(3,7),10,1); // myNa
 
         // 3. Post-conditions
         assertEquals(4, artistList.size());
@@ -159,7 +159,7 @@ public class ArtistJpaDaoTest {
         // 1. Pre-conditions - artist does not exist with substring
 
         // 2. Execute
-        List<Artist> artistList = artistDao.findByNameContaining("Nothing"); // myNa
+        List<Artist> artistList = artistDao.findByNameContaining("Nothing",10,1); // myNa
 
         // 3. Post-conditions
         assertEquals(0, artistList.size());

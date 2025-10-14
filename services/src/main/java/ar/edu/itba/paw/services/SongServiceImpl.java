@@ -57,8 +57,8 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findByTitleContaining(String sub) {
-        List<Song> songs = songDao.findByTitleContaining(sub);
+    public List<SongDTO> findByTitleContaining(String sub, Integer pageSize, Integer pageNum) {
+        List<Song> songs = songDao.findByTitleContaining(sub, pageSize, pageNum);
         return songMapper.toDTOList(songs);
     }
 

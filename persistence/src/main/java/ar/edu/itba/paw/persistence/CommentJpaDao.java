@@ -23,7 +23,7 @@ public class CommentJpaDao implements CommentDao {
     }
 
     @Override
-    public List<Comment> findByReviewId(Long reviewId, Integer pageSize, Integer offset) {
+    public List<Comment> findByReviewId(Long reviewId, Integer pageSize, Integer pageNum) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT id FROM comment " +
@@ -31,8 +31,8 @@ public class CommentJpaDao implements CommentDao {
                 "ORDER BY created_at DESC");
         nativeQuery.setParameter("reviewId", reviewId);
         nativeQuery.setMaxResults(pageSize);
-        nativeQuery.setFirstResult(offset);
-        
+        nativeQuery.setFirstResult((pageNum - 1) * pageSize);
+         
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> commentIds = rawResults.stream()

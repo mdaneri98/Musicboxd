@@ -58,8 +58,8 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArtistDTO> findByNameContaining(String sub) {
-        return artistMapper.toDTOList(artistDao.findByNameContaining(sub));
+    public List<ArtistDTO> findByNameContaining(String sub, Integer page, Integer size) {
+        return artistMapper.toDTOList(artistDao.findByNameContaining(sub, page, size));
     }
 
     @Override
@@ -105,7 +105,7 @@ public class ArtistServiceImpl implements ArtistService {
             LOGGER.warn("Invalid artist data for deletion: {}", artistDTO);
             return false;
         }
-        
+
         Long id = artistDTO.getId();
 
         // Delete Images

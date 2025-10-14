@@ -62,7 +62,7 @@ public class AlbumJpaDao implements AlbumDao {
     }
 
     @Override
-    public List<Album> findByTitleContaining(String sub) {
+    public List<Album> findByTitleContaining(String sub, Integer page, Integer size) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = entityManager.createNativeQuery(
                 "SELECT a.id FROM album a " +
@@ -70,7 +70,8 @@ public class AlbumJpaDao implements AlbumDao {
                 "ORDER BY a.title"
         );
         nativeQuery.setParameter("sub", "%" + sub + "%");
-        nativeQuery.setMaxResults(10); // Límite de resultados
+        nativeQuery.setMaxResults(size);
+        nativeQuery.setFirstResult((page - 1) * size);
         
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();

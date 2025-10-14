@@ -71,7 +71,7 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public List<Song> findByTitleContaining(String sub) {
+    public List<Song> findByTitleContaining(String sub, Integer pageSize, Integer pageNum) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT s.id FROM song s " +
@@ -79,7 +79,8 @@ public class SongJpaDao implements SongDao {
                 "ORDER BY s.title"
         );
         nativeQuery.setParameter("sub", "%" + sub + "%");
-        nativeQuery.setMaxResults(10); // Límite de resultados
+        nativeQuery.setMaxResults(pageSize); // Límite de resultados
+        nativeQuery.setFirstResult((pageNum - 1) * pageSize);
         
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();

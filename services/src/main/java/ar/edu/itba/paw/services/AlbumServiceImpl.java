@@ -71,8 +71,8 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AlbumDTO> findByTitleContaining(String sub) {
-        List<Album> albums = albumDao.findByTitleContaining(sub);
+    public List<AlbumDTO> findByTitleContaining(String sub, Integer page, Integer size) {
+        List<Album> albums = albumDao.findByTitleContaining(sub, page, size);
         albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
         return albumMapper.toDTOList(albums);
     }

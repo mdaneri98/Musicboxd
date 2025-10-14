@@ -37,10 +37,20 @@ public class UserController extends BaseController {
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("search") String search,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+        if (search != null && !search.isEmpty()) return getUserBySubstring(search, page, size);
         List<UserDTO> users = userService.findPaginated(filter, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, userService.countUsers(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+        return buildResponse(collection);
+    }
+
+    private Response getUserBySubstring(String substring, int page, int size) {
+        List<UserDTO> users = userService.findByUsernameContaining(substring, page, size);
+        List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
+        Long totalCount = userService.countUsers();
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
         return buildResponse(collection);
     }
 

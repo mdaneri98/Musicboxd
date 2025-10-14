@@ -70,7 +70,7 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-    public List<Artist> findByNameContaining(String sub) {
+    public List<Artist> findByNameContaining(String sub, Integer page, Integer size) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = entityManager.createNativeQuery(
                 "SELECT a.id FROM artist a " +
@@ -78,7 +78,8 @@ public class ArtistJpaDao implements ArtistDao {
                 "ORDER BY a.name"
         );
         nativeQuery.setParameter("name", "%" + sub + "%");
-        nativeQuery.setMaxResults(10); // Límite de resultados
+        nativeQuery.setMaxResults(size);
+        nativeQuery.setFirstResult((page - 1) * size);
         
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();

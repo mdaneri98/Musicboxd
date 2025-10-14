@@ -56,7 +56,7 @@ public class ArtistController extends BaseController {
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
-        
+        if (search != null && !search.isEmpty()) return getArtistBySubstring(search, page, size);
         List<ArtistDTO> artistDTOs = artistService.findPaginated(FilterType.FIRST, page, size);
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
         Long totalCount = artistService.countAll();
@@ -64,6 +64,15 @@ public class ArtistController extends BaseController {
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
                 artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE);
         
+        return buildResponse(collection);
+    }
+
+    private Response getArtistBySubstring(String substring, int page, int size) {
+        List<ArtistDTO> artists = artistService.findByNameContaining(substring, page, size);
+        List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artists, getBaseUrl());
+        Long totalCount = artistService.countAll();
+        CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
+                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE);
         return buildResponse(collection);
     }
 
@@ -112,7 +121,7 @@ public class ArtistController extends BaseController {
         Long totalCount = reviewService.countAll();
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTIST_REVIEWS);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
         
         return buildResponse(collection);
     }
@@ -156,7 +165,7 @@ public class ArtistController extends BaseController {
         Long totalCount = albumService.countAll();
         
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTIST_ALBUMS);
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE);
         
         return buildResponse(collection);
     }

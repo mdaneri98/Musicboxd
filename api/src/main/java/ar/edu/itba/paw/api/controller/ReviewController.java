@@ -121,7 +121,7 @@ public class ReviewController extends BaseController {
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
         Long totalCount = reviewDTO.getLikes().longValue();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEW_LIKES);
+                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
         
         return buildResponse(collection);
     }

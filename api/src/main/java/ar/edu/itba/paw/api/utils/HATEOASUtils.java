@@ -119,11 +119,24 @@ public class HATEOASUtils {
     }
     
     /**
-     * Gets the base URL from UriInfo
+     * Gets the base URL from UriInfo (JAX-RS).
+     * This returns only the application base URL (e.g., http://localhost:8080/api_war)
+     * without any path parameters or request-specific paths.
+     * 
+     * Example:
+     * Request: GET /api_war/api/albums/123/reviews
+     * Returns: http://localhost:8080/api_war
      */
     public static String getBaseUrl(UriInfo uriInfo) {
         URI baseUri = uriInfo.getBaseUri();
-        return baseUri.toString();
+        String baseUrl = baseUri.toString();
+        
+        // Remove trailing slash if present
+        if (baseUrl.endsWith("/")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+        }
+        
+        return baseUrl;
     }
     
     /**

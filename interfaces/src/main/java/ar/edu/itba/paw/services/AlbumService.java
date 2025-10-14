@@ -8,7 +8,7 @@ public interface AlbumService extends CrudService<AlbumDTO> {
 
     List<AlbumDTO> findByArtistId(Long id);
 
-    List<AlbumDTO> findByTitleContaining(String sub);
+    List<AlbumDTO> findByTitleContaining(String sub, Integer page, Integer size);
 
     Boolean createAll(List<AlbumDTO> albumsDTO, Long artistId);
 
