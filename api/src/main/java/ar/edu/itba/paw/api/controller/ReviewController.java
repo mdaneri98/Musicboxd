@@ -102,7 +102,7 @@ public class ReviewController extends BaseController {
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size) {
         
-        List<CommentDTO> commentDTOs = commentService.findByReviewId(id, page, size);
+        List<CommentDTO> commentDTOs = commentService.findByReviewId(id, size, page);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Long totalCount = commentService.countByReviewId(id);
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(

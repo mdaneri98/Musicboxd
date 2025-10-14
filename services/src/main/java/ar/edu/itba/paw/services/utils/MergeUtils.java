@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.services.utils;
 
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.dtos.CommentDTO;
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
@@ -51,6 +53,16 @@ public class MergeUtils {
         setFieldIfNotNull(existingReview::setLikes, reviewDTO.getLikes());
         setFieldIfNotNull(existingReview::setBlocked, reviewDTO.getIsBlocked());
         setFieldIfNotNull(existingReview::setCommentAmount, reviewDTO.getCommentAmount());
+    }
+
+    // Comment fields merge
+    public static void mergeCommentFields(Comment existingComment, CommentDTO commentDTO) {
+        mergeBasicFields(existingComment, commentDTO);
+        existingComment.setCreatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Comment existingComment, CommentDTO commentDTO) {
+        setFieldIfNotNull(existingComment::setContent, commentDTO.getContent());
     }
 
     private static <T> void setFieldIfNotNull(java.util.function.Consumer<T> setter, T value) {

@@ -101,7 +101,7 @@ public class CommentJpaDaoTest {
         Comment comment = new Comment(user, review, NEW_COMMENT_CONTENT, now);
 
         // 2. Execute
-        Comment saved = commentDao.save(comment);
+        Comment saved = commentDao.create(comment);
 
         // 3. Post-conditions
         assertNotNull(saved);
@@ -126,7 +126,7 @@ public class CommentJpaDaoTest {
         comment.setContent(NEW_COMMENT_CONTENT);
 
         // 2. Execute
-        Comment updated = commentDao.save(comment);
+        Comment updated = commentDao.update(comment);
 
         // 3. Post-conditions
         assertEquals(PRE_EXISTING_COMMENT_ID, updated.getId().longValue());
@@ -142,7 +142,7 @@ public class CommentJpaDaoTest {
         // 1. Pre-conditions - comment exists
 
         // 2. Execute
-        commentDao.deleteById(PRE_EXISTING_COMMENT_ID);
+        commentDao.delete(PRE_EXISTING_COMMENT_ID);
 
         // 3. Post-conditions
         assertNull(em.find(Comment.class, PRE_EXISTING_COMMENT_ID));
@@ -153,7 +153,7 @@ public class CommentJpaDaoTest {
         // 1. Pre-conditions
 
         // 2. Execute - should not throw exception
-        commentDao.deleteById(NEW_COMMENT_ID);
+        commentDao.delete(NEW_COMMENT_ID);
 
         // 3. Post-conditions
         assertNull(em.find(Comment.class, NEW_COMMENT_ID));

@@ -17,6 +17,7 @@ import ar.edu.itba.paw.services.exception.ReviewNotFoundException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -38,17 +39,24 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> findAll() {
-        throw new RuntimeException("Method not allowed");
+        return commentMapper.toDTOList(commentDao.findAll());
     }
 
     @Override
     public List<CommentDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
-        throw new RuntimeException("Method not allowed");
+        return commentMapper.toDTOList(commentDao.findPaginated(filterType, page, pageSize));
     }
 
     @Override
+    @Transactional
     public CommentDTO update(CommentDTO commentDTO) {
-        throw new RuntimeException("Method not allowed");
+        Comment comment = commentDao.findById(commentDTO.getId()).orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentDTO.getId() + " not found"));
+        MergeUtils.mergeCommentFields(comment, commentDTO);
+        CommentDTO updatedCommentDTO = commentMapper.toDTO(commentDao.update(comment));
+        User user = userDao.findById(updatedCommentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + updatedCommentDTO.getUserId() + " not found"));
+        Review review = reviewDao.findById(updatedCommentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException("Review with id " + updatedCommentDTO.getReviewId() + " not found"));
+        notificationService.notifyComment(review, user);
+        return updatedCommentDTO;
     }
 
     @Override
@@ -58,8 +66,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> findByReviewId(Long reviewId, Integer pageSize, Integer pageNum) {
-        int offset = (pageNum - 1) * pageSize;
-        List<Comment> comments = commentDao.findByReviewId(reviewId, pageSize, offset);
+        List<Comment> comments = commentDao.findByReviewId(reviewId, pageSize, pageNum);
         setTimeAgo(comments);
         return commentMapper.toDTOList(comments);
     }
@@ -67,7 +74,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDTO create(CommentDTO commentDTO) {
-        Comment savedComment = commentDao.save(commentMapper.toEntity(commentDTO));
+        Comment savedComment = commentDao.create(commentMapper.toEntity(commentDTO));
         updateReviewCommentAmount(commentDTO.getReviewId());
         User user = userDao.findById(commentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + commentDTO.getUserId() + " not found"));
         Review review = reviewDao.findById(commentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException("Review with id " + commentDTO.getReviewId() + " not found"));
@@ -79,9 +86,9 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public Boolean delete(Long id) {
         Comment comment = commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException("Comment with id " + id + " not found"));
-        commentDao.deleteById(id);
+        Boolean deleted = commentDao.delete(id);
         updateReviewCommentAmount(comment.getReview().getId());
-        return true;
+        return deleted;
     }
 
     @Override
@@ -99,5 +106,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Long countByReviewId(Long reviewId) {
         return commentDao.countByReviewId(reviewId);
+    }
+
+    @Override
+    public Long countAll() {
+        return commentDao.countAll();
     }
 }

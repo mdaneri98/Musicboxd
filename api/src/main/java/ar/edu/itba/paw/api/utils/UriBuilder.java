@@ -112,7 +112,21 @@ public class UriBuilder {
     }
     
     // Comment URIs
-    
+    public String buildCommentReviewUri(String baseUrl, Long reviewId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.REVIEWS_BASE)
+                .pathSegment(reviewId.toString(), "comments")
+                .toUriString();
+    }
+
+    public String buildCommentUri(String baseUrl, Long commentId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.COMMENTS_BASE)
+                .pathSegment(commentId.toString())
+                .toUriString();
+    }
+
+
     // Image URIs
     public String buildImageUri(String baseUrl, Long imageId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)

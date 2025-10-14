@@ -161,7 +161,7 @@ public class HATEOASUtils {
      * Creates search/filter links using UriComponentsBuilder
      */
     public static void addSearchLinks(Resource<?> resource, String baseUrl, String resourcePath) {
-        Map<String, String> sortParams = new HashMap<>(Map.of("filter", "FIRST"));
+        Map<String, String> sortParams = new HashMap<>(Map.of("filter", ""));
         Map<String, String> searchParams = new HashMap<>(Map.of("search", ""));
 
         resource.addLink(createLinkWithQuery(baseUrl, resourcePath, "search", "Search resources", "GET", searchParams));
