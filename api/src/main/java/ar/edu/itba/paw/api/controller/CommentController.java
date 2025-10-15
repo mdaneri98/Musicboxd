@@ -37,6 +37,8 @@ public class CommentController extends BaseController {
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
         
+        if (search != null && !search.isEmpty()) return getCommentBySubstring(search, page, size);
+        
         List<CommentDTO> commentDTOs = commentService.findPaginated(filter, page, size);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Long totalCount = commentService.countAll();
