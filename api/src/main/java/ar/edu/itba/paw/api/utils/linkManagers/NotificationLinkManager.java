@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.api.utils.linkManagers;
 
-import ar.edu.itba.paw.api.resources.CollectionResource;
 import ar.edu.itba.paw.api.resources.NotificationResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
