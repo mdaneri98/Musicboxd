@@ -21,7 +21,7 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setBio(user.getBio());
-        dto.setImageId(user.getImageId());
+        dto.setImageId(user.getImage().getId());
         dto.setFollowersAmount(user.getFollowersAmount());
         dto.setFollowingAmount(user.getFollowingAmount());
         dto.setReviewsAmount(user.getReviewAmount());
@@ -56,7 +56,6 @@ public class UserMapper {
 
         User user = new User();
         user.setId(dto.getId());
-        user.setImageId(dto.getImageId());
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setName(dto.getName());

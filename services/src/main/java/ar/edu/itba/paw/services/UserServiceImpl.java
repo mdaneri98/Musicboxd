@@ -264,15 +264,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUser(Long userId, UserDTO userDTO) {
+    public UserDTO updateUser(UserDTO userDTO) {
         // TODO: checkear si el parametro userId es necesario o si se puede usar el id que viene en el userDTO
-        LOGGER.info("Updating user with ID: {}", userId);
-        
-        User existingUser = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        LOGGER.info("Updating user with ID: {}", userDTO.getId());
+        User existingUser = userDao.findById(userDTO.getId()).orElseThrow(() -> new UserNotFoundException("User with ID " + userDTO.getId() + " not found"));
+        existingUser.setImage(imageService.findById(userDTO.getImageId())); 
         MergeUtils.mergeUserFields(existingUser, userDTO);
-        
         User updatedUser = saveUser(existingUser);
-        LOGGER.info("User with ID {} updated successfully", userId);
+        LOGGER.info("User with ID {} updated successfully", userDTO.getId());
         
         return userMapper.toDTO(updatedUser);
     }

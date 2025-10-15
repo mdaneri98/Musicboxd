@@ -16,6 +16,7 @@ import ar.edu.itba.paw.services.mappers.AlbumMapper;
 import java.util.stream.Collectors;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
+import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -164,13 +165,9 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public AlbumDTO update(AlbumDTO albumDTO) {
         LOGGER.info("Updating album with ID: {}", albumDTO.getId());
-        Image image = imageService.findById(albumDTO.getImageId());
-
         Album album = albumDao.findById(albumDTO.getId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + albumDTO.getId() + " not found"));
-        album.setTitle(albumDTO.getTitle());
-        album.setImage(image);
-        album.setGenre(albumDTO.getGenre());
-        album.setReleaseDate(albumDTO.getReleaseDate());
+        album.setImage(imageService.findById(albumDTO.getImageId()));
+        MergeUtils.mergeAlbumFields(album, albumDTO);
 
         album = albumDao.update(album);
         LOGGER.info("Album updated successfully");

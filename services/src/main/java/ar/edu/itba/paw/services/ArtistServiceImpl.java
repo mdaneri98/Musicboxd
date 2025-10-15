@@ -18,6 +18,7 @@ import ar.edu.itba.paw.services.mappers.ArtistMapper;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
 import java.util.stream.Collectors;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -157,11 +158,9 @@ public class ArtistServiceImpl implements ArtistService {
     public ArtistDTO update(ArtistDTO artistDTO) {
         LOGGER.info("Updating artist from DTO: {} (ID: {})", artistDTO.getName(), artistDTO.getId());
 
-        Image image = imageService.findById(artistDTO.getImageId());
-        Artist artist = artistDao.findById(artistDTO.getId()).get();
-        artist.setName(artistDTO.getName());
-        artist.setBio(artistDTO.getBio());
-        artist.setImage(image);
+        Artist artist = artistDao.findById(artistDTO.getId()).orElseThrow(() -> new ArtistNotFoundException("Artist with id " + artistDTO.getId() + " not found"));
+        artist.setImage(imageService.findById(artistDTO.getImageId()));
+        MergeUtils.mergeArtistFields(artist, artistDTO);
 
         artist = artistDao.update(artist);
         LOGGER.info("Artist updated successfully");

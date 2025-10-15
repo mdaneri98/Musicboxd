@@ -28,7 +28,7 @@ public interface UserService{
     Boolean isArtistFavorite(Long userId, Long albumId);
     Boolean isSongFavorite(Long userId, Long albumId);
 
-    UserDTO updateUser(Long userId, UserDTO user);
+    UserDTO updateUser(UserDTO user);
     Boolean changePassword(Long userId, String newPassword);
 
     Integer deleteById(Long id);

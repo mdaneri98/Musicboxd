@@ -6,6 +6,12 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.dtos.SongDTO;
 
 import java.time.LocalDateTime;
 
@@ -27,7 +33,6 @@ public class MergeUtils {
         setFieldIfNotNull(existingUser::setEmail, userDTO.getEmail());
         setFieldIfNotNull(existingUser::setName, userDTO.getName());
         setFieldIfNotNull(existingUser::setBio, userDTO.getBio());
-        setFieldIfNotNull(existingUser::setImageId, userDTO.getImageId());
         setFieldIfNotNull(existingUser::setPreferredLanguage, userDTO.getPreferredLanguage());
         setFieldIfNotNull(existingUser::setTheme, userDTO.getPreferredTheme());
     }
@@ -69,5 +74,40 @@ public class MergeUtils {
         if (value != null) {
             setter.accept(value);
         }
+    }
+
+    // Artist fields merge
+    public static void mergeArtistFields(Artist existingArtist, ArtistDTO artistDTO) {
+        mergeBasicFields(existingArtist, artistDTO);
+        existingArtist.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Artist existingArtist, ArtistDTO artistDTO) {
+        setFieldIfNotNull(existingArtist::setName, artistDTO.getName());
+        setFieldIfNotNull(existingArtist::setBio, artistDTO.getBio());
+    }
+
+    // Album fields merge
+    public static void mergeAlbumFields(Album existingAlbum, AlbumDTO albumDTO) {
+        mergeBasicFields(existingAlbum, albumDTO);
+        existingAlbum.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Album existingAlbum, AlbumDTO albumDTO) {
+        setFieldIfNotNull(existingAlbum::setTitle, albumDTO.getTitle());
+        setFieldIfNotNull(existingAlbum::setGenre, albumDTO.getGenre());
+        setFieldIfNotNull(existingAlbum::setReleaseDate, albumDTO.getReleaseDate());
+    }
+
+    // Song fields merge
+    public static void mergeSongFields(Song existingSong, SongDTO songDTO) {
+        mergeBasicFields(existingSong, songDTO);
+        existingSong.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Song existingSong, SongDTO songDTO) {
+        setFieldIfNotNull(existingSong::setTitle, songDTO.getTitle());
+        setFieldIfNotNull(existingSong::setDuration, songDTO.getDuration());
+        setFieldIfNotNull(existingSong::setTrackNumber, songDTO.getTrackNumber());
     }
 }

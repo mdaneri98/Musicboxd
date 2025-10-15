@@ -28,6 +28,7 @@ import ar.edu.itba.paw.services.mappers.UserMapper;
 import ar.edu.itba.paw.services.mappers.ArtistMapper;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
+import ar.edu.itba.paw.services.mappers.SongMapper;
 
 import javax.mail.MessagingException;
 import java.util.List;
@@ -40,7 +41,6 @@ public class ReviewServiceImpl implements ReviewService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
     private final ReviewDao reviewDao;
-    private final SongDao songDao;
     private final UserDao userDao;
     private final SongService songService;
     private final ArtistService artistService;
@@ -50,11 +50,12 @@ public class ReviewServiceImpl implements ReviewService {
     private final NotificationService notificationService;
     private final ArtistMapper artistMapper;
     private final AlbumMapper albumMapper;
+    private final SongMapper songMapper;
     private final UserMapper userMapper;   
     private final ReviewMapper reviewMapper;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, SongDao songDao, UserDao userDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, ArtistMapper artistMapper, AlbumMapper albumMapper, UserMapper userMapper, ReviewMapper reviewMapper) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, UserMapper userMapper, ReviewMapper reviewMapper) {
         this.reviewDao = reviewDao;
         this.songService = songService;
         this.artistService = artistService;
@@ -63,16 +64,16 @@ public class ReviewServiceImpl implements ReviewService {
         this.emailService = emailService;
         this.notificationService = notificationService;
         this.userDao = userDao;
-        this.songDao = songDao;
         this.artistMapper = artistMapper;
         this.albumMapper = albumMapper;
+        this.songMapper = songMapper;
         this.userMapper = userMapper;
         this.reviewMapper = reviewMapper;
     }
 
-    @Override
+
     @Transactional
-    public Integer updateAvgRatingForAll(){
+    private Integer updateAvgRatingForAll(){
         LOGGER.info("Updating average ratings for all songs, albums, and artists");
         List<SongDTO> songs = songService.findAll();
         List<AlbumDTO> albums = albumService.findAll();
@@ -161,7 +162,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDTO createSongReview(ReviewDTO review) {
         SongReview entity = new SongReview();
         entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + review.getUserId() + " not found")));
-        Song song = songDao.findById(review.getItemId()).orElseThrow(() -> new SongNotFoundException("Song with id " + review.getItemId() + " not found"));
+        Song song = songMapper.toEntity(songService.findById(review.getItemId()));
         entity.setSong(song);
         MergeUtils.mergeReviewFields(entity, review);
         Review createdReview = reviewDao.create(entity);
@@ -187,9 +188,8 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.toDTO(updatedReview);
     }
 
-    @Override
     @Transactional
-    public Void updateRatingForItem(ReviewDTO review) {
+    private Void updateRatingForItem(ReviewDTO review) {
         if(review.getItemType().equals("Artist")) {
             updateArtistRating(review.getItemId());
         } else if(review.getItemType().equals("Album")) {
@@ -229,23 +229,6 @@ public class ReviewServiceImpl implements ReviewService {
         review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
         review.setLiked(isLiked(loggedUserId, review.getId()));
         return reviewMapper.toDTO(review);
-    }
-
-    @Override
-    @Transactional
-    public ReviewDTO saveArtistReview(ReviewDTO review) {
-        ArtistReview reviewEntity = new ArtistReview();
-        reviewEntity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + review.getUserId() + " not found")));
-        Artist artist = artistMapper.toEntity(artistService.findById(review.getItemId()));
-        reviewEntity.setArtist(artist);
-        MergeUtils.mergeReviewFields(reviewEntity, review);
-        LOGGER.info("Saving new artist review for artist ID: {}", review.getItemId());
-        ArtistReview result = reviewDao.saveArtistReview(reviewEntity);
-        updateUserReviewAmount(reviewEntity.getUser().getId());
-        updateArtistRating(reviewEntity.getArtist().getId());
-        notificationService.notifyNewReview(result, result.getUser());
-        LOGGER.info("Artist review saved, user review amount updated, and artist rating recalculated");
-        return reviewMapper.toDTO(result);
     }
 
     @Override
@@ -311,23 +294,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public ReviewDTO saveAlbumReview(ReviewDTO review) {
-        AlbumReview reviewEntity = new AlbumReview();
-        reviewEntity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + review.getUserId() + " not found")));
-        Album album = albumMapper.toEntity(albumService.findById(review.getItemId()));
-        reviewEntity.setAlbum(album);
-        MergeUtils.mergeReviewFields(reviewEntity, review);
-        LOGGER.info("Saving new album review for album ID: {}", review.getItemId());
-        AlbumReview result = reviewDao.saveAlbumReview(reviewEntity);
-        updateUserReviewAmount(reviewEntity.getUser().getId());
-        updateAlbumRating(reviewEntity.getAlbum().getId());
-        notificationService.notifyNewReview(result, result.getUser());
-        LOGGER.info("Album review saved, user review amount updated, and album rating recalculated");
-        return reviewMapper.toDTO(result);
-    }
-
-    @Override
-    @Transactional
     public Void updateAlbumRating(Long albumId) {
         LOGGER.info("Updating rating for album ID: {}", albumId);
         List<ReviewDTO> reviews = albumService.findReviewsByAlbumId(albumId);
@@ -354,24 +320,6 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.toDTO(review);
     }
 
-
-    @Override
-    @Transactional
-    public ReviewDTO saveSongReview(ReviewDTO review) {
-        SongReview reviewEntity = new SongReview();
-        reviewEntity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + review.getUserId() + " not found")));
-        Song song = songDao.findById(review.getItemId()).orElseThrow(() -> new SongNotFoundException("Song with id " + review.getItemId() + " not found"));
-        reviewEntity.setSong(song);
-        MergeUtils.mergeReviewFields(reviewEntity, review);
-        LOGGER.info("Saving new song review for song ID: {}", review.getItemId());
-        SongReview result = reviewDao.saveSongReview(reviewEntity);
-        updateUserReviewAmount(reviewEntity.getUser().getId());
-        updateSongRating(reviewEntity.getSong().getId());
-        notificationService.notifyNewReview(result, result.getUser());
-        LOGGER.info("Song review saved, user review amount updated, and song rating recalculated");
-        return reviewMapper.toDTO(result);
-    }
-
     @Override
     @Transactional
     public Void updateUserReviewAmount(Long userId) {
@@ -385,8 +333,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public Void updateSongRating(Long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
-        List<SongReview> reviews = songDao.findReviewsBySongId(songId);
-        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
+        List<ReviewDTO> reviews = songService.findReviewsBySongId(songId);
+        Double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();
         songService.updateRating(songId, roundedAvgRating, ratingAmount);

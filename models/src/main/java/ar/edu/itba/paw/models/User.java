@@ -56,8 +56,9 @@ public class User {
     @Column(name = "review_amount")
     private Integer reviewAmount;
 
-    @Column(name = "img_id", nullable = false)
-    private Long imageId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
+    private Image image;    
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Review> reviews;
@@ -135,7 +136,7 @@ public class User {
 
     public User() {}
 
-    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Long imageId, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
+    public User(Long id, String username, String email, String password, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -145,7 +146,7 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.verified = verified;
-        this.imageId = imageId;
+        this.image = image;
         this.moderator = moderator;
         this.followersAmount = followersAmount != null ? followersAmount : 0;
         this.followingAmount = followingAmount != null ? followingAmount : 0;
@@ -165,7 +166,7 @@ public class User {
         this.likedReviews = new ArrayList<>();
     }
 
-    public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Long Long, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount, String preferredLanguage) {
+    public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount, String preferredLanguage) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -173,7 +174,7 @@ public class User {
         this.name = name;
         this.bio = bio;
         this.verified = verified;
-        this.imageId = Long;
+        this.image = image;
         this.moderator = moderator;
         this.followersAmount = followersAmount != null ? followersAmount : 0;
         this.followingAmount = followingAmount != null ? followingAmount : 0;
@@ -188,7 +189,7 @@ public class User {
         this.likedReviews = new ArrayList<>();
     }
 
-    public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Long Long, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
+    public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -196,7 +197,7 @@ public class User {
         this.name = name;
         this.bio = bio;
         this.verified = verified;
-        this.imageId = Long;
+        this.image = image;
         this.moderator = moderator;
         this.followersAmount = followersAmount != null ? followersAmount : 0;
         this.followingAmount = followingAmount != null ? followingAmount : 0;
@@ -217,7 +218,7 @@ public class User {
         this.password = password;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.imageId = 0L;
+        this.image = null;
         this.verified = false;
         this.moderator = false;
         this.followersAmount = 0;
@@ -239,11 +240,11 @@ public class User {
         this.likedReviews = new ArrayList<>();
     }
 
-    public User(Long id, String username, String name, Long Long, Boolean verified, Boolean moderator) {
+    public User(Long id, String username, String name, Image image, Boolean verified, Boolean moderator) {
         this.id = id;
         this.username = username;
         this.name = name;
-        this.imageId = Long;
+        this.image = image;
         this.verified = verified;
         this.moderator = moderator;
         this.comments = new ArrayList<>();
@@ -284,7 +285,7 @@ public class User {
         anonymousUser.followersAmount = 0;
         anonymousUser.followingAmount = 0;
         anonymousUser.reviewAmount = 0;
-        anonymousUser.imageId = 0L;
+        anonymousUser.image = null;
 
         return anonymousUser;
     }
@@ -518,11 +519,15 @@ public class User {
     }
 
     public Long getImageId() {
-        return this.imageId;
+        return this.image.getId();
     }
 
-    public void setImageId(Long imageId) {
-        this.imageId = imageId;
+    public Image getImage() {
+        return this.image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public Integer getUnreadNotificationCount() {

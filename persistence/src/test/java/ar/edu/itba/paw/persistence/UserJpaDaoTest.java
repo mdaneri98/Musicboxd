@@ -269,9 +269,9 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertTrue(optionalUser.isPresent());
         User user = optionalUser.get();
-        
+        Image image = new Image(NEW_IMAGE_ID, new byte[0]);
         // Set imageId to avoid null constraint violation and persist the change
-        user.setImageId(NEW_IMAGE_ID);
+        user.setImage(image);
         em.flush(); // Force the change to be persisted
         
         // Basic validations

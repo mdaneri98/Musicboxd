@@ -20,6 +20,7 @@ import ar.edu.itba.paw.services.exception.SongNotFoundException;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
 import java.util.stream.Collectors;
+import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service 
 public class SongServiceImpl implements SongService {
@@ -145,12 +146,8 @@ public class SongServiceImpl implements SongService {
     public SongDTO update(SongDTO songDTO) {
         LOGGER.info("Updating song with ID: {}", songDTO.getId());
         Song song = songDao.findById(songDTO.getId()).orElseThrow(() -> new SongNotFoundException("Song with id " + songDTO.getId() + " not found"));
-        Album album = albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + songDTO.getAlbumId() + " not found"));
-        song.setTitle(songDTO.getTitle());
-        song.setDuration(songDTO.getDuration());
-        song.setTrackNumber(songDTO.getTrackNumber());
-        song.setAlbum(album);
-        song.setUpdatedAt(LocalDateTime.now());
+        song.setAlbum(albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + songDTO.getAlbumId() + " not found")));
+        MergeUtils.mergeSongFields(song, songDTO);
         song = songDao.update(song);
         LOGGER.info("Song updated successfully");
         return songMapper.toDTO(song);

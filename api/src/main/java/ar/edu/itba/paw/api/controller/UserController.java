@@ -76,7 +76,8 @@ public class UserController extends BaseController {
     @PUT
     @Path(ApiUriConstants.ID)
     public Response updateUser(@PathParam("id") Long userId, @Valid UserDTO userDTO) {
-        UserDTO user = userService.updateUser(userId, userDTO);
+        userDTO.setId(userId);
+        UserDTO user = userService.updateUser(userDTO);
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
 
         return buildResponse(userResource);
