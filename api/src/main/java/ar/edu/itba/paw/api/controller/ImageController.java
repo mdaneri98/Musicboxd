@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.mapper.ImageResourceMapper;
-import ar.edu.itba.paw.api.models.ImageResource;
+import ar.edu.itba.paw.api.resources.ImageResource;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.services.ImageService;
 

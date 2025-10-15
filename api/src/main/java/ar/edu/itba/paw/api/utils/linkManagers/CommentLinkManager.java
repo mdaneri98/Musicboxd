@@ -3,7 +3,7 @@ package ar.edu.itba.paw.api.utils.linkManagers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.api.resources.Resource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;

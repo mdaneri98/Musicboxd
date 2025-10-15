@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.api.models;
+package ar.edu.itba.paw.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

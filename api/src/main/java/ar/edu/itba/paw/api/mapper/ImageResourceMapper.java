@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.mapper;
 
-import ar.edu.itba.paw.api.models.ImageResource; 
+import ar.edu.itba.paw.api.resources.ImageResource;
 import ar.edu.itba.paw.models.Image;
 import java.util.List;
 import java.util.stream.Collectors;

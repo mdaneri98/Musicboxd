@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.mapper;
 
-import ar.edu.itba.paw.api.models.ArtistResource;
+import ar.edu.itba.paw.api.resources.ArtistResource;
 import ar.edu.itba.paw.api.utils.linkManagers.ArtistLinkManager;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import org.springframework.beans.factory.annotation.Autowired;

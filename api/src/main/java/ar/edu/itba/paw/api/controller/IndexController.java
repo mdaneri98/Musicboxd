@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.paw.api.models.Link;
-import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.api.utils.Link;
+import ar.edu.itba.paw.api.resources.Resource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 

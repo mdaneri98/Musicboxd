@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.api.utils;
 
-import ar.edu.itba.paw.api.models.Link;
-import ar.edu.itba.paw.api.models.Resource;
+import ar.edu.itba.paw.api.resources.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;

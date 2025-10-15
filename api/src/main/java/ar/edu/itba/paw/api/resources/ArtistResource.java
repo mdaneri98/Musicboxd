@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.api.models;
+package ar.edu.itba.paw.api.resources;
 
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 

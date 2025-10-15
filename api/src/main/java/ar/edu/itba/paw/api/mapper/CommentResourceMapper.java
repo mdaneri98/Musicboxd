@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.mapper;
 
-import ar.edu.itba.paw.api.models.CommentResource;
+import ar.edu.itba.paw.api.resources.CommentResource;
 import ar.edu.itba.paw.api.utils.linkManagers.CommentLinkManager;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
 import org.springframework.beans.factory.annotation.Autowired;

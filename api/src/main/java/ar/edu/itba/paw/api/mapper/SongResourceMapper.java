@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.mapper;
 
-import ar.edu.itba.paw.api.models.SongResource;
+import ar.edu.itba.paw.api.resources.SongResource;
 import ar.edu.itba.paw.api.utils.linkManagers.SongLinkManager;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import org.springframework.beans.factory.annotation.Autowired;
