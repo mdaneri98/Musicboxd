@@ -26,26 +26,22 @@ public class NotificationLinkManager {
     private void addRelationshipLinks(NotificationResource resource, String baseUrl, NotificationDTO dto) {
         // Link al usuario receptor
         if (dto.getRecipientUserId() != null) {
-            HATEOASUtils.addRelationshipLinks(resource, baseUrl, ApiUriConstants.USERS_BASE, 
-                dto.getRecipientUserId(), "recipient-user", null);
+            resource.addLink(uriBuilder.buildUserUri(baseUrl, dto.getRecipientUserId()), "recipient-user", "Recipient user", "GET");
         }
 
         // Link al usuario que disparó la notificación
         if (dto.getTriggerUserId() != null) {
-            HATEOASUtils.addRelationshipLinks(resource, baseUrl, ApiUriConstants.USERS_BASE,
-                dto.getTriggerUserId(), "trigger-user", null);
+            resource.addLink(uriBuilder.buildUserUri(baseUrl, dto.getTriggerUserId()), "trigger-user", "Trigger user", "GET");
         }
 
         // Link a la review relacionada (si existe)
         if (dto.getReviewId() != null) {
-            HATEOASUtils.addRelationshipLinks(resource, baseUrl, ApiUriConstants.REVIEWS_BASE,
-                dto.getReviewId(), "review", null);
+            resource.addLink(uriBuilder.buildReviewUri(baseUrl, dto.getReviewId()), "review", "Review", "GET");
         }
 
         // Link a la imagen del usuario que disparó la notificación
         if (dto.getTriggerUserImageId() != null) {
-            HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.IMAGES_BASE, 
-                dto.getTriggerUserImageId());
+            resource.addLink(uriBuilder.buildImageUri(baseUrl, dto.getTriggerUserImageId()), "trigger-user-image", "Trigger user image", "GET");
         }
     }
 }
