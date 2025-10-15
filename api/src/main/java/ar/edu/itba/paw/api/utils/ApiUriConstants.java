@@ -48,4 +48,10 @@ public class ApiUriConstants {
     /* IMAGES */
     public static final String IMAGES_BASE = API_BASE + "/images";
 
+    /* NOTIFICATIONS */
+    public static final String NOTIFICATIONS_BASE = API_BASE + "/notifications";
+    public static final String NOTIFICATION_READ = ID + "/read";
+    public static final String NOTIFICATIONS_READ_ALL = "/read-all";
+    public static final String NOTIFICATIONS_UNREAD_COUNT = "/unread-count";
+
 }

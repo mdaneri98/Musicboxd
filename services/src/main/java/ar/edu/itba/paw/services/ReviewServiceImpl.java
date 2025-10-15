@@ -15,7 +15,6 @@ import ar.edu.itba.paw.services.exception.AcknowledgementEmailException;
 import ar.edu.itba.paw.services.exception.ReviewNotFoundException;
 import ar.edu.itba.paw.services.exception.UserNotFoundException;
 import ar.edu.itba.paw.services.exception.UnkownReviewTypeException;
-import ar.edu.itba.paw.services.exception.SongNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

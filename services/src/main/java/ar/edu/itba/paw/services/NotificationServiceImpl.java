@@ -3,8 +3,12 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.dtos.NotificationDTO;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.NotificationDao;
+import ar.edu.itba.paw.services.mappers.NotificationMapper;
 import ar.edu.itba.paw.services.utils.TimeUtils;
+import ar.edu.itba.paw.services.exception.NotificationNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +18,12 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationDao notificationDao;
+    private final NotificationMapper notificationMapper;
 
     @Autowired
-    public NotificationServiceImpl(NotificationDao notificationDao){
+    public NotificationServiceImpl(NotificationDao notificationDao, NotificationMapper notificationMapper){
         this.notificationDao = notificationDao;
+        this.notificationMapper = notificationMapper;
     }
 
     @Transactional 
@@ -88,10 +94,74 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Notification> getUserNotifications(Long userId, Integer page, Integer pageSize) {
+    public NotificationDTO findById(Long id) {
+        Notification notification = notificationDao.findById(id)
+                .orElseThrow(() -> new NotificationNotFoundException("Notification with id " + id + " not found"));
+        return notificationMapper.toDTO(notification);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<NotificationDTO> findAll() {
+        List<Notification> notifications = notificationDao.findAll();
+        return notificationMapper.toDTOList(notifications);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<NotificationDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
+        List<Notification> notifications = notificationDao.findPaginated(filterType, page, pageSize);
+        return notificationMapper.toDTOList(notifications);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<NotificationDTO> findBySubstring(String substring, Integer page, Integer pageSize) {
+        List<Notification> notifications = notificationDao.findBySubstring(substring, page, pageSize);
+        return notificationMapper.toDTOList(notifications);
+    }
+
+    @Transactional
+    @Override
+    public NotificationDTO create(NotificationDTO notificationDTO) {
+        Notification notification = notificationMapper.toEntity(notificationDTO);
+        Notification savedNotification = notificationDao.create(notification);
+        return notificationMapper.toDTO(savedNotification);
+    }
+
+    @Transactional
+    @Override
+    public NotificationDTO update(NotificationDTO notificationDTO) {
+        Notification notification = notificationMapper.toEntity(notificationDTO);
+        Notification updatedNotification = notificationDao.update(notification);
+        return notificationMapper.toDTO(updatedNotification);
+    }
+
+    @Transactional
+    @Override
+    public Boolean delete(Long id) {
+        notificationDao.delete(id);
+        return true;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Long countAll() {
+        return notificationDao.countAll();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Long countByUserId(Long userId) {
+        return notificationDao.countByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<NotificationDTO> getUserNotifications(Long userId, Integer page, Integer pageSize) {
          List<Notification> notifications = notificationDao.getNotificationsForUser(userId, page, pageSize);
          notifications.forEach(n -> n.setTimeAgo(TimeUtils.formatTimeAgo(n.getCreatedAt())));
-         return notifications;
+         return notificationMapper.toDTOList(notifications);
     }
 
     @Transactional

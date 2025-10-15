@@ -20,8 +20,8 @@ public class ImageController extends BaseController {
     @Autowired
     private ImageService imageService;
 
-    @Autowired
-    private ImageResourceMapper imageResourceMapper;
+//    @Autowired
+//    private ImageResourceMapper imageResourceMapper;
 
     @GET
     @Path(ApiUriConstants.ID)
@@ -36,10 +36,10 @@ public class ImageController extends BaseController {
         return Response.status(Response.Status.OK).entity(array).build();
     }
 
-    @POST
-    public Response createImage(byte[] bytes) {
-        Image image = imageService.create(bytes);
-        ImageResource imageResource = imageResourceMapper.toResource(image);
-        return buildCreatedResponse(imageResource);
-    }
+//    @POST
+//    public Response createImage(byte[] bytes) {
+//        Image image = imageService.create(bytes);
+//        ImageResource imageResource = imageResourceMapper.toResource(image);
+//        return buildCreatedResponse(imageResource);
+//    }
 }

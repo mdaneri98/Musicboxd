@@ -15,6 +15,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class UriBuilder {
     
     // User URIs
+    public String buildUserUri(String baseUrl, Long userId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.USERS_BASE)
+                .pathSegment(userId.toString())
+                .toUriString();
+    }
+    
     public String buildUserReviewsUri(String baseUrl, Long userId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.USERS_BASE)
@@ -97,6 +104,13 @@ public class UriBuilder {
     }
     
     // Review URIs
+    public String buildReviewUri(String baseUrl, Long reviewId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.REVIEWS_BASE)
+                .pathSegment(reviewId.toString())
+                .toUriString();
+    }
+    
     public String buildReviewCommentsUri(String baseUrl, Long reviewId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.REVIEWS_BASE)
@@ -123,6 +137,35 @@ public class UriBuilder {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.COMMENTS_BASE)
                 .pathSegment(commentId.toString())
+                .toUriString();
+    }
+
+    // Notification URIs
+    public String buildNotificationUri(String baseUrl, Long notificationId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.NOTIFICATIONS_BASE)
+                .pathSegment(notificationId.toString())
+                .toUriString();
+    }
+
+    public String buildNotificationReadUri(String baseUrl, Long notificationId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.NOTIFICATIONS_BASE)
+                .pathSegment(notificationId.toString(), "read")
+                .toUriString();
+    }
+
+    public String buildNotificationReadAllUri(String baseUrl) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.NOTIFICATIONS_BASE)
+                .pathSegment("read-all")
+                .toUriString();
+    }
+
+    public String buildNotificationUnreadCountUri(String baseUrl) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.NOTIFICATIONS_BASE)
+                .pathSegment("unread-count")
                 .toUriString();
     }
 

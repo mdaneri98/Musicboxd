@@ -44,8 +44,9 @@ public class UserServiceImpl implements UserService {
 
     private final EmailService emailService;
     private final NotificationService notificationService;
+    private final ImageService imageService;    
 
-    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, UserMapper userMapper, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, EmailService emailService, NotificationService notificationService) {
+    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, UserMapper userMapper, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, EmailService emailService, NotificationService notificationService, ImageService imageService) {
         this.userDao = userDao;
         this.userVerificationDao = userVerificationDao;
         this.passwordEncoder = passwordEncoder;
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
         this.songMapper = songMapper;
         this.emailService = emailService;
         this.notificationService = notificationService;
+        this.imageService = imageService;
     }
 
     @Override
