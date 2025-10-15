@@ -37,7 +37,9 @@ public class UserController extends BaseController {
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("search") String search,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+
         if (search != null && !search.isEmpty()) return getUserBySubstring(search, page, size);
+        
         List<UserDTO> users = userService.findPaginated(filter, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(

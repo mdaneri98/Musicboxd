@@ -124,4 +124,30 @@ public class CommentJpaDao implements CommentDao {
         query.setParameter("reviewId", reviewId);
         return (Long) query.getSingleResult();
     }
+
+    @Override
+    public List<Comment> findBySubstring(String substring, Integer page, Integer size) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT id FROM comment WHERE content LIKE :substring ORDER BY created_at DESC");
+        nativeQuery.setParameter("substring", "%" + substring + "%");
+        nativeQuery.setMaxResults(size);
+        nativeQuery.setFirstResult((page - 1) * size);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> commentIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(java.util.stream.Collectors.toList());
+
+        if (commentIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<Comment> query = em.createQuery(
+            "FROM Comment c WHERE c.id IN :ids ORDER BY c.createdAt DESC", Comment.class);
+        query.setParameter("ids", commentIds);
+        return query.getResultList();
+    }
 }

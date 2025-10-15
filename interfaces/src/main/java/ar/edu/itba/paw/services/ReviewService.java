@@ -25,6 +25,7 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     Void removeLike(Long userId, Long reviewId);
     Boolean isLiked(Long userId, Long reviewId);
 
+    List<ReviewDTO> findBySubstring(String substring, Integer page, Integer size);
     List<ReviewDTO> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);
     List<ReviewDTO> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId);
     List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);
@@ -55,6 +56,5 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     ReviewDTO createAlbumReview(ReviewDTO review);
     ReviewDTO createSongReview(ReviewDTO review);
     
-    // Count methods for pagination
     Long countAll();
 }

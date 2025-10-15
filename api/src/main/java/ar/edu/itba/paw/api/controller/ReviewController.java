@@ -48,12 +48,13 @@ public class ReviewController extends BaseController {
 
     @GET
     public Response getAllReviews(
-            @QueryParam("popular") @DefaultValue("false") boolean popular,
-            @QueryParam("following") @DefaultValue("false") boolean following,
+            @QueryParam("search") String search,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
 
+        if (search != null && !search.isEmpty()) return getReviewBySubstring(search, page, size);
+        
         List<ReviewDTO> reviewDTOs = reviewService.findPaginated(filter, page, size);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Long totalCount = reviewService.countAll();
@@ -61,6 +62,15 @@ public class ReviewController extends BaseController {
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
         
+        return buildResponse(collection);
+    }
+
+    private Response getReviewBySubstring(String substring, int page, int size) {
+        List<ReviewDTO> reviewDTOs = reviewService.findBySubstring(substring, page, size);
+        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
+        Long totalCount = reviewService.countAll();
+        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
         return buildResponse(collection);
     }
 

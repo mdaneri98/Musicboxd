@@ -56,7 +56,9 @@ public class ArtistController extends BaseController {
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+
         if (search != null && !search.isEmpty()) return getArtistBySubstring(search, page, size);
+
         List<ArtistDTO> artistDTOs = artistService.findPaginated(FilterType.FIRST, page, size);
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
         Long totalCount = artistService.countAll();
@@ -76,19 +78,19 @@ public class ArtistController extends BaseController {
         return buildResponse(collection);
     }
 
+    @POST
+    public Response createArtist(@Valid ArtistDTO artistDTO) {
+        ArtistDTO responseDTO = artistService.create(artistDTO);
+        ArtistResource artistResource = artistResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildCreatedResponse(artistResource);
+    }
+
     @GET
     @Path(ApiUriConstants.ID)
     public Response getArtist(@PathParam("id") Long id) {
         ArtistDTO artistDTO = artistService.findById(id);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
         return buildResponse(artistResource);
-    }
-
-    @POST
-    public Response createArtist(@Valid ArtistDTO artistDTO) {
-        ArtistDTO responseDTO = artistService.create(artistDTO);
-        ArtistResource artistResource = artistResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildCreatedResponse(artistResource);
     }
 
     @PUT

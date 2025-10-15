@@ -47,26 +47,29 @@ public class CommentController extends BaseController {
         return buildResponse(collection);
     }
 
+    private Response getCommentBySubstring(String substring, int page, int size) {
+        List<CommentDTO> commentDTOs = commentService.findBySubstring(substring, page, size);
+        List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
+        Long totalCount = commentService.countAll();
+        CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE);
+        return buildResponse(collection);
+    }
+
+    @POST
+    public Response createComment(@Valid CommentDTO commentDTO) {
+        // TODO: Obtener userId del contexto de seguridad
+        CommentDTO responseDTO = commentService.create(commentDTO);
+        CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildCreatedResponse(commentResource);
+    }
+
     @GET
     @Path(ApiUriConstants.ID)
     public Response getComment(@PathParam("id") Long id) {
         CommentDTO commentDTO = commentService.findById(id);
         CommentResource commentResource = commentResourceMapper.toResource(commentDTO, getBaseUrl());
         return buildResponse(commentResource);
-    }
-
-    @POST
-    public Response createComment(@Valid CommentDTO commentDTO) {
-        // TODO: Obtener userId del contexto de seguridad
-        if (commentDTO.getReviewId() == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Review ID is required")
-                    .build();
-        }
-
-        CommentDTO responseDTO = commentService.create(commentDTO);
-        CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildCreatedResponse(commentResource);
     }
 
     @DELETE

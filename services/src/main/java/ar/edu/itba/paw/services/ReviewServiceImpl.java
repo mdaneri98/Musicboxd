@@ -92,6 +92,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<ReviewDTO> findBySubstring(String substring, Integer page, Integer size) {
+        return reviewMapper.toDTOList(reviewDao.findBySubstring(substring, page, size));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ReviewDTO findById(Long id) {
         return reviewMapper.toDTO(reviewDao.findById(id).orElseThrow(() -> new ReviewNotFoundException("Review with id " + id + " not found")));
     }

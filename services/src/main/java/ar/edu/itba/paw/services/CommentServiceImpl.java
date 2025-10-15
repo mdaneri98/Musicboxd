@@ -74,6 +74,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDTO create(CommentDTO commentDTO) {
+        if (commentDTO.getUserId() == null || commentDTO.getReviewId() == null) throw new IllegalArgumentException("User ID and review ID are required");
         Comment savedComment = commentDao.create(commentMapper.toEntity(commentDTO));
         updateReviewCommentAmount(commentDTO.getReviewId());
         User user = userDao.findById(commentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + commentDTO.getUserId() + " not found"));
@@ -111,5 +112,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Long countAll() {
         return commentDao.countAll();
+    }
+
+    @Override
+    public List<CommentDTO> findBySubstring(String substring, Integer page, Integer size) {
+        return commentMapper.toDTOList(commentDao.findBySubstring(substring, page, size));
     }
 }

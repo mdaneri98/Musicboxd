@@ -53,11 +53,12 @@ public class AlbumController extends BaseController {
     @GET
     public Response getAllAlbums(
             @QueryParam("search") String search,
-            @QueryParam("artistId") Long artistId,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+
         if (search != null && !search.isEmpty()) return getAlbumBySubstring(search, page, size);
+
         List<AlbumDTO> albumDTOs = albumService.findPaginated(filter, page, size);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
         Long totalCount = albumService.countAll();
@@ -77,14 +78,6 @@ public class AlbumController extends BaseController {
         return buildResponse(collection);
     }
 
-    @GET
-    @Path(ApiUriConstants.ID)
-    public Response getAlbum(@PathParam("id") Long id) {
-        AlbumDTO albumDTO = albumService.findById(id);
-        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
-        return buildResponse(albumResource);
-    }
-
     @POST
     public Response createAlbum(
             @Valid AlbumDTO albumDTO) {
@@ -98,6 +91,14 @@ public class AlbumController extends BaseController {
         AlbumDTO responseDTO = albumService.create(albumDTO);
         AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(albumResource);
+    }
+
+    @GET
+    @Path(ApiUriConstants.ID)
+    public Response getAlbum(@PathParam("id") Long id) {
+        AlbumDTO albumDTO = albumService.findById(id);
+        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
+        return buildResponse(albumResource);
     }
 
     @PUT

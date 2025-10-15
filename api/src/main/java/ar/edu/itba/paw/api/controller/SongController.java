@@ -43,12 +43,12 @@ public class SongController extends BaseController {
     @GET
     public Response getAllSongs(
             @QueryParam("search") String search,
-            @QueryParam("artistId") Long artistId,
-            @QueryParam("albumId") Long albumId,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+
         if (search != null && !search.isEmpty()) return getSongBySubstring(search, page, size);
+
         List<SongDTO> songDTOs = songService.findPaginated(filter, page, size);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         Long totalCount = songService.countAll();
@@ -68,14 +68,6 @@ public class SongController extends BaseController {
         return buildResponse(collection);
     }
 
-    @GET
-    @Path(ApiUriConstants.ID)
-    public Response getSong(@PathParam("id") Long id) {
-        SongDTO songDTO = songService.findById(id);
-        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
-        return buildResponse(songResource);
-    }
-
     @POST
     public Response createSong(
             @Valid SongDTO songDTO) {
@@ -89,6 +81,14 @@ public class SongController extends BaseController {
         SongDTO responseDTO = songService.create(songDTO);
         SongResource songResource = songResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(songResource);
+    }
+
+    @GET
+    @Path(ApiUriConstants.ID)
+    public Response getSong(@PathParam("id") Long id) {
+        SongDTO songDTO = songService.findById(id);
+        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
+        return buildResponse(songResource);
     }
 
     @PUT

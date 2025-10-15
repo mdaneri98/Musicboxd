@@ -7,6 +7,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.mapper.ImageResourceMapper;
+import ar.edu.itba.paw.api.models.ImageResource;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.services.ImageService;
 
@@ -17,6 +19,9 @@ public class ImageController extends BaseController {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private ImageResourceMapper imageResourceMapper;
 
     @GET
     @Path(ApiUriConstants.ID)
@@ -29,5 +34,12 @@ public class ImageController extends BaseController {
         headers.set("Content-Disposition", String.format("inline; filename=\"image_%d.jpg\"", id));
 
         return Response.status(Response.Status.OK).entity(array).build();
+    }
+
+    @POST
+    public Response createImage(byte[] bytes) {
+        Image image = imageService.create(bytes);
+        ImageResource imageResource = imageResourceMapper.toResource(image);
+        return buildCreatedResponse(imageResource);
     }
 }

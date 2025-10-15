@@ -10,4 +10,5 @@ public interface CommentService extends CrudService<CommentDTO> {
     Long countByReviewId(Long reviewId);
     List<CommentDTO> findPaginated(FilterType filter, Integer page, Integer pageSize);
     Long countAll();
+    List<CommentDTO> findBySubstring(String substring, Integer page, Integer size);
 }
