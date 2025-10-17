@@ -15,6 +15,9 @@ import ar.edu.itba.paw.services.exception.AcknowledgementEmailException;
 import ar.edu.itba.paw.services.exception.ReviewNotFoundException;
 import ar.edu.itba.paw.services.exception.UserNotFoundException;
 import ar.edu.itba.paw.services.exception.UnkownReviewTypeException;
+import ar.edu.itba.paw.services.exception.ArtistNotFoundException;
+import ar.edu.itba.paw.services.exception.AlbumNotFoundException;
+import ar.edu.itba.paw.services.exception.SongNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 import ar.edu.itba.paw.services.mappers.UserMapper;
-import ar.edu.itba.paw.services.mappers.ArtistMapper;
-import ar.edu.itba.paw.services.mappers.AlbumMapper;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
-import ar.edu.itba.paw.services.mappers.SongMapper;
 
 import javax.mail.MessagingException;
 import java.util.List;
@@ -41,31 +41,31 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewDao reviewDao;
     private final UserDao userDao;
+    private final ArtistDao artistDao;
+    private final AlbumDao albumDao;
+    private final SongDao songDao;
     private final SongService songService;
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final UserService userService;
     private final EmailService emailService;
     private final NotificationService notificationService;
-    private final ArtistMapper artistMapper;
-    private final AlbumMapper albumMapper;
-    private final SongMapper songMapper;
     private final UserMapper userMapper;   
     private final ReviewMapper reviewMapper;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, UserMapper userMapper, ReviewMapper reviewMapper) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, ArtistDao artistDao, AlbumDao albumDao, SongDao songDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, UserMapper userMapper, ReviewMapper reviewMapper) {
         this.reviewDao = reviewDao;
+        this.userDao = userDao;
+        this.artistDao = artistDao;
+        this.albumDao = albumDao;
+        this.songDao = songDao;
         this.songService = songService;
         this.artistService = artistService;
         this.albumService = albumService;
         this.userService = userService;
         this.emailService = emailService;
         this.notificationService = notificationService;
-        this.userDao = userDao;
-        this.artistMapper = artistMapper;
-        this.albumMapper = albumMapper;
-        this.songMapper = songMapper;
         this.userMapper = userMapper;
         this.reviewMapper = reviewMapper;
     }
@@ -129,7 +129,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDTO createArtistReview(ReviewDTO review) {
         ArtistReview entity = new ArtistReview();
         entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + review.getUserId() + " not found")));
-        Artist artist = artistMapper.toEntity(artistService.findById(review.getItemId()));
+        Artist artist = artistDao.findById(review.getItemId()).orElseThrow(() -> new ArtistNotFoundException("Artist with id " + review.getItemId() + " not found"));
         entity.setArtist(artist);
         MergeUtils.mergeReviewFields(entity, review);
         Review createdReview = reviewDao.create(entity);
@@ -145,7 +145,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDTO createAlbumReview(ReviewDTO review) {
         AlbumReview entity = new AlbumReview();
         entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + review.getUserId() + " not found")));
-        Album album = albumMapper.toEntity(albumService.findById(review.getItemId()));
+        Album album = albumDao.findById(review.getItemId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + review.getItemId() + " not found"));
         entity.setAlbum(album);
         MergeUtils.mergeReviewFields(entity, review);
         Review createdReview = reviewDao.create(entity);
@@ -161,7 +161,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDTO createSongReview(ReviewDTO review) {
         SongReview entity = new SongReview();
         entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + review.getUserId() + " not found")));
-        Song song = songMapper.toEntity(songService.findById(review.getItemId()));
+        Song song = songDao.findById(review.getItemId()).orElseThrow(() -> new SongNotFoundException("Song with id " + review.getItemId() + " not found"));
         entity.setSong(song);
         MergeUtils.mergeReviewFields(entity, review);
         Review createdReview = reviewDao.create(entity);
@@ -189,13 +189,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     private Void updateRatingForItem(ReviewDTO review) {
-        if(review.getItemType().equals("Artist")) {
-            updateArtistRating(review.getItemId());
-        } else if(review.getItemType().equals("Album")) {
-            updateAlbumRating(review.getItemId());
-        } else if(review.getItemType().equals("Song")) {
-            updateSongRating(review.getItemId());
-        }
+        if(review.getItemType().equals("Artist")) updateArtistRating(review.getItemId());
+        else if(review.getItemType().equals("Album")) updateAlbumRating(review.getItemId());
+        else if(review.getItemType().equals("Song")) updateSongRating(review.getItemId());
+        else throw new UnkownReviewTypeException("Review with item type " + review.getItemType() + " not found");
         return null;
     }
 

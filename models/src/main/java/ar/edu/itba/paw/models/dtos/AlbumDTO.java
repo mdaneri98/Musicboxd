@@ -135,6 +135,9 @@ public class AlbumDTO {
     }
 
     public Boolean isDeleted() {
+        if (isDeleted == null) {
+            return false;
+        }
         return isDeleted;
     }
 

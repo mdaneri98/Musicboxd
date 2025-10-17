@@ -147,18 +147,6 @@ public class AlbumController extends BaseController {
         return buildResponse(reviewResource);
     }
 
-    @PUT
-    @Path(ApiUriConstants.ALBUM_REVIEWS)
-    public Response updateAlbumReview(
-            @PathParam("id") Long id,
-            @Valid ReviewDTO reviewDTO) {
-        reviewDTO.setId(id);
-        reviewDTO.setItemType("Album");
-        ReviewDTO responseDTO = reviewService.update(reviewDTO);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildResponse(reviewResource);
-    }
-
     @GET
     @Path(ApiUriConstants.ALBUM_SONGS)
     public Response getAlbumSongs(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") int page, @QueryParam("size") @DefaultValue("20") int size) {

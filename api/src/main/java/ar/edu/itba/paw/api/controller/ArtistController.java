@@ -141,18 +141,6 @@ public class ArtistController extends BaseController {
         return buildResponse(reviewResource);
     }
 
-    @PUT
-    @Path(ApiUriConstants.ARTIST_REVIEWS)
-    public Response updateArtistReview(
-            @PathParam("id") Long id,
-            @Valid ReviewDTO reviewDTO) {
-        reviewDTO.setId(id);
-        reviewDTO.setItemType("Artist");
-        ReviewDTO responseDTO = reviewService.update(reviewDTO);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildResponse(reviewResource);
-    }
-
     @GET
     @Path(ApiUriConstants.ARTIST_ALBUMS)
     public Response getArtistAlbums(

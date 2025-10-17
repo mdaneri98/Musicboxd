@@ -133,6 +133,9 @@ public class SongDTO {
     }
 
     public Boolean isDeleted() {
+        if (isDeleted == null) {
+            return false;
+        }
         return isDeleted;
     }
 

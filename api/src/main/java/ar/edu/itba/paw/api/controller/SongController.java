@@ -147,17 +147,5 @@ public class SongController extends BaseController {
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
-
-    @PUT
-    @Path(ApiUriConstants.SONG_REVIEWS)
-    public Response updateSongReview(
-            @PathParam("id") Long id,
-            @Valid ReviewDTO reviewDTO) {
-        reviewDTO.setId(id);
-        reviewDTO.setItemType("Song");
-        ReviewDTO responseDTO = reviewService.update(reviewDTO);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildResponse(reviewResource);
-    }
 }
 
