@@ -65,8 +65,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDTO> findByReviewId(Long reviewId, Integer pageSize, Integer pageNum) {
-        List<Comment> comments = commentDao.findByReviewId(reviewId, pageSize, pageNum);
+    public List<CommentDTO> findByReviewId(Long reviewId, Integer pageNum, Integer pageSize) {
+        List<Comment> comments = commentDao.findByReviewId(reviewId, pageNum, pageSize);
         setTimeAgo(comments);
         return commentMapper.toDTOList(comments);
     }

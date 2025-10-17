@@ -12,6 +12,8 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.models.Notification;
+import ar.edu.itba.paw.models.dtos.NotificationDTO;
 
 import java.time.LocalDateTime;
 
@@ -109,5 +111,16 @@ public class MergeUtils {
         setFieldIfNotNull(existingSong::setTitle, songDTO.getTitle());
         setFieldIfNotNull(existingSong::setDuration, songDTO.getDuration());
         setFieldIfNotNull(existingSong::setTrackNumber, songDTO.getTrackNumber());
+    }
+
+    // Notification fields merge
+    public static void mergeNotificationFields(Notification existingNotification, NotificationDTO notificationDTO) {
+        mergeBasicFields(existingNotification, notificationDTO);
+        existingNotification.setCreatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Notification existingNotification, NotificationDTO notificationDTO) {
+        setFieldIfNotNull(existingNotification::setMessage, notificationDTO.getMessage());
+        setFieldIfNotNull(existingNotification::setRead, notificationDTO.getIsRead());
     }
 }

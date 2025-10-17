@@ -59,7 +59,7 @@ public class ArtistController extends BaseController {
 
         if (search != null && !search.isEmpty()) return getArtistBySubstring(search, page, size);
 
-        List<ArtistDTO> artistDTOs = artistService.findPaginated(FilterType.FIRST, page, size);
+        List<ArtistDTO> artistDTOs = artistService.findPaginated(filter, page, size);
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
         Long totalCount = artistService.countAll();
         

@@ -76,15 +76,15 @@ public class NotificationJpaDao implements NotificationDao {
 
     @Override
     public List<Notification> findBySubstring(String substring, Integer page, Integer pageSize) {
-        // Buscar por mensaje o nombre de usuario que disparó la notificación
+        // Buscar por nombre de usuario que disparó la notificación
         Query nativeQuery = em.createNativeQuery(
-            "SELECT n.notification_id FROM notifications n " +
-            "LEFT JOIN cuser u ON n.trigger_user_id = u.user_id " +
-            "WHERE n.message LIKE :substring OR u.username LIKE :substring " +
-            "ORDER BY n.created_at DESC"
+            "SELECT DISTINCT n.notification_id FROM notifications n " +
+            "INNER JOIN cuser u ON n.trigger_user_id = u.id " +
+            "WHERE LOWER(u.username) LIKE LOWER(:sub) " +
+            "ORDER BY n.notification_id DESC"
         );
         
-        nativeQuery.setParameter("substring", "%" + substring + "%");
+        nativeQuery.setParameter("sub", "%" + substring + "%");
         nativeQuery.setFirstResult((page - 1) * pageSize);
         nativeQuery.setMaxResults(pageSize);
         

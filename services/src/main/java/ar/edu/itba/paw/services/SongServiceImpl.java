@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.dtos.SongDTO;
@@ -116,28 +117,29 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public SongDTO create(SongDTO songDTO) {
         LOGGER.info("Creating new song from DTO: {}", songDTO.getTitle());
-        Album album = albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + songDTO.getAlbumId() + " not found"));
-        Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), new Album(songDTO.getAlbumId()));
         song.setCreatedAt(LocalDateTime.now());
         song.setUpdatedAt(LocalDateTime.now());
         song.setRatingCount(0);
         song.setAvgRating(0d);
         songDao.create(song);
-        songDao.saveSongArtist(song, song.getAlbum().getArtist());
+        songDao.saveSongArtist(song, new Artist(songDTO.getArtistId()));
         LOGGER.info("Song created successfully with ID: {}", song.getId());
         return songMapper.toDTO(song);
     }
 
     @Override
     @Transactional
-    public Boolean createAll(List<SongDTO> songsDTO, Album album) {
-        LOGGER.info("Creating multiple songs for album: {}", album.getTitle());
+        public Boolean createAll(List<SongDTO> songsDTO, Album album) {
+            LOGGER.info("Creating multiple songs for album: {}", album.getId());
         for (SongDTO songDTO : songsDTO) {
+            songDTO.setAlbumId(album.getId());
+            songDTO.setArtistId(album.getArtist().getId());
             if (!songDTO.isDeleted()) {
                 create(songDTO);
-            } 
+            }
         }
-        LOGGER.info("All songs created successfully for album: {}", album.getTitle());
+        LOGGER.info("All songs created successfully for album: {}", album.getId());
         return true;
     }
 
@@ -158,6 +160,8 @@ public class SongServiceImpl implements SongService {
     public Boolean updateAll(List<SongDTO> songsDTO, Album album) {
         LOGGER.info("Updating multiple songs for album: {}", album.getTitle());
         for (SongDTO songDTO : songsDTO) {
+            songDTO.setAlbumId(album.getId());
+            songDTO.setArtistId(album.getArtist().getId());
             if (songDTO.getId() != 0) {
                 if (songDTO.isDeleted()) {
                     delete(songDTO.getId());

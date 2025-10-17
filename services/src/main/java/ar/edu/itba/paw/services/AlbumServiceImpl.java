@@ -150,14 +150,15 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional
-    public Boolean createAll(List<AlbumDTO> albumsDTO, Long artistId) {
-        LOGGER.info("Creating multiple albums for artist ID: {}", artistId);
+    public Boolean createAll(List<AlbumDTO> albumsDTO, Artist artist) {
+        LOGGER.info("Creating multiple albums for artist ID: {}", artist.getId());
         for (AlbumDTO albumDTO : albumsDTO) {
+            albumDTO.setArtistId(artist.getId());
             if (!albumDTO.isDeleted()) {
                 create(albumDTO);
             }
         }
-        LOGGER.info("All albums created successfully for artist ID: {}", artistId);
+        LOGGER.info("All albums created successfully for artist ID: {}", artist.getId());
         return true;
     }
 
@@ -166,9 +167,8 @@ public class AlbumServiceImpl implements AlbumService {
     public AlbumDTO update(AlbumDTO albumDTO) {
         LOGGER.info("Updating album with ID: {}", albumDTO.getId());
         Album album = albumDao.findById(albumDTO.getId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + albumDTO.getId() + " not found"));
-        album.setImage(imageService.findById(albumDTO.getImageId()));
+        if (albumDTO.getImageId() != null) album.setImage(imageService.findById(albumDTO.getImageId()));
         MergeUtils.mergeAlbumFields(album, albumDTO);
-
         album = albumDao.update(album);
         LOGGER.info("Album updated successfully");
 
@@ -181,9 +181,10 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional
-    public Boolean updateAll(List<AlbumDTO> albumsDTO, Long artistId) {
-        LOGGER.info("Updating multiple albums for artist ID: {}", artistId);
+    public Boolean updateAll(List<AlbumDTO> albumsDTO, Artist artist) {
+        LOGGER.info("Updating multiple albums for artist ID: {}", artist.getId());
         for (AlbumDTO albumDTO : albumsDTO) {
+            albumDTO.setArtistId(artist.getId());
             if (albumDTO.getId() != 0) {
                 if (albumDTO.isDeleted()) {
                     delete(albumDTO.getId());
@@ -196,7 +197,7 @@ public class AlbumServiceImpl implements AlbumService {
                 }
             }
         }
-        LOGGER.info("All albums updated successfully for artist ID: {}", artistId);
+        LOGGER.info("All albums updated successfully for artist ID: {}", artist.getId());
         return true;
     }
 

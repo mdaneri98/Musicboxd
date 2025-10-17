@@ -148,7 +148,7 @@ public class ArtistServiceImpl implements ArtistService {
 
         if (artistDTO.getAlbums() != null) {
             LOGGER.info("Creating albums for artist: {} (ID: {})", artist.getName(), artist.getId());
-            albumService.createAll(artistDTO.getAlbums(), artist.getId());
+            albumService.createAll(artistDTO.getAlbums(), artist);
         }
         return artistMapper.toDTO(artist);
     }
@@ -159,7 +159,7 @@ public class ArtistServiceImpl implements ArtistService {
         LOGGER.info("Updating artist from DTO: {} (ID: {})", artistDTO.getName(), artistDTO.getId());
 
         Artist artist = artistDao.findById(artistDTO.getId()).orElseThrow(() -> new ArtistNotFoundException("Artist with id " + artistDTO.getId() + " not found"));
-        artist.setImage(imageService.findById(artistDTO.getImageId()));
+        if (artistDTO.getImageId() != null) artist.setImage(imageService.findById(artistDTO.getImageId()));
         MergeUtils.mergeArtistFields(artist, artistDTO);
 
         artist = artistDao.update(artist);
@@ -167,7 +167,7 @@ public class ArtistServiceImpl implements ArtistService {
 
         if (artistDTO.getAlbums() != null) {
             LOGGER.info("Updating albums for artist: {} (ID: {})", artist.getName(), artist.getId());
-            albumService.updateAll(artistDTO.getAlbums(), artist.getId());
+            albumService.updateAll(artistDTO.getAlbums(), artist);
         }
         return artistMapper.toDTO(artist);
     }
