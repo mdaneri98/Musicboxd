@@ -3,10 +3,12 @@ package ar.edu.itba.paw.api.controller;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
 import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.api.utils.JwtUtils;
+import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.LoginRequestDTO;
 import ar.edu.itba.paw.models.dtos.LoginResponseDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.services.AuthService;
+import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +27,9 @@ public class AuthController extends BaseController {
     private AuthService authService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserResourceMapper userResourceMapper;
 
     @POST
@@ -32,6 +37,15 @@ public class AuthController extends BaseController {
     public Response login(@Valid LoginRequestDTO loginRequest) {
         LoginResponseDTO loginResponse = authService.login(loginRequest);
         return Response.ok(loginResponse).build();
+    }
+
+    @POST
+    @Path("/register")
+    public Response register(@Valid CreateUserDTO createUserDTO) {
+        UserDTO userDTO = userService.create(createUserDTO);
+        UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
+        
+        return Response.status(Response.Status.CREATED).entity(userResource).build();
     }
 
     @POST

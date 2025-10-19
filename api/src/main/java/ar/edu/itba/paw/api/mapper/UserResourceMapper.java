@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.api.mapper;
 
-import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.UserResource;
 import ar.edu.itba.paw.api.utils.linkManagers.UserLinkManager;
 
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +16,14 @@ public class UserResourceMapper implements ResourceMapper<UserDTO, UserResource>
     @Autowired
     private UserLinkManager userLinkManager;
 
+    @Override
     public UserResource toResource(UserDTO userDTO, String baseUrl) {
         UserResource resource = new UserResource(userDTO);
         userLinkManager.addUserLinks(resource, baseUrl, userDTO.getId());
         return resource;
     }
 
+    @Override
     public List<UserResource> toResourceList(List<UserDTO> userDTOs, String baseUrl) {
         return userDTOs.stream()
                 .map(userDTO -> toResource(userDTO, baseUrl))

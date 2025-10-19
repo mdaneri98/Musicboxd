@@ -79,6 +79,74 @@
 					]
 				},
 				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user account"
+					},
+					"response": [
+						{
+							"name": "Successful Registration",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/auth/register",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"data\": {\n    \"id\": 1,\n    \"username\": \"newuser\",\n    \"email\": \"newuser@example.com\",\n    \"name\": null,\n    \"bio\": null,\n    \"imageId\": null,\n    \"followersAmount\": 0,\n    \"followingAmount\": 0,\n    \"reviewsAmount\": 0,\n    \"createdAt\": \"2024-01-01T00:00:00\",\n    \"updatedAt\": \"2024-01-01T00:00:00\",\n    \"isVerified\": false,\n    \"isModerator\": false,\n    \"preferredLanguage\": \"en\",\n    \"preferredTheme\": \"light\",\n    \"hasFollowNotificationsEnabled\": true,\n    \"hasLikeNotificationsEnabled\": true,\n    \"hasCommentsNotificationsEnabled\": true,\n    \"hasReviewsNotificationsEnabled\": true\n  },\n  \"links\": [\n    {\n      \"rel\": \"self\",\n      \"href\": \"{{baseUrl}}/api/users/1\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
 					"name": "Refresh Token",
 					"request": {
 						"method": "POST",

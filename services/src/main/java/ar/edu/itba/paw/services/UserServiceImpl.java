@@ -121,32 +121,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO create(CreateUserDTO createUserDTO) {
-        //TODO: arregar este metodo. sacar el caso en el que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email.
         LOGGER.info("Creating new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
+
+        if (userDao.findByEmail(createUserDTO.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("User with email " + createUserDTO.getEmail() + " already exists");
+        }
+
         String hashedPassword = passwordEncoder.encode(createUserDTO.getPassword());
-
-        /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
-        Optional<User> emailOptUser = userDao.findByEmail(createUserDTO.getEmail());
-        Optional<User> usernameOptUser = userDao.findByUsername(createUserDTO.getUsername());
-
-        if (emailOptUser.isPresent()) {
-            if (emailOptUser.get().getUsername() == null){
-                User user = emailOptUser.get();
-                user.setUsername(createUserDTO.getUsername());
-                user.setPassword(createUserDTO.getPassword());
-                user.setEmail(createUserDTO.getEmail());
-                userDao.updateUser(user.getId(), user);
-                LOGGER.info("Updated existing user with email: {}", createUserDTO.getEmail());
-                return userMapper.toDTO(user);
-            } else {
-                LOGGER.warn("Attempt to create user with existing email: {}", createUserDTO.getEmail());
-                throw new UserAlreadyExistsException("El correo " + createUserDTO.getEmail() + " ya está en uso.");
-            }
-        }
-        if (usernameOptUser.isPresent()) {
-            LOGGER.warn("Attempt to create user with existing username: {}", createUserDTO.getUsername());
-            throw new UserAlreadyExistsException("El usuario " + createUserDTO.getUsername() + " ya está en uso.");
-        }
 
         Optional<User> userOpt = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword);
         if (userOpt.isPresent()) {

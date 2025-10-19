@@ -135,6 +135,7 @@ public class UserJpaDao implements UserDao {
     @Override
     public Optional<User> create(String username, String email, String password) {
         final User user = new User(username, password, email);
+        user.setImageId(1L);
         user.setPreferredLanguage("es");
         em.persist(user);
         return Optional.of(user);
