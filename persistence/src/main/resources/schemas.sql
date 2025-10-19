@@ -178,3 +178,13 @@ CREATE TABLE IF NOT EXISTS comment (
     FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE,
     FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS refresh_token (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(255) UNIQUE NOT NULL,
+    user_id INT NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    is_revoked BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES cuser(id) ON DELETE CASCADE
+);
