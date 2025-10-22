@@ -2,12 +2,12 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
-import ar.edu.itba.paw.api.resources.CollectionResource;
+import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
-import ar.edu.itba.paw.api.resources.UserResource;
+import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 

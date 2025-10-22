@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.api.utils.linkManagers;
+package ar.edu.itba.paw.api.models.links.managers;
 
-import ar.edu.itba.paw.api.resources.Resource;
+import ar.edu.itba.paw.api.models.resources.Resource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;

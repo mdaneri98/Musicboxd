@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.api.utils;
+package ar.edu.itba.paw.api.models.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.MediaType;

@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.api.resources;
+package ar.edu.itba.paw.api.models.resources;
 
 import ar.edu.itba.paw.models.dtos.NotificationDTO;
 

@@ -2,8 +2,8 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.CommentResourceMapper;
-import ar.edu.itba.paw.api.resources.CollectionResource;
-import ar.edu.itba.paw.api.resources.CommentResource;
+import ar.edu.itba.paw.api.models.resources.CollectionResource;
+import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CommentDTO;

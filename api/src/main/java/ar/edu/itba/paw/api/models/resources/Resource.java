@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.api.resources;
+package ar.edu.itba.paw.api.models.resources;
 
-import ar.edu.itba.paw.api.utils.Link;
+import ar.edu.itba.paw.api.models.links.Link;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
