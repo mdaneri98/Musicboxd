@@ -1,7 +1,11 @@
 package ar.edu.itba.paw.services.exception;
 
 public class AcknowledgementEmailException extends RuntimeException {
-    public AcknowledgementEmailException(String message, Throwable cause) {
-        super(message, cause);
+    public AcknowledgementEmailException(String email) {
+        super("Failed to send acknowledgement email to user: " + email);
+    }
+
+    public AcknowledgementEmailException(String email, Throwable cause) {
+        super("Failed to send acknowledgement email to user: " + email, cause);
     }
 }

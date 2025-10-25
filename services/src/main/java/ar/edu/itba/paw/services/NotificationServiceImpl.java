@@ -9,7 +9,7 @@ import ar.edu.itba.paw.persistence.NotificationDao;
 import ar.edu.itba.paw.services.mappers.NotificationMapper;
 import ar.edu.itba.paw.services.utils.TimeUtils;
 import ar.edu.itba.paw.services.utils.MergeUtils;
-import ar.edu.itba.paw.services.exception.NotificationNotFoundException;
+import ar.edu.itba.paw.services.exception.not_found.NotificationNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,7 +98,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO findById(Long id) {
         Notification notification = notificationDao.findById(id)
-                .orElseThrow(() -> new NotificationNotFoundException("Notification with id " + id + " not found"));
+                .orElseThrow(() -> new NotificationNotFoundException(id));
         return notificationMapper.toDTO(notification);
     }
 
@@ -134,7 +134,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     @Override
     public NotificationDTO update(NotificationDTO notificationDTO) {
-        Notification notification = notificationDao.findById(notificationDTO.getId()).orElseThrow(() -> new NotificationNotFoundException("Notification with id " + notificationDTO.getId() + " not found"));
+        Notification notification = notificationDao.findById(notificationDTO.getId()).orElseThrow(() -> new NotificationNotFoundException(notificationDTO.getId()));
         MergeUtils.mergeNotificationFields(notification, notificationDTO);
         Notification updatedNotification = notificationDao.update(notification);
         return notificationMapper.toDTO(updatedNotification);

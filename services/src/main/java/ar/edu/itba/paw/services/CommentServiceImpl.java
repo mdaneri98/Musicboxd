@@ -10,10 +10,10 @@ import ar.edu.itba.paw.persistence.ReviewDao;
 import java.util.List;
 import ar.edu.itba.paw.services.mappers.CommentMapper;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
-import ar.edu.itba.paw.services.exception.CommentNotFoundException;
+import ar.edu.itba.paw.services.exception.not_found.CommentNotFoundException;
 import ar.edu.itba.paw.persistence.UserDao;
-import ar.edu.itba.paw.services.exception.UserNotFoundException;
-import ar.edu.itba.paw.services.exception.ReviewNotFoundException;
+import ar.edu.itba.paw.services.exception.not_found.UserNotFoundException;
+import ar.edu.itba.paw.services.exception.not_found.ReviewNotFoundException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
@@ -50,18 +50,18 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDTO update(CommentDTO commentDTO) {
-        Comment comment = commentDao.findById(commentDTO.getId()).orElseThrow(() -> new CommentNotFoundException("Comment with id " + commentDTO.getId() + " not found"));
+        Comment comment = commentDao.findById(commentDTO.getId()).orElseThrow(() -> new CommentNotFoundException(commentDTO.getId()));
         MergeUtils.mergeCommentFields(comment, commentDTO);
         CommentDTO updatedCommentDTO = commentMapper.toDTO(commentDao.update(comment));
-        User user = userDao.findById(updatedCommentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + updatedCommentDTO.getUserId() + " not found"));
-        Review review = reviewDao.findById(updatedCommentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException("Review with id " + updatedCommentDTO.getReviewId() + " not found"));
+        User user = userDao.findById(updatedCommentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException(updatedCommentDTO.getUserId()));
+        Review review = reviewDao.findById(updatedCommentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException(updatedCommentDTO.getReviewId()));
         notificationService.notifyComment(review, user);
         return updatedCommentDTO;
     }
 
     @Override
     public CommentDTO findById(Long id) {
-        return commentMapper.toDTO(commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException("Comment with id " + id + " not found")));
+        return commentMapper.toDTO(commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException(id)));
     }
 
     @Override
@@ -77,8 +77,8 @@ public class CommentServiceImpl implements CommentService {
         if (commentDTO.getUserId() == null || commentDTO.getReviewId() == null) throw new IllegalArgumentException("User ID and review ID are required");
         Comment savedComment = commentDao.create(commentMapper.toEntity(commentDTO));
         updateReviewCommentAmount(commentDTO.getReviewId());
-        User user = userDao.findById(commentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException("User with id " + commentDTO.getUserId() + " not found"));
-        Review review = reviewDao.findById(commentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException("Review with id " + commentDTO.getReviewId() + " not found"));
+        User user = userDao.findById(commentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException(commentDTO.getUserId()));
+        Review review = reviewDao.findById(commentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException(commentDTO.getReviewId()));
         notificationService.notifyComment(review, user);
         return commentMapper.toDTO(savedComment);
     }
@@ -86,7 +86,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Boolean delete(Long id) {
-        Comment comment = commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException("Comment with id " + id + " not found"));
+        Comment comment = commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
         Boolean deleted = commentDao.delete(id);
         updateReviewCommentAmount(comment.getReview().getId());
         return deleted;

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import ar.edu.itba.paw.services.exception.AlbumNotFoundException;
+import ar.edu.itba.paw.services.exception.not_found.AlbumNotFoundException;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;
 import java.util.stream.Collectors;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
@@ -42,7 +42,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     @Transactional(readOnly = true)
     public AlbumDTO findById(Long id) {
-        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException("Album with id " + id + " not found"));
+        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
         album.setFormattedReleaseDate(TimeUtils.formatDate(album.getReleaseDate()));
         return albumMapper.toDTO(album);
     }
@@ -81,7 +81,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public boolean delete(long id) {
         LOGGER.info("Attempting to delete album with ID: {}", id);
-        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException("Album with id " + id + " not found"));
+        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
         List<Long> userIds = new ArrayList<>();
         albumDao.findReviewsByAlbumId(id).forEach(review -> userIds.add(review.getUser().getId()));
         albumDao.deleteReviewsFromAlbum(id);
@@ -105,7 +105,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     @Transactional
     public Boolean delete(Long id) {
-        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException("Album with id " + id + " not found"));
+        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
         List<Long> userIds = new ArrayList<>();
         albumDao.findReviewsByAlbumId(id).forEach(review -> userIds.add(review.getUser().getId()));
         albumDao.deleteReviewsFromAlbum(id);
@@ -166,7 +166,7 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public AlbumDTO update(AlbumDTO albumDTO) {
         LOGGER.info("Updating album with ID: {}", albumDTO.getId());
-        Album album = albumDao.findById(albumDTO.getId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + albumDTO.getId() + " not found"));
+        Album album = albumDao.findById(albumDTO.getId()).orElseThrow(() -> new AlbumNotFoundException(albumDTO.getId()));
         if (albumDTO.getImageId() != null) album.setImage(imageService.findById(albumDTO.getImageId()));
         MergeUtils.mergeAlbumFields(album, albumDTO);
         album = albumDao.update(album);

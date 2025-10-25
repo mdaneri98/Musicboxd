@@ -83,13 +83,19 @@
     </Subtask>
   </Task>
 
-  <Task name="Global_Exception_Handler" status="pending" priority="medium">
+  <Task name="Global_Exception_Handler" status="done" priority="medium">
     <Detail>Unificar manejo de errores y respuestas JSON estándar.</Detail>
-    <Subtask name="Crear_ControllerAdvice" status="pending">
-      <Detail>Implementar clase global con @ControllerAdvice y @ExceptionHandler.</Detail>
+    <Subtask name="Crear_ExceptionMappers" status="done">
+      <Detail>Implementar ExceptionMappers JAX-RS para cada tipo de excepción.</Detail>
+      <Note>ExceptionMappers creados: EntityNotFoundExceptionMapper, ConflictExceptionMapper, BadRequestExceptionMapper, EmailExceptionMapper, ValidationExceptionMapper, WebApplicationExceptionMapper, GlobalExceptionHandler. Todos configurados con @Provider y @Component para integración Jersey-Spring.</Note>
     </Subtask>
-    <Subtask name="Definir_error_schema" status="pending">
+    <Subtask name="Definir_error_schema" status="done">
       <Detail>Formato: timestamp, code, message, path.</Detail>
+      <Note>ErrorResponseDTO implementado con código, status, mensaje, path y validationErrors opcionales.</Note>
+    </Subtask>
+    <Subtask name="Configurar_Jersey_Scanning" status="done">
+      <Detail>Agregar paquetes de exception mappers al web.xml para que Jersey los detecte.</Detail>
+      <Note>web.xml actualizado para incluir ar.edu.itba.paw.api.exception.mapper y ar.edu.itba.paw.api.exception</Note>
     </Subtask>
   </Task>
 
