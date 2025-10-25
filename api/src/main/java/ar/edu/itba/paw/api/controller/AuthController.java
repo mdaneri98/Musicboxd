@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
-import ar.edu.itba.paw.api.models.UserResource;
+import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.api.utils.JwtUtils;
 import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.LoginRequestDTO;

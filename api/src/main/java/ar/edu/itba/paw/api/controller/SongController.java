@@ -7,6 +7,7 @@ import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
@@ -121,10 +122,10 @@ public class SongController extends BaseController {
     public Response getSongReviews(
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
-        // TODO: Obtener loggedUserId del contexto de seguridad
-        
+            @QueryParam("size") @DefaultValue("20") int size) {
+
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+
         List<ReviewDTO> reviews = reviewService.findSongReviewsPaginated(id, page, size, loggedUserId);
 
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());

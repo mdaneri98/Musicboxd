@@ -9,13 +9,16 @@ import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.Valid;
@@ -37,6 +40,9 @@ public class AlbumController extends BaseController {
 
     @Autowired
     private SongService songService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private AlbumResourceMapper albumResourceMapper;
@@ -122,9 +128,9 @@ public class AlbumController extends BaseController {
     public Response getAlbumReviews(
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
-        // TODO: Obtener loggedUserId del contexto de seguridad
+            @QueryParam("size") @DefaultValue("20") int size) {
+
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         
         List<ReviewDTO> reviews = reviewService.findAlbumReviewsPaginated(id, page, size, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());

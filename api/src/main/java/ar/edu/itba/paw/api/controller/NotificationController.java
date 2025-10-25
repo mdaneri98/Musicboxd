@@ -5,6 +5,7 @@ import ar.edu.itba.paw.api.mapper.NotificationResourceMapper;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.NotificationResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.NotificationDTO;
 import ar.edu.itba.paw.services.NotificationService;
@@ -34,47 +35,44 @@ public class NotificationController extends BaseController {
      * GET /api/notifications
      * Obtiene todas las notificaciones con paginación
      */
+    // @GET
+    // public Response getAllNotifications(
+    //         @QueryParam("search") String search,
+    //         @QueryParam("page") @DefaultValue("1") int page,
+    //         @QueryParam("size") @DefaultValue("20") int size,
+    //         @QueryParam("filter") @DefaultValue("RECENT") FilterType filter) {
+        
+    //     if (search != null && !search.isEmpty()) return getNotificationsBySubstring(search, page, size);
+        
+    //     List<NotificationDTO> notificationDTOs = notificationService.findPaginated(filter, page, size);
+    //     List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
+    //     Long totalCount = notificationService.countAll();
+        
+    //     CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
+    //             notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE);
+        
+    //     return buildResponse(collection);
+    // }
+
+    // private Response getNotificationsBySubstring(String substring, int page, int size) {
+    //     List<NotificationDTO> notificationDTOs = notificationService.findBySubstring(substring, page, size);
+    //     List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
+    //     Long totalCount = notificationService.countAll();
+        
+    //     CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
+    //             notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE);
+        
+    //     return buildResponse(collection);
+    // }
+
     @GET
-    public Response getAllNotifications(
-            @QueryParam("search") String search,
-            @QueryParam("userId") Long userId,
+    public Response getNotifications(
             @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("filter") @DefaultValue("RECENT") FilterType filter) {
-        
-        // Si se especifica userId, devolver notificaciones de ese usuario
-        if (userId != null) return getUserNotifications(userId, page, size);
-        
-        
-        // Si hay búsqueda por substring
-        if (search != null && !search.isEmpty()) return getNotificationsBySubstring(search, page, size);
-        
-        // Búsqueda paginada normal
-        List<NotificationDTO> notificationDTOs = notificationService.findPaginated(filter, page, size);
+            @QueryParam("size") @DefaultValue("20") int size) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        List<NotificationDTO> notificationDTOs = notificationService.getUserNotifications(loggedUserId, page, size);
         List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-        Long totalCount = notificationService.countAll();
-        
-        CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
-                notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE);
-        
-        return buildResponse(collection);
-    }
-
-    private Response getNotificationsBySubstring(String substring, int page, int size) {
-        List<NotificationDTO> notificationDTOs = notificationService.findBySubstring(substring, page, size);
-        List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-        Long totalCount = notificationService.countAll();
-        
-        CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
-                notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE);
-        
-        return buildResponse(collection);
-    }
-
-    private Response getUserNotifications(Long userId, int page, int size) {
-        List<NotificationDTO> notificationDTOs = notificationService.getUserNotifications(userId, page, size);
-        List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-        Long totalCount = notificationService.countByUserId(userId);
+        Long totalCount = notificationService.countByUserId(loggedUserId);
         
         CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
                 notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE);
@@ -125,10 +123,10 @@ public class NotificationController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.NOTIFICATIONS_READ_ALL)
-    public Response markAllAsRead(@QueryParam("userId") @DefaultValue("1") Long userId) {
-        // TODO: Obtener userId del contexto de seguridad
-        
-        notificationService.markAllAsRead(userId);
+    public Response markAllAsRead() {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+
+        notificationService.markAllAsRead(loggedUserId);
         return Response.ok()
                 .entity("{\"message\": \"All notifications marked as read\"}")
                 .build();
@@ -136,10 +134,9 @@ public class NotificationController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.NOTIFICATIONS_UNREAD_COUNT)
-    public Response getUnreadCount(@QueryParam("userId") @DefaultValue("1") Long userId) {
-        // TODO: Obtener userId del contexto de seguridad
-        
-        Integer unreadCount = notificationService.getUnreadCount(userId);
+    public Response getUnreadCount() {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Integer unreadCount = notificationService.getUnreadCount(loggedUserId);
         return Response.ok()
                 .entity("{\"unread_count\": " + unreadCount + "}")
                 .build();

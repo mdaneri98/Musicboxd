@@ -9,6 +9,7 @@ import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
@@ -83,9 +84,9 @@ public class ReviewController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getReview(@PathParam("id") Long id, @QueryParam("loggedUserId") @DefaultValue("23") Long loggedUserId) {
-        // TODO: Obtener loggedUserId del contexto de seguridad
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(id), getBaseUrl());
+    public Response getReview(@PathParam("id") Long id) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(loggedUserId), getBaseUrl());
         return buildResponse(reviewResource);
     }
 
@@ -124,7 +125,6 @@ public class ReviewController extends BaseController {
     @GET
     @Path(ApiUriConstants.REVIEW_LIKES)
     public Response getReviewLikes(@PathParam("id") Long reviewId, @QueryParam("page") @DefaultValue("1") int page, @QueryParam("size") @DefaultValue("20") int size) {
-        // TODO: Obtener userId del contexto de seguridad
         
         ReviewDTO reviewDTO = reviewService.findById(reviewId);
         List<UserDTO> userDTOs = reviewService.likedBy(reviewId, page, size);
@@ -138,28 +138,32 @@ public class ReviewController extends BaseController {
 
     @POST
     @Path(ApiUriConstants.REVIEW_LIKES)
-    public Response likeReview(@PathParam("id") Long reviewId) {
-        // TODO: Obtener userId del contexto de seguridad
-        long userId = 1L;
+        public Response likeReview(@PathParam("id") Long reviewId) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         
-        reviewService.createLike(userId, reviewId);
+        reviewService.createLike(loggedUserId, reviewId);
         return Response.ok().entity("{\"message\": \"Review liked successfully\"}").build();
     }
 
     @DELETE
     @Path(ApiUriConstants.REVIEW_LIKES)
     public Response unlikeReview(@PathParam("id") Long reviewId) {
-        // TODO: Obtener userId del contexto de seguridad
-        long userId = 1L;
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         
-        reviewService.removeLike(userId, reviewId);
+        reviewService.removeLike(loggedUserId, reviewId);
         return buildNoContentResponse();
     }
 
     @POST
     @Path(ApiUriConstants.REVIEW_BLOCK)
     public Response blockReview(@PathParam("id") Long reviewId) {
-        // TODO: Verificar que el usuario sea moderador
+
+        if (!SecurityContextUtils.isModerator()) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("You are not allowed to block this review")
+                    .build();
+        }
+
         reviewService.block(reviewId);
         return Response.ok().entity("{\"message\": \"Review blocked successfully\"}").build();
     }
@@ -167,7 +171,11 @@ public class ReviewController extends BaseController {
     @POST
     @Path(ApiUriConstants.REVIEW_UNBLOCK)
     public Response unblockReview(@PathParam("id") Long reviewId) {
-        // TODO: Verificar que el usuario sea moderador
+        if (!SecurityContextUtils.isModerator()) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("You are not allowed to unblock this review")
+                    .build();
+        }
         reviewService.unblock(reviewId);
         return Response.ok().entity("{\"message\": \"Review unblocked successfully\"}").build();
     }

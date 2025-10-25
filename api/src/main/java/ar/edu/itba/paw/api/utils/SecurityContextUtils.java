@@ -1,30 +1,29 @@
 package ar.edu.itba.paw.api.utils;
 
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.persistence.UserDao;
+import ar.edu.itba.paw.models.dtos.UserDTO;
+import ar.edu.itba.paw.services.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.Optional;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class SecurityContextUtils {
     
     /**
      * Get the current authenticated user from SecurityContext
-     * @param userDao the UserDao to fetch user details
+     * @param userService the UserService to fetch user details
      * @return Optional containing the current user, empty if not authenticated
      */
-    public static Optional<User> getCurrentUser(UserDao userDao) {
+    public static UserDTO getCurrentUser(UserService userService) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
         if (authentication != null && authentication.isAuthenticated() 
             && !"anonymousUser".equals(authentication.getPrincipal())) {
             
             String username = authentication.getName();
-            return userDao.findByUsername(username);
+            return userService.findByUsername(username);
         }
-        
-        return Optional.empty();
+
+        return null;
     }
     
     /**
@@ -45,6 +44,17 @@ public class SecurityContextUtils {
         }
         
         return null;
+    }
+
+    /**
+     * Check if current user is moderator
+     * @return true if user is moderator
+     */
+    public static boolean isModerator() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.isAuthenticated() 
+            && !"anonymousUser".equals(authentication.getPrincipal())
+            && authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MODERATOR")); // check if this string is correct
     }
     
     /**

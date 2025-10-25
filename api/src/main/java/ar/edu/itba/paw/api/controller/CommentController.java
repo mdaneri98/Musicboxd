@@ -5,6 +5,7 @@ import ar.edu.itba.paw.api.mapper.CommentResourceMapper;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
 import ar.edu.itba.paw.services.CommentService;
@@ -60,7 +61,8 @@ public class CommentController extends BaseController {
 
     @POST
     public Response createComment(@Valid CommentDTO commentDTO) {
-        // TODO: Obtener userId del contexto de seguridad
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        commentDTO.setUserId(loggedUserId);
         CommentDTO responseDTO = commentService.create(commentDTO);
         CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(commentResource);
@@ -77,7 +79,6 @@ public class CommentController extends BaseController {
     @DELETE
     @Path(ApiUriConstants.ID)
     public Response deleteComment(@PathParam("id") Long id) {
-        // TODO: Verificar que el usuario logueado sea el dueño del comentario o moderador
         commentService.delete(id);
         return buildNoContentResponse();
     }

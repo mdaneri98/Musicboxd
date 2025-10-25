@@ -7,6 +7,7 @@ import ar.edu.itba.paw.api.models.resources.ArtistResource;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
@@ -114,10 +115,10 @@ public class ArtistController extends BaseController {
     public Response getArtistReviews(
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
-        // TODO: Obtener loggedUserId del contexto de seguridad
-        
+            @QueryParam("size") @DefaultValue("20") int size) {
+
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+
         List<ReviewDTO> reviews = reviewService.findArtistReviewsPaginated(id, page, size, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         Long totalCount = reviewService.countAll();
@@ -146,9 +147,9 @@ public class ArtistController extends BaseController {
     public Response getArtistAlbums(
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
-        // TODO: Obtener loggedUserId del contexto de seguridad
+            @QueryParam("size") @DefaultValue("20") int size) {
+
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
 
         List<AlbumDTO> albums = albumService.findByArtistId(id);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
