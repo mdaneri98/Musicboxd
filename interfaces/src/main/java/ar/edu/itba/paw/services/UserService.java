@@ -28,7 +28,7 @@ public interface UserService{
     Boolean isArtistFavorite(Long userId, Long albumId);
     Boolean isSongFavorite(Long userId, Long albumId);
 
-    UserDTO updateUser(Long userId, UserDTO user);
+    UserDTO updateUser(UserDTO user);
     Boolean changePassword(Long userId, String newPassword);
 
     Integer deleteById(Long id);
@@ -61,5 +61,8 @@ public interface UserService{
     Boolean removeFavoriteSong(Long userId, Long songId);
     Integer getFavoriteSongsCount(Long userId);
     List<UserDTO> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize);
+
+    Void validateUsernameUniqueness(Long userId, String username);
+    Void validateEmailUniqueness(Long userId, String email);
 
 }

@@ -25,7 +25,7 @@ public class ReviewDTO {
 
     @NotNull(message = "Rating is required")
     @Min(value = 1, message = "Rating must be at least 1")
-    @Max(value = 10, message = "Rating must not exceed 10")
+    @Max(value = 5, message = "Rating must not exceed 5")
     private Integer rating;
 
     private LocalDateTime createdAt;
@@ -39,9 +39,13 @@ public class ReviewDTO {
     private Integer commentAmount;
 
     // Campos polimórficos para el item relacionado
+    @NotNull(message = "Item type is required")
     private String itemType; 
+    @NotNull(message = "Item ID is required")
     private Long itemId;
+    @NotNull(message = "Item name is required")
     private String itemName;
+    @NotNull(message = "Item image ID is required")
     private Long itemImageId;
 
     public ReviewDTO() {}

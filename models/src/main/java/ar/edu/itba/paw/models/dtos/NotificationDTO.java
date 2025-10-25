@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models.dtos;
 
 import java.time.LocalDateTime;
+import ar.edu.itba.paw.models.Notification;
 
 public class NotificationDTO {
 
@@ -38,6 +39,9 @@ public class NotificationDTO {
     }
 
     public void setType(String type) {
+        if(!type.equals(Notification.NotificationType.LIKE.name()) && !type.equals(Notification.NotificationType.COMMENT.name()) && !type.equals(Notification.NotificationType.FOLLOW.name()) && !type.equals(Notification.NotificationType.NEW_REVIEW.name())) {
+            throw new IllegalArgumentException("Invalid notification type");
+        }
         this.type = type;
     }
 

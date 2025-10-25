@@ -9,7 +9,7 @@ import java.util.List;
 public interface ArtistDao extends CrudDao<Artist> {
 
     List<Artist> findBySongId(Long id);
-    List<Artist> findByNameContaining(String sub);
+    List<Artist> findByNameContaining(String sub, Integer page, Integer size);
 
     Boolean updateRating(Long artistId, Double newRating, Integer newRatingAmount);
     Boolean hasUserReviewed(Long userId, Long artistId);
@@ -17,5 +17,8 @@ public interface ArtistDao extends CrudDao<Artist> {
     Boolean deleteReviewsFromArtist(Long artistId);
 
     List<ArtistReview> findReviewsByArtistId(Long artistId);
+    
+    // Count methods for pagination
+    Long countAll();
 }
 

@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.FilterType;
+
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -23,7 +25,7 @@ public class CommentJpaDao implements CommentDao {
     }
 
     @Override
-    public List<Comment> findByReviewId(Long reviewId, Integer pageSize, Integer offset) {
+    public List<Comment> findByReviewId(Long reviewId, Integer pageSize, Integer pageNum) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT id FROM comment " +
@@ -31,8 +33,8 @@ public class CommentJpaDao implements CommentDao {
                 "ORDER BY created_at DESC");
         nativeQuery.setParameter("reviewId", reviewId);
         nativeQuery.setMaxResults(pageSize);
-        nativeQuery.setFirstResult(offset);
-        
+        nativeQuery.setFirstResult((pageNum - 1) * pageSize);
+         
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> commentIds = rawResults.stream()
@@ -53,7 +55,7 @@ public class CommentJpaDao implements CommentDao {
     }
 
     @Override
-    public Comment save(Comment comment) {
+    public Comment create(Comment comment) {
         if (comment.getId() == null) {
             em.persist(comment);
             return comment;
@@ -62,11 +64,90 @@ public class CommentJpaDao implements CommentDao {
     }
 
     @Override
-    public Void deleteById(Long id) {
+    public Boolean delete(Long id) {
         Comment comment = em.find(Comment.class, id);
         if (comment != null) {
             em.remove(comment);
+            return true;
         }
-        return null;
+        return false;
+    }
+
+    @Override
+    public Comment update(Comment comment) {
+        return em.merge(comment);
+    }
+
+    @Override
+    public List<Comment> findAll() {
+        return em.createQuery("FROM Comment", Comment.class).getResultList();
+    }
+
+    @Override
+    public List<Comment> findPaginated(FilterType filter, Integer page, Integer pageSize) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        String nativeSQL = "SELECT c.id FROM comment c " +
+                          filter.getFilter();
+
+        Query nativeQuery = em.createNativeQuery(nativeSQL)
+            .setFirstResult((page - 1) * pageSize)
+            .setMaxResults(pageSize);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> commentIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(java.util.stream.Collectors.toList());
+        
+        if (commentIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
+        String entityQueryStr = "SELECT c FROM Comment c WHERE c.id IN :ids " +
+        filter.getFilter();
+        
+        return em.createQuery(entityQueryStr, Comment.class)
+            .setParameter("ids", commentIds)
+            .getResultList();
+    }
+
+    @Override
+    public Long countAll() {
+        Query query = em.createQuery("SELECT COUNT(c) FROM Comment c");
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long countByReviewId(Long reviewId) {
+        Query query = em.createQuery("SELECT COUNT(c) FROM Comment c WHERE c.review.id = :reviewId");
+        query.setParameter("reviewId", reviewId);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public List<Comment> findBySubstring(String substring, Integer page, Integer size) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT id FROM comment WHERE content LIKE :substring ORDER BY created_at DESC");
+        nativeQuery.setParameter("substring", "%" + substring + "%");
+        nativeQuery.setMaxResults(size);
+        nativeQuery.setFirstResult((page - 1) * size);
+        
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> commentIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(java.util.stream.Collectors.toList());
+
+        if (commentIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<Comment> query = em.createQuery(
+            "FROM Comment c WHERE c.id IN :ids ORDER BY c.createdAt DESC", Comment.class);
+        query.setParameter("ids", commentIds);
+        return query.getResultList();
     }
 }

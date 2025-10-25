@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services.mappers;
 
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,7 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setBio(user.getBio());
-        dto.setImageId(user.getImageId());
+        dto.setImageId(user.getImage().getId());
         dto.setFollowersAmount(user.getFollowersAmount());
         dto.setFollowingAmount(user.getFollowingAmount());
         dto.setReviewsAmount(user.getReviewAmount());
@@ -57,7 +56,6 @@ public class UserMapper {
 
         User user = new User();
         user.setId(dto.getId());
-        user.setImageId(dto.getImageId());
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setName(dto.getName());

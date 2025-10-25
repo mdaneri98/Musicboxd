@@ -3,9 +3,6 @@ package ar.edu.itba.paw.services.mappers;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.reviews.Review;
 import org.springframework.stereotype.Component;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
-import ar.edu.itba.paw.models.reviews.ArtistReview;
-import ar.edu.itba.paw.models.reviews.SongReview;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +31,7 @@ public class ReviewMapper {
         dto.setItemType(review.getItemType());
         dto.setItemId(review.getItemId());
         dto.setItemName(review.getItemName());
-        dto.setItemImageId(review.getItemImage() != null ? review.getItemImage().getId() : null);
+        dto.setItemImageId(review.getItemImage().getId());
 
         return dto;
     }

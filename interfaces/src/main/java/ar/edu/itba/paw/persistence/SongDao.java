@@ -9,7 +9,7 @@ public interface SongDao extends CrudDao<Song> {
 
     List<Song> findByArtistId(Long id, Integer pageNum, Integer pageSize);
     List<Song> findByAlbumId(Long id);
-    List<Song> findByTitleContaining(String sub);
+    List<Song> findByTitleContaining(String sub, Integer pageSize, Integer pageNum);
 
     Integer saveSongArtist(Song song, Artist artist);
     Boolean updateRating(Long songId, Double newRating, Integer newRatingAmount);
@@ -17,5 +17,8 @@ public interface SongDao extends CrudDao<Song> {
 
     Boolean deleteReviewsFromSong(Long songId);
     List<SongReview> findReviewsBySongId(Long songId);
+    
+    // Count methods for pagination
+    Long countAll();
 }
 

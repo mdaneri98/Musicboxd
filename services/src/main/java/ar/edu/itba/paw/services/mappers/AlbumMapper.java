@@ -3,7 +3,6 @@ package ar.edu.itba.paw.services.mappers;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,5 +67,6 @@ public class AlbumMapper {
                 .map(this::toEntity)
                 .collect(Collectors.toList());
     }
+
 }
 

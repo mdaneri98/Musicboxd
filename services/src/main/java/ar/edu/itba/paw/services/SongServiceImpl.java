@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.persistence.SongDao;
 import ar.edu.itba.paw.services.utils.TimeUtils;
@@ -21,6 +21,7 @@ import ar.edu.itba.paw.services.exception.SongNotFoundException;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
 import java.util.stream.Collectors;
+import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service 
 public class SongServiceImpl implements SongService {
@@ -29,12 +30,14 @@ public class SongServiceImpl implements SongService {
     private final AlbumDao albumDao;
     private final UserService userService;
     private final SongMapper songMapper;
+    private final ReviewMapper reviewMapper;
 
-    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService, SongMapper songMapper) {
+    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService, SongMapper songMapper, ReviewMapper reviewMapper) {
         this.songDao = songDao;
         this.albumDao = albumDao;
         this.userService = userService;
         this.songMapper = songMapper;
+        this.reviewMapper = reviewMapper;
     }
 
     @Override
@@ -56,8 +59,8 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findByTitleContaining(String sub) {
-        List<Song> songs = songDao.findByTitleContaining(sub);
+    public List<SongDTO> findByTitleContaining(String sub, Integer pageSize, Integer pageNum) {
+        List<Song> songs = songDao.findByTitleContaining(sub, pageSize, pageNum);
         return songMapper.toDTOList(songs);
     }
 
@@ -102,7 +105,7 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> findReviewsBySongId(Long songId) {
-        return songDao.findReviewsBySongId(songId).stream().map(SongReview::toDTO).collect(Collectors.toList());
+        return songDao.findReviewsBySongId(songId).stream().map(reviewMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -114,28 +117,29 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public SongDTO create(SongDTO songDTO) {
         LOGGER.info("Creating new song from DTO: {}", songDTO.getTitle());
-        Album album = albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + songDTO.getAlbumId() + " not found"));
-        Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+        Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), new Album(songDTO.getAlbumId()));
         song.setCreatedAt(LocalDateTime.now());
         song.setUpdatedAt(LocalDateTime.now());
         song.setRatingCount(0);
         song.setAvgRating(0d);
         songDao.create(song);
-        songDao.saveSongArtist(song, song.getAlbum().getArtist());
+        songDao.saveSongArtist(song, new Artist(songDTO.getArtistId()));
         LOGGER.info("Song created successfully with ID: {}", song.getId());
         return songMapper.toDTO(song);
     }
 
     @Override
     @Transactional
-    public Boolean createAll(List<SongDTO> songsDTO, Album album) {
-        LOGGER.info("Creating multiple songs for album: {}", album.getTitle());
+        public Boolean createAll(List<SongDTO> songsDTO, Album album) {
+            LOGGER.info("Creating multiple songs for album: {}", album.getId());
         for (SongDTO songDTO : songsDTO) {
+            songDTO.setAlbumId(album.getId());
+            songDTO.setArtistId(album.getArtist().getId());
             if (!songDTO.isDeleted()) {
                 create(songDTO);
             }
         }
-        LOGGER.info("All songs created successfully for album: {}", album.getTitle());
+        LOGGER.info("All songs created successfully for album: {}", album.getId());
         return true;
     }
 
@@ -144,12 +148,8 @@ public class SongServiceImpl implements SongService {
     public SongDTO update(SongDTO songDTO) {
         LOGGER.info("Updating song with ID: {}", songDTO.getId());
         Song song = songDao.findById(songDTO.getId()).orElseThrow(() -> new SongNotFoundException("Song with id " + songDTO.getId() + " not found"));
-        Album album = albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + songDTO.getAlbumId() + " not found"));
-        song.setTitle(songDTO.getTitle());
-        song.setDuration(songDTO.getDuration());
-        song.setTrackNumber(songDTO.getTrackNumber());
-        song.setAlbum(album);
-        song.setUpdatedAt(LocalDateTime.now());
+        song.setAlbum(albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + songDTO.getAlbumId() + " not found")));
+        MergeUtils.mergeSongFields(song, songDTO);
         song = songDao.update(song);
         LOGGER.info("Song updated successfully");
         return songMapper.toDTO(song);
@@ -160,6 +160,8 @@ public class SongServiceImpl implements SongService {
     public Boolean updateAll(List<SongDTO> songsDTO, Album album) {
         LOGGER.info("Updating multiple songs for album: {}", album.getTitle());
         for (SongDTO songDTO : songsDTO) {
+            songDTO.setAlbumId(album.getId());
+            songDTO.setArtistId(album.getArtist().getId());
             if (songDTO.getId() != 0) {
                 if (songDTO.isDeleted()) {
                     delete(songDTO.getId());
@@ -186,5 +188,11 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public Boolean hasUserReviewed(Long userId, Long songId) {
         return songDao.hasUserReviewed(userId, songId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long countAll() {
+        return songDao.countAll();
     }
 }

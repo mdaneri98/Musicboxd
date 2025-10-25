@@ -3,9 +3,9 @@ package ar.edu.itba.paw.api.controller;
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
 import ar.edu.itba.paw.api.mapper.SongResourceMapper;
-import ar.edu.itba.paw.api.models.CollectionResource;
-import ar.edu.itba.paw.api.models.ReviewResource;
-import ar.edu.itba.paw.api.models.SongResource;
+import ar.edu.itba.paw.api.models.resources.CollectionResource;
+import ar.edu.itba.paw.api.models.resources.ReviewResource;
+import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
@@ -43,27 +43,29 @@ public class SongController extends BaseController {
     @GET
     public Response getAllSongs(
             @QueryParam("search") String search,
-            @QueryParam("artistId") Long artistId,
-            @QueryParam("albumId") Long albumId,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
-        
+
+        if (search != null && !search.isEmpty()) return getSongBySubstring(search, page, size);
+
         List<SongDTO> songDTOs = songService.findPaginated(filter, page, size);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
+        Long totalCount = songService.countAll();
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, getBaseUrl(), ApiUriConstants.SONGS_BASE);
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
         
         return buildResponse(collection);
     }
 
-    @GET
-    @Path(ApiUriConstants.ID)
-    public Response getSong(@PathParam("id") Long id) {
-        SongDTO songDTO = songService.findById(id);
-        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
-        return buildResponse(songResource);
+    private Response getSongBySubstring(String substring, int page, int size) {
+        List<SongDTO> songDTOs = songService.findByTitleContaining(substring, page, size);
+        List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
+        Long totalCount = songService.countAll();
+        CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
+        return buildResponse(collection);
     }
 
     @POST
@@ -79,6 +81,14 @@ public class SongController extends BaseController {
         SongDTO responseDTO = songService.create(songDTO);
         SongResource songResource = songResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(songResource);
+    }
+
+    @GET
+    @Path(ApiUriConstants.ID)
+    public Response getSong(@PathParam("id") Long id) {
+        SongDTO songDTO = songService.findById(id);
+        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
+        return buildResponse(songResource);
     }
 
     @PUT
@@ -112,17 +122,30 @@ public class SongController extends BaseController {
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("loggedUserId") @DefaultValue("23") Long loggedUserId) {
+            @QueryParam("loggedUserId") @DefaultValue("1") Long loggedUserId) {
         // TODO: Obtener loggedUserId del contexto de seguridad
         
         List<ReviewDTO> reviews = reviewService.findSongReviewsPaginated(id, page, size, loggedUserId);
 
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
-        
+        Long totalCount = reviewService.countAll();
+                
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                    reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
         
         return buildResponse(collection);
+    }
+
+    @POST
+    @Path(ApiUriConstants.SONG_REVIEWS)
+    public Response createSongReview(
+            @PathParam("id") Long id,
+            @Valid ReviewDTO reviewDTO) {
+        reviewDTO.setItemId(id);
+        reviewDTO.setItemType("Song");
+        ReviewDTO responseDTO = reviewService.create(reviewDTO);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildResponse(reviewResource);
     }
 }
 

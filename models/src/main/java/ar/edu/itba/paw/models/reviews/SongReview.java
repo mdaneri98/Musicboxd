@@ -1,12 +1,9 @@
 package ar.edu.itba.paw.models.reviews;
 
-import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
 
-import java.util.List;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -65,25 +62,4 @@ public class SongReview extends Review {
     public void setSong(Song song) {
         this.song = song;
     }
-
-    public ReviewDTO toDTO() {
-        ReviewDTO reviewDTO = new ReviewDTO();
-        reviewDTO.setId(getId());
-        reviewDTO.setUserId(getUser().getId());
-        reviewDTO.setUsername(getUser().getUsername());
-        reviewDTO.setTitle(getTitle());
-        reviewDTO.setDescription(getDescription());
-        reviewDTO.setRating(getRating());
-        reviewDTO.setCreatedAt(getCreatedAt());
-        reviewDTO.setLikes(getLikes());
-        reviewDTO.setIsBlocked(isBlocked());
-        reviewDTO.setCommentAmount(getCommentAmount());
-        reviewDTO.setItemType("Song");
-        reviewDTO.setItemId(song.getId());
-        reviewDTO.setItemName(song.getTitle());
-        reviewDTO.setItemImageId(song.getAlbum().getImage().getId());
-        return reviewDTO;
-    }
-
-
 }

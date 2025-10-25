@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface ReviewDao extends CrudDao<Review> {
 
+    List<Review> findBySubstring(String substring, Integer page, Integer size);
+
     // Métodos específicos para ArtistReview
     Optional<ArtistReview> findArtistReviewById(Long id);
     Optional<ArtistReview> findArtistReviewByUserId(Long userId, Long artistId);
@@ -51,4 +53,7 @@ public interface ReviewDao extends CrudDao<Review> {
     Void unblock(Long reviewId);
 
     Void updateCommentAmount(Long reviewId);
+    
+    // Count methods for pagination
+    Long countAll();
 }

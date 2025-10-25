@@ -230,25 +230,4 @@ public class Album {
     public void setFormattedReleaseDate(String formattedReleaseDate) {
         this.formattedReleaseDate = formattedReleaseDate;
     }
-
-    // Método para convertir a JSON
-    public String toJson() {
-        StringBuilder json = new StringBuilder();
-        json.append("{");
-        json.append("\"type\":\"").append("album").append("\",");
-        json.append("\"id\":").append(id).append(",");
-        json.append("\"name\":\"").append(title).append("\",");
-        json.append("\"genre\":\"").append(genre).append("\",");
-        json.append("\"releaseDate\":\"").append(releaseDate != null ? releaseDate.toString() : null).append("\",");
-        json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
-        json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"imgId\":").append(image.getId()).append(",");
-
-        // Convertir el artista a JSON si no es nulo
-        json.append("\"artist\":").append(artist != null ? artist.toJson() : null);
-
-        json.append("}");
-        return json.toString();
-    }
-
 }

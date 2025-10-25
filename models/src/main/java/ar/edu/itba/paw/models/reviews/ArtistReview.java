@@ -3,7 +3,6 @@ package ar.edu.itba.paw.models.reviews;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -62,24 +61,5 @@ public class ArtistReview extends Review {
 
     public void setArtist(Artist artist) {
         this.artist = artist;
-    }
-
-    public ReviewDTO toDTO() {
-        ReviewDTO reviewDTO = new ReviewDTO();
-        reviewDTO.setId(getId());
-        reviewDTO.setUserId(getUser().getId());
-        reviewDTO.setUsername(getUser().getUsername());
-        reviewDTO.setTitle(getTitle());
-        reviewDTO.setDescription(getDescription());
-        reviewDTO.setRating(getRating());
-        reviewDTO.setCreatedAt(getCreatedAt());
-        reviewDTO.setLikes(getLikes());
-        reviewDTO.setIsBlocked(isBlocked());
-        reviewDTO.setCommentAmount(getCommentAmount());
-        reviewDTO.setItemType("Artist");
-        reviewDTO.setItemId(artist.getId());
-        reviewDTO.setItemName(artist.getName());
-        reviewDTO.setItemImageId(artist.getImage().getId());
-        return reviewDTO;
     }
 }

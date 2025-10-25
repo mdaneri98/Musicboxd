@@ -2,8 +2,8 @@ package ar.edu.itba.paw.models.reviews;
 
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -60,6 +60,10 @@ public abstract class Review {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     List<User> likedBy;
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
+
 
 
 
@@ -131,11 +135,11 @@ public abstract class Review {
         this.id = id;
     }
 
-    public boolean isLiked() {
+    public Boolean isLiked() {
         return isLiked;
     }
 
-    public void setLiked(boolean liked) {
+    public void setLiked(Boolean liked) {
         isLiked = liked;
     }
 
@@ -204,25 +208,5 @@ public abstract class Review {
 
     public void setTimeAgo(String timeAgo) {
         this.timeAgo = timeAgo;
-    }
-
-    public ReviewDTO toDTO() {
-        ReviewDTO reviewDTO = new ReviewDTO();
-        reviewDTO.setId(getId());
-        reviewDTO.setUserId(getUser().getId());
-        reviewDTO.setUsername(getUser().getUsername());
-        reviewDTO.setTitle(getTitle());
-        reviewDTO.setDescription(getDescription());
-        reviewDTO.setRating(getRating());
-        reviewDTO.setCreatedAt(getCreatedAt());
-        reviewDTO.setLikes(getLikes());
-        reviewDTO.setIsLiked(isLiked());
-        reviewDTO.setIsBlocked(isBlocked());
-        reviewDTO.setCommentAmount(getCommentAmount());
-        reviewDTO.setItemType(getItemType());
-        reviewDTO.setItemId(getItemId());
-        reviewDTO.setItemName(getItemName());
-        reviewDTO.setItemImageId(getItemImage().getId());
-        return reviewDTO;
     }
 }

@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.mapper;
 
-import ar.edu.itba.paw.api.models.ReviewResource;
-import ar.edu.itba.paw.api.utils.linkManagers.ReviewLinkManager;
+import ar.edu.itba.paw.api.models.resources.ReviewResource;
+import ar.edu.itba.paw.api.models.links.managers.ReviewLinkManager;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

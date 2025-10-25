@@ -34,9 +34,7 @@ public class AlbumDTO {
 
     private List<SongDTO> songs;
 
-    private ImageDTO image;
-
-    private boolean deleted;
+    private Boolean isDeleted;
 
     public AlbumDTO() {}
 
@@ -136,19 +134,14 @@ public class AlbumDTO {
         this.songs = songs;
     }
 
-    public ImageDTO getImage() {
-        return image;
+    public Boolean isDeleted() {
+        if (isDeleted == null) {
+            return false;
+        }
+        return isDeleted;
     }
 
-    public void setImage(ImageDTO image) {
-        this.image = image;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

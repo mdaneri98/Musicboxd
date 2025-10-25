@@ -1,9 +1,8 @@
 package ar.edu.itba.paw.api.mapper;
 
-import ar.edu.itba.paw.api.models.UserResource;
-import ar.edu.itba.paw.api.utils.linkManagers.UserLinkManager;
-
 import ar.edu.itba.paw.models.dtos.UserDTO;
+import ar.edu.itba.paw.api.models.resources.UserResource;
+import ar.edu.itba.paw.api.models.links.managers.UserLinkManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

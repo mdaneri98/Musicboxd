@@ -2,12 +2,12 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
-import ar.edu.itba.paw.api.models.CollectionResource;
+import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
-import ar.edu.itba.paw.api.models.UserResource;
+import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,10 +37,22 @@ public class UserController extends BaseController {
             @QueryParam("size") @DefaultValue("20") int size,
             @QueryParam("search") String search,
             @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+
+        if (search != null && !search.isEmpty()) return getUserBySubstring(search, page, size);
+        
         List<UserDTO> users = userService.findPaginated(filter, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, userService.countUsers(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+        return buildResponse(collection);
+    }
+
+    private Response getUserBySubstring(String substring, int page, int size) {
+        List<UserDTO> users = userService.findByUsernameContaining(substring, page, size);
+        List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
+        Long totalCount = userService.countUsers();
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
         return buildResponse(collection);
     }
 
@@ -64,7 +76,8 @@ public class UserController extends BaseController {
     @PUT
     @Path(ApiUriConstants.ID)
     public Response updateUser(@PathParam("id") Long userId, @Valid UserDTO userDTO) {
-        UserDTO user = userService.updateUser(userId, userDTO);
+        userDTO.setId(userId);
+        UserDTO user = userService.updateUser(userDTO);
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
 
         return buildResponse(userResource);

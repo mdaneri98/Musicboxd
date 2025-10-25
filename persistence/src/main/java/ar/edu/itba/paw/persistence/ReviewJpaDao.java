@@ -39,6 +39,7 @@ public class ReviewJpaDao implements ReviewDao {
         Review review = em.find(Review.class, id);
         if (review != null) {
             em.remove(review);
+            em.flush();
             return true;
         }
         return false;
@@ -452,14 +453,14 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
-    public List<Review> findPaginated(FilterType filterType, Integer limit, Integer offset) {
+    public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         String nativeSQL = "SELECT r.id FROM review r WHERE isblocked = false " +
                           filterType.getFilter();
 
         Query nativeQuery = em.createNativeQuery(nativeSQL)
-            .setFirstResult(offset)
-            .setMaxResults(limit);
+            .setFirstResult((page - 1) * pageSize)
+            .setMaxResults(pageSize);
         
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
@@ -496,6 +497,41 @@ public class ReviewJpaDao implements ReviewDao {
         updateQuery.setParameter("reviewId", reviewId);
         updateQuery.executeUpdate();
         return null;
+    }
+
+    @Override
+    public Long countAll() {
+        Query query = em.createQuery("SELECT COUNT(r) FROM Review r WHERE r.isBlocked = false");
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public List<Review> findBySubstring(String substring, Integer page, Integer size) {
+        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT r.id FROM review r WHERE r.title LIKE :substring AND r.isBlocked = false ORDER BY r.createdAt DESC"
+        );
+        nativeQuery.setParameter("substring", "%" + substring + "%");
+        nativeQuery.setFirstResult((page - 1) * size);
+        nativeQuery.setMaxResults(size);
+
+        @SuppressWarnings("unchecked")
+        List<Object> rawResults = nativeQuery.getResultList();
+        List<Long> reviewIds = rawResults.stream()
+                .map(n -> ((Number)n).longValue())
+                .collect(Collectors.toList());
+        
+        if (reviewIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Query 2: JPQL para obtener entidades completas
+        TypedQuery<Review> query = em.createQuery(
+                "FROM Review r WHERE r.id IN :ids ORDER BY r.createdAt DESC",
+                Review.class
+        );
+        query.setParameter("ids", reviewIds);
+        return query.getResultList();
     }
 
 }

@@ -24,6 +24,7 @@ public class ApiUriConstants {
     /* ARTISTS */
     public static final String ARTISTS_BASE = API_BASE + "/artists";
     public static final String ARTIST_REVIEWS = ID + "/reviews";
+    public static final String ARTIST_ALBUMS = ID + "/albums";
 
     /* ALBUMS */
     public static final String ALBUMS_BASE = API_BASE + "/albums";
@@ -46,5 +47,11 @@ public class ApiUriConstants {
 
     /* IMAGES */
     public static final String IMAGES_BASE = API_BASE + "/images";
+
+    /* NOTIFICATIONS */
+    public static final String NOTIFICATIONS_BASE = API_BASE + "/notifications";
+    public static final String NOTIFICATION_READ = ID + "/read";
+    public static final String NOTIFICATIONS_READ_ALL = "/read-all";
+    public static final String NOTIFICATIONS_UNREAD_COUNT = "/unread-count";
 
 }

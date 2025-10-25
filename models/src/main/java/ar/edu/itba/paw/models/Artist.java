@@ -186,19 +186,4 @@ public class Artist {
         return songs;
     }
 
-    // Método para convertir a JSON
-    public String toJson() {
-        StringBuilder json = new StringBuilder();
-        json.append("{");
-        json.append("\"type\":\"").append("artist").append("\",");
-        json.append("\"id\":").append(id).append(",");
-        json.append("\"name\":\"").append(name).append("\",");
-        json.append("\"bio\":\"").append(bio).append("\",");
-        json.append("\"createdAt\":\"").append(createdAt != null ? createdAt.toString() : null).append("\",");
-        json.append("\"updatedAt\":\"").append(updatedAt != null ? updatedAt.toString() : null).append("\",");
-        json.append("\"imgId\":").append(this.image.getId());
-        json.append("}");
-        return json.toString();
-    }
-
 }

@@ -1,97 +1,210 @@
 package ar.edu.itba.paw.api.utils;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * Utility class for building URIs using Spring's UriComponentsBuilder.
+ * This approach provides:
+ * - Automatic URL encoding
+ * - Security against path traversal attacks
+ * - Type-safe URI construction
+ * - Better maintainability
+ */
 @Component
 public class UriBuilder {
     
     // User URIs
     public String buildUserUri(String baseUrl, Long userId) {
-        return baseUrl + ApiUriConstants.USERS_BASE + ApiUriConstants.ID.replace("{id}", userId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.USERS_BASE)
+                .pathSegment(userId.toString())
+                .toUriString();
     }
     
     public String buildUserReviewsUri(String baseUrl, Long userId) {
-        return baseUrl + ApiUriConstants.USERS_BASE + ApiUriConstants.USER_REVIEWS.replace("{id}", userId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.USERS_BASE)
+                .pathSegment(userId.toString(), "reviews")
+                .toUriString();
     }
     
     public String buildUserFollowersUri(String baseUrl, Long userId) {
-        return baseUrl + ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWERS.replace("{id}", userId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.USERS_BASE)
+                .pathSegment(userId.toString(), "followers")
+                .toUriString();
     }
     
     public String buildUserFollowingUri(String baseUrl, Long userId) {
-        return baseUrl + ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWING.replace("{id}", userId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.USERS_BASE)
+                .pathSegment(userId.toString(), "following")
+                .toUriString();
     }
     
     // Artist URIs
-    public String buildArtistUri(String baseUrl, Long artistId) {
-        return baseUrl + ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ID.replace("{id}", artistId.toString());
+    public String buildArtistReviewsUri(String baseUrl, Long artistId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ARTISTS_BASE)
+                .pathSegment(artistId.toString(), "reviews")
+                .toUriString();
     }
     
-    public String buildArtistReviewsUri(String baseUrl, Long artistId) {
-        return baseUrl + ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_REVIEWS.replace("{id}", artistId.toString());
+    public String buildArtistAlbumsUri(String baseUrl, Long artistId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ARTISTS_BASE)
+                .pathSegment(artistId.toString(), "albums")
+                .toUriString();
     }
+    
     
     // Album URIs
-    public String buildAlbumUri(String baseUrl, Long albumId) {
-        return baseUrl + ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ID.replace("{id}", albumId.toString());
-    }
-    
     public String buildAlbumReviewsUri(String baseUrl, Long albumId) {
-        return baseUrl + ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_REVIEWS.replace("{id}", albumId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ALBUMS_BASE)
+                .pathSegment(albumId.toString(), "reviews")
+                .toUriString();
     }
     
     public String buildAlbumSongsUri(String baseUrl, Long albumId) {
-        return baseUrl + ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_SONGS.replace("{id}", albumId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ALBUMS_BASE)
+                .pathSegment(albumId.toString(), "songs")
+                .toUriString();
+    }
+
+    public String buildAlbumArtistUri(String baseUrl, Long artistId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ARTISTS_BASE)
+                .pathSegment(artistId.toString())
+                .toUriString();
     }
     
     // Song URIs
-    public String buildSongUri(String baseUrl, Long songId) {
-        return baseUrl + ApiUriConstants.SONGS_BASE + ApiUriConstants.ID.replace("{id}", songId.toString());
-    }
-    
     public String buildSongReviewsUri(String baseUrl, Long songId) {
-        return baseUrl + ApiUriConstants.SONGS_BASE + ApiUriConstants.ID.replace("{id}", songId.toString()) + ApiUriConstants.SONG_REVIEWS.replace("{id}", songId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.SONGS_BASE)
+                .pathSegment(songId.toString(), "reviews")
+                .toUriString();
+    }
+
+    public String buildSongAlbumUri(String baseUrl, Long albumId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ALBUMS_BASE)
+                .pathSegment(albumId.toString())
+                .toUriString();
+    }
+
+    public String buildSongArtistUri(String baseUrl, Long artistId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.ARTISTS_BASE)
+                .pathSegment(artistId.toString())
+                .toUriString();
     }
     
     // Review URIs
     public String buildReviewUri(String baseUrl, Long reviewId) {
-        return baseUrl + ApiUriConstants.REVIEWS_BASE + ApiUriConstants.ID.replace("{id}", reviewId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.REVIEWS_BASE)
+                .pathSegment(reviewId.toString())
+                .toUriString();
     }
     
     public String buildReviewCommentsUri(String baseUrl, Long reviewId) {
-        return baseUrl + ApiUriConstants.REVIEWS_BASE + ApiUriConstants.ID.replace("{id}", reviewId.toString()) + ApiUriConstants.REVIEW_COMMENTS.replace("{id}", reviewId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.REVIEWS_BASE)
+                .pathSegment(reviewId.toString(), "comments")
+                .toUriString();
     }
     
     public String buildReviewLikesUri(String baseUrl, Long reviewId) {
-        return baseUrl + ApiUriConstants.REVIEWS_BASE + ApiUriConstants.ID.replace("{id}", reviewId.toString()) + ApiUriConstants.REVIEW_LIKES.replace("{id}", reviewId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.REVIEWS_BASE)
+                .pathSegment(reviewId.toString(), "likes")
+                .toUriString();
     }
     
     // Comment URIs
-    public String buildCommentUri(String baseUrl, Long commentId) {
-        return baseUrl + ApiUriConstants.COMMENTS_BASE + ApiUriConstants.ID.replace("{id}", commentId.toString());
+    public String buildCommentReviewUri(String baseUrl, Long reviewId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.REVIEWS_BASE)
+                .pathSegment(reviewId.toString(), "comments")
+                .toUriString();
     }
-    
+
+    public String buildCommentUri(String baseUrl, Long commentId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.COMMENTS_BASE)
+                .pathSegment(commentId.toString())
+                .toUriString();
+    }
+
+    // Notification URIs
+    public String buildNotificationUri(String baseUrl, Long notificationId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.NOTIFICATIONS_BASE)
+                .pathSegment(notificationId.toString())
+                .toUriString();
+    }
+
+    public String buildNotificationReadUri(String baseUrl, Long notificationId) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.NOTIFICATIONS_BASE)
+                .pathSegment(notificationId.toString(), "read")
+                .toUriString();
+    }
+
+    public String buildNotificationReadAllUri(String baseUrl) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.NOTIFICATIONS_BASE)
+                .pathSegment("read-all")
+                .toUriString();
+    }
+
+    public String buildNotificationUnreadCountUri(String baseUrl) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.NOTIFICATIONS_BASE)
+                .pathSegment("unread-count")
+                .toUriString();
+    }
+
+
     // Image URIs
     public String buildImageUri(String baseUrl, Long imageId) {
-        return baseUrl + ApiUriConstants.IMAGES_BASE + ApiUriConstants.ID.replace("{id}", imageId.toString());
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.IMAGES_BASE)
+                .pathSegment(imageId.toString())
+                .toUriString();
     }
     
-    // Generic URIs
-    public String buildCollectionUri(String baseUrl, String resource) {
-        return baseUrl + ApiUriConstants.API_BASE + "/" + resource + "s";
-    }
-    
-    public String buildPaginationUri(String baseUrl, String resource, int page, int size) {
-        return baseUrl + ApiUriConstants.API_BASE + "/" + resource + 
-               "?page=" + page + "&size=" + size;
-    }
-    
-    public String buildSearchUri(String baseUrl, String resource, String query) {
-        return baseUrl + ApiUriConstants.API_BASE + "/" + resource + 
-               "/search?q=" + query;
-    }
-    
+    // Auth URIs
     public String buildAuthUri(String baseUrl, String action) {
-        return baseUrl + ApiUriConstants.AUTH_BASE + "/" + action;
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(ApiUriConstants.AUTH_BASE)
+                .pathSegment(action)
+                .toUriString();
+    }
+    
+    // Generic URIs for HATEOAS
+    public String buildResourceUri(String baseUrl, String resourcePath, Long id) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(resourcePath)
+                .pathSegment(id.toString())
+                .toUriString();
+    }
+    
+    public String buildCollectionUri(String baseUrl, String resourcePath) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(resourcePath)
+                .toUriString();
+    }
+    
+    public String buildPaginatedUri(String baseUrl, String resourcePath, int page, int size) {
+        return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(resourcePath)
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .toUriString();
     }
 }

@@ -44,8 +44,9 @@ public class UserServiceImpl implements UserService {
 
     private final EmailService emailService;
     private final NotificationService notificationService;
+    private final ImageService imageService;    
 
-    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, UserMapper userMapper, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, EmailService emailService, NotificationService notificationService) {
+    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, UserMapper userMapper, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, EmailService emailService, NotificationService notificationService, ImageService imageService) {
         this.userDao = userDao;
         this.userVerificationDao = userVerificationDao;
         this.passwordEncoder = passwordEncoder;
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
         this.songMapper = songMapper;
         this.emailService = emailService;
         this.notificationService = notificationService;
+        this.imageService = imageService;
     }
 
     @Override
@@ -245,15 +247,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUser(Long userId, UserDTO userDTO) {
+    public UserDTO updateUser(UserDTO userDTO) {
         // TODO: checkear si el parametro userId es necesario o si se puede usar el id que viene en el userDTO
-        LOGGER.info("Updating user with ID: {}", userId);
-        
-        User existingUser = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        LOGGER.info("Updating user with ID: {}", userDTO.getId());
+        User existingUser = userDao.findById(userDTO.getId()).orElseThrow(() -> new UserNotFoundException("User with ID " + userDTO.getId() + " not found"));
+        existingUser.setImage(imageService.findById(userDTO.getImageId())); 
         MergeUtils.mergeUserFields(existingUser, userDTO);
-        
         User updatedUser = saveUser(existingUser);
-        LOGGER.info("User with ID {} updated successfully", userId);
+        LOGGER.info("User with ID {} updated successfully", userDTO.getId());
         
         return userMapper.toDTO(updatedUser);
     }
@@ -421,22 +422,26 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDTOList(recommendedUsers);
     }
 
-    private void validateUsernameUniqueness(Long userId, String username) {
-        if (username == null) return;
+    @Override
+    public Void validateUsernameUniqueness(Long userId, String username) {
+        if (username == null) return null;
 
         User existingUser = userDao.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User with username " + username + " not found"));
         if (!existingUser.getId().equals(userId)) {
             throw new UserAlreadyExistsException("Username " + username + " is already in use");
         }
+        return null;
     }
 
-    private void validateEmailUniqueness(Long userId, String email) {
-        if (email == null) return;
+    @Override
+    public Void validateEmailUniqueness(Long userId, String email) {
+        if (email == null) return null;
 
         User existingUser = userDao.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
         if (existingUser.getId().equals(userId)) {
             throw new UserAlreadyExistsException("Email " + email + " is already in use");
         }
+        return null;
     }
 
     private User saveUser(User user) {

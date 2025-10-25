@@ -1,5 +1,6 @@
-package ar.edu.itba.paw.api.models;
+package ar.edu.itba.paw.api.models.resources;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -41,39 +42,11 @@ public class CollectionResource<T> extends Resource<List<T>> {
     }
     
     @Override
+    @JsonIgnore 
     public List<T> getData() {
         return items;
     }
     
-    // Pagination link helpers
-    public void addPaginationLinks(String baseUrl, Integer currentPage, Integer totalPages) {
-        if (currentPage != null && totalPages != null) {
-            // First page
-            if (currentPage > 1) {
-                addLink(Link.first(baseUrl + "?page=1"));
-            }
-            
-            // Previous page
-            if (currentPage > 1) {
-                addLink(Link.prev(baseUrl + "?page=" + (currentPage - 1)));
-            }
-            
-            // Next page
-            if (currentPage < totalPages) {
-                addLink(Link.next(baseUrl + "?page=" + (currentPage + 1)));
-            }
-            
-            // Last page
-            if (currentPage < totalPages) {
-                addLink(Link.last(baseUrl + "?page=" + totalPages));
-            }
-        }
-    }
-    
-    // Getters and setters
-    public List<T> getItems() {
-        return items;
-    }
     
     public void setItems(List<T> items) {
         this.items = items;

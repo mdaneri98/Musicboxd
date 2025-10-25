@@ -1,9 +1,19 @@
 package ar.edu.itba.paw.services.utils;
 
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.dtos.CommentDTO;
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.models.Notification;
+import ar.edu.itba.paw.models.dtos.NotificationDTO;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +35,6 @@ public class MergeUtils {
         setFieldIfNotNull(existingUser::setEmail, userDTO.getEmail());
         setFieldIfNotNull(existingUser::setName, userDTO.getName());
         setFieldIfNotNull(existingUser::setBio, userDTO.getBio());
-        setFieldIfNotNull(existingUser::setImageId, userDTO.getImageId());
         setFieldIfNotNull(existingUser::setPreferredLanguage, userDTO.getPreferredLanguage());
         setFieldIfNotNull(existingUser::setTheme, userDTO.getPreferredTheme());
     }
@@ -53,9 +62,65 @@ public class MergeUtils {
         setFieldIfNotNull(existingReview::setCommentAmount, reviewDTO.getCommentAmount());
     }
 
+    // Comment fields merge
+    public static void mergeCommentFields(Comment existingComment, CommentDTO commentDTO) {
+        mergeBasicFields(existingComment, commentDTO);
+        existingComment.setCreatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Comment existingComment, CommentDTO commentDTO) {
+        setFieldIfNotNull(existingComment::setContent, commentDTO.getContent());
+    }
+
     private static <T> void setFieldIfNotNull(java.util.function.Consumer<T> setter, T value) {
         if (value != null) {
             setter.accept(value);
         }
+    }
+
+    // Artist fields merge
+    public static void mergeArtistFields(Artist existingArtist, ArtistDTO artistDTO) {
+        mergeBasicFields(existingArtist, artistDTO);
+        existingArtist.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Artist existingArtist, ArtistDTO artistDTO) {
+        setFieldIfNotNull(existingArtist::setName, artistDTO.getName());
+        setFieldIfNotNull(existingArtist::setBio, artistDTO.getBio());
+    }
+
+    // Album fields merge
+    public static void mergeAlbumFields(Album existingAlbum, AlbumDTO albumDTO) {
+        mergeBasicFields(existingAlbum, albumDTO);
+        existingAlbum.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Album existingAlbum, AlbumDTO albumDTO) {
+        setFieldIfNotNull(existingAlbum::setTitle, albumDTO.getTitle());
+        setFieldIfNotNull(existingAlbum::setGenre, albumDTO.getGenre());
+        setFieldIfNotNull(existingAlbum::setReleaseDate, albumDTO.getReleaseDate());
+    }
+
+    // Song fields merge
+    public static void mergeSongFields(Song existingSong, SongDTO songDTO) {
+        mergeBasicFields(existingSong, songDTO);
+        existingSong.setUpdatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Song existingSong, SongDTO songDTO) {
+        setFieldIfNotNull(existingSong::setTitle, songDTO.getTitle());
+        setFieldIfNotNull(existingSong::setDuration, songDTO.getDuration());
+        setFieldIfNotNull(existingSong::setTrackNumber, songDTO.getTrackNumber());
+    }
+
+    // Notification fields merge
+    public static void mergeNotificationFields(Notification existingNotification, NotificationDTO notificationDTO) {
+        mergeBasicFields(existingNotification, notificationDTO);
+        existingNotification.setCreatedAt(LocalDateTime.now());
+    }
+
+    private static void mergeBasicFields(Notification existingNotification, NotificationDTO notificationDTO) {
+        setFieldIfNotNull(existingNotification::setMessage, notificationDTO.getMessage());
+        setFieldIfNotNull(existingNotification::setRead, notificationDTO.getIsRead());
     }
 }

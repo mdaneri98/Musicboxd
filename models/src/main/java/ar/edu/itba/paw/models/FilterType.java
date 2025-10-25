@@ -16,7 +16,6 @@ public enum FilterType {
     FOLLOWERS_AMOUNT("followers_amount", "ASC"),
     FOLLOWING_AMOUNT("following_amount", "ASC"),
     REVIEW_AMOUNT("review_amount", "ASC"),
-    CREATED_AT("created_at", "ASC"),
     UPDATED_AT("updated_at", "ASC");
 
     private final String criteria;
