@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.services.exception.conflict;
+package ar.edu.itba.paw.exception.conflict;
 
 public class UserHasAlreadyReviewedException extends ConflictException {
     public UserHasAlreadyReviewedException(Long userId, Long itemId, String itemType) {

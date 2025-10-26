@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import ar.edu.itba.paw.services.exception.not_found.AlbumNotFoundException;
+import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;
 import java.util.stream.Collectors;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;

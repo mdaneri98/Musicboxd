@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.services.exception.conflict;
+package ar.edu.itba.paw.exception.conflict;
 
 public class ConflictException extends RuntimeException {
     public ConflictException(String message) {

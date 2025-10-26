@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.api.exception.mapper;
 
 import ar.edu.itba.paw.models.dtos.ErrorResponseDTO;
+import ar.edu.itba.paw.api.exception.ErrorResponseBuilder;
+import ar.edu.itba.paw.exception.UnkownReviewTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,33 +19,24 @@ import javax.ws.rs.ext.Provider;
  *
  * Excepciones manejadas:
  * - UnkownReviewTypeException
- * - Otras excepciones de tipo BadRequest
  */
 @Provider
 @Component
-public class BadRequestExceptionMapper implements ExceptionMapper<RuntimeException> {
+public class BadRequestExceptionMapper implements ExceptionMapper<UnkownReviewTypeException> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BadRequestExceptionMapper.class);
-    private static final String UNKNOWN_REVIEW_TYPE = "ar.edu.itba.paw.services.exception.UnkownReviewTypeException";
 
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
     @Override
-    public Response toResponse(RuntimeException exception) {
-        String exceptionName = exception.getClass().getName();
-
-        // Solo procesar UnkownReviewTypeException
-        if (!exceptionName.equals(UNKNOWN_REVIEW_TYPE)) {
-            return null;
-        }
-
+    public Response toResponse(UnkownReviewTypeException exception) {
         LOGGER.warn("Bad request: {}", exception.getMessage());
 
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.BAD_REQUEST,
                 exception,
-                ErrorMessages.BAD_REQUEST
+                "Bad request"
         );
 
         return Response.status(Response.Status.BAD_REQUEST)

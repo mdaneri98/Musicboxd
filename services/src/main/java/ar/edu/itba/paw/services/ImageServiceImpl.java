@@ -2,7 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.persistence.ImageDao;
-import ar.edu.itba.paw.services.exception.not_found.ImageNotFoundException;
+import ar.edu.itba.paw.exception.not_found.ImageNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

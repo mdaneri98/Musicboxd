@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.services.exception;
+package ar.edu.itba.paw.exception;
 
 public class AcknowledgementEmailException extends RuntimeException {
     public AcknowledgementEmailException(String email) {

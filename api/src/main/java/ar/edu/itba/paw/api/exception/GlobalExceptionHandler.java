@@ -50,11 +50,14 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
         LOGGER.error("Unhandled exception occurred: {}", exception.getClass().getName(), exception);
 
         // Construir respuesta de error genérica
+        String path = uriInfo != null ? uriInfo.getPath() : "unknown";
+        String message = exception.getMessage() != null ? exception.getMessage() : "An unexpected error occurred";
+        
         ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                "An unexpected error occurred",
-                uriInfo.getPath()
+                message,
+                path
         );
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

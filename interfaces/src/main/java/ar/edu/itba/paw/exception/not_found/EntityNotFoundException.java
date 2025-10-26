@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.services.exception.not_found;
+package ar.edu.itba.paw.exception.not_found;
 
 public class EntityNotFoundException extends RuntimeException {
     public EntityNotFoundException(String message) {

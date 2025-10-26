@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.services.exception;
+package ar.edu.itba.paw.exception;
 
 public class UnkownReviewTypeException extends RuntimeException {
     public UnkownReviewTypeException(String type) {

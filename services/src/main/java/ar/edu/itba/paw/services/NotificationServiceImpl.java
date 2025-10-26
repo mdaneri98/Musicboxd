@@ -9,7 +9,7 @@ import ar.edu.itba.paw.persistence.NotificationDao;
 import ar.edu.itba.paw.services.mappers.NotificationMapper;
 import ar.edu.itba.paw.services.utils.TimeUtils;
 import ar.edu.itba.paw.services.utils.MergeUtils;
-import ar.edu.itba.paw.services.exception.not_found.NotificationNotFoundException;
+import ar.edu.itba.paw.exception.not_found.NotificationNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

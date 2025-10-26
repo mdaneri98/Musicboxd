@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import ar.edu.itba.paw.services.exception.not_found.ArtistNotFoundException;
+import ar.edu.itba.paw.exception.not_found.ArtistNotFoundException;
 import java.util.List;
 import ar.edu.itba.paw.services.mappers.ArtistMapper;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
