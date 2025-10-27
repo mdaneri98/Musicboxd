@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import ar.edu.itba.paw.services.mappers.SongMapper;
 import ar.edu.itba.paw.persistence.AlbumDao;
-import ar.edu.itba.paw.services.exception.AlbumNotFoundException;
-import ar.edu.itba.paw.services.exception.SongNotFoundException;
+import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
+import ar.edu.itba.paw.exception.not_found.SongNotFoundException;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
 import java.util.stream.Collectors;
@@ -43,7 +43,7 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional(readOnly = true)
     public SongDTO findById(Long id) {
-        Song song = songDao.findById(id).orElseThrow(() -> new SongNotFoundException("Song with id " + id + " not found"));
+        Song song = songDao.findById(id).orElseThrow(() -> new SongNotFoundException(id));
         song.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(song.getAlbum().getReleaseDate()));
         SongDTO songDTO = songMapper.toDTO(song);
         return songDTO;
@@ -147,8 +147,8 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public SongDTO update(SongDTO songDTO) {
         LOGGER.info("Updating song with ID: {}", songDTO.getId());
-        Song song = songDao.findById(songDTO.getId()).orElseThrow(() -> new SongNotFoundException("Song with id " + songDTO.getId() + " not found"));
-        song.setAlbum(albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException("Album with id " + songDTO.getAlbumId() + " not found")));
+        Song song = songDao.findById(songDTO.getId()).orElseThrow(() -> new SongNotFoundException(songDTO.getId()));
+        song.setAlbum(albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException(songDTO.getAlbumId())));
         MergeUtils.mergeSongFields(song, songDTO);
         song = songDao.update(song);
         LOGGER.info("Song updated successfully");

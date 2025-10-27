@@ -8,9 +8,9 @@ import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.persistence.UserVerificationDao;
-import ar.edu.itba.paw.services.exception.UserAlreadyExistsException;
-import ar.edu.itba.paw.services.exception.UserNotFoundException;
-import ar.edu.itba.paw.services.exception.VerificationEmailException;
+import ar.edu.itba.paw.exception.conflict.UserAlreadyExistsException;
+import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
+import ar.edu.itba.paw.exception.VerificationEmailException;
 import ar.edu.itba.paw.services.mappers.UserMapper;
 import ar.edu.itba.paw.services.mappers.ArtistMapper;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO findUserById(Long id) {
         return userDao.findById(id)
                 .map(userMapper::toDTO)
-                .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO findByEmail(String email) {
         return userDao.findByEmail(email)
                 .map(userMapper::toDTO)
-                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+                .orElseThrow(() -> new UserNotFoundException(email, "email"));
     }
 
     @Override
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO findByUsername(String username) {
         return userDao.findByUsername(username)
                 .map(userMapper::toDTO)
-                .orElseThrow(() -> new UserNotFoundException("User with username " + username + " not found"));
+                .orElseThrow(() -> new UserNotFoundException(username, "username"));
     }
 
     @Override
@@ -123,13 +123,32 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO create(CreateUserDTO createUserDTO) {
+        //TODO: arregar este metodo. sacar el caso en el que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email.
         LOGGER.info("Creating new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
-
-        if (userDao.findByEmail(createUserDTO.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("User with email " + createUserDTO.getEmail() + " already exists");
-        }
-
         String hashedPassword = passwordEncoder.encode(createUserDTO.getPassword());
+
+        /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
+        Optional<User> emailOptUser = userDao.findByEmail(createUserDTO.getEmail());
+        Optional<User> usernameOptUser = userDao.findByUsername(createUserDTO.getUsername());
+
+        if (emailOptUser.isPresent()) {
+            if (emailOptUser.get().getUsername() == null){
+                User user = emailOptUser.get();
+                user.setUsername(createUserDTO.getUsername());
+                user.setPassword(createUserDTO.getPassword());
+                user.setEmail(createUserDTO.getEmail());
+                userDao.updateUser(user.getId(), user);
+                LOGGER.info("Updated existing user with email: {}", createUserDTO.getEmail());
+                return userMapper.toDTO(user);
+            } else {
+                LOGGER.warn("Attempt to create user with existing email: {}", createUserDTO.getEmail());
+                throw new UserAlreadyExistsException(createUserDTO.getEmail(), "email");
+            }
+        }
+        if (usernameOptUser.isPresent()) {
+            LOGGER.warn("Attempt to create user with existing username: {}", createUserDTO.getUsername());
+            throw new UserAlreadyExistsException(createUserDTO.getUsername(), "username");
+        }
 
         Optional<User> userOpt = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword);
         if (userOpt.isPresent()) {
@@ -148,7 +167,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<UserDTO> getFollowers(Long userId, Integer pageNumber, Integer pageSize) {
         if (userId == null || userDao.findById(userId).isEmpty()) {
-            throw new UserNotFoundException("User with ID " + userId + " not found");
+            throw new UserNotFoundException(userId);
         }
         return userMapper.toDTOList(userDao.getFollowers(userId, pageNumber, pageSize));
     }
@@ -157,7 +176,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<UserDTO> getFollowings(Long userId, Integer pageNumber, Integer pageSize) {
         if (userId == null || userDao.findById(userId).isEmpty()) {
-            throw new UserNotFoundException("User with ID " + userId + " not found");
+            throw new UserNotFoundException(userId);
         }
         return userMapper.toDTOList(userDao.getFollowings(userId, pageNumber, pageSize));
     }
@@ -194,8 +213,8 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Following relationship already exists");
             return 0;
         }
-        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
-        User following = userDao.findById(followingId).orElseThrow(() -> new UserNotFoundException("User with ID " + followingId + " not found"));
+        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User following = userDao.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
 
         int result = userDao.createFollowing(user, following);
         notificationService.notifyFollow(following, user);
@@ -207,8 +226,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Integer undoFollowing(Long userId, Long followingId) {
         LOGGER.info("Removing following relationship: User {} unfollowing User {}", userId, followingId);
-        User following = userDao.findById(followingId).orElseThrow(() -> new UserNotFoundException("User with ID " + followingId + " not found"));
-        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        User following = userDao.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
+        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         int result = userDao.undoFollowing(user, following);
         LOGGER.info("Following relationship removed successfully");
         return result;
@@ -227,7 +246,7 @@ public class UserServiceImpl implements UserService {
             LOGGER.info("Verification created and email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send verification email to user: {}", user.getEmail(), e);
-            throw new VerificationEmailException("No se pudo enviar la verificación del email al usuario " + user.getEmail(), e);
+            throw new VerificationEmailException(user.getEmail(), e);
         }
         return null;
     }
@@ -248,9 +267,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO updateUser(UserDTO userDTO) {
-        // TODO: checkear si el parametro userId es necesario o si se puede usar el id que viene en el userDTO
         LOGGER.info("Updating user with ID: {}", userDTO.getId());
-        User existingUser = userDao.findById(userDTO.getId()).orElseThrow(() -> new UserNotFoundException("User with ID " + userDTO.getId() + " not found"));
+        User existingUser = userDao.findById(userDTO.getId()).orElseThrow(() -> new UserNotFoundException(userDTO.getId()));
         existingUser.setImage(imageService.findById(userDTO.getImageId())); 
         MergeUtils.mergeUserFields(existingUser, userDTO);
         User updatedUser = saveUser(existingUser);
@@ -263,7 +281,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Boolean changePassword(Long userId, String newPassword) {
         LOGGER.info("Changing password for user with ID: {}", userId);
-        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         user.setPassword(passwordEncoder.encode(newPassword));
         LOGGER.info("Password changed successfully for user with ID: {}", userId);
         return true;
@@ -414,7 +432,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("Getting recommended users for user with ID: {}", userId);
         if (userId == null || userDao.findById(userId).isEmpty()) {
             LOGGER.warn("Invalid user ID: {}", userId);
-            throw new UserNotFoundException("User with ID " + userId + " not found");
+            throw new UserNotFoundException(userId);
         }
         
         List<User> recommendedUsers = userDao.getRecommendedUsers(userId, pageNumber, pageSize);
@@ -426,9 +444,9 @@ public class UserServiceImpl implements UserService {
     public Void validateUsernameUniqueness(Long userId, String username) {
         if (username == null) return null;
 
-        User existingUser = userDao.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User with username " + username + " not found"));
+        User existingUser = userDao.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username, "username"));
         if (!existingUser.getId().equals(userId)) {
-            throw new UserAlreadyExistsException("Username " + username + " is already in use");
+            throw new UserAlreadyExistsException(username, "username");
         }
         return null;
     }
@@ -437,15 +455,16 @@ public class UserServiceImpl implements UserService {
     public Void validateEmailUniqueness(Long userId, String email) {
         if (email == null) return null;
 
-        User existingUser = userDao.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+        User existingUser = userDao.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email, "email"));
         if (existingUser.getId().equals(userId)) {
-            throw new UserAlreadyExistsException("Email " + email + " is already in use");
+            throw new UserAlreadyExistsException(email, "email");
         }
         return null;
     }
 
     private User saveUser(User user) {
         return userDao.updateUser(user.getId(), user)
-                .orElseThrow(() -> new UserNotFoundException("User with ID " + user.getId() + " not found"));
+                
+        .orElseThrow(() -> new UserNotFoundException(user.getId()));
     }
 }

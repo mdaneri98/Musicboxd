@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import ar.edu.itba.paw.services.exception.ArtistNotFoundException;
+import ar.edu.itba.paw.exception.not_found.ArtistNotFoundException;
 import java.util.List;
 import ar.edu.itba.paw.services.mappers.ArtistMapper;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
@@ -42,7 +42,7 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     @Transactional(readOnly = true)
     public ArtistDTO findById(Long id) {
-        return artistDao.findById(id).map(artistMapper::toDTO).orElseThrow(() -> new ArtistNotFoundException("Artist with id " + id + " not found"));
+        return artistDao.findById(id).map(artistMapper::toDTO).orElseThrow(() -> new ArtistNotFoundException(id));
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ArtistServiceImpl implements ArtistService {
     @Transactional
     public Boolean delete(Long id) {
         LOGGER.info("Attempting to delete artist with ID: {}", id);
-        Artist artist = artistDao.findById(id).orElseThrow(() -> new ArtistNotFoundException("Artist with id " + id + " not found"));
+        Artist artist = artistDao.findById(id).orElseThrow(() -> new ArtistNotFoundException(id));
 
         // Delete Images
         List<AlbumDTO> list = albumService.findByArtistId(id);
@@ -158,7 +158,7 @@ public class ArtistServiceImpl implements ArtistService {
     public ArtistDTO update(ArtistDTO artistDTO) {
         LOGGER.info("Updating artist from DTO: {} (ID: {})", artistDTO.getName(), artistDTO.getId());
 
-        Artist artist = artistDao.findById(artistDTO.getId()).orElseThrow(() -> new ArtistNotFoundException("Artist with id " + artistDTO.getId() + " not found"));
+        Artist artist = artistDao.findById(artistDTO.getId()).orElseThrow(() -> new ArtistNotFoundException(artistDTO.getId()));
         if (artistDTO.getImageId() != null) artist.setImage(imageService.findById(artistDTO.getImageId()));
         MergeUtils.mergeArtistFields(artist, artistDTO);
 

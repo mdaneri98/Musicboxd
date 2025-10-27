@@ -2,7 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.persistence.ImageDao;
-import ar.edu.itba.paw.services.exception.ImageNotFoundException;
+import ar.edu.itba.paw.exception.not_found.ImageNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Transactional(readOnly = true)
     public Image findById(Long id) {
-        return imageDao.findById(id).orElseThrow(() -> new ImageNotFoundException("Image with id " + id + " not found"));
+        return imageDao.findById(id).orElseThrow(() -> new ImageNotFoundException(id));
     }
 
     @Transactional
@@ -47,7 +47,7 @@ public class ImageServiceImpl implements ImageService {
             return create(image.getBytes());
         }
 
-        Image imageUpdated = imageDao.update(image).orElseThrow(() -> new ImageNotFoundException("Image with id " + image.getId() + " not found"));
+        Image imageUpdated = imageDao.update(image).orElseThrow(() -> new ImageNotFoundException(image.getId()));
 
         return imageUpdated;
     }
