@@ -15,12 +15,11 @@ public interface AlbumService extends CrudService<AlbumDTO> {
 
     Boolean updateAll(List<AlbumDTO> albumsDTO, Artist artist);
 
-    Boolean updateRating(Long albumId, Double newRating, Integer newRatingAmount);
-
     Boolean hasUserReviewed(Long userId, Long albumId);
 
     List<ReviewDTO> findReviewsByAlbumId(Long albumId);
+
+    Boolean updateRating(Long albumId);
     
-    // Count methods for pagination
     Long countAll();
 }

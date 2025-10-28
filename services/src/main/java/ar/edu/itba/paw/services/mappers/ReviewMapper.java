@@ -26,8 +26,6 @@ public class ReviewMapper {
         dto.setIsLiked(review.isLiked());
         dto.setIsBlocked(review.isBlocked());
         dto.setCommentAmount(review.getCommentAmount());
-
-        // Campos polimórficos usando métodos abstractos
         dto.setItemType(review.getItemType());
         dto.setItemId(review.getItemId());
         dto.setItemName(review.getItemName());

@@ -78,24 +78,6 @@ public class AlbumServiceImpl implements AlbumService {
         return albumMapper.toDTOList(albums);
     }
 
-    @Transactional
-    public boolean delete(long id) {
-        LOGGER.info("Attempting to delete album with ID: {}", id);
-        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
-        List<Long> userIds = new ArrayList<>();
-        albumDao.findReviewsByAlbumId(id).forEach(review -> userIds.add(review.getUser().getId()));
-        albumDao.deleteReviewsFromAlbum(id);
-        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
-        boolean deleted = albumDao.delete(id);
-        imageService.delete(album.getImage().getId());
-        if (deleted) {
-            LOGGER.info("Album with ID {} deleted successfully", id);
-        } else {
-            LOGGER.error("Failed to delete album with ID {}", id);
-        }
-        return deleted;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> findReviewsByAlbumId(Long albumId) {
@@ -111,7 +93,7 @@ public class AlbumServiceImpl implements AlbumService {
         albumDao.deleteReviewsFromAlbum(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         album.getSongs().forEach(song -> songService.delete(song.getId()));
-        boolean deleted = albumDao.delete(album.getId());
+        Boolean deleted = albumDao.delete(album.getId());
         imageService.delete(album.getImage().getId());
         if (deleted) {
             LOGGER.info("Album {} (ID: {}) deleted successfully", album.getTitle(), album.getId());
@@ -202,19 +184,6 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    @Transactional
-    public Boolean updateRating(Long albumId, Double newRating, Integer newRatingAmount) {
-        LOGGER.info("Updating rating for album ID: {} to {} with {} ratings", albumId, newRating, newRatingAmount);
-        boolean updated = albumDao.updateRating(albumId, newRating, newRatingAmount);
-        if (updated) {
-            LOGGER.info("Rating updated successfully for album ID: {}", albumId);
-        } else {
-            LOGGER.error("Failed to update rating for album ID: {}", albumId);
-        }
-        return updated;
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public Boolean hasUserReviewed(Long userId, Long albumId) {
         return albumDao.hasUserReviewed(userId, albumId);
@@ -224,6 +193,26 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional(readOnly = true)
     public Long countAll() {
         return albumDao.countAll();
+    }
+
+    @Override
+    @Transactional
+    public Boolean updateRating(Long albumId) {
+        LOGGER.info("Updating rating for album ID: {}", albumId);
+
+        List<ReviewDTO> reviews = findReviewsByAlbumId(albumId);
+        Double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
+        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
+        int ratingAmount = reviews.size();
+        Boolean updated = albumDao.updateRating(albumId, roundedAvgRating, ratingAmount);
+
+        if (updated) {
+            LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        } else {
+            LOGGER.error("Failed to update album rating");
+            LOGGER.error("Album rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        }
+        return updated;
     }
 
 }

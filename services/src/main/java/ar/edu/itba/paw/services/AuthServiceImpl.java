@@ -7,7 +7,7 @@ import ar.edu.itba.paw.models.dtos.LoginResponseDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.persistence.RefreshTokenDao;
 import ar.edu.itba.paw.persistence.UserDao;
-import ar.edu.itba.paw.services.exception.UserNotFoundException;
+import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
 import ar.edu.itba.paw.services.mappers.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

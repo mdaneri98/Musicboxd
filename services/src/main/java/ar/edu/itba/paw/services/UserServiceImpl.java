@@ -10,7 +10,7 @@ import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.persistence.UserVerificationDao;
 import ar.edu.itba.paw.exception.conflict.UserAlreadyExistsException;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
-import ar.edu.itba.paw.exception.VerificationEmailException;
+import ar.edu.itba.paw.exception.email.VerificationEmailException;
 import ar.edu.itba.paw.services.mappers.UserMapper;
 import ar.edu.itba.paw.services.mappers.ArtistMapper;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;

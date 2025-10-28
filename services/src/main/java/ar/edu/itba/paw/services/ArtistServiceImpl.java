@@ -71,6 +71,25 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     @Transactional
+    public Boolean updateRating(Long artistId) {
+        LOGGER.info("Updating rating for artist ID: {}", artistId);
+        List<ReviewDTO> reviews = findReviewsByArtistId(artistId);
+        Double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
+        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
+        Integer ratingAmount = reviews.size();
+        Boolean updated = artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
+        
+        if (updated) {
+            LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        } else {
+            LOGGER.error("Failed to update artist rating");
+            LOGGER.error("Artist rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        }
+        return updated;
+    }
+
+    @Override
+    @Transactional
     public Boolean delete(Long id) {
         LOGGER.info("Attempting to delete artist with ID: {}", id);
         Artist artist = artistDao.findById(id).orElseThrow(() -> new ArtistNotFoundException(id));
@@ -83,7 +102,7 @@ public class ArtistServiceImpl implements ArtistService {
         artistDao.findReviewsByArtistId(id).forEach(review -> userIds.add(review.getUser().getId()));
         artistDao.deleteReviewsFromArtist(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
-        boolean deleted = artistDao.delete(id);
+        Boolean deleted = artistDao.delete(id);
         imageService.delete(artist.getImage().getId());
         if (deleted) {
             LOGGER.info("Artist with ID {} deleted successfully", id);
@@ -97,34 +116,6 @@ public class ArtistServiceImpl implements ArtistService {
     @Transactional(readOnly = true)
     public List<ReviewDTO> findReviewsByArtistId(Long artistId) {
         return artistDao.findReviewsByArtistId(artistId).stream().map(reviewMapper::toDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public Boolean delete(ArtistDTO artistDTO) {
-        if (artistDTO.getId() == null || artistDTO.getImageId() == null || artistDTO.getId() < 1 || artistDTO.getImageId() < 1) {
-            LOGGER.warn("Invalid artist data for deletion: {}", artistDTO);
-            return false;
-        }
-
-        Long id = artistDTO.getId();
-
-        // Delete Images
-        List<AlbumDTO> list = albumService.findByArtistId(id);
-        list.forEach(album -> albumService.delete(album.getId()));
-
-        List<Long> userIds = new ArrayList<>();
-        artistDao.findReviewsByArtistId(id).forEach(review -> userIds.add(review.getUser().getId()));
-        artistDao.deleteReviewsFromArtist(id);
-        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
-        boolean deleted = artistDao.delete(id);
-        imageService.delete(artistDTO.getImageId());
-        if (deleted) {
-            LOGGER.info("Artist with ID {} deleted successfully", id);
-        } else {
-            LOGGER.error("Failed to delete artist with ID {}", id);
-        }
-        return deleted;
     }
 
     @Override
@@ -174,19 +165,6 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     @Transactional
-    public Boolean updateRating(Long artistId, Double roundedAvgRating, Integer ratingAmount) {
-        LOGGER.info("Updating rating for artist with ID: {}", artistId);
-        boolean updated = artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
-        if (updated) {
-            LOGGER.info("Rating updated successfully for artist ID: {}", artistId);
-        } else {
-            LOGGER.error("Failed to update rating for artist ID: {}", artistId);
-        }
-        return updated;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Boolean hasUserReviewed(Long userId, Long artistId) {
         return artistDao.hasUserReviewed(userId, artistId);
     }

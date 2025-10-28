@@ -50,11 +50,6 @@ public class ArtistReview extends Review {
         return "Artist";
     }
 
-    @Override
-    public String getItemLink() {
-        return "artist/" + artist.getId();
-    }
-
     public Artist getArtist() {
         return artist;
     }

@@ -98,7 +98,6 @@ public abstract class Review {
     public abstract Long getItemId();
     public abstract Image getItemImage();
     public abstract String getItemType();
-    public abstract String getItemLink();
 
     public Integer getCommentAmount() {
         return commentAmount;

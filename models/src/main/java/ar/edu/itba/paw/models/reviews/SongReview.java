@@ -50,11 +50,6 @@ public class SongReview extends Review {
         return "Song";
     }
 
-    @Override
-    public String getItemLink() {
-        return "song/" + song.getId();
-    }
-
     public Song getSong() {
         return song;
     }

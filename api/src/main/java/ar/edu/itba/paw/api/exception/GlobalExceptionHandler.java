@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -40,24 +41,19 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @Context
-    private UriInfo uriInfo;
+    @Autowired
+    private ErrorResponseBuilder errorResponseBuilder;
 
     @Override
     public Response toResponse(Throwable exception) {
-        // Log con nivel ERROR porque cualquier excepción que llegue aquí
-        // es inesperada y debería ser investigada
+
         LOGGER.error("Unhandled exception occurred: {}", exception.getClass().getName(), exception);
 
-        // Construir respuesta de error genérica
-        String path = uriInfo != null ? uriInfo.getPath() : "unknown";
         String message = exception.getMessage() != null ? exception.getMessage() : "An unexpected error occurred";
         
-        ErrorResponseDTO error = new ErrorResponseDTO(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                message,
-                path
+        ErrorResponseDTO error = errorResponseBuilder.build(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                message
         );
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

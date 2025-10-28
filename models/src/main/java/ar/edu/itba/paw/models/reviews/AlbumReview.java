@@ -51,11 +51,6 @@ public class AlbumReview extends Review {
         return "Album";
     }
 
-    @Override
-    public String getItemLink() {
-        return "album/" + album.getId();
-    }
-
     public Album getAlbum() {
         return album;
     }

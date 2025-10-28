@@ -31,21 +31,12 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     List<ReviewDTO> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId);
     List<ReviewDTO> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId);
 
-    Boolean hasUserReviewedArtist(Long userId, Long artistId);
-    Boolean hasUserReviewedAlbum(Long userId, Long albumId);
-    Boolean hasUserReviewedSong(Long userId, Long songId);
-
     Boolean isArtistReview(Long reviewId);
     Boolean isAlbumReview(Long reviewId);
     Boolean isSongReview(Long reviewId);
 
     Void block(Long reviewId);
     Void unblock(Long reviewId);
-
-    Void updateUserReviewAmount(Long userId);
-    Void updateSongRating(Long songId);
-    Void updateAlbumRating(Long albumId);
-    Void updateArtistRating(Long artistId);
     
     ReviewDTO createArtistReview(ReviewDTO review);
     ReviewDTO createAlbumReview(ReviewDTO review);

@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.exception;
+package ar.edu.itba.paw.exception.email;
 
-public class VerificationEmailException extends RuntimeException {
+public class VerificationEmailException extends EmailException {
 
     public VerificationEmailException(String email) {
         super("Failed to send verification email to user: " + email);

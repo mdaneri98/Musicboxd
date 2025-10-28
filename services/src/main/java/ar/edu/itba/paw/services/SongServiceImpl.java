@@ -109,11 +109,6 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public Boolean deleteReviewsFromSong(Long id){
-        return songDao.deleteReviewsFromSong(id);
-    }
-
-    @Override
     @Transactional
     public SongDTO create(SongDTO songDTO) {
         LOGGER.info("Creating new song from DTO: {}", songDTO.getTitle());
@@ -180,12 +175,6 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional
-    public Boolean updateRating(Long songId, Double newRating, Integer newRatingAmount) {
-        return songDao.updateRating(songId, newRating, newRatingAmount);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Boolean hasUserReviewed(Long userId, Long songId) {
         return songDao.hasUserReviewed(userId, songId);
     }
@@ -194,5 +183,25 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public Long countAll() {
         return songDao.countAll();
+    }
+
+    @Override
+    @Transactional
+    public Boolean updateRating(Long songId) {
+        LOGGER.info("Updating rating for song ID: {}", songId);
+        
+        List<ReviewDTO> reviews = findReviewsBySongId(songId);
+        Double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
+        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
+        int ratingAmount = reviews.size();
+        Boolean updated = songDao.updateRating(songId, roundedAvgRating, ratingAmount);
+
+        if (updated) {
+            LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        } else {
+            LOGGER.error("Failed to update song rating");
+            LOGGER.error("Song rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        }
+        return updated;
     }
 }

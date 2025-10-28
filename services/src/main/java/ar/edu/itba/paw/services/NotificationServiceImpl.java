@@ -77,7 +77,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional
     @Override
-    public Void notifyNewReview(Review review, User reviewer) {
+    public Void notifyNewReview(Review review) {
+        User reviewer = review.getUser();
         List<User> followers = reviewer.getFollowers();
 
         for (User follower : followers) {
