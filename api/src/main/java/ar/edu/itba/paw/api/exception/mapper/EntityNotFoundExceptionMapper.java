@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -33,6 +35,9 @@ public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotF
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityNotFoundExceptionMapper.class);
 
+    @Context
+    private UriInfo uriInfo;
+
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
@@ -43,7 +48,8 @@ public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotF
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.NOT_FOUND,
                 exception,
-                "Entity not found"
+                "Entity not found",
+                uriInfo
         );
 
         return Response.status(Response.Status.NOT_FOUND)

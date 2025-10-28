@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import ar.edu.itba.paw.api.exception.ErrorResponseBuilder;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import ar.edu.itba.paw.exception.email.EmailException;
@@ -26,6 +28,9 @@ public class EmailExceptionMapper implements ExceptionMapper<EmailException> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailExceptionMapper.class);
 
+    @Context
+    private UriInfo uriInfo;
+
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
@@ -36,7 +41,8 @@ public class EmailExceptionMapper implements ExceptionMapper<EmailException> {
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 exception,
-                "Email sending failed"
+                "Email sending failed",
+                uriInfo
         );
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

@@ -9,7 +9,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * - Automatic URL encoding
  * - Security against path traversal attacks
  * - Type-safe URI construction
- * - Better maintainability
+ * - Better maintainability 
  */
 @Component
 public class UriBuilder {

@@ -4,33 +4,33 @@ import ar.edu.itba.paw.models.dtos.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
 /**
  * Builder para construir respuestas de error estandarizadas.
  * Centraliza la lógica de construcción de ErrorResponseDTO siguiendo el principio SRP.
+ * 
+ * Nota: UriInfo se pasa como parámetro en lugar de inyectarse con @Context
+ * porque @Context solo funciona en clases @Provider de JAX-RS, no en @Component de Spring.
  */
 @Component
 public class ErrorResponseBuilder {
-
-    @Context
-    private UriInfo uriInfo;
 
     /**
      * Construye una respuesta de error básica.
      *
      * @param httpStatus Estado HTTP
      * @param message Mensaje de error
+     * @param uriInfo Información de la URI del request (puede ser null)
      * @return ErrorResponseDTO construido
      */
-    public ErrorResponseDTO build(HttpStatus httpStatus, String message) {
+    public ErrorResponseDTO build(HttpStatus httpStatus, String message, UriInfo uriInfo) {
         return new ErrorResponseDTO(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 message,
-                getPath()
+                getPath(uriInfo)
         );
     }
 
@@ -40,14 +40,15 @@ public class ErrorResponseBuilder {
      * @param code Código HTTP
      * @param status Estado HTTP como string
      * @param message Mensaje de error
+     * @param uriInfo Información de la URI del request (puede ser null)
      * @return ErrorResponseDTO construido
      */
-    public ErrorResponseDTO build(int code, String status, String message) {
+    public ErrorResponseDTO build(int code, String status, String message, UriInfo uriInfo) {
         return new ErrorResponseDTO(
                 code,
                 status,
                 message,
-                getPath()
+                getPath(uriInfo)
         );
     }
 
@@ -57,17 +58,19 @@ public class ErrorResponseBuilder {
      * @param httpStatus Estado HTTP
      * @param message Mensaje de error
      * @param validationErrors Lista de errores de validación
+     * @param uriInfo Información de la URI del request (puede ser null)
      * @return ErrorResponseDTO construido
      */
     public ErrorResponseDTO buildWithValidations(
             HttpStatus httpStatus,
             String message,
-            List<ErrorResponseDTO.ValidationErrorDTO> validationErrors) {
+            List<ErrorResponseDTO.ValidationErrorDTO> validationErrors,
+            UriInfo uriInfo) {
         return new ErrorResponseDTO(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 message,
-                getPath(),
+                getPath(uriInfo),
                 validationErrors
         );
     }
@@ -78,23 +81,26 @@ public class ErrorResponseBuilder {
      * @param httpStatus Estado HTTP
      * @param exception Excepción lanzada
      * @param defaultMessage Mensaje por defecto si la excepción no tiene mensaje
+     * @param uriInfo Información de la URI del request (puede ser null)
      * @return ErrorResponseDTO construido
      */
     public ErrorResponseDTO buildFromException(
             HttpStatus httpStatus,
             Throwable exception,
-            String defaultMessage) {
+            String defaultMessage,
+            UriInfo uriInfo) {
         String message = exception.getMessage() != null ? exception.getMessage() : defaultMessage;
-        return build(httpStatus, message);
+        return build(httpStatus, message, uriInfo);
     }
 
     /**
-     * Obtiene la ruta actual del request.
+     * Extrae la ruta del request desde UriInfo.
      *
+     * @param uriInfo Información de la URI del request (puede ser null)
      * @return Path del request o "unknown" si no está disponible
      */
-    private String getPath() {
-        return uriInfo != null ? uriInfo.getPath() : "unknown";
+    private String getPath(UriInfo uriInfo) {
+        return uriInfo != null ? uriInfo.getBaseUri().toString() + uriInfo.getPath() : "unknown";
     }
 }
 

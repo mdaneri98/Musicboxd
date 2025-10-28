@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -28,6 +30,9 @@ public class ConflictExceptionMapper implements ExceptionMapper<ConflictExceptio
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConflictExceptionMapper.class);
 
+    @Context
+    private UriInfo uriInfo;
+
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
@@ -38,7 +43,8 @@ public class ConflictExceptionMapper implements ExceptionMapper<ConflictExceptio
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.CONFLICT,
                 exception,
-                "Resource already exists"
+                "Resource already exists",
+                uriInfo
         );
 
         return Response.status(Response.Status.CONFLICT)

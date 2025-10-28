@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -26,6 +28,9 @@ public class BadRequestExceptionMapper implements ExceptionMapper<UnkownReviewTy
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BadRequestExceptionMapper.class);
 
+    @Context
+    private UriInfo uriInfo;
+
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
@@ -36,7 +41,8 @@ public class BadRequestExceptionMapper implements ExceptionMapper<UnkownReviewTy
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.BAD_REQUEST,
                 exception,
-                "Bad request"
+                "Bad request",
+                uriInfo
         );
 
         return Response.status(Response.Status.BAD_REQUEST)

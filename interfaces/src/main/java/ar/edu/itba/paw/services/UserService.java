@@ -37,6 +37,7 @@ public interface UserService{
 
     UserDTO findByUsername(String email);
     Boolean usernameExists(String username);
+    Boolean emailExists(String email);
 
     Void updateUserReviewAmount(Long userId);
 
@@ -61,8 +62,4 @@ public interface UserService{
     Boolean removeFavoriteSong(Long userId, Long songId);
     Integer getFavoriteSongsCount(Long userId);
     List<UserDTO> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize);
-
-    Void validateUsernameUniqueness(Long userId, String username);
-    Void validateEmailUniqueness(Long userId, String email);
-
 }

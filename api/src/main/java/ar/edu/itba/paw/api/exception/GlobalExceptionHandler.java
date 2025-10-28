@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -44,6 +44,9 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
+    @Context
+    private UriInfo uriInfo;
+
     @Override
     public Response toResponse(Throwable exception) {
 
@@ -53,7 +56,8 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
         
         ErrorResponseDTO error = errorResponseBuilder.build(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                message
+                message,
+                uriInfo
         );
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

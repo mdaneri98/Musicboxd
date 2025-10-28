@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.util.List;
@@ -29,6 +31,9 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationExceptionMapper.class);
 
+    @Context
+    private UriInfo uriInfo;
+
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
@@ -45,7 +50,8 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
         ErrorResponseDTO error = errorResponseBuilder.buildWithValidations(
                 HttpStatus.BAD_REQUEST,
                 "Validation failed",
-                validationErrors
+                validationErrors,
+                uriInfo
         );
 
         return Response.status(Response.Status.BAD_REQUEST)

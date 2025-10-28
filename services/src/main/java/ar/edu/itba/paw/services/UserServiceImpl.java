@@ -95,6 +95,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Boolean emailExists(String email) {
+        return userDao.findByEmail(email).isPresent();
+    }
+
+    @Override
     @Transactional
     public Void updateUserReviewAmount(Long userId) {
         LOGGER.info("Updating review amount for user with ID: {}", userId);
@@ -123,44 +128,20 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO create(CreateUserDTO createUserDTO) {
-        //TODO: arregar este metodo. sacar el caso en el que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email.
         LOGGER.info("Creating new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
         String hashedPassword = passwordEncoder.encode(createUserDTO.getPassword());
 
-        /* Caso que el usuario se haya registrado anteriormente sin datos de usuario, y unicamente con email. */
-        Optional<User> emailOptUser = userDao.findByEmail(createUserDTO.getEmail());
-        Optional<User> usernameOptUser = userDao.findByUsername(createUserDTO.getUsername());
-
-        if (emailOptUser.isPresent()) {
-            if (emailOptUser.get().getUsername() == null){
-                User user = emailOptUser.get();
-                user.setUsername(createUserDTO.getUsername());
-                user.setPassword(createUserDTO.getPassword());
-                user.setEmail(createUserDTO.getEmail());
-                userDao.updateUser(user.getId(), user);
-                LOGGER.info("Updated existing user with email: {}", createUserDTO.getEmail());
-                return userMapper.toDTO(user);
-            } else {
-                LOGGER.warn("Attempt to create user with existing email: {}", createUserDTO.getEmail());
-                throw new UserAlreadyExistsException(createUserDTO.getEmail(), "email");
-            }
-        }
-        if (usernameOptUser.isPresent()) {
-            LOGGER.warn("Attempt to create user with existing username: {}", createUserDTO.getUsername());
-            throw new UserAlreadyExistsException(createUserDTO.getUsername(), "username");
-        }
+        if (usernameExists(createUserDTO.getUsername())) throw new UserAlreadyExistsException(createUserDTO.getUsername(), "username");
+        if (emailExists(createUserDTO.getEmail())) throw new UserAlreadyExistsException(createUserDTO.getEmail(), "email");
 
         Optional<User> userOpt = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword);
-        if (userOpt.isPresent()) {
-            User createdUser = userOpt.get();
-            createdUser.setPreferredLanguage(LocaleContextHolder.getLocale().getLanguage());
-            this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
-            LOGGER.info("Successfully created new user with ID: {}", createdUser.getId());
-            return userMapper.toDTO(createdUser);
-        } else {
-            LOGGER.error("Failed to create new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
-            throw new RuntimeException("Failed to create user");
-        }
+        if (userOpt.isEmpty()) throw new RuntimeException("Failed to create user");
+        
+        User createdUser = userOpt.get();
+        createdUser.setPreferredLanguage(LocaleContextHolder.getLocale().getLanguage());
+        this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
+        LOGGER.info("Successfully created new user with ID: {}", createdUser.getId());
+        return userMapper.toDTO(createdUser);
     }
 
     @Override
@@ -438,28 +419,6 @@ public class UserServiceImpl implements UserService {
         List<User> recommendedUsers = userDao.getRecommendedUsers(userId, pageNumber, pageSize);
         LOGGER.info("Found {} recommended users for user with ID: {}", recommendedUsers.size(), userId);
         return userMapper.toDTOList(recommendedUsers);
-    }
-
-    @Override
-    public Void validateUsernameUniqueness(Long userId, String username) {
-        if (username == null) return null;
-
-        User existingUser = userDao.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username, "username"));
-        if (!existingUser.getId().equals(userId)) {
-            throw new UserAlreadyExistsException(username, "username");
-        }
-        return null;
-    }
-
-    @Override
-    public Void validateEmailUniqueness(Long userId, String email) {
-        if (email == null) return null;
-
-        User existingUser = userDao.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email, "email"));
-        if (existingUser.getId().equals(userId)) {
-            throw new UserAlreadyExistsException(email, "email");
-        }
-        return null;
     }
 
     private User saveUser(User user) {
