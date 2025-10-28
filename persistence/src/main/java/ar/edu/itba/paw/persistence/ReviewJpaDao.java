@@ -506,6 +506,13 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
+    public Long countReviewsByUser(Long userId) {
+        Query query = em.createQuery("SELECT COUNT(r) FROM Review r WHERE r.user.id = :userId AND r.isBlocked = false");
+        query.setParameter("userId", userId);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
     public List<Review> findBySubstring(String substring, Integer page, Integer size) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(

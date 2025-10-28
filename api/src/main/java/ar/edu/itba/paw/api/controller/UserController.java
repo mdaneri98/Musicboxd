@@ -10,6 +10,11 @@ import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
+import ar.edu.itba.paw.api.models.resources.ReviewResource;
+import ar.edu.itba.paw.services.ReviewService;
+import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -26,7 +31,13 @@ public class UserController extends BaseController {
     private UserService userService;
 
     @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
     private UserResourceMapper userResourceMapper;
+
+    @Autowired
+    private ReviewResourceMapper reviewResourceMapper;
 
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
@@ -91,4 +102,50 @@ public class UserController extends BaseController {
         return buildNoContentResponse();
     }
 
+    @GET
+    @Path(ApiUriConstants.USER_REVIEWS)
+    public Response getUserReviews(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") Integer page, @QueryParam("size") @DefaultValue("20") Integer size) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        List<ReviewDTO> reviews = reviewService.findReviewsByUserPaginated(id, page, size, loggedUserId);
+        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
+        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
+                reviewResources, reviewService.countReviewsByUser(id), page, size, getBaseUrl(), ApiUriConstants.USER_REVIEWS);
+        return buildResponse(collection);
+    }
+
+    @GET
+    @Path(ApiUriConstants.USER_FOLLOWERS)
+    public Response getUserFollowers(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") Integer page, @QueryParam("size") @DefaultValue("20") Integer size) {
+        UserDTO user = userService.findUserById(id);
+        List<UserDTO> followers = userService.getFollowers(id, page, size);
+        List<UserResource> userResources = userResourceMapper.toResourceList(followers, getBaseUrl());
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, user.getFollowersAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USER_FOLLOWERS);
+        return buildResponse(collection);
+    }
+
+    @GET
+    @Path(ApiUriConstants.USER_FOLLOWINGS)
+    public Response getUserFollowing(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") Integer page, @QueryParam("size") @DefaultValue("20") Integer size) {
+        UserDTO user = userService.findUserById(id);
+        List<UserDTO> following = userService.getFollowings(id, page, size);
+        List<UserResource> userResources = userResourceMapper.toResourceList(following, getBaseUrl());
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, user.getFollowingAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USER_FOLLOWINGS);
+        return buildResponse(collection);
+    }
+
+    @POST
+    @Path(ApiUriConstants.USER_FOLLOWERS)
+    public Response followUser(@PathParam("id") Long id) {
+        userService.createFollowing(SecurityContextUtils.getCurrentUserId(), id);
+        return buildNoContentResponse();
+    }
+
+    @DELETE
+    @Path(ApiUriConstants.USER_FOLLOWERS)
+    public Response unfollowUser(@PathParam("id") Long id) {
+        userService.undoFollowing(SecurityContextUtils.getCurrentUserId(), id);
+        return buildNoContentResponse();
+    }
 }

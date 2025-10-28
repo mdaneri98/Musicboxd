@@ -56,4 +56,5 @@ public interface ReviewDao extends CrudDao<Review> {
     
     // Count methods for pagination
     Long countAll();
+    Long countReviewsByUser(Long userId);
 }

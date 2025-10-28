@@ -19,7 +19,7 @@ public class ApiUriConstants {
     public static final String USERS_BASE = API_BASE + "/users";
     public static final String USER_REVIEWS = ID + "/reviews";
     public static final String USER_FOLLOWERS = ID + "/followers";
-    public static final String USER_FOLLOWING = ID + "/following";
+    public static final String USER_FOLLOWINGS = ID + "/followings";
 
     /* ARTISTS */
     public static final String ARTISTS_BASE = API_BASE + "/artists";
