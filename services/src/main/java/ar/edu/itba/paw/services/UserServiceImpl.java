@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     private final EmailService emailService;
     private final NotificationService notificationService;
-    private final ImageService imageService;    
+    private final ImageService imageService;
 
     public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, UserMapper userMapper, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, EmailService emailService, NotificationService notificationService, ImageService imageService) {
         this.userDao = userDao;
@@ -128,13 +128,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO create(CreateUserDTO createUserDTO) {
+        Long DEFAULT_IMAGE_ID = 1L;
         LOGGER.info("Creating new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
         String hashedPassword = passwordEncoder.encode(createUserDTO.getPassword());
 
         if (usernameExists(createUserDTO.getUsername())) throw new UserAlreadyExistsException(createUserDTO.getUsername(), "username");
         if (emailExists(createUserDTO.getEmail())) throw new UserAlreadyExistsException(createUserDTO.getEmail(), "email");
 
-        Optional<User> userOpt = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword);
+        Optional<User> userOpt = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword, imageService.findById(DEFAULT_IMAGE_ID));
         if (userOpt.isEmpty()) throw new RuntimeException("Failed to create user");
         
         User createdUser = userOpt.get();

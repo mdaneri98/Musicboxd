@@ -264,12 +264,12 @@ public class UserJpaDaoTest {
         // 1. Pre-conditions - no user with username or email exists
 
         // 2. Execute
-        Optional<User> optionalUser = userDao.create(NEW_USERNAME, NEW_EMAIL, NEW_PASSWORD);
+        Image image = new Image(NEW_IMAGE_ID, new byte[0]);
+        Optional<User> optionalUser = userDao.create(NEW_USERNAME, NEW_EMAIL, NEW_PASSWORD, image);
 
         // 3. Post-conditions
         assertTrue(optionalUser.isPresent());
         User user = optionalUser.get();
-        Image image = new Image(NEW_IMAGE_ID, new byte[0]);
         // Set imageId to avoid null constraint violation and persist the change
         user.setImage(image);
         em.flush(); // Force the change to be persisted
@@ -312,7 +312,7 @@ public class UserJpaDaoTest {
         // 1. Pre-conditions - User with the same username exists
 
         // 2. Execute
-        Optional<User> user = userDao.create(PRE_EXISTING_USERNAME, NEW_EMAIL, NEW_PASSWORD);
+        Optional<User> user = userDao.create(PRE_EXISTING_USERNAME, NEW_EMAIL, NEW_PASSWORD, new Image(NEW_IMAGE_ID, new byte[0]));
 
         // 3. Post-conditions
         // The user should not be created due to duplicate username constraint
@@ -332,7 +332,7 @@ public class UserJpaDaoTest {
         // 1. Pre-conditions - User with the same email exists
 
         // 2. Execute
-        Optional<User> user = userDao.create(NEW_USERNAME, PRE_EXISTING_EMAIL, NEW_PASSWORD);
+        Optional<User> user = userDao.create(NEW_USERNAME, PRE_EXISTING_EMAIL, NEW_PASSWORD, new Image(NEW_IMAGE_ID, new byte[0]));
 
         // 3. Post-conditions
         // The user should not be created due to duplicate email constraint

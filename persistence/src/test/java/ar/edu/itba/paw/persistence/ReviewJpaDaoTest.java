@@ -56,7 +56,7 @@ public class ReviewJpaDaoTest {
     private static final String NEW_COMMENT = "New Comment";
 
     @Autowired
-    ReviewJpaDao reviewDao;
+    ReviewDao reviewDao;
 
     @PersistenceContext
     private EntityManager em;

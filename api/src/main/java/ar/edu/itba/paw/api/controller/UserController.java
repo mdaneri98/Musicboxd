@@ -139,7 +139,8 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FOLLOWERS)
     public Response followUser(@PathParam("id") Long id) {
         userService.createFollowing(SecurityContextUtils.getCurrentUserId(), id);
-        return buildNoContentResponse();
+        UserResource userResource = userResourceMapper.toResource(userService.findUserById(id), getBaseUrl());
+        return buildCreatedResponse(userResource);
     }
 
     @DELETE

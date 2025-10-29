@@ -137,7 +137,7 @@ public class ArtistController extends BaseController {
             @Valid ReviewDTO reviewDTO) {
         reviewDTO.setItemId(id);
         reviewDTO.setItemType("Artist");
-        ReviewDTO responseDTO = reviewService.create(reviewDTO);
+        ReviewDTO responseDTO = reviewService.createArtistReview(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
@@ -148,8 +148,6 @@ public class ArtistController extends BaseController {
             @PathParam("id") Long id,
             @QueryParam("page") @DefaultValue("1") int page,
             @QueryParam("size") @DefaultValue("20") int size) {
-
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
 
         List<AlbumDTO> albums = albumService.findByArtistId(id);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());

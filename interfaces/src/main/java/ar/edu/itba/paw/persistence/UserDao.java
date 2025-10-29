@@ -13,7 +13,7 @@ public interface UserDao {
     List<User> findPaginated(FilterType filterType, Integer pageNumber, Integer pageSize);
     List<User> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize);
 
-    Optional<User> create(String username, String email, String password);
+    Optional<User> create(String username, String email, String password, Image defaultImage);
 
     Integer createFollowing(User loggedUser, User following);
 
