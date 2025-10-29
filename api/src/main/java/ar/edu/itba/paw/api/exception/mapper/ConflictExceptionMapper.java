@@ -2,7 +2,7 @@ package ar.edu.itba.paw.api.exception.mapper;
 
 import ar.edu.itba.paw.models.dtos.ErrorResponseDTO;
 import ar.edu.itba.paw.api.exception.ErrorResponseBuilder;
-import ar.edu.itba.paw.exception.conflict.ConflictException;
+import ar.edu.itba.paw.exception.conflict.ConflictException; 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class ConflictExceptionMapper implements ExceptionMapper<ConflictExceptio
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
-    @Override
+    @Override 
     public Response toResponse(ConflictException exception) {
         LOGGER.warn("Conflict exception: {}", exception.getMessage());
 

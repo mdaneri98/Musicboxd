@@ -153,11 +153,10 @@ public class ReviewController extends BaseController {
         return buildNoContentResponse();
     }
 
-    //! Block y Unblock son verbos, no respetan API REST puro 
-    //! Se deben usar PUT para actualizar el estado de un recurso
-    @POST
-    @Path(ApiUriConstants.REVIEW_BLOCK)
-    public Response blockReview(@PathParam("id") Long reviewId) {
+
+    @PATCH
+    @Path(ApiUriConstants.ID)
+    public Response updateBlockReviewStatus(@PathParam("id") Long reviewId, Boolean isBlocked) {
 
         if (!SecurityContextUtils.isModerator()) {
             return Response.status(Response.Status.FORBIDDEN)
@@ -165,19 +164,8 @@ public class ReviewController extends BaseController {
                     .build();
         }
 
-        reviewService.block(reviewId);
-        return Response.ok().entity("{\"message\": \"Review blocked successfully\"}").build();
-    }
-
-    @POST
-    @Path(ApiUriConstants.REVIEW_UNBLOCK)
-    public Response unblockReview(@PathParam("id") Long reviewId) {
-        if (!SecurityContextUtils.isModerator()) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("You are not allowed to unblock this review")
-                    .build();
-        }
-        reviewService.unblock(reviewId);
-        return Response.ok().entity("{\"message\": \"Review unblocked successfully\"}").build();
+        if (isBlocked) reviewService.block(reviewId);
+        else reviewService.unblock(reviewId);
+        return buildNoContentResponse();
     }
 }
