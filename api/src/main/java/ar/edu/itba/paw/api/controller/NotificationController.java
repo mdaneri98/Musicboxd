@@ -6,7 +6,6 @@ import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.NotificationResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
-import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.NotificationDTO;
 import ar.edu.itba.paw.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;

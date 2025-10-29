@@ -105,11 +105,11 @@ public class UserController extends BaseController {
     @GET
     @Path(ApiUriConstants.USER_REVIEWS)
     public Response getUserReviews(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") Integer page, @QueryParam("size") @DefaultValue("20") Integer size) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        List<ReviewDTO> reviews = reviewService.findReviewsByUserPaginated(id, page, size, loggedUserId);
+        UserDTO user = userService.findUserById(id);
+        List<ReviewDTO> reviews = reviewService.findReviewsByUserPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, reviewService.countReviewsByUser(id), page, size, getBaseUrl(), ApiUriConstants.USER_REVIEWS);
+                reviewResources, user.getReviewsAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
         return buildResponse(collection);
     }
 
@@ -120,7 +120,7 @@ public class UserController extends BaseController {
         List<UserDTO> followers = userService.getFollowers(id, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(followers, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, user.getFollowersAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USER_FOLLOWERS);
+                userResources, user.getFollowersAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
         return buildResponse(collection);
     }
 
@@ -131,7 +131,7 @@ public class UserController extends BaseController {
         List<UserDTO> following = userService.getFollowings(id, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(following, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, user.getFollowingAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USER_FOLLOWINGS);
+                userResources, user.getFollowingAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
         return buildResponse(collection);
     }
 

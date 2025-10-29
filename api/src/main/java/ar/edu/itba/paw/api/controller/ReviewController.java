@@ -85,8 +85,7 @@ public class ReviewController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getReview(@PathParam("id") Long id) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(loggedUserId), getBaseUrl());
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(id), getBaseUrl());
         return buildResponse(reviewResource);
     }
 
@@ -154,6 +153,8 @@ public class ReviewController extends BaseController {
         return buildNoContentResponse();
     }
 
+    //! Block y Unblock son verbos, no respetan API REST puro 
+    //! Se deben usar PUT para actualizar el estado de un recurso
     @POST
     @Path(ApiUriConstants.REVIEW_BLOCK)
     public Response blockReview(@PathParam("id") Long reviewId) {
