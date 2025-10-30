@@ -48,7 +48,7 @@ public class CommentController extends BaseController {
         Long totalCount = commentService.countAll();
         
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, true, null);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, commentsCollectionLinks, null);
         
         return buildResponse(collection);
     }
@@ -58,7 +58,7 @@ public class CommentController extends BaseController {
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Long totalCount = commentService.countAll();
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, true, null);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, commentsCollectionLinks, null);
         return buildResponse(collection);
     }
 

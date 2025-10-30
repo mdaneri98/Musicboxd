@@ -18,9 +18,6 @@ public class ImageController extends BaseController {
     @Autowired
     private ImageService imageService;
 
-//    @Autowired
-//    private ImageResourceMapper imageResourceMapper;
-
     @GET
     @Path(ApiUriConstants.ID)
     public Response getImage(@PathParam("id") Long id) {
@@ -31,13 +28,12 @@ public class ImageController extends BaseController {
         headers.set("Content-type", MediaType.IMAGE_JPEG_VALUE);
         headers.set("Content-Disposition", String.format("inline; filename=\"image_%d.jpg\"", id));
 
-        return Response.status(Response.Status.OK).entity(array).build();
+        return Response.status(Response.Status.OK).entity(array).header(getBaseUrl(), headers).build();
     }
 
-//    @POST
-//    public Response createImage(byte[] bytes) {
-//        Image image = imageService.create(bytes);
-//        ImageResource imageResource = imageResourceMapper.toResource(image);
-//        return buildCreatedResponse(imageResource);
-//    }
+    @POST
+    public Response uploadImage(byte[] bytes) {
+        final Image image = imageService.create(bytes);
+        return buildCreatedResponse(image);
+    }
 }
