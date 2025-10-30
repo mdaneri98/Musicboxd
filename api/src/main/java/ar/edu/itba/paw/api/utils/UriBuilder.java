@@ -194,17 +194,20 @@ public class UriBuilder {
                 .toUriString();
     }
     
-    public String buildCollectionUri(String baseUrl, String resourcePath) {
+    public String buildCollectionUri(String baseUrl, String resourcePath, Long id) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(resourcePath)
+                .buildAndExpand(id != null ? id.toString() : "")
                 .toUriString();
     }
+
     
-    public String buildPaginatedUri(String baseUrl, String resourcePath, int page, int size) {
+    public String buildPaginatedUri(String baseUrl, String resourcePath, int page, int size, Long id) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(resourcePath)
                 .queryParam("page", page)
                 .queryParam("size", size)
+                .buildAndExpand(id != null ? id.toString() : "")
                 .toUriString();
     }
 }

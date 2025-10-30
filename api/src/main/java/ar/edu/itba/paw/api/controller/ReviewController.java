@@ -4,6 +4,7 @@ import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.CommentResourceMapper;
 import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
@@ -17,6 +18,7 @@ import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.models.FilterType;
 import org.springframework.beans.factory.annotation.Autowired;
+import javax.ws.rs.ForbiddenException;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -47,6 +49,10 @@ public class ReviewController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
+    private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private CollectionLinkManager likesCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
+
     @GET
     public Response getAllReviews(
             @QueryParam("search") String search,
@@ -61,7 +67,7 @@ public class ReviewController extends BaseController {
         Long totalCount = reviewService.countAll();
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, reviewsCollectionLinks, null);
         
         return buildResponse(collection);
     }
@@ -71,7 +77,7 @@ public class ReviewController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Long totalCount = reviewService.countAll();
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, reviewsCollectionLinks, null);
         return buildResponse(collection);
     }
 
@@ -116,9 +122,18 @@ public class ReviewController extends BaseController {
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Long totalCount = commentService.countByReviewId(id);
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, commentsCollectionLinks, id);
         
         return buildResponse(collection);
+    }
+
+    @POST
+    @Path(ApiUriConstants.REVIEW_COMMENTS)
+    public Response createReviewComment(@PathParam("id") Long id, @Valid CommentDTO commentDTO) {
+        commentDTO.setReviewId(id);
+        CommentDTO responseDTO = commentService.create(commentDTO);
+        CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());
+        return buildCreatedResponse(commentResource);
     }
 
     @GET
@@ -130,7 +145,7 @@ public class ReviewController extends BaseController {
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
         Long totalCount = reviewDTO.getLikes().longValue();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE + ApiUriConstants.REVIEW_LIKES, likesCollectionLinks, reviewId);
         
         return buildResponse(collection);
     }
@@ -141,7 +156,7 @@ public class ReviewController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         
         reviewService.createLike(loggedUserId, reviewId);
-        return Response.ok().entity("{\"message\": \"Review liked successfully\"}").build();
+        return buildCreatedResponse(null);
     }
 
     @DELETE
@@ -158,14 +173,11 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response updateBlockReviewStatus(@PathParam("id") Long reviewId, Boolean isBlocked) {
 
-        if (!SecurityContextUtils.isModerator()) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("You are not allowed to block this review")
-                    .build();
-        }
+        if (!SecurityContextUtils.isModerator()) throw new ForbiddenException("You are not allowed to block this review");
 
         if (isBlocked) reviewService.block(reviewId);
         else reviewService.unblock(reviewId);
+        
         return buildNoContentResponse();
     }
 }

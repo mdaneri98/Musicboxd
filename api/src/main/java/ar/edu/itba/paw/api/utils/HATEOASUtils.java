@@ -1,10 +1,14 @@
 package ar.edu.itba.paw.api.utils;
 
 import ar.edu.itba.paw.api.models.links.Link;
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
+import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
+
+
 
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
@@ -35,50 +39,54 @@ public class HATEOASUtils {
         resource.addEditLink(uri);
         resource.addDeleteLink(uri);
         
-        String collectionUri = uriBuilder.buildCollectionUri(baseUrl, resourcePath);
+        String collectionUri = uriBuilder.buildCollectionUri(baseUrl, resourcePath, id);
         resource.addCollectionLink(collectionUri);
     }
     
     /**
      * Creates CRUD links for a collection using UriBuilder
      */
-    public static void addCollectionCrudLinks(Resource<?> resource, String baseUrl, String resourcePath) {
-        String uri = uriBuilder.buildCollectionUri(baseUrl, resourcePath);
+    public static void addCollectionCrudLinks(CollectionResource<?> resource, String baseUrl, String resourcePath, Long id, CollectionLinkManager collectionLinkManager) {
+        String uri = uriBuilder.buildCollectionUri(baseUrl, resourcePath, id);
         
         resource.addSelfLink(uri);
-        resource.addCreateLink(uri);
+        if (collectionLinkManager.getCreate()) resource.addCreateLink(uri);
+        if (collectionLinkManager.getDelete()) resource.addDeleteLink(uri);
+        if (collectionLinkManager.getEdit()) resource.addEditLink(uri);
+        if (collectionLinkManager.getSearch()) addSearchLinks(resource, baseUrl, resourcePath);
+        if (collectionLinkManager.getPagination()) addPaginationLinks(resource, baseUrl, resourcePath, resource.getCurrentPage(), resource.getTotalPages(), resource.getPageSize(), id);
     }
     
     /**
      * Creates pagination links for a collection using UriBuilder
      */
     public static void addPaginationLinks(Resource<?> resource, String baseUrl, String resourcePath, 
-                                        Integer currentPage, Integer totalPages, Integer pageSize) {
+                                        Integer currentPage, Integer totalPages, Integer pageSize, Long id) {
         if (currentPage == null || totalPages == null || pageSize == null) {
             return;
         }
         
         // First page link
         if (currentPage > 1) {
-            String firstUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, 1, pageSize);
+            String firstUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, 1, pageSize, id);
             resource.addLink(Link.createLink(firstUri, "first", "First Page", "GET"));
         }
         
         // Previous page link
         if (currentPage > 1) {
-            String prevUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, currentPage - 1, pageSize);
+            String prevUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, currentPage - 1, pageSize, id);
             resource.addLink(Link.createLink(prevUri, "prev", "Previous Page", "GET"));
         }
         
         // Next page link
         if (currentPage < totalPages) {
-            String nextUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, currentPage + 1, pageSize);
+            String nextUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, currentPage + 1, pageSize, id);
             resource.addLink(Link.createLink(nextUri, "next", "Next Page", "GET"));
         }
         
         // Last page link
         if (currentPage < totalPages) {
-            String lastUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, totalPages, pageSize);
+            String lastUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, totalPages, pageSize, id);
             resource.addLink(Link.createLink(lastUri, "last", "Last Page", "GET"));
         }
     }

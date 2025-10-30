@@ -2,6 +2,7 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.CommentResourceMapper;
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
@@ -31,6 +32,8 @@ public class CommentController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
+    private CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+
     @GET
     public Response getAllComments(
             @QueryParam("search") String search,
@@ -45,7 +48,7 @@ public class CommentController extends BaseController {
         Long totalCount = commentService.countAll();
         
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, true, null);
         
         return buildResponse(collection);
     }
@@ -55,7 +58,7 @@ public class CommentController extends BaseController {
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Long totalCount = commentService.countAll();
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, true, null);
         return buildResponse(collection);
     }
 

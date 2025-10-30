@@ -22,6 +22,6 @@ public class UserLinkManager {
         HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.USERS_BASE, resource.getData().getImageId());
         resource.addLink(uriBuilder.buildUserReviewsUri(baseUrl, userId), "reviews", "User reviews", "GET");
         resource.addLink(uriBuilder.buildUserFollowersUri(baseUrl, userId), "followers", "User followers", "GET");
-        resource.addLink(uriBuilder.buildUserFollowingUri(baseUrl, userId), "following", "User following", "GET");
+        resource.addLink(uriBuilder.buildUserFollowingUri(baseUrl, userId), "followings", "User followings", "GET");
     }
 }

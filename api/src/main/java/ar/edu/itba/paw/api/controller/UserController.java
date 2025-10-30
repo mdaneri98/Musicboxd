@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.mapper.UserResourceMapper;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
@@ -42,6 +43,11 @@ public class UserController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
+    private CollectionLinkManager usersCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private CollectionLinkManager followingsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
+    private CollectionLinkManager followersCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
+    private CollectionLinkManager reviewsCollectionLinks = followingsCollectionLinks;
+
     @GET
     public Response getAllUsers(
             @QueryParam("page") @DefaultValue("1") int page,
@@ -54,7 +60,7 @@ public class UserController extends BaseController {
         List<UserDTO> users = userService.findPaginated(filter, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, userService.countUsers(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+                userResources, userService.countUsers(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, usersCollectionLinks, null);
         return buildResponse(collection);
     }
 
@@ -63,7 +69,7 @@ public class UserController extends BaseController {
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         Long totalCount = userService.countUsers();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, usersCollectionLinks, null);
         return buildResponse(collection);
     }
 
@@ -109,7 +115,7 @@ public class UserController extends BaseController {
         List<ReviewDTO> reviews = reviewService.findReviewsByUserPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, user.getReviewsAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                reviewResources, user.getReviewsAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_REVIEWS, reviewsCollectionLinks, id);
         return buildResponse(collection);
     }
 
@@ -120,7 +126,7 @@ public class UserController extends BaseController {
         List<UserDTO> followers = userService.getFollowers(id, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(followers, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, user.getFollowersAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+                userResources, user.getFollowersAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWERS, followersCollectionLinks, id);
         return buildResponse(collection);
     }
 
@@ -131,7 +137,7 @@ public class UserController extends BaseController {
         List<UserDTO> following = userService.getFollowings(id, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(following, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, user.getFollowingAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE);
+                userResources, user.getFollowingAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWINGS, followingsCollectionLinks, id);
         return buildResponse(collection);
     }
 

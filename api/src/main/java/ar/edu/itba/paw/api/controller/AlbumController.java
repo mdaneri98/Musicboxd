@@ -4,6 +4,7 @@ import ar.edu.itba.paw.api.mapper.AlbumResourceMapper;
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
 import ar.edu.itba.paw.api.mapper.SongResourceMapper;
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.AlbumResource;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
@@ -12,13 +13,11 @@ import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
-import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.Valid;
@@ -42,9 +41,6 @@ public class AlbumController extends BaseController {
     private SongService songService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private AlbumResourceMapper albumResourceMapper;
 
     @Autowired
@@ -55,6 +51,10 @@ public class AlbumController extends BaseController {
 
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
+
+    private CollectionLinkManager albumsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    private CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
 
     @GET
     public Response getAllAlbums(
@@ -70,7 +70,7 @@ public class AlbumController extends BaseController {
         Long totalCount = albumService.countAll();
         
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE);
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, albumsCollectionLinks, null);
         
         return buildResponse(collection);
     }
@@ -80,7 +80,7 @@ public class AlbumController extends BaseController {
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
         Long totalCount = albumService.countAll();
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE);
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, albumsCollectionLinks, null);
         return buildResponse(collection);
     }
 
@@ -136,7 +136,7 @@ public class AlbumController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, reviewService.countAll(), page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                reviewResources, reviewService.countAll(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_REVIEWS, reviewsCollectionLinks, id);
         
         return buildResponse(collection);
     }
@@ -160,7 +160,7 @@ public class AlbumController extends BaseController {
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, songService.countAll(), page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
+                songResources, songService.countAll(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_SONGS, songsCollectionLinks, id);
         
         return buildResponse(collection);
     }

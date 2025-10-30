@@ -2,6 +2,7 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.mapper.SongResourceMapper;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
@@ -41,6 +42,9 @@ public class SongController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
+    private CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+
     @GET
     public Response getAllSongs(
             @QueryParam("search") String search,
@@ -55,7 +59,7 @@ public class SongController extends BaseController {
         Long totalCount = songService.countAll();
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, songsCollectionLinks, null);
         
         return buildResponse(collection);
     }
@@ -65,7 +69,7 @@ public class SongController extends BaseController {
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         Long totalCount = songService.countAll();
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE);
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, songsCollectionLinks, null);
         return buildResponse(collection);
     }
 
@@ -132,7 +136,7 @@ public class SongController extends BaseController {
         Long totalCount = reviewService.countAll();
                 
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                    reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                    reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE + ApiUriConstants.SONG_REVIEWS, reviewsCollectionLinks, id);
         
         return buildResponse(collection);
     }

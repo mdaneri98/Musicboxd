@@ -21,10 +21,9 @@ public class ReviewLinkManager {
         HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.REVIEWS_BASE, resource.getData().getItemImageId());
         resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), "comments", "Review comments", "GET");
         resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), "likes", "Review likes", "GET");
-    }
-    
-    public void addReviewActionLinks(Resource<?> resource, String baseUrl, Long reviewId) {
-        resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), "like", "Like this review", "POST");
-        resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), "unlike", "Unlike this review", "DELETE");
+        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), "comments", "Create comment", "POST");
+        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), "comments", "Update comment", "PUT");
+        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), "comments", "Delete comment", "DELETE");
+        resource.addLink(uriBuilder.buildReviewUri(baseUrl, reviewId), "block", "Block/Unblock review", "PATCH");
     }
 }

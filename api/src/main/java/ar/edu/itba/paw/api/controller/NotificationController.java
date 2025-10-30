@@ -2,6 +2,7 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.NotificationResourceMapper;
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.NotificationResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
@@ -30,39 +31,7 @@ public class NotificationController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    /**
-     * GET /api/notifications
-     * Obtiene todas las notificaciones con paginación
-     */
-    // @GET
-    // public Response getAllNotifications(
-    //         @QueryParam("search") String search,
-    //         @QueryParam("page") @DefaultValue("1") int page,
-    //         @QueryParam("size") @DefaultValue("20") int size,
-    //         @QueryParam("filter") @DefaultValue("RECENT") FilterType filter) {
-        
-    //     if (search != null && !search.isEmpty()) return getNotificationsBySubstring(search, page, size);
-        
-    //     List<NotificationDTO> notificationDTOs = notificationService.findPaginated(filter, page, size);
-    //     List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-    //     Long totalCount = notificationService.countAll();
-        
-    //     CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
-    //             notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE);
-        
-    //     return buildResponse(collection);
-    // }
-
-    // private Response getNotificationsBySubstring(String substring, int page, int size) {
-    //     List<NotificationDTO> notificationDTOs = notificationService.findBySubstring(substring, page, size);
-    //     List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-    //     Long totalCount = notificationService.countAll();
-        
-    //     CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
-    //             notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE);
-        
-    //     return buildResponse(collection);
-    // }
+    private CollectionLinkManager notificationsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
 
     @GET
     public Response getNotifications(
@@ -74,7 +43,7 @@ public class NotificationController extends BaseController {
         Long totalCount = notificationService.countByUserId(loggedUserId);
         
         CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
-                notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE);
+                notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, notificationsCollectionLinks, null);
         
         return buildResponse(collection);
     }
@@ -111,24 +80,21 @@ public class NotificationController extends BaseController {
         return buildNoContentResponse();
     }
 
-    @PUT
-    @Path(ApiUriConstants.NOTIFICATION_READ)
-    public Response markAsRead(@PathParam("id") Long id) {
-        notificationService.markAsRead(id);
+    @PATCH
+    @Path(ApiUriConstants.ID)
+    public Response markAsRead(@PathParam("id") Long id, Boolean isRead) {
+        if (isRead) notificationService.markAsRead(id);
+        else return buildNoContentResponse();
         NotificationDTO notificationDTO = notificationService.findById(id);
         NotificationResource notificationResource = notificationResourceMapper.toResource(notificationDTO, getBaseUrl());
         return buildResponse(notificationResource);
     }
 
-    @PUT
-    @Path(ApiUriConstants.NOTIFICATIONS_READ_ALL)
-    public Response markAllAsRead() {
+    @PATCH
+    public Response markAllAsRead(Boolean markAllAsRead) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-
-        notificationService.markAllAsRead(loggedUserId);
-        return Response.ok()
-                .entity("{\"message\": \"All notifications marked as read\"}")
-                .build();
+        if (markAllAsRead) notificationService.markAllAsRead(loggedUserId);
+        return buildNoContentResponse();
     }
 
     @GET

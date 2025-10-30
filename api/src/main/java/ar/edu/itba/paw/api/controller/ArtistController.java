@@ -3,6 +3,7 @@ package ar.edu.itba.paw.api.controller;
 import ar.edu.itba.paw.api.mapper.ArtistResourceMapper;
 import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
+import ar.edu.itba.paw.api.mapper.SongResourceMapper;
 import ar.edu.itba.paw.api.models.resources.ArtistResource;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
@@ -18,6 +19,10 @@ import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.api.mapper.AlbumResourceMapper;
 import ar.edu.itba.paw.api.models.resources.AlbumResource;
+import ar.edu.itba.paw.api.models.resources.SongResource;
+import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -43,6 +48,12 @@ public class ArtistController extends BaseController {
     private ReviewService reviewService;
 
     @Autowired
+    private SongService songService;
+
+    @Autowired
+    private SongResourceMapper songResourceMapper;
+
+    @Autowired
     private ArtistResourceMapper artistResourceMapper;
 
     @Autowired
@@ -50,6 +61,12 @@ public class ArtistController extends BaseController {
 
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
+
+
+    private CollectionLinkManager artistsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    private CollectionLinkManager albumsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    private CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
 
     @GET
     public Response getAllArtists(
@@ -65,7 +82,7 @@ public class ArtistController extends BaseController {
         Long totalCount = artistService.countAll();
         
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
-                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE);
+                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, artistsCollectionLinks, null);
         
         return buildResponse(collection);
     }
@@ -75,7 +92,7 @@ public class ArtistController extends BaseController {
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artists, getBaseUrl());
         Long totalCount = artistService.countAll();
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
-                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE);
+                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, artistsCollectionLinks, null);
         return buildResponse(collection);
     }
 
@@ -124,7 +141,7 @@ public class ArtistController extends BaseController {
         Long totalCount = reviewService.countAll();
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_REVIEWS, reviewsCollectionLinks, id);
         
         return buildResponse(collection);
     }
@@ -154,7 +171,7 @@ public class ArtistController extends BaseController {
         Long totalCount = albumService.countAll();
         
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE);
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_ALBUMS, albumsCollectionLinks, id);
         
         return buildResponse(collection);
     }
@@ -168,6 +185,17 @@ public class ArtistController extends BaseController {
         AlbumDTO responseDTO = albumService.create(albumDTO);
         AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(albumResource);
+    }
+
+    @GET
+    @Path(ApiUriConstants.ARTIST_SONGS)
+    public Response getArtistSongs(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") int page, @QueryParam("size") @DefaultValue("20") int size) {
+        List<SongDTO> songs = songService.findByArtistId(id, page, size);
+        List<SongResource> songResources = songResourceMapper.toResourceList(songs, getBaseUrl());
+        Long totalCount = songService.countAll();
+        CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_SONGS, songsCollectionLinks, id);
+        return buildResponse(collection);
     }
 }
 

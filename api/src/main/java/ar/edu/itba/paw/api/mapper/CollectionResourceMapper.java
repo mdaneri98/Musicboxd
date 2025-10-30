@@ -2,7 +2,8 @@ package ar.edu.itba.paw.api.mapper;
 
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component
+import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 
 import java.util.List;
 
@@ -13,15 +14,14 @@ public class CollectionResourceMapper {
      * Creates a collection resource with HATEOAS links for CRUD operations
      */
     public <R> CollectionResource<R> createCollection(
-            List<R> resources, Long totalCount, int page, int size, String baseUrl, String resourcePath) {
+            List<R> resources, Long totalCount, int page, int size, String baseUrl, String resourcePath, CollectionLinkManager collectionLinkManager, Long id) {
         
         CollectionResource<R> collection = new CollectionResource<>(resources, totalCount, size, page);
         
         // Add collection-level links
-        HATEOASUtils.addCollectionCrudLinks(collection, baseUrl, resourcePath);
-        HATEOASUtils.addSearchLinks(collection, baseUrl, resourcePath);
-        HATEOASUtils.addPaginationLinks(collection, baseUrl, resourcePath, page,
-                collection.getTotalPages(), size);
+        HATEOASUtils.addCollectionCrudLinks(collection, baseUrl, resourcePath, id, collectionLinkManager.getCreate(), collectionLinkManager.getDelete(), collectionLinkManager.getEdit(), collectionLinkManager.getSearch());
+        if (search) HATEOASUtils.addSearchLinks(collection, baseUrl, resourcePath);
+        HATEOASUtils.addPaginationLinks(collection, baseUrl, resourcePath, page,collection.getTotalPages(), size, id);
         
         return collection;
     }
