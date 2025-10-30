@@ -23,5 +23,9 @@ public class UserLinkManager {
         resource.addLink(uriBuilder.buildUserReviewsUri(baseUrl, userId), "reviews", "User reviews", "GET");
         resource.addLink(uriBuilder.buildUserFollowersUri(baseUrl, userId), "followers", "User followers", "GET");
         resource.addLink(uriBuilder.buildUserFollowingUri(baseUrl, userId), "followings", "User followings", "GET");
+        resource.addLink(uriBuilder.buildUserFollowingUri(baseUrl, userId), "followings", "User followings", "GET");
+        resource.addLink(uriBuilder.buildUserFavoriteArtistsUri(baseUrl, userId), "favorite-artists", "User favorite artists", "GET");
+        resource.addLink(uriBuilder.buildUserFavoriteAlbumsUri(baseUrl, userId), "favorite-albums", "User favorite albums", "GET");
+        resource.addLink(uriBuilder.buildUserFavoriteSongsUri(baseUrl, userId), "favorite-songs", "User favorite songs", "GET");
     }
 }

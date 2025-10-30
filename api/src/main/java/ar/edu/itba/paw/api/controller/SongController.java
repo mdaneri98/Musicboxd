@@ -14,6 +14,7 @@ import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.Valid;
@@ -41,6 +42,9 @@ public class SongController extends BaseController {
 
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
+
+    @Autowired
+    private UserService userService;
 
     private CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
     private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
@@ -151,6 +155,20 @@ public class SongController extends BaseController {
         ReviewDTO responseDTO = reviewService.create(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
+    }
+
+    @POST
+    @Path(ApiUriConstants.SONG_FAVORITE)
+    public Response addSongFavorite(@PathParam("id") Long id) {
+        userService.addFavoriteSong(SecurityContextUtils.getCurrentUserId(), id);
+        return buildCreatedResponse(songService.findById(id));
+    }
+
+    @DELETE
+    @Path(ApiUriConstants.SONG_FAVORITE)
+    public Response removeSongFavorite(@PathParam("id") Long id) {
+        userService.removeFavoriteSong(SecurityContextUtils.getCurrentUserId(), id);
+        return buildNoContentResponse();
     }
 }
 

@@ -26,6 +26,8 @@ public class AlbumLinkManager {
         resource.addLink(uriBuilder.buildAlbumReviewsUri(baseUrl, albumId), "reviews", "Update Album review", "PUT");
         resource.addLink(uriBuilder.buildAlbumSongsUri(baseUrl, albumId), "songs", "Album songs", "GET" );
         resource.addLink(uriBuilder.buildAlbumSongsUri(baseUrl, albumId), "songs", "Create Album song", "POST");
+        resource.addLink(uriBuilder.buildAlbumFavoriteUri(baseUrl, albumId), "favorite", "Album favorite", "POST");
+        resource.addLink(uriBuilder.buildAlbumFavoriteUri(baseUrl, albumId), "favorite", "Album favorite", "DELETE");
     }
 }
 

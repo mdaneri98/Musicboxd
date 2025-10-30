@@ -16,6 +16,15 @@ import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
+import ar.edu.itba.paw.models.dtos.ArtistDTO;
+import ar.edu.itba.paw.api.models.resources.ArtistResource;
+import ar.edu.itba.paw.api.mapper.ArtistResourceMapper;
+import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.api.models.resources.AlbumResource;
+import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.api.models.resources.SongResource;
+import ar.edu.itba.paw.api.mapper.AlbumResourceMapper;
+import ar.edu.itba.paw.api.mapper.SongResourceMapper;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -41,12 +50,24 @@ public class UserController extends BaseController {
     private ReviewResourceMapper reviewResourceMapper;
 
     @Autowired
+    private ArtistResourceMapper artistResourceMapper;
+
+    @Autowired
+    private AlbumResourceMapper albumResourceMapper;
+
+    @Autowired
+    private SongResourceMapper songResourceMapper;
+
+    @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
     private CollectionLinkManager usersCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
     private CollectionLinkManager followingsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
     private CollectionLinkManager followersCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
     private CollectionLinkManager reviewsCollectionLinks = followingsCollectionLinks;
+    private CollectionLinkManager favoriteArtistsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
+    private CollectionLinkManager favoriteAlbumsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
+    private CollectionLinkManager favoriteSongsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
 
     @GET
     public Response getAllUsers(
@@ -155,4 +176,35 @@ public class UserController extends BaseController {
         userService.undoFollowing(SecurityContextUtils.getCurrentUserId(), id);
         return buildNoContentResponse();
     }
+
+    @GET
+    @Path(ApiUriConstants.USER_FAVORITE_ARTISTS)
+    public Response getUserFavoriteArtists(@PathParam("id") Long id) {
+        List<ArtistDTO> artists = userService.getFavoriteArtists(id);
+        List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artists, getBaseUrl());
+        CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
+                artistResources, 5L, 1, 5, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ARTISTS, favoriteArtistsCollectionLinks, id);
+        return buildResponse(collection);
+    }
+
+    @GET
+    @Path(ApiUriConstants.USER_FAVORITE_ALBUMS)
+    public Response getUserFavoriteAlbums(@PathParam("id") Long id) {
+        List<AlbumDTO> albums = userService.getFavoriteAlbums(id);
+        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
+        CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
+                albumResources, 5L, 1, 5, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ALBUMS, favoriteAlbumsCollectionLinks, id);
+        return buildResponse(collection);
+    }
+
+    @GET
+    @Path(ApiUriConstants.USER_FAVORITE_SONGS)
+    public Response getUserFavoriteSongs(@PathParam("id") Long id) {
+        List<SongDTO> songs = userService.getFavoriteSongs(id);
+        List<SongResource> songResources = songResourceMapper.toResourceList(songs, getBaseUrl());
+        CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
+                songResources, 5L, 1, 5, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_SONGS, favoriteSongsCollectionLinks, id);
+        return buildResponse(collection);
+    }
+
 }

@@ -20,21 +20,27 @@ public class ApiUriConstants {
     public static final String USER_REVIEWS = ID + "/reviews";
     public static final String USER_FOLLOWERS = ID + "/followers";
     public static final String USER_FOLLOWINGS = ID + "/followings";
+    public static final String USER_FAVORITE_ARTISTS = ID + "/favorite-artists";
+    public static final String USER_FAVORITE_ALBUMS = ID + "/favorite-albums";
+    public static final String USER_FAVORITE_SONGS = ID + "/favorite-songs";
 
     /* ARTISTS */
     public static final String ARTISTS_BASE = API_BASE + "/artists";
     public static final String ARTIST_REVIEWS = ID + "/reviews";
     public static final String ARTIST_ALBUMS = ID + "/albums";
     public static final String ARTIST_SONGS = ID + "/songs";
+    public static final String ARTIST_FAVORITE = ID + "/favorite";
 
     /* ALBUMS */
     public static final String ALBUMS_BASE = API_BASE + "/albums";
     public static final String ALBUM_REVIEWS = ID + "/reviews";
     public static final String ALBUM_SONGS = ID + "/songs";
+    public static final String ALBUM_FAVORITE = ID + "/favorite";
 
     /* SONGS */
     public static final String SONGS_BASE = API_BASE + "/songs";
     public static final String SONG_REVIEWS = ID + "/reviews";
+    public static final String SONG_FAVORITE = ID + "/favorite";
 
     /* REVIEWS */
     public static final String REVIEWS_BASE = API_BASE + "/reviews";

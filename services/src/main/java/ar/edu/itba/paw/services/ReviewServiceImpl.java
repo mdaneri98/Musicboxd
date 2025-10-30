@@ -218,7 +218,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public ReviewDTO findArtistReviewById(Long id, Long loggedUserId) {
-        ArtistReview review = reviewDao.findArtistReviewById(id).get();
+        ArtistReview review = reviewDao.findArtistReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
         review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
         review.setLiked(isLiked(loggedUserId, review.getId()));
         return reviewMapper.toDTO(review);

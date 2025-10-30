@@ -17,6 +17,7 @@ import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
+import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.services.SongService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +40,9 @@ public class AlbumController extends BaseController {
 
     @Autowired
     private SongService songService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private AlbumResourceMapper albumResourceMapper;
@@ -174,6 +178,20 @@ public class AlbumController extends BaseController {
         SongDTO responseDTO = songService.create(songDTO);
         SongResource songResource = songResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(songResource);
+    }
+
+    @POST
+    @Path(ApiUriConstants.ALBUM_FAVORITE)
+    public Response addAlbumFavorite(@PathParam("id") Long id) {
+        userService.addFavoriteAlbum(SecurityContextUtils.getCurrentUserId(), id);
+        return buildCreatedResponse(albumService.findById(id));
+    }
+
+    @DELETE
+    @Path(ApiUriConstants.ALBUM_FAVORITE)
+    public Response removeAlbumFavorite(@PathParam("id") Long id) {
+        userService.removeFavoriteAlbum(SecurityContextUtils.getCurrentUserId(), id);
+        return buildNoContentResponse();
     }
 }
 

@@ -23,6 +23,7 @@ import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
+import ar.edu.itba.paw.services.UserService;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -49,6 +50,9 @@ public class ArtistController extends BaseController {
 
     @Autowired
     private SongService songService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private SongResourceMapper songResourceMapper;
@@ -196,6 +200,20 @@ public class ArtistController extends BaseController {
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                 songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_SONGS, songsCollectionLinks, id);
         return buildResponse(collection);
+    }
+    
+    @POST
+    @Path(ApiUriConstants.ARTIST_FAVORITE)
+    public Response addArtistFavorite(@PathParam("id") Long id) {
+        userService.addFavoriteArtist(SecurityContextUtils.getCurrentUserId(), id);
+        return buildCreatedResponse(artistService.findById(id));
+    }
+
+    @DELETE
+    @Path(ApiUriConstants.ARTIST_FAVORITE)
+    public Response removeArtistFavorite(@PathParam("id") Long id) {
+        userService.removeFavoriteArtist(SecurityContextUtils.getCurrentUserId(), id);
+        return buildNoContentResponse();
     }
 }
 
