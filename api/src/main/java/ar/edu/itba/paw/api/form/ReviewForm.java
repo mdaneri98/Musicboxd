@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.form;
+package ar.edu.itba.paw.api.form;
 
 import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.Size;

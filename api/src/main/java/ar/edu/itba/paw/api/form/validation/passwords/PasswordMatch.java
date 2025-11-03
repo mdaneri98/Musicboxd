@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.form.validation.passwords;
+package ar.edu.itba.paw.api.form.validation.passwords;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

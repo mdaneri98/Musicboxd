@@ -1,7 +1,7 @@
-package ar.edu.itba.paw.webapp.form;
+package ar.edu.itba.paw.api.form;
 
-import ar.edu.itba.paw.webapp.form.validation.passwords.PasswordConfirmation;
-import ar.edu.itba.paw.webapp.form.validation.passwords.PasswordMatch;
+import ar.edu.itba.paw.api.form.validation.passwords.PasswordConfirmation;
+import ar.edu.itba.paw.api.form.validation.passwords.PasswordMatch;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

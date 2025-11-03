@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.form.validation;
+package ar.edu.itba.paw.api.form.validation;
 
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,6 @@ public class EmailNotInUseValidator implements ConstraintValidator<EmailNotInUse
         if (s == null || s.length() < 3)
             return true;
 
-        return userService.findByEmail(s).isEmpty();
+        return !userService.emailExists(s);
     }
 }

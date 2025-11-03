@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.form;
+package ar.edu.itba.paw.api.form;
 
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;

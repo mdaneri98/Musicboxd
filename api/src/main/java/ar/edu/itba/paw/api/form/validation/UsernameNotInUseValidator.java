@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.form.validation;
+package ar.edu.itba.paw.api.form.validation;
 
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

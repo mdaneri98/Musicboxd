@@ -1,9 +1,9 @@
-package ar.edu.itba.paw.webapp.form;
+package ar.edu.itba.paw.api.form;
 
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
-import ar.edu.itba.paw.webapp.form.validation.UsernameNotInUse;
+import ar.edu.itba.paw.api.form.validation.UsernameNotInUse;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -13,6 +13,7 @@ public class UserProfileForm {
 
     @Size(min = 4, max = 50, message = "{validation.profile.username.size}")
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.profile.username.pattern}")
+    @UsernameNotInUse(message = "{validation.profile.username.in.use}")
     private String username;
 
     @Size(max = 100, message = "{validation.profile.name.size}")
