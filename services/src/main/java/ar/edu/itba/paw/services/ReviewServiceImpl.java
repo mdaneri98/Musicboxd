@@ -12,6 +12,7 @@ import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.persistence.*;
 import ar.edu.itba.paw.exception.email.AcknowledgementEmailException;
+import ar.edu.itba.paw.exception.conflict.UserAlreadyReviewedException;
 import ar.edu.itba.paw.exception.not_found.ReviewNotFoundException;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
 import ar.edu.itba.paw.exception.UnkownReviewTypeException;
@@ -131,6 +132,7 @@ public class ReviewServiceImpl implements ReviewService {
         ArtistReview entity = new ArtistReview();
         entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException(review.getUserId())));
         entity.setArtist(artistDao.findById(review.getItemId()).orElseThrow(() -> new ArtistNotFoundException(review.getItemId())));
+        if (artistService.hasUserReviewed(review.getUserId(), review.getItemId())) throw new UserAlreadyReviewedException(review.getUserId(), review.getItemId(), "Artist");
         MergeUtils.mergeReviewFields(entity, review);
         Review createdReview = reviewDao.create(entity);
         userService.updateUserReviewAmount(createdReview.getUser().getId());
@@ -146,6 +148,7 @@ public class ReviewServiceImpl implements ReviewService {
         AlbumReview entity = new AlbumReview();
         entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException(review.getUserId())));
         entity.setAlbum(albumDao.findById(review.getItemId()).orElseThrow(() -> new AlbumNotFoundException(review.getItemId())));
+        if (albumService.hasUserReviewed(review.getUserId(), review.getItemId())) throw new UserAlreadyReviewedException(review.getUserId(), review.getItemId(), "Album");
         MergeUtils.mergeReviewFields(entity, review);
         Review createdReview = reviewDao.create(entity);
         userService.updateUserReviewAmount(createdReview.getUser().getId());
@@ -161,6 +164,7 @@ public class ReviewServiceImpl implements ReviewService {
         SongReview entity = new SongReview();
         entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException(review.getUserId())));
         entity.setSong(songDao.findById(review.getItemId()).orElseThrow(() -> new SongNotFoundException(review.getItemId())));
+        if (songService.hasUserReviewed(review.getUserId(), review.getItemId())) throw new UserAlreadyReviewedException(review.getUserId(), review.getItemId(), "Song");
         MergeUtils.mergeReviewFields(entity, review);
         Review createdReview = reviewDao.create(entity);
         userService.updateUserReviewAmount(createdReview.getUser().getId());
