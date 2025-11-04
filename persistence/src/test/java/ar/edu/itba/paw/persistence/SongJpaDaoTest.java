@@ -96,7 +96,7 @@ public class SongJpaDaoTest {
         int pageSize = 10;
 
         // 2. Execute
-        List<Song> songList = songDao.findByArtistId(PRE_EXISTING_ARTIST_2_ID, pageSize, offset);
+        List<Song> songList = songDao.findByArtistId(PRE_EXISTING_ARTIST_2_ID, FilterType.POPULAR,pageSize, offset);
 
         // 3. Post-conditions
         assertEquals(5, songList.size());
@@ -109,7 +109,7 @@ public class SongJpaDaoTest {
         int pageSize = 10;
 
         // 2. Execute
-        List<Song> songList = songDao.findByArtistId(NEW_ARTIST_ID, pageSize, page);
+        List<Song> songList = songDao.findByArtistId(NEW_ARTIST_ID, FilterType.POPULAR,pageSize, page);
 
         // 3. Post-conditions
         assertEquals(0, songList.size());
