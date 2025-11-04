@@ -73,8 +73,8 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findByArtistId(Long id, Integer pageNum, Integer pageSize) {
-        List<Song> songs = songDao.findByArtistId(id, pageSize, (pageNum - 1) * pageSize);
+    public List<SongDTO> findByArtistId(Long id, FilterType filterType, Integer pageNum, Integer pageSize) {
+        List<Song> songs = songDao.findByArtistId(id, filterType, pageSize, (pageNum - 1) * pageSize);
         return songMapper.toDTOList(songs);
     }
 

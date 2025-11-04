@@ -24,4 +24,9 @@ public class CollectionResourceMapper {
         
         return collection;
     }
+
+    public <R> CollectionResource<R> createCollection(
+        List<R> resources, Long totalCount, int page, int size, String baseUrl, String resourcePath, CollectionLinkManager collectionLinkManager) { // No id
+        return createCollection(resources, totalCount, page, size, baseUrl, resourcePath, collectionLinkManager, null);
+    }
 }

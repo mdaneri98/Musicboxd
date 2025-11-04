@@ -7,6 +7,7 @@ import ar.edu.itba.paw.api.utils.UriBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 /**
  * Link manager for Review resources using HATEOASUtils for common operations
  */
@@ -19,11 +20,13 @@ public class ReviewLinkManager {
     public void addReviewLinks(Resource<ReviewDTO> resource, String baseUrl, Long reviewId) {
         HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.REVIEWS_BASE, reviewId);
         HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.REVIEWS_BASE, resource.getData().getItemImageId());
-        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), "comments", "Review comments", "GET");
-        resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), "likes", "Review likes", "GET");
-        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), "comments", "Create comment", "POST");
-        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), "comments", "Update comment", "PUT");
-        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), "comments", "Delete comment", "DELETE");
-        resource.addLink(uriBuilder.buildReviewUri(baseUrl, reviewId), "block", "Block/Unblock review", "PATCH");
+        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), ControllerUtils.RELATION_COMMENTS, "Review comments", ControllerUtils.METHOD_GET);
+        resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), ControllerUtils.RELATION_LIKES, "Review likes", ControllerUtils.METHOD_GET);
+        resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), ControllerUtils.RELATION_LIKES, "Like review", ControllerUtils.METHOD_POST);
+        resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), ControllerUtils.RELATION_LIKES, "Unlike review", ControllerUtils.METHOD_DELETE);   
+        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), ControllerUtils.RELATION_COMMENTS, "Create comment", ControllerUtils.METHOD_POST);
+        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), ControllerUtils.RELATION_COMMENTS, "Update comment", ControllerUtils.METHOD_PUT);
+        resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), ControllerUtils.RELATION_COMMENTS, "Delete comment", ControllerUtils.METHOD_DELETE);
+        resource.addLink(uriBuilder.buildReviewUri(baseUrl, reviewId), ControllerUtils.RELATION_BLOCK, "Block/Unblock review", ControllerUtils.METHOD_PATCH);
     }
 }

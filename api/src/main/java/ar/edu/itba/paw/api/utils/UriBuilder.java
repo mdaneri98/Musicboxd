@@ -3,14 +3,6 @@ package ar.edu.itba.paw.api.utils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-/**
- * Utility class for building URIs using Spring's UriComponentsBuilder.
- * This approach provides:
- * - Automatic URL encoding
- * - Security against path traversal attacks
- * - Type-safe URI construction
- * - Better maintainability 
- */
 @Component
 public class UriBuilder {
     
@@ -25,64 +17,70 @@ public class UriBuilder {
     public String buildUserReviewsUri(String baseUrl, Long userId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.USERS_BASE)
-                .pathSegment(userId.toString(), "reviews")
+                .pathSegment(userId.toString(), ControllerUtils.RELATION_REVIEWS)
                 .toUriString();
     }
     
     public String buildUserFollowersUri(String baseUrl, Long userId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.USERS_BASE)
-                .pathSegment(userId.toString(), "followers")
+                .pathSegment(userId.toString(), ControllerUtils.RELATION_FOLLOWERS)
                 .toUriString();
     }
     
     public String buildUserFollowingUri(String baseUrl, Long userId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.USERS_BASE)
-                .pathSegment(userId.toString(), "following")
+                .pathSegment(userId.toString(), ControllerUtils.RELATION_FOLLOWINGS)
                 .toUriString();
     }
 
     public String buildUserFavoriteArtistsUri(String baseUrl, Long userId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.USERS_BASE)
-                .pathSegment(userId.toString(), "favorite-artists")
+                .pathSegment(userId.toString(), ControllerUtils.RELATION_FAVORITE_ARTISTS)
                 .toUriString();
     }
 
     public String buildUserFavoriteAlbumsUri(String baseUrl, Long userId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.USERS_BASE)
-                .pathSegment(userId.toString(), "favorite-albums")
+                .pathSegment(userId.toString(), ControllerUtils.RELATION_FAVORITE_ALBUMS)
                 .toUriString();
     }
     
     public String buildUserFavoriteSongsUri(String baseUrl, Long userId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.USERS_BASE)
-                .pathSegment(userId.toString(), "favorite-songs")
+                .pathSegment(userId.toString(), ControllerUtils.RELATION_FAVORITE_SONGS)
                 .toUriString();
     }
     // Artist URIs
     public String buildArtistReviewsUri(String baseUrl, Long artistId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.ARTISTS_BASE)
-                .pathSegment(artistId.toString(), "reviews")
+                .pathSegment(artistId.toString(), ControllerUtils.RELATION_REVIEWS)
                 .toUriString();
     }
     
-    public String buildArtistAlbumsUri(String baseUrl, Long artistId) {
+        public String buildArtistAlbumsUri(String baseUrl, Long artistId) {
+            return UriComponentsBuilder.fromHttpUrl(baseUrl)
+                    .path(ApiUriConstants.ARTISTS_BASE)
+                    .pathSegment(artistId.toString(), ControllerUtils.RELATION_ALBUMS)
+                    .toUriString();
+        }
+
+    public String buildArtistSongsUri(String baseUrl, Long artistId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.ARTISTS_BASE)
-                .pathSegment(artistId.toString(), "albums")
+                .pathSegment(artistId.toString(), ControllerUtils.RELATION_SONGS)
                 .toUriString();
     }
-
 
     public String buildArtistFavoriteUri(String baseUrl, Long artistId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.ARTISTS_BASE)
-                .pathSegment(artistId.toString(), "favorite")
+                .pathSegment(artistId.toString(), ControllerUtils.RELATION_FAVORITE)
                 .toUriString();
     }
     
@@ -90,14 +88,14 @@ public class UriBuilder {
     public String buildAlbumReviewsUri(String baseUrl, Long albumId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.ALBUMS_BASE)
-                .pathSegment(albumId.toString(), "reviews")
+                .pathSegment(albumId.toString(), ControllerUtils.RELATION_REVIEWS)
                 .toUriString();
     }
     
     public String buildAlbumSongsUri(String baseUrl, Long albumId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.ALBUMS_BASE)
-                .pathSegment(albumId.toString(), "songs")
+                .pathSegment(albumId.toString(), ControllerUtils.RELATION_SONGS)
                 .toUriString();
     }
 
@@ -111,7 +109,7 @@ public class UriBuilder {
     public String buildAlbumFavoriteUri(String baseUrl, Long albumId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.ALBUMS_BASE)
-                .pathSegment(albumId.toString(), "favorite")
+                .pathSegment(albumId.toString(), ControllerUtils.RELATION_FAVORITE)
                 .toUriString();
     }
     
@@ -119,7 +117,7 @@ public class UriBuilder {
     public String buildSongReviewsUri(String baseUrl, Long songId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.SONGS_BASE)
-                .pathSegment(songId.toString(), "reviews")
+                .pathSegment(songId.toString(), ControllerUtils.RELATION_REVIEWS)
                 .toUriString();
     }
 
@@ -140,7 +138,7 @@ public class UriBuilder {
     public String buildSongFavoriteUri(String baseUrl, Long songId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.SONGS_BASE)
-                .pathSegment(songId.toString(), "favorite")
+                .pathSegment(songId.toString(), ControllerUtils.RELATION_FAVORITE)
                 .toUriString();
     }
     
@@ -155,14 +153,14 @@ public class UriBuilder {
     public String buildReviewCommentsUri(String baseUrl, Long reviewId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.REVIEWS_BASE)
-                .pathSegment(reviewId.toString(), "comments")
+                .pathSegment(reviewId.toString(), ControllerUtils.RELATION_COMMENTS)
                 .toUriString();
     }
     
     public String buildReviewLikesUri(String baseUrl, Long reviewId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.REVIEWS_BASE)
-                .pathSegment(reviewId.toString(), "likes")
+                .pathSegment(reviewId.toString(), ControllerUtils.RELATION_LIKES)
                 .toUriString();
     }
     
@@ -170,7 +168,7 @@ public class UriBuilder {
     public String buildCommentReviewUri(String baseUrl, Long reviewId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.REVIEWS_BASE)
-                .pathSegment(reviewId.toString(), "comments")
+                .pathSegment(reviewId.toString(), ControllerUtils.RELATION_COMMENTS)
                 .toUriString();
     }
 
@@ -192,21 +190,21 @@ public class UriBuilder {
     public String buildNotificationReadUri(String baseUrl, Long notificationId) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.NOTIFICATIONS_BASE)
-                .pathSegment(notificationId.toString(), "read")
+                .pathSegment(notificationId.toString(), ControllerUtils.RELATION_READ)
                 .toUriString();
     }
 
     public String buildNotificationReadAllUri(String baseUrl) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.NOTIFICATIONS_BASE)
-                .pathSegment("read-all")
+                .pathSegment(ControllerUtils.RELATION_READ_ALL)
                 .toUriString();
     }
 
     public String buildNotificationUnreadCountUri(String baseUrl) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ApiUriConstants.NOTIFICATIONS_BASE)
-                .pathSegment("unread-count")
+                .pathSegment(ControllerUtils.RELATION_UNREAD_COUNT)
                 .toUriString();
     }
 
@@ -246,8 +244,8 @@ public class UriBuilder {
     public String buildPaginatedUri(String baseUrl, String resourcePath, int page, int size, Long id) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(resourcePath)
-                .queryParam("page", page)
-                .queryParam("size", size)
+                .queryParam(ControllerUtils.PAGE_PARAM_NAME, page)
+                .queryParam(ControllerUtils.SIZE_PARAM_NAME, size)
                 .buildAndExpand(id != null ? id.toString() : "")
                 .toUriString();
     }

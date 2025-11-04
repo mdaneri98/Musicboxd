@@ -2,11 +2,11 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.CommentResourceMapper;
-import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
 import ar.edu.itba.paw.services.CommentService;
@@ -37,14 +37,12 @@ public class CommentController extends BaseController {
     @Autowired
     private CommentFormMapper commentFormMapper;
 
-    private final CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-
     @GET
     public Response getAllComments(
-            @QueryParam("search") String search,
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+            @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
         
         if (search != null && !search.isEmpty()) return getCommentBySubstring(search, page, size);
         
@@ -53,17 +51,17 @@ public class CommentController extends BaseController {
         Long totalCount = commentService.countAll();
         
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, commentsCollectionLinks, null);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks);
         
         return buildResponse(collection);
     }
 
-    private Response getCommentBySubstring(String substring, int page, int size) {
+    private Response getCommentBySubstring(String substring, Integer page, Integer size) {
         List<CommentDTO> commentDTOs = commentService.findBySubstring(substring, page, size);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Long totalCount = commentService.countAll();
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, commentsCollectionLinks, null);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks);
         return buildResponse(collection);
     }
 
@@ -79,7 +77,7 @@ public class CommentController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getComment(@PathParam("id") Long id) {
+    public Response getComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         CommentDTO commentDTO = commentService.findById(id);
         CommentResource commentResource = commentResourceMapper.toResource(commentDTO, getBaseUrl());
         return buildResponse(commentResource);
@@ -87,14 +85,14 @@ public class CommentController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    public Response deleteComment(@PathParam("id") Long id) {
+    public Response deleteComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         commentService.delete(id);
         return buildNoContentResponse();
     }
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateComment(@PathParam("id") Long id, @Valid CommentForm commentForm) {
+    public Response updateComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid CommentForm commentForm) {
         CommentDTO commentDTO = commentFormMapper.toDTO(commentForm);
         commentDTO.setId(id);
         CommentDTO responseDTO = commentService.update(commentDTO);

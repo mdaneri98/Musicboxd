@@ -2,7 +2,7 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.NotificationResourceMapper;
-import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.NotificationResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
@@ -31,19 +31,17 @@ public class NotificationController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    private final CollectionLinkManager notificationsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-
     @GET
     public Response getNotifications(
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size) {
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         List<NotificationDTO> notificationDTOs = notificationService.getUserNotifications(loggedUserId, page, size);
         List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
         Long totalCount = notificationService.countByUserId(loggedUserId);
         
         CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
-                notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, notificationsCollectionLinks, null);
+                notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, ControllerUtils.notificationsCollectionLinks);
         
         return buildResponse(collection);
     }
@@ -58,7 +56,7 @@ public class NotificationController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getNotification(@PathParam("id") Long id) {
+    public Response getNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         NotificationDTO notificationDTO = notificationService.findById(id);
         NotificationResource notificationResource = notificationResourceMapper.toResource(notificationDTO, getBaseUrl());
         return buildResponse(notificationResource);
@@ -66,7 +64,7 @@ public class NotificationController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateNotification(@PathParam("id") Long id, @Valid NotificationDTO notificationDTO) {
+    public Response updateNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid NotificationDTO notificationDTO) {
         notificationDTO.setId(id);
         NotificationDTO responseDTO = notificationService.update(notificationDTO);
         NotificationResource notificationResource = notificationResourceMapper.toResource(responseDTO, getBaseUrl());
@@ -75,14 +73,14 @@ public class NotificationController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    public Response deleteNotification(@PathParam("id") Long id) {
+    public Response deleteNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         notificationService.delete(id);
         return buildNoContentResponse();
     }
 
     @PATCH
     @Path(ApiUriConstants.ID)
-    public Response markAsRead(@PathParam("id") Long id, Boolean isRead) {
+    public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, Boolean isRead) {
         if (isRead) notificationService.markAsRead(id);
         else return buildNoContentResponse();
         NotificationDTO notificationDTO = notificationService.findById(id);

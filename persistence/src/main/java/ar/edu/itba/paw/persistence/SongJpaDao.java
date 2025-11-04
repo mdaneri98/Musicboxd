@@ -30,13 +30,13 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public List<Song> findByArtistId(Long artistId, Integer pageSize, Integer offset) {
+    public List<Song> findByArtistId(Long artistId, FilterType filterType, Integer pageSize, Integer offset) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT s.id FROM song s " +
                 "JOIN album a ON s.album_id = a.id " +
                 "WHERE a.artist_id = :artistId " +
-                "ORDER BY s.avg_rating DESC"
+                filterType.getFilter()
         );
         nativeQuery.setParameter("artistId", artistId);
         nativeQuery.setFirstResult(offset);

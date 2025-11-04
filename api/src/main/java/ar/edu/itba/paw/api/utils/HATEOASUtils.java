@@ -69,25 +69,25 @@ public class HATEOASUtils {
         // First page link
         if (currentPage > 1) {
             String firstUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, 1, pageSize, id);
-            resource.addLink(Link.createLink(firstUri, "first", "First Page", "GET"));
+            resource.addLink(Link.createLink(firstUri, ControllerUtils.RELATION_PAGINATED_FIRST, "First Page", ControllerUtils.METHOD_GET));
         }
         
         // Previous page link
         if (currentPage > 1) {
             String prevUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, currentPage - 1, pageSize, id);
-            resource.addLink(Link.createLink(prevUri, "prev", "Previous Page", "GET"));
+            resource.addLink(Link.createLink(prevUri, ControllerUtils.RELATION_PAGINATED_PREV, "Previous Page", ControllerUtils.METHOD_GET));
         }
         
         // Next page link
         if (currentPage < totalPages) {
             String nextUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, currentPage + 1, pageSize, id);
-            resource.addLink(Link.createLink(nextUri, "next", "Next Page", "GET"));
+            resource.addLink(Link.createLink(nextUri, ControllerUtils.RELATION_PAGINATED_NEXT, "Next Page", ControllerUtils.METHOD_GET));
         }
         
         // Last page link
         if (currentPage < totalPages) {
             String lastUri = uriBuilder.buildPaginatedUri(baseUrl, resourcePath, totalPages, pageSize, id);
-            resource.addLink(Link.createLink(lastUri, "last", "Last Page", "GET"));
+            resource.addLink(Link.createLink(lastUri, ControllerUtils.RELATION_PAGINATED_LAST, "Last Page", ControllerUtils.METHOD_GET));
         }
     }
     
@@ -98,13 +98,13 @@ public class HATEOASUtils {
                                          String relatedResource, Long relatedId) {
         if (relatedId != null) {
             String uri = uriBuilder.buildResourceUri(baseUrl, relatedResource, relatedId);
-            resource.addLink(Link.createLink(uri, "item", "View " + relatedResource, "GET"));
+            resource.addLink(Link.createLink(uri, ControllerUtils.RELATION_ITEM, "View " + relatedResource, ControllerUtils.METHOD_GET));
         }
     }
 
     public static void addImageLinks(Resource<?> resource, String baseUrl, String resourcePath, Long id) {
         String uri = uriBuilder.buildImageUri(baseUrl, id);
-        Link link = new Link(uri, "image", "Image", MediaType.IMAGE_JPEG_VALUE, "GET");
+        Link link = new Link(uri, ControllerUtils.RELATION_IMAGE, "Image", MediaType.IMAGE_JPEG_VALUE, ControllerUtils.METHOD_GET);
         resource.addLink(link);
     }
     
@@ -126,15 +126,6 @@ public class HATEOASUtils {
                 .toUriString();
     }
     
-    /**
-     * Gets the base URL from UriInfo (JAX-RS).
-     * This returns only the application base URL (e.g., http://localhost:8080/api_war)
-     * without any path parameters or request-specific paths.
-     * 
-     * Example:
-     * Request: GET /api_war/api/albums/123/reviews
-     * Returns: http://localhost:8080/api_war
-     */
     public static String getBaseUrl(UriInfo uriInfo) {
         URI baseUri = uriInfo.getBaseUri();
         String baseUrl = baseUri.toString();
@@ -169,10 +160,10 @@ public class HATEOASUtils {
      * Creates search/filter links using UriComponentsBuilder
      */
     public static void addSearchLinks(Resource<?> resource, String baseUrl, String resourcePath) {
-        Map<String, String> sortParams = new HashMap<>(Map.of("filter", ""));
-        Map<String, String> searchParams = new HashMap<>(Map.of("search", ""));
+        Map<String, String> filterParams = new HashMap<>(Map.of(ControllerUtils.FILTER_PARAM_NAME, ""));
+        Map<String, String> searchParams = new HashMap<>(Map.of(ControllerUtils.SEARCH_PARAM_NAME, ""));
 
-        resource.addLink(createLinkWithQuery(baseUrl, resourcePath, "search", "Search resources", "GET", searchParams));
-        resource.addLink(createLinkWithQuery(baseUrl, resourcePath, "sort", "Sort resources", "GET", sortParams));
+        resource.addLink(createLinkWithQuery(baseUrl, resourcePath, ControllerUtils.SEARCH_PARAM_NAME, "Search resources", ControllerUtils.METHOD_GET, searchParams));
+        resource.addLink(createLinkWithQuery(baseUrl, resourcePath, ControllerUtils.FILTER_PARAM_NAME, "Filter resources", ControllerUtils.METHOD_GET, filterParams));
     }
 }

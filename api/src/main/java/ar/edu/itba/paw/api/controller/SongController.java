@@ -2,12 +2,12 @@ package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
-import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.mapper.resource.SongResourceMapper;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
@@ -55,15 +55,12 @@ public class SongController extends BaseController {
     @Autowired
     private ModSongFormMapper modSongFormMapper;
 
-    private final CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private final CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-
     @GET
     public Response getAllSongs(
-            @QueryParam("search") String search,
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+            @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
         if (search != null && !search.isEmpty()) return getSongBySubstring(search, page, size);
 
@@ -72,17 +69,17 @@ public class SongController extends BaseController {
         Long totalCount = songService.countAll();
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, songsCollectionLinks, null);
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, ControllerUtils.songsCollectionLinks);
         
         return buildResponse(collection);
     }
 
-    private Response getSongBySubstring(String substring, int page, int size) {
+    private Response getSongBySubstring(String substring, Integer page, Integer size) {
         List<SongDTO> songDTOs = songService.findByTitleContaining(substring, page, size);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         Long totalCount = songService.countAll();
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, songsCollectionLinks, null);
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, ControllerUtils.songsCollectionLinks);
         return buildResponse(collection);
     }
 
@@ -97,7 +94,7 @@ public class SongController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getSong(@PathParam("id") Long id) {
+    public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         SongDTO songDTO = songService.findById(id);
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
         return buildResponse(songResource);
@@ -106,7 +103,7 @@ public class SongController extends BaseController {
     @PUT
     @Path(ApiUriConstants.ID)
     public Response updateSong(
-            @PathParam("id") Long id,
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
         SongDTO songDTO = modSongFormMapper.toDTO(modSongForm);
         songDTO.setId(id);
@@ -117,7 +114,7 @@ public class SongController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    public Response deleteSong(@PathParam("id") Long id) {
+    public Response deleteSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         songService.delete(id);
         return buildNoContentResponse();
     }
@@ -125,9 +122,9 @@ public class SongController extends BaseController {
     @GET
     @Path(ApiUriConstants.SONG_REVIEWS)
     public Response getSongReviews(
-            @PathParam("id") Long id,
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size) {
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
 
@@ -137,7 +134,7 @@ public class SongController extends BaseController {
         Long totalCount = reviewService.countAll();
                 
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                    reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE + ApiUriConstants.SONG_REVIEWS, reviewsCollectionLinks, id);
+                    reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE + ApiUriConstants.SONG_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
         
         return buildResponse(collection);
     }
@@ -145,11 +142,11 @@ public class SongController extends BaseController {
     @POST
     @Path(ApiUriConstants.SONG_REVIEWS)
     public Response createSongReview(
-            @PathParam("id") Long id,
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ReviewForm reviewForm) {
         ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         reviewDTO.setItemId(id);
-        reviewDTO.setItemType("Song");
+        reviewDTO.setItemType(ControllerUtils.ITEM_TYPE_SONG);
         ReviewDTO responseDTO = reviewService.create(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
@@ -157,14 +154,14 @@ public class SongController extends BaseController {
 
     @POST
     @Path(ApiUriConstants.SONG_FAVORITE)
-    public Response addSongFavorite(@PathParam("id") Long id) {
+    public Response addSongFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.addFavoriteSong(SecurityContextUtils.getCurrentUserId(), id);
         return buildCreatedResponse(songService.findById(id));
     }
 
     @DELETE
     @Path(ApiUriConstants.SONG_FAVORITE)
-    public Response removeSongFavorite(@PathParam("id") Long id) {
+    public Response removeSongFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.removeFavoriteSong(SecurityContextUtils.getCurrentUserId(), id);
         return buildNoContentResponse();
     }

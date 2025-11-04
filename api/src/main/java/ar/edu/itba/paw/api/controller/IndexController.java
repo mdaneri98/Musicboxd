@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 
 @Path(ApiUriConstants.API_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,17 +38,18 @@ public class IndexController extends BaseController {
             }
         };
 
-            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.USERS_BASE, "Users", "GET"));
-            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.ARTISTS_BASE, "Artists", "GET"));
-            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.ALBUMS_BASE, "Albums", "GET"));
-            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.SONGS_BASE, "Songs", "GET"));
-            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.REVIEWS_BASE, "Reviews", "GET"));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.USERS_BASE, ControllerUtils.ITEM_TYPE_USER, ControllerUtils.METHOD_GET));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.ARTISTS_BASE, ControllerUtils.ITEM_TYPE_ARTIST, ControllerUtils.METHOD_GET));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.ALBUMS_BASE, ControllerUtils.ITEM_TYPE_ALBUM, ControllerUtils.METHOD_GET));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.SONGS_BASE, ControllerUtils.ITEM_TYPE_SONG, ControllerUtils.METHOD_GET));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.REVIEWS_BASE, ControllerUtils.ITEM_TYPE_REVIEW, ControllerUtils.METHOD_GET));
 
             
             // Add authentication links
-            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.LOGIN, "Login", "GET"));
-            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.REGISTER, "Register", "GET"));
-            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.LOGOUT, "Logout", "GET"));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.LOGIN, ControllerUtils.ACTION_LOGIN, ControllerUtils.METHOD_POST));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.REGISTER, ControllerUtils.ACTION_REGISTER, ControllerUtils.METHOD_POST));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.REFRESH, ControllerUtils.ACTION_REFRESH, ControllerUtils.METHOD_POST));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.LOGOUT, ControllerUtils.ACTION_LOGOUT, ControllerUtils.METHOD_POST));
         
         return buildResponse(apiResource);
     }

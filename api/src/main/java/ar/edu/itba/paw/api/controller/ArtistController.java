@@ -22,7 +22,6 @@ import ar.edu.itba.paw.api.models.resources.AlbumResource;
 import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.services.SongService;
-import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.api.form.ReviewForm;
 import ar.edu.itba.paw.api.form.ModAlbumForm;
@@ -31,6 +30,7 @@ import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModArtistFormMapper;
 import ar.edu.itba.paw.services.ImageService;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -50,19 +50,22 @@ public class ArtistController extends BaseController {
     private AlbumService albumService;
 
     @Autowired
-    private AlbumResourceMapper albumResourceMapper;
-
-    @Autowired
     private ReviewService reviewService;
-
+    
     @Autowired
     private SongService songService;
-
+    
     @Autowired
     private UserService userService;
 
     @Autowired
+    private ImageService imageService;
+    
+    @Autowired
     private SongResourceMapper songResourceMapper;
+
+    @Autowired
+    private AlbumResourceMapper albumResourceMapper;
 
     @Autowired
     private ArtistResourceMapper artistResourceMapper;
@@ -82,20 +85,12 @@ public class ArtistController extends BaseController {
     @Autowired
     private ModArtistFormMapper modArtistFormMapper;
 
-    @Autowired
-    private ImageService imageService;
-
-    private final CollectionLinkManager artistsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private final CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-    private final CollectionLinkManager albumsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-    private final CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
-
     @GET
     public Response getAllArtists(
-            @QueryParam("search") String search,
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+            @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
         if (search != null && !search.isEmpty()) return getArtistBySubstring(search, page, size);
 
@@ -104,17 +99,17 @@ public class ArtistController extends BaseController {
         Long totalCount = artistService.countAll();
         
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
-                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, artistsCollectionLinks, null);
+                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, ControllerUtils.artistsCollectionLinks);
         
         return buildResponse(collection);
     }
 
-    private Response getArtistBySubstring(String substring, int page, int size) {
+    private Response getArtistBySubstring(String substring, Integer page, Integer size) {
         List<ArtistDTO> artists = artistService.findByNameContaining(substring, page, size);
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artists, getBaseUrl());
         Long totalCount = artistService.countAll();
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
-                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, artistsCollectionLinks, null);
+                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, ControllerUtils.artistsCollectionLinks);
         return buildResponse(collection);
     }
 
@@ -129,7 +124,7 @@ public class ArtistController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getArtist(@PathParam("id") Long id) {
+    public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         ArtistDTO artistDTO = artistService.findById(id);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
         return buildResponse(artistResource);
@@ -137,7 +132,7 @@ public class ArtistController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateArtist(@PathParam("id") Long id, @Valid ModArtistForm modArtistForm) {
+    public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModArtistForm modArtistForm) {
         ArtistDTO artistDTO = modArtistFormMapper.toDTO(modArtistForm);
         artistDTO.setImageId(imageService.handleImage(modArtistForm.getArtistImage()));
         artistDTO.setId(id);
@@ -148,7 +143,7 @@ public class ArtistController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    public Response deleteArtist(@PathParam("id") Long id) {
+    public Response deleteArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         artistService.delete(id);
         return buildNoContentResponse();
     }
@@ -156,9 +151,9 @@ public class ArtistController extends BaseController {
     @GET
     @Path(ApiUriConstants.ARTIST_REVIEWS)
     public Response getArtistReviews(
-            @PathParam("id") Long id,
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size) {
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
 
@@ -167,7 +162,7 @@ public class ArtistController extends BaseController {
         Long totalCount = reviewService.countAll();
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_REVIEWS, reviewsCollectionLinks, id);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
         
         return buildResponse(collection);
     }
@@ -176,11 +171,11 @@ public class ArtistController extends BaseController {
     @POST
     @Path(ApiUriConstants.ARTIST_REVIEWS)
     public Response createArtistReview(
-            @PathParam("id") Long id,
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ReviewForm reviewForm) {
         ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         reviewDTO.setItemId(id);
-        reviewDTO.setItemType("Artist");
+        reviewDTO.setItemType(ControllerUtils.ITEM_TYPE_ARTIST);
         ReviewDTO responseDTO = reviewService.createArtistReview(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
@@ -189,16 +184,16 @@ public class ArtistController extends BaseController {
     @GET
     @Path(ApiUriConstants.ARTIST_ALBUMS)
     public Response getArtistAlbums(
-            @PathParam("id") Long id,
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size) {
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
         List<AlbumDTO> albums = albumService.findByArtistId(id);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
         Long totalCount = albumService.countAll();
         
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_ALBUMS, albumsCollectionLinks, id);
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_ALBUMS, ControllerUtils.artistAlbumsCollectionLinks, id);
         
         return buildResponse(collection);
     }
@@ -206,7 +201,7 @@ public class ArtistController extends BaseController {
     @POST
     @Path(ApiUriConstants.ARTIST_ALBUMS)
     public Response createArtistAlbum(
-            @PathParam("id") Long id,
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModAlbumForm modAlbumForm) {
         AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
         albumDTO.setArtistId(id);
@@ -217,25 +212,28 @@ public class ArtistController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ARTIST_SONGS)
-    public Response getArtistSongs(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") int page, @QueryParam("size") @DefaultValue("20") int size) {
-        List<SongDTO> songs = songService.findByArtistId(id, page, size);
+    public Response getArtistSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, 
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.POPULAR_FILTER_STRING) FilterType filter) {
+        List<SongDTO> songs = songService.findByArtistId(id, filter, page, size);
         List<SongResource> songResources = songResourceMapper.toResourceList(songs, getBaseUrl());
         Long totalCount = songService.countAll();
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_SONGS, songsCollectionLinks, id);
+                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_SONGS, ControllerUtils.artistSongsCollectionLinks, id);
         return buildResponse(collection);
     }
     
     @POST
     @Path(ApiUriConstants.ARTIST_FAVORITE)
-    public Response addArtistFavorite(@PathParam("id") Long id) {
+    public Response addArtistFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.addFavoriteArtist(SecurityContextUtils.getCurrentUserId(), id);
         return buildCreatedResponse(artistService.findById(id));
     }
 
     @DELETE
     @Path(ApiUriConstants.ARTIST_FAVORITE)
-    public Response removeArtistFavorite(@PathParam("id") Long id) {
+    public Response removeArtistFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.removeFavoriteArtist(SecurityContextUtils.getCurrentUserId(), id);
         return buildNoContentResponse();
     }

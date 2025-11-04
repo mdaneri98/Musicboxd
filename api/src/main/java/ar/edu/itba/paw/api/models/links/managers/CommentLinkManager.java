@@ -8,6 +8,7 @@ import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 
 @Component
 public class CommentLinkManager {
@@ -17,6 +18,6 @@ public class CommentLinkManager {
 
     public void addCommentLinks(Resource<CommentDTO> resource, String baseUrl, Long commentId) {
         HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.COMMENTS_BASE, commentId);
-        resource.addLink(uriBuilder.buildCommentReviewUri(baseUrl, resource.getData().getReviewId()), "review", "Comment in review", "GET");
+        resource.addLink(uriBuilder.buildCommentReviewUri(baseUrl, resource.getData().getReviewId()), ControllerUtils.RELATION_REVIEW, "Comment in review", ControllerUtils.METHOD_GET);
     }
 }

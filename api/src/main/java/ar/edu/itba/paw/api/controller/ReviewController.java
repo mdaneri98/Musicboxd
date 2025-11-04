@@ -4,7 +4,6 @@ import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.CommentResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.UserResourceMapper;
-import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
@@ -23,6 +22,7 @@ import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.ForbiddenException;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -59,16 +59,12 @@ public class ReviewController extends BaseController {
     @Autowired
     private CommentFormMapper commentFormMapper;
 
-    private final CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private final CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private final CollectionLinkManager likesCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
-
     @GET
     public Response getAllReviews(
-            @QueryParam("search") String search,
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size,
-            @QueryParam("filter") @DefaultValue("FIRST") FilterType filter) {
+            @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
         if (search != null && !search.isEmpty()) return getReviewBySubstring(search, page, size);
         
@@ -77,17 +73,17 @@ public class ReviewController extends BaseController {
         Long totalCount = reviewService.countAll();
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, reviewsCollectionLinks, null);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         
         return buildResponse(collection);
     }
 
-    private Response getReviewBySubstring(String substring, int page, int size) {
+    private Response getReviewBySubstring(String substring, Integer page, Integer size) {
         List<ReviewDTO> reviewDTOs = reviewService.findBySubstring(substring, page, size);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Long totalCount = reviewService.countAll();
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, reviewsCollectionLinks, null);
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         return buildResponse(collection);
     }
 
@@ -101,21 +97,21 @@ public class ReviewController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getReview(@PathParam("id") Long id) {
+    public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(id), getBaseUrl());
         return buildResponse(reviewResource);
     }
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    public Response deleteReview(@PathParam("id") Long id) {
+    public Response deleteReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         reviewService.delete(id);
         return buildNoContentResponse();
     }
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateReview(@PathParam("id") Long id, @Valid ReviewForm reviewForm) {
+    public Response updateReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ReviewForm reviewForm) {
         ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         reviewDTO.setId(id);
         ReviewDTO responseDTO = reviewService.update(reviewDTO);
@@ -126,22 +122,22 @@ public class ReviewController extends BaseController {
     @GET
     @Path(ApiUriConstants.REVIEW_COMMENTS)
     public Response getReviewComments(
-            @PathParam("id") Long id,
-            @QueryParam("page") @DefaultValue("1") int page,
-            @QueryParam("size") @DefaultValue("20") int size) {
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
         
         List<CommentDTO> commentDTOs = commentService.findByReviewId(id, size, page);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Long totalCount = commentService.countByReviewId(id);
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, commentsCollectionLinks, id);
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks, id);
         
         return buildResponse(collection);
     }
 
     @POST
     @Path(ApiUriConstants.REVIEW_COMMENTS)
-    public Response createReviewComment(@PathParam("id") Long id, @Valid CommentForm commentForm) {
+    public Response createReviewComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid CommentForm commentForm) {
         CommentDTO commentDTO = commentFormMapper.toDTO(commentForm);
         commentDTO.setReviewId(id);
         CommentDTO responseDTO = commentService.create(commentDTO);
@@ -151,21 +147,22 @@ public class ReviewController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.REVIEW_LIKES)
-    public Response getReviewLikes(@PathParam("id") Long reviewId, @QueryParam("page") @DefaultValue("1") int page, @QueryParam("size") @DefaultValue("20") int size) {
-        
+    public Response getReviewLikes(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, 
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {  
         ReviewDTO reviewDTO = reviewService.findById(reviewId);
         List<UserDTO> userDTOs = reviewService.likedBy(reviewId, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
         Long totalCount = reviewDTO.getLikes().longValue();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE + ApiUriConstants.REVIEW_LIKES, likesCollectionLinks, reviewId);
+                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE + ApiUriConstants.REVIEW_LIKES, ControllerUtils.likesCollectionLinks, reviewId);
         
         return buildResponse(collection);
     }
 
     @POST
     @Path(ApiUriConstants.REVIEW_LIKES)
-        public Response likeReview(@PathParam("id") Long reviewId) {
+        public Response likeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         
         reviewService.createLike(loggedUserId, reviewId);
@@ -174,7 +171,7 @@ public class ReviewController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.REVIEW_LIKES)
-    public Response unlikeReview(@PathParam("id") Long reviewId) {
+    public Response unlikeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         
         reviewService.removeLike(loggedUserId, reviewId);
@@ -184,7 +181,7 @@ public class ReviewController extends BaseController {
 
     @PATCH
     @Path(ApiUriConstants.ID)
-    public Response updateBlockReviewStatus(@PathParam("id") Long reviewId, Boolean isBlocked) {
+    public Response updateBlockReviewStatus(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, Boolean isBlocked) {
 
         if (!SecurityContextUtils.isModerator()) throw new ForbiddenException("You are not allowed to block this review");
 

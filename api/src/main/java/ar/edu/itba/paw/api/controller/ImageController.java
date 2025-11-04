@@ -3,15 +3,13 @@ package ar.edu.itba.paw.api.controller;
 import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Base64;
 
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.dtos.ImageDTO;
 import ar.edu.itba.paw.services.ImageService;
 
 @Path(ApiUriConstants.IMAGES_BASE)
@@ -24,7 +22,7 @@ public class ImageController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getImage(@PathParam("id") Long id) {
+    public Response getImage(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Image image = imageService.findById(id);
         byte[] array = image.getBytes();
 
