@@ -11,6 +11,7 @@ import ar.edu.itba.paw.persistence.UserVerificationDao;
 import ar.edu.itba.paw.exception.conflict.UserAlreadyExistsException;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
 import ar.edu.itba.paw.exception.email.VerificationEmailException;
+import ar.edu.itba.paw.exception.conflict.FavoriteLimitException;
 import ar.edu.itba.paw.services.mappers.UserMapper;
 import ar.edu.itba.paw.services.mappers.ArtistMapper;
 import ar.edu.itba.paw.services.mappers.AlbumMapper;
@@ -280,10 +281,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Boolean addFavoriteArtist(Long userId, Long artistId) {
         LOGGER.info("Adding favorite artist with ID: {} for user with ID: {}", artistId, userId);
-        if (getFavoriteArtistsCount(userId) >= 5) {
-            LOGGER.warn("User with ID: {} has reached the maximum number of favorite artists", userId);
-            return false;
-        }
+        if (getFavoriteArtistsCount(userId) >= 5) throw new FavoriteLimitException(userId);
         boolean result = userDao.addFavoriteArtist(userId, artistId);
         if (result) LOGGER.info("Favorite artist added successfully");
         else LOGGER.warn("Failed to add favorite artist");
@@ -316,10 +314,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Boolean addFavoriteAlbum(Long userId, Long albumId) {
         LOGGER.info("Adding favorite album with ID: {} for user with ID: {}", albumId, userId);
-        if (getFavoriteAlbumsCount(userId) >= 5) {
-            LOGGER.warn("User with ID: {} has reached the maximum number of favorite albums", userId);
-            return false;
-        }
+        if (getFavoriteAlbumsCount(userId) >= 5) throw new FavoriteLimitException(userId);
         boolean result = userDao.addFavoriteAlbum(userId, albumId);
         if (result) LOGGER.info("Favorite album added successfully");
         else LOGGER.warn("Failed to add favorite album");
@@ -352,10 +347,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Boolean addFavoriteSong(Long userId, Long songId) {
         LOGGER.info("Adding favorite song with ID: {} for user with ID: {}", songId, userId);
-        if (getFavoriteSongsCount(userId) >= 5) {
-            LOGGER.warn("User with ID: {} has reached the maximum number of favorite songs", userId);
-            return false;
-        }
+        if (getFavoriteSongsCount(userId) >= 5) throw new FavoriteLimitException(userId);
         boolean result = userDao.addFavoriteSong(userId, songId);
         if (result) LOGGER.info("Favorite song added successfully");
         else LOGGER.warn("Failed to add favorite song");
