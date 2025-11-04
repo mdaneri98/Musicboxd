@@ -128,17 +128,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO create(CreateUserDTO createUserDTO) {
-        Long DEFAULT_IMAGE_ID = 1L;
         LOGGER.info("Creating new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
         String hashedPassword = passwordEncoder.encode(createUserDTO.getPassword());
 
         if (usernameExists(createUserDTO.getUsername())) throw new UserAlreadyExistsException(createUserDTO.getUsername(), "username");
         if (emailExists(createUserDTO.getEmail())) throw new UserAlreadyExistsException(createUserDTO.getEmail(), "email");
 
-        Optional<User> userOpt = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword, imageService.findById(DEFAULT_IMAGE_ID));
-        if (userOpt.isEmpty()) throw new RuntimeException("Failed to create user");
-        
-        User createdUser = userOpt.get();
+        User createdUser = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword, imageService.findById(imageService.getDefaultProfileImgId())).orElseThrow(() -> new RuntimeException("Failed to create user"));
         createdUser.setPreferredLanguage(LocaleContextHolder.getLocale().getLanguage());
         this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
         LOGGER.info("Successfully created new user with ID: {}", createdUser.getId());
@@ -251,7 +247,10 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UserDTO userDTO) {
         LOGGER.info("Updating user with ID: {}", userDTO.getId());
         User existingUser = userDao.findById(userDTO.getId()).orElseThrow(() -> new UserNotFoundException(userDTO.getId()));
-        existingUser.setImage(imageService.findById(userDTO.getImageId())); 
+        
+        if (userDTO.getImageId() != null) 
+            existingUser.setImage(imageService.findById(userDTO.getImageId()));
+
         MergeUtils.mergeUserFields(existingUser, userDTO);
         User updatedUser = saveUser(existingUser);
         LOGGER.info("User with ID {} updated successfully", userDTO.getId());
@@ -423,8 +422,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private User saveUser(User user) {
-        return userDao.updateUser(user.getId(), user)
-                
-        .orElseThrow(() -> new UserNotFoundException(user.getId()));
+        return userDao.updateUser(user.getId(), user).orElseThrow(() -> new UserNotFoundException(user.getId()));
     }
 }

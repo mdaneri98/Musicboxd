@@ -64,6 +64,8 @@ public class Artist {
         this.image = image;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Artist(Long id, String name, String bio, Image image) {
@@ -71,12 +73,20 @@ public class Artist {
         this.name = name;
         this.bio = bio;
         this.image = image;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Artist(Long id, String name, Image image) {
         this.id = id;
         this.name = name;
         this.image = image;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Artist(String name, String bio, Image image, Integer ratingCount, Double avgRating) {
@@ -85,12 +95,18 @@ public class Artist {
         this.image = image;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Artist(String name, String bio, Image image) {
         this.name = name;
         this.bio = bio;
         this.image = image;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Artist(Long id) {

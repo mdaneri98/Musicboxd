@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
-import ar.edu.itba.paw.api.mapper.CommentResourceMapper;
-import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
-import ar.edu.itba.paw.api.mapper.UserResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CommentResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.UserResourceMapper;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.CommentResource;
@@ -17,6 +17,10 @@ import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.api.form.ReviewForm;
+import ar.edu.itba.paw.api.form.CommentForm;
+import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
+import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.ForbiddenException;
 
@@ -49,9 +53,15 @@ public class ReviewController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private CollectionLinkManager likesCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
+    @Autowired
+    private ReviewFormMapper reviewFormMapper;
+
+    @Autowired
+    private CommentFormMapper commentFormMapper;
+
+    private final CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private final CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private final CollectionLinkManager likesCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
 
     @GET
     public Response getAllReviews(
@@ -82,7 +92,8 @@ public class ReviewController extends BaseController {
     }
 
     @POST
-    public Response createReview(@Valid ReviewDTO reviewDTO) {
+    public Response createReview(@Valid ReviewForm reviewForm) {
+        ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         ReviewDTO responseDTO = reviewService.create(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
@@ -104,7 +115,8 @@ public class ReviewController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateReview(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
+    public Response updateReview(@PathParam("id") Long id, @Valid ReviewForm reviewForm) {
+        ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         reviewDTO.setId(id);
         ReviewDTO responseDTO = reviewService.update(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
@@ -129,7 +141,8 @@ public class ReviewController extends BaseController {
 
     @POST
     @Path(ApiUriConstants.REVIEW_COMMENTS)
-    public Response createReviewComment(@PathParam("id") Long id, @Valid CommentDTO commentDTO) {
+    public Response createReviewComment(@PathParam("id") Long id, @Valid CommentForm commentForm) {
+        CommentDTO commentDTO = commentFormMapper.toDTO(commentForm);
         commentDTO.setReviewId(id);
         CommentDTO responseDTO = commentService.create(commentDTO);
         CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());

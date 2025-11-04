@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import ar.edu.itba.paw.exception.not_found.ArtistNotFoundException;
 import java.util.List;
@@ -124,16 +123,10 @@ public class ArtistServiceImpl implements ArtistService {
         LOGGER.info("Creating new artist from DTO: {}", artistDTO.getName());
 
         Image image;
-        if (artistDTO.getImageId() == 0)
-            image = imageService.findById(imageService.getDefaultImgId());
-        else
-            image = imageService.findById(artistDTO.getImageId());
+        if (artistDTO.getImageId() == null) image = imageService.findById(imageService.getDefaultImgId());
+        else image = imageService.findById(artistDTO.getImageId());
 
         Artist artist = new Artist(artistDTO.getName(), artistDTO.getBio(), image);
-        artist.setCreatedAt(LocalDateTime.now());
-        artist.setUpdatedAt(LocalDateTime.now());
-        artist.setRatingCount(0);
-        artist.setAvgRating(0d);
         artist = artistDao.create(artist);
         LOGGER.info("Artist created successfully with ID: {}", artist.getId());
 

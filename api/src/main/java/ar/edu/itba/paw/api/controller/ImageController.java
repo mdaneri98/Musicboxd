@@ -34,11 +34,4 @@ public class ImageController extends BaseController {
 
         return Response.status(Response.Status.OK).entity(array).header(getBaseUrl(), headers).build();
     }
-
-    @POST
-    public Response uploadImage(@Valid ImageDTO imageDTO) {
-        byte[] bytes = Base64.getDecoder().decode(imageDTO.getBase64());
-        final Image image = imageService.create(bytes);
-        return buildCreatedResponse(image);
-    }
 }

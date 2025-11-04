@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
-import ar.edu.itba.paw.api.mapper.NotificationResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.NotificationResourceMapper;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.NotificationResource;
@@ -31,7 +31,7 @@ public class NotificationController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    private CollectionLinkManager notificationsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    private final CollectionLinkManager notificationsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
 
     @GET
     public Response getNotifications(

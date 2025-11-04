@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
-import ar.edu.itba.paw.api.mapper.CommentResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CommentResourceMapper;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.CommentResource;
@@ -10,6 +10,8 @@ import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
 import ar.edu.itba.paw.services.CommentService;
+import ar.edu.itba.paw.api.form.CommentForm;
+import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.Valid;
@@ -32,7 +34,10 @@ public class CommentController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    private CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    @Autowired
+    private CommentFormMapper commentFormMapper;
+
+    private final CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
 
     @GET
     public Response getAllComments(
@@ -63,7 +68,8 @@ public class CommentController extends BaseController {
     }
 
     @POST
-    public Response createComment(@Valid CommentDTO commentDTO) {
+    public Response createComment(@Valid CommentForm commentForm) {
+        CommentDTO commentDTO = commentFormMapper.toDTO(commentForm);
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         commentDTO.setUserId(loggedUserId);
         CommentDTO responseDTO = commentService.create(commentDTO);
@@ -88,7 +94,8 @@ public class CommentController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateComment(@PathParam("id") Long id, @Valid CommentDTO commentDTO) {
+    public Response updateComment(@PathParam("id") Long id, @Valid CommentForm commentForm) {
+        CommentDTO commentDTO = commentFormMapper.toDTO(commentForm);
         commentDTO.setId(id);
         CommentDTO responseDTO = commentService.update(commentDTO);
         CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());

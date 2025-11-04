@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
-import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
-import ar.edu.itba.paw.api.mapper.SongResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.SongResourceMapper;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.api.models.resources.SongResource;
@@ -16,7 +16,10 @@ import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
+import ar.edu.itba.paw.api.form.ReviewForm;
+import ar.edu.itba.paw.api.form.ModSongForm;
+import ar.edu.itba.paw.api.mapper.dto.ModSongFormMapper;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -41,13 +44,19 @@ public class SongController extends BaseController {
     private ReviewResourceMapper reviewResourceMapper;
 
     @Autowired
+    private ReviewFormMapper reviewFormMapper;
+
+    @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
     @Autowired
     private UserService userService;
 
-    private CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    @Autowired
+    private ModSongFormMapper modSongFormMapper;
+
+    private final CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private final CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
 
     @GET
     public Response getAllSongs(
@@ -79,14 +88,8 @@ public class SongController extends BaseController {
 
     @POST
     public Response createSong(
-            @Valid SongDTO songDTO) {
-        
-        if (songDTO.getAlbumId() == 0) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Album ID is required")
-                    .build();
-        }
-
+            @Valid ModSongForm modSongForm) {
+        SongDTO songDTO = modSongFormMapper.toDTO(modSongForm);
         SongDTO responseDTO = songService.create(songDTO);
         SongResource songResource = songResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(songResource);
@@ -104,15 +107,9 @@ public class SongController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response updateSong(
             @PathParam("id") Long id,
-            @Valid SongDTO songDTO,
-            @QueryParam("albumId") Long albumId) {
-        
+            @Valid ModSongForm modSongForm) {
+        SongDTO songDTO = modSongFormMapper.toDTO(modSongForm);
         songDTO.setId(id);
-        
-        if (albumId != null) {
-            songDTO.setAlbumId(albumId);
-        }
-
         SongDTO responseDTO = songService.update(songDTO);
         SongResource songResource = songResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(songResource);
@@ -149,7 +146,8 @@ public class SongController extends BaseController {
     @Path(ApiUriConstants.SONG_REVIEWS)
     public Response createSongReview(
             @PathParam("id") Long id,
-            @Valid ReviewDTO reviewDTO) {
+            @Valid ReviewForm reviewForm) {
+        ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         reviewDTO.setItemId(id);
         reviewDTO.setItemType("Song");
         ReviewDTO responseDTO = reviewService.create(reviewDTO);

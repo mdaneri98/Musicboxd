@@ -1,35 +1,42 @@
 package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
-import ar.edu.itba.paw.api.mapper.UserResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.UserResourceMapper;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.resources.UserResource;
+import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.api.models.resources.ArtistResource;
-import ar.edu.itba.paw.api.mapper.ArtistResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.ArtistResourceMapper;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.api.models.resources.AlbumResource;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.api.models.resources.SongResource;
-import ar.edu.itba.paw.api.mapper.AlbumResourceMapper;
-import ar.edu.itba.paw.api.mapper.SongResourceMapper;
+import ar.edu.itba.paw.api.form.UserProfileForm;
+import ar.edu.itba.paw.api.mapper.resource.AlbumResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.SongResourceMapper;
+import ar.edu.itba.paw.api.form.UserForm;
+import ar.edu.itba.paw.api.mapper.dto.UserFormMapper;
+import ar.edu.itba.paw.api.mapper.dto.UserProfileFormMapper;
+import ar.edu.itba.paw.models.Image;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.List;
 
 @Path(ApiUriConstants.USERS_BASE)
@@ -42,6 +49,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     private UserResourceMapper userResourceMapper;
@@ -61,13 +71,19 @@ public class UserController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    private CollectionLinkManager usersCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private CollectionLinkManager followingsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
-    private CollectionLinkManager followersCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
-    private CollectionLinkManager reviewsCollectionLinks = followingsCollectionLinks;
-    private CollectionLinkManager favoriteArtistsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
-    private CollectionLinkManager favoriteAlbumsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
-    private CollectionLinkManager favoriteSongsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
+    @Autowired
+    private UserFormMapper userFormMapper;
+
+    @Autowired
+    private UserProfileFormMapper userProfileFormMapper;
+
+    private final CollectionLinkManager usersCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private final CollectionLinkManager followingsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
+    private final CollectionLinkManager followersCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
+    private final CollectionLinkManager reviewsCollectionLinks = followingsCollectionLinks;
+    private final CollectionLinkManager favoriteArtistsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
+    private final CollectionLinkManager favoriteAlbumsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
+    private final CollectionLinkManager favoriteSongsCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
 
     @GET
     public Response getAllUsers(
@@ -104,7 +120,8 @@ public class UserController extends BaseController {
     }
 
     @POST
-    public Response createUser(@Valid CreateUserDTO createUserDTO) {
+    public Response createUser(@Valid UserForm userForm) {
+        CreateUserDTO createUserDTO = userFormMapper.toDTO(userForm);
         UserDTO user = userService.create(createUserDTO);
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
 
@@ -113,8 +130,11 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateUser(@PathParam("id") Long userId, @Valid UserDTO userDTO) {
+    public Response updateUser(@PathParam("id") Long userId, @Valid UserProfileForm userProfileForm) {
+        UserDTO userDTO = userProfileFormMapper.toDTO(userProfileForm);
+        userDTO.setImageId(imageService.handleImage(userProfileForm.getProfilePicture()));
         userDTO.setId(userId);
+        
         UserDTO user = userService.updateUser(userDTO);
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
 

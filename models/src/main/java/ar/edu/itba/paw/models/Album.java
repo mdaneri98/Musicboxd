@@ -76,6 +76,8 @@ public class Album {
         this.artist = artist;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Album(Long id, String title, Image image, String genre, Artist artist, LocalDate releaseDate) {
@@ -85,6 +87,10 @@ public class Album {
         this.artist = artist;
         this.releaseDate = releaseDate;
         this.genre = genre;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Album(String title, Image image, String genre, Artist artist, LocalDate releaseDate, Integer ratingCount, Double avgRating) {
@@ -95,6 +101,8 @@ public class Album {
         this.releaseDate = releaseDate;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Album(String title, Image image, String genre, Artist artist, LocalDate releaseDate) {
@@ -103,6 +111,10 @@ public class Album {
         this.image = image;
         this.artist = artist;
         this.releaseDate = releaseDate;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Album(String title, String genre, Image image, Artist artist) {
@@ -110,11 +122,19 @@ public class Album {
         this.genre = genre;
         this.image = image;
         this.artist = artist;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Album(String title, String genre) {
         this.title = title;
         this.genre = genre;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Album(Long id) {

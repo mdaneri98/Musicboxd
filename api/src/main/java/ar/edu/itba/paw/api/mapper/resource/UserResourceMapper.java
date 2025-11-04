@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.api.mapper;
+package ar.edu.itba.paw.api.mapper.resource;
 
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.resources.UserResource;

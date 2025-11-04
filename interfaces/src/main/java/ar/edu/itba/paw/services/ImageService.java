@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Image;
+import org.springframework.web.multipart.MultipartFile;
 
 
 public interface ImageService {
@@ -16,5 +17,7 @@ public interface ImageService {
     Long getDefaultImgId();
 
     Long getDefaultProfileImgId();
+
+    Long handleImage(MultipartFile file);
 
 }

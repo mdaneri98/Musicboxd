@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.paw.api.mapper.AlbumResourceMapper;
-import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
-import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
-import ar.edu.itba.paw.api.mapper.SongResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.AlbumResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.SongResourceMapper;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.api.models.resources.AlbumResource;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
@@ -19,8 +19,15 @@ import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.api.form.ModAlbumForm;
+import ar.edu.itba.paw.api.form.ReviewForm;
+import ar.edu.itba.paw.api.form.ModSongForm;
+import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
+import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
+import ar.edu.itba.paw.api.mapper.dto.ModSongFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import ar.edu.itba.paw.services.ImageService;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -45,6 +52,9 @@ public class AlbumController extends BaseController {
     private UserService userService;
 
     @Autowired
+    private ImageService imageService;
+
+    @Autowired
     private AlbumResourceMapper albumResourceMapper;
 
     @Autowired
@@ -56,9 +66,18 @@ public class AlbumController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
-    private CollectionLinkManager albumsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-    private CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    @Autowired
+    private ModAlbumFormMapper modAlbumFormMapper;
+
+    @Autowired
+    private ReviewFormMapper reviewFormMapper;
+
+    @Autowired
+    private ModSongFormMapper modSongFormMapper;
+
+    private final CollectionLinkManager albumsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private final CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    private final CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
 
     @GET
     public Response getAllAlbums(
@@ -89,15 +108,9 @@ public class AlbumController extends BaseController {
     }
 
     @POST
-    public Response createAlbum(
-            @Valid AlbumDTO albumDTO) {
-        
-        if (albumDTO.getArtistId() == 0) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Artist ID is required")
-                    .build();
-        }
-
+    public Response createAlbum(@Valid ModAlbumForm modAlbumForm) {
+        AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
+        albumDTO.setImageId(imageService.handleImage(modAlbumForm.getAlbumImage()));
         AlbumDTO responseDTO = albumService.create(albumDTO);
         AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(albumResource);
@@ -113,7 +126,9 @@ public class AlbumController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateAlbum(@PathParam("id") Long id, @Valid AlbumDTO albumDTO) {
+    public Response updateAlbum(@PathParam("id") Long id, @Valid ModAlbumForm modAlbumForm) {
+        AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
+        albumDTO.setImageId(imageService.handleImage(modAlbumForm.getAlbumImage()));
         albumDTO.setId(id);
         AlbumDTO responseDTO = albumService.update(albumDTO);
         AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());
@@ -149,7 +164,8 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ALBUM_REVIEWS)
     public Response createAlbumReview(
             @PathParam("id") Long id,
-            @Valid ReviewDTO reviewDTO) {
+            @Valid ReviewForm reviewForm) {
+        ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         reviewDTO.setItemId(id);
         reviewDTO.setItemType("Album");
         ReviewDTO responseDTO = reviewService.create(reviewDTO);
@@ -173,7 +189,8 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ALBUM_SONGS)
     public Response createAlbumSong(
             @PathParam("id") Long id,
-            @Valid SongDTO songDTO) {
+            @Valid ModSongForm modSongForm) {
+        SongDTO songDTO = modSongFormMapper.toDTO(modSongForm);
         songDTO.setAlbumId(id);
         SongDTO responseDTO = songService.create(songDTO);
         SongResource songResource = songResourceMapper.toResource(responseDTO, getBaseUrl());

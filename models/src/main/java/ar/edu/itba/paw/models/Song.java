@@ -70,6 +70,8 @@ public class Song {
         this.album = album;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Song(Long id, String title, String duration, Integer trackNumber, Album album) {
@@ -85,6 +87,10 @@ public class Song {
         this.title = title;
         this.duration = duration;
         this.album = album;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Song(String title, String duration, Integer trackNumber, Album album, Integer ratingCount, Double avgRating) {
@@ -94,6 +100,8 @@ public class Song {
         this.album = album;
         this.ratingCount = ratingCount;
         this.avgRating = avgRating;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Song(String title, String duration, Integer trackNumber, Album album) {
@@ -101,6 +109,10 @@ public class Song {
         this.duration = duration;
         this.trackNumber = trackNumber;
         this.album = album;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.ratingCount = 0;
+        this.avgRating = 0.0;
     }
 
     public Song(Long id) {

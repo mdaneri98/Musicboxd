@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
@@ -109,17 +108,10 @@ public class AlbumServiceImpl implements AlbumService {
         LOGGER.info("Creating new album from DTO: {} for artist ID: {}", albumDTO.getTitle(), albumDTO.getArtistId());
         
         Image image;
-        if (albumDTO.getImageId() == 0)
-            image = imageService.findById(imageService.getDefaultImgId());
-        else
-            image = imageService.findById(albumDTO.getImageId());
+        if (albumDTO.getImageId() == null) image = imageService.findById(imageService.getDefaultImgId());
+        else image = imageService.findById(albumDTO.getImageId());
 
         Album album = new Album(albumDTO.getTitle(), image, albumDTO.getGenre(), new Artist(albumDTO.getArtistId()), albumDTO.getReleaseDate());
-        album.setCreatedAt(LocalDateTime.now());
-        album.setUpdatedAt(LocalDateTime.now());
-        album.setRatingCount(0);
-        album.setAvgRating(0d);
-
         album = albumDao.create(album);
         LOGGER.info("Album created successfully with ID: {}", album.getId());
 
@@ -167,17 +159,10 @@ public class AlbumServiceImpl implements AlbumService {
         LOGGER.info("Updating multiple albums for artist ID: {}", artist.getId());
         for (AlbumDTO albumDTO : albumsDTO) {
             albumDTO.setArtistId(artist.getId());
-            if (albumDTO.getId() != 0) {
-                if (albumDTO.isDeleted()) {
-                    delete(albumDTO.getId());
-                } else {
-                    update(albumDTO);
-                }
-            } else {
-                if (!albumDTO.isDeleted()) {
-                    create(albumDTO);
-                }
-            }
+            if (albumDTO.getId() != 0 && albumDTO.getId() != null) {
+                if (albumDTO.isDeleted()) delete(albumDTO.getId());
+                else update(albumDTO);
+            } else if (!albumDTO.isDeleted()) create(albumDTO);
         }
         LOGGER.info("All albums updated successfully for artist ID: {}", artist.getId());
         return true;

@@ -112,11 +112,8 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public SongDTO create(SongDTO songDTO) {
         LOGGER.info("Creating new song from DTO: {}", songDTO.getTitle());
-        Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), new Album(songDTO.getAlbumId()));
-        song.setCreatedAt(LocalDateTime.now());
-        song.setUpdatedAt(LocalDateTime.now());
-        song.setRatingCount(0);
-        song.setAvgRating(0d);
+        Album album = albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException(songDTO.getAlbumId()));
+        Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
         songDao.create(song);
         songDao.saveSongArtist(song, new Artist(songDTO.getArtistId()));
         LOGGER.info("Song created successfully with ID: {}", song.getId());
@@ -157,17 +154,10 @@ public class SongServiceImpl implements SongService {
         for (SongDTO songDTO : songsDTO) {
             songDTO.setAlbumId(album.getId());
             songDTO.setArtistId(album.getArtist().getId());
-            if (songDTO.getId() != 0) {
-                if (songDTO.isDeleted()) {
-                    delete(songDTO.getId());
-                } else {
-                    update(songDTO);
-                }
-            } else {
-                if (!songDTO.isDeleted()) {
-                    create(songDTO);
-                }
-            }
+            if (songDTO.getId() != 0 && songDTO.getId() != null) {
+                if (songDTO.isDeleted()) delete(songDTO.getId());
+                else update(songDTO);
+            } else if (!songDTO.isDeleted()) create(songDTO);
         }
         LOGGER.info("All songs updated successfully for album: {}", album.getTitle());
         return true;

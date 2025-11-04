@@ -11,9 +11,11 @@ public class ApiUriConstants {
 
     /* AUTH */
     public static final String AUTH_BASE = API_BASE + "/auth";
-    public static final String LOGIN = AUTH_BASE + "/login";
-    public static final String REGISTER = AUTH_BASE + "/register";
-    public static final String LOGOUT = AUTH_BASE + "/logout";
+    public static final String LOGIN = "/login";
+    public static final String REGISTER = "/register";
+    public static final String LOGOUT = "/logout";
+    public static final String REFRESH = "/refresh";
+    public static final String ME = "/me";
 
     /* USERS */
     public static final String USERS_BASE = API_BASE + "/users";

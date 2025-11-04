@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.api.controller;
 
-import ar.edu.itba.paw.api.mapper.ArtistResourceMapper;
-import ar.edu.itba.paw.api.mapper.CollectionResourceMapper;
-import ar.edu.itba.paw.api.mapper.ReviewResourceMapper;
-import ar.edu.itba.paw.api.mapper.SongResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.ArtistResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.SongResourceMapper;
 import ar.edu.itba.paw.api.models.resources.ArtistResource;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
@@ -17,13 +17,20 @@ import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.services.AlbumService;
-import ar.edu.itba.paw.api.mapper.AlbumResourceMapper;
+import ar.edu.itba.paw.api.mapper.resource.AlbumResourceMapper;
 import ar.edu.itba.paw.api.models.resources.AlbumResource;
 import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.models.dtos.SongDTO;
 import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.api.form.ReviewForm;
+import ar.edu.itba.paw.api.form.ModAlbumForm;
+import ar.edu.itba.paw.api.form.ModArtistForm;
+import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
+import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
+import ar.edu.itba.paw.api.mapper.dto.ModArtistFormMapper;
+import ar.edu.itba.paw.services.ImageService;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -66,11 +73,22 @@ public class ArtistController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
+    @Autowired
+    private ReviewFormMapper reviewFormMapper;
 
-    private CollectionLinkManager artistsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    private CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-    private CollectionLinkManager albumsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-    private CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
+    @Autowired
+    private ModAlbumFormMapper modAlbumFormMapper;
+
+    @Autowired
+    private ModArtistFormMapper modArtistFormMapper;
+
+    @Autowired
+    private ImageService imageService;
+
+    private final CollectionLinkManager artistsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
+    private final CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    private final CollectionLinkManager albumsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
+    private final CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
 
     @GET
     public Response getAllArtists(
@@ -101,7 +119,9 @@ public class ArtistController extends BaseController {
     }
 
     @POST
-    public Response createArtist(@Valid ArtistDTO artistDTO) {
+    public Response createArtist(@Valid ModArtistForm modArtistForm) {
+        ArtistDTO artistDTO = modArtistFormMapper.toDTO(modArtistForm);
+        artistDTO.setImageId(imageService.handleImage(modArtistForm.getArtistImage()));
         ArtistDTO responseDTO = artistService.create(artistDTO);
         ArtistResource artistResource = artistResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(artistResource);
@@ -117,7 +137,9 @@ public class ArtistController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateArtist(@PathParam("id") Long id, @Valid ArtistDTO artistDTO) {
+    public Response updateArtist(@PathParam("id") Long id, @Valid ModArtistForm modArtistForm) {
+        ArtistDTO artistDTO = modArtistFormMapper.toDTO(modArtistForm);
+        artistDTO.setImageId(imageService.handleImage(modArtistForm.getArtistImage()));
         artistDTO.setId(id);
         ArtistDTO responseDTO = artistService.update(artistDTO);
         ArtistResource artistResource = artistResourceMapper.toResource(responseDTO, getBaseUrl());
@@ -155,7 +177,8 @@ public class ArtistController extends BaseController {
     @Path(ApiUriConstants.ARTIST_REVIEWS)
     public Response createArtistReview(
             @PathParam("id") Long id,
-            @Valid ReviewDTO reviewDTO) {
+            @Valid ReviewForm reviewForm) {
+        ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         reviewDTO.setItemId(id);
         reviewDTO.setItemType("Artist");
         ReviewDTO responseDTO = reviewService.createArtistReview(reviewDTO);
@@ -184,7 +207,8 @@ public class ArtistController extends BaseController {
     @Path(ApiUriConstants.ARTIST_ALBUMS)
     public Response createArtistAlbum(
             @PathParam("id") Long id,
-            @Valid AlbumDTO albumDTO) {
+            @Valid ModAlbumForm modAlbumForm) {
+        AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
         albumDTO.setArtistId(id);
         AlbumDTO responseDTO = albumService.create(albumDTO);
         AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());

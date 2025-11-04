@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 
 @Service
@@ -72,5 +74,17 @@ public class ImageServiceImpl implements ImageService {
     @Transactional(readOnly = true)
     public Boolean exists(Long imageId) {
         return imageDao.exists(imageId);
+    }
+
+    public Long handleImage(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+        byte[] bytes;
+        try {
+            bytes = file.getBytes();
+        } catch (IOException e) {
+            LOGGER.error("Error getting bytes from multipart file", e);
+            return null;
+        }
+        return create(bytes).getId();
     }
 }
