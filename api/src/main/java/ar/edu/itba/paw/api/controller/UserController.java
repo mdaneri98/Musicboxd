@@ -87,14 +87,14 @@ public class UserController extends BaseController {
         List<UserDTO> users = userService.findPaginated(filter, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, userService.countUsers(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
+                userResources, userService.countUsers().intValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
         return buildResponse(collection);
     }
 
     private Response getUserBySubstring(String substring, Integer page, Integer size) {
         List<UserDTO> users = userService.findByUsernameContaining(substring, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(users, getBaseUrl());
-        Long totalCount = userService.countUsers();
+        Integer totalCount = userService.countUsers().intValue();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
         return buildResponse(collection);
@@ -149,7 +149,7 @@ public class UserController extends BaseController {
         List<ReviewDTO> reviews = reviewService.findReviewsByUserPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, user.getReviewsAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_REVIEWS, ControllerUtils.userReviewsCollectionLinks, id);
+                reviewResources, user.getReviewsAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_REVIEWS, ControllerUtils.userReviewsCollectionLinks, id);
         return buildResponse(collection);
     }
 
@@ -163,7 +163,7 @@ public class UserController extends BaseController {
         List<UserDTO> followers = userService.getFollowers(id, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(followers, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, user.getFollowersAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWERS, ControllerUtils.followersCollectionLinks, id);
+                userResources, user.getFollowersAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWERS, ControllerUtils.followersCollectionLinks, id);
         return buildResponse(collection);
     }
 
@@ -175,7 +175,7 @@ public class UserController extends BaseController {
         List<UserDTO> following = userService.getFollowings(id, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(following, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, user.getFollowingAmount().longValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWINGS, ControllerUtils.followingsCollectionLinks, id);
+                userResources, user.getFollowingAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWINGS, ControllerUtils.followingsCollectionLinks, id);
         return buildResponse(collection);
     }
 
@@ -200,7 +200,7 @@ public class UserController extends BaseController {
         List<ArtistDTO> artists = userService.getFavoriteArtists(id);
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artists, getBaseUrl());
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
-                artistResources, ControllerUtils.FAVORITE_COUNT, ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ARTISTS, ControllerUtils.userFavoriteCollectionLinks, id);
+                artistResources, artists.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ARTISTS, ControllerUtils.userFavoriteCollectionLinks, id);
         return buildResponse(collection);
     }
 
@@ -210,7 +210,7 @@ public class UserController extends BaseController {
         List<AlbumDTO> albums = userService.getFavoriteAlbums(id);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, ControllerUtils.FAVORITE_COUNT, ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ALBUMS, ControllerUtils.userFavoriteCollectionLinks, id);
+                albumResources, albums.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ALBUMS, ControllerUtils.userFavoriteCollectionLinks, id);
         return buildResponse(collection);
     }
 
@@ -220,7 +220,7 @@ public class UserController extends BaseController {
         List<SongDTO> songs = userService.getFavoriteSongs(id);
         List<SongResource> songResources = songResourceMapper.toResourceList(songs, getBaseUrl());
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                    songResources, ControllerUtils.FAVORITE_COUNT, ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_SONGS, ControllerUtils.userFavoriteCollectionLinks, id);
+                    songResources, songs.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_SONGS, ControllerUtils.userFavoriteCollectionLinks, id);
         return buildResponse(collection);
     }
 

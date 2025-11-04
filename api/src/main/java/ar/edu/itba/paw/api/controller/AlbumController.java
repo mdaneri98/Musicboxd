@@ -87,7 +87,7 @@ public class AlbumController extends BaseController {
 
         List<AlbumDTO> albumDTOs = albumService.findPaginated(filter, page, size);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
-        Long totalCount = albumService.countAll();
+        Integer totalCount = albumService.countAll().intValue();
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
                 albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, ControllerUtils.albumsCollectionLinks);
         return buildResponse(collection);
@@ -96,7 +96,7 @@ public class AlbumController extends BaseController {
     private Response getAlbumBySubstring(String substring, Integer page, Integer size) {
         List<AlbumDTO> albums = albumService.findByTitleContaining(substring, page, size);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
-        Long totalCount = albumService.countAll();
+        Integer totalCount = albumService.countAll().intValue();
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
                 albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, ControllerUtils.albumsCollectionLinks);
         return buildResponse(collection);
@@ -150,7 +150,7 @@ public class AlbumController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, reviewService.countAll(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
+                reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
         
         return buildResponse(collection);
     }
@@ -175,7 +175,7 @@ public class AlbumController extends BaseController {
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                    songResources, songService.countAll(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_SONGS, ControllerUtils.albumSongsCollectionLinks, id);
+                    songResources, songService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_SONGS, ControllerUtils.albumSongsCollectionLinks, id);
         
         return buildResponse(collection);
     }

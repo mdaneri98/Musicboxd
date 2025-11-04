@@ -38,7 +38,7 @@ public class NotificationController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         List<NotificationDTO> notificationDTOs = notificationService.getUserNotifications(loggedUserId, page, size);
         List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-        Long totalCount = notificationService.countByUserId(loggedUserId);
+        Integer totalCount = notificationService.countByUserId(loggedUserId).intValue();
         
         CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
                 notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, ControllerUtils.notificationsCollectionLinks);

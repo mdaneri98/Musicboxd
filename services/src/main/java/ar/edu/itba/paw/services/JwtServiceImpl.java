@@ -31,7 +31,7 @@ public class JwtServiceImpl implements JwtService {
         Map<String, Object> claims = Map.of(
             "userId", userId,
             "username", username,
-            "roles", isModerator ? "USER,MODERATOR" : "USER"
+            "roles", isModerator ? "ROLE_MODERATOR" : "ROLE_USER"
         );
         
         return createToken(claims, username, accessTokenExpiration);

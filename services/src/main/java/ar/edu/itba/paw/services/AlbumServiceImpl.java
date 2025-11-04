@@ -94,11 +94,8 @@ public class AlbumServiceImpl implements AlbumService {
         album.getSongs().forEach(song -> songService.delete(song.getId()));
         Boolean deleted = albumDao.delete(album.getId());
         imageService.delete(album.getImage().getId());
-        if (deleted) {
-            LOGGER.info("Album {} (ID: {}) deleted successfully", album.getTitle(), album.getId());
-        } else {
-            LOGGER.error("Failed to delete album {} (ID: {})", album.getTitle(), album.getId());
-        }
+        if (deleted) LOGGER.info("Album {} (ID: {}) deleted successfully", album.getTitle(), album.getId());
+        else LOGGER.error("Failed to delete album {} (ID: {})", album.getTitle(), album.getId());
         return deleted;
     }
 
@@ -128,9 +125,7 @@ public class AlbumServiceImpl implements AlbumService {
         LOGGER.info("Creating multiple albums for artist ID: {}", artist.getId());
         for (AlbumDTO albumDTO : albumsDTO) {
             albumDTO.setArtistId(artist.getId());
-            if (!albumDTO.isDeleted()) {
-                create(albumDTO);
-            }
+            if (!albumDTO.isDeleted()) create(albumDTO);
         }
         LOGGER.info("All albums created successfully for artist ID: {}", artist.getId());
         return true;
@@ -191,12 +186,9 @@ public class AlbumServiceImpl implements AlbumService {
         int ratingAmount = reviews.size();
         Boolean updated = albumDao.updateRating(albumId, roundedAvgRating, ratingAmount);
 
-        if (updated) {
-            LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        } else {
-            LOGGER.error("Failed to update album rating");
-            LOGGER.error("Album rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        }
+        if (updated) LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        else LOGGER.error("Album rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        
         return updated;
     }
 

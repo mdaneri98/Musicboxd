@@ -68,9 +68,9 @@ public class ReviewController extends BaseController {
 
         if (search != null && !search.isEmpty()) return getReviewBySubstring(search, page, size);
         
-        List<ReviewDTO> reviewDTOs = reviewService.findPaginated(filter, page, size);
+        List<ReviewDTO> reviewDTOs = reviewService.findPaginated(filter, page, size, SecurityContextUtils.getCurrentUserId());
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
-        Long totalCount = reviewService.countAll();
+        Integer totalCount = reviewService.countAll().intValue();
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
@@ -81,7 +81,7 @@ public class ReviewController extends BaseController {
     private Response getReviewBySubstring(String substring, Integer page, Integer size) {
         List<ReviewDTO> reviewDTOs = reviewService.findBySubstring(substring, page, size);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
-        Long totalCount = reviewService.countAll();
+        Integer totalCount = reviewService.countAll().intValue();
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         return buildResponse(collection);
@@ -128,7 +128,7 @@ public class ReviewController extends BaseController {
         
         List<CommentDTO> commentDTOs = commentService.findByReviewId(id, size, page);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
-        Long totalCount = commentService.countByReviewId(id);
+        Integer totalCount = commentService.countByReviewId(id).intValue();
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
                 commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks, id);
         
@@ -153,7 +153,7 @@ public class ReviewController extends BaseController {
         ReviewDTO reviewDTO = reviewService.findById(reviewId);
         List<UserDTO> userDTOs = reviewService.likedBy(reviewId, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
-        Long totalCount = reviewDTO.getLikes().longValue();
+        Integer totalCount = reviewDTO.getLikes().intValue();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE + ApiUriConstants.REVIEW_LIKES, ControllerUtils.likesCollectionLinks, reviewId);
         

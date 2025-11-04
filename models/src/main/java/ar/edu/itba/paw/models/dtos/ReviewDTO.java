@@ -38,6 +38,8 @@ public class ReviewDTO {
 
     private Integer commentAmount;
 
+    private String timeAgo;
+
     // Campos polimórficos para el item relacionado
     @NotNull(message = "Item type is required")
     private String itemType; 
@@ -168,6 +170,14 @@ public class ReviewDTO {
 
     public void setItemImageId(Long itemImageId) {
         this.itemImageId = itemImageId;
+    }
+
+    public String getTimeAgo() {
+        return timeAgo;
+    }
+
+    public void setTimeAgo(String timeAgo) {
+        this.timeAgo = timeAgo;
     }
 }
 

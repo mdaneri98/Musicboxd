@@ -30,7 +30,7 @@ public class ReviewMapper {
         dto.setItemId(review.getItemId());
         dto.setItemName(review.getItemName());
         dto.setItemImageId(review.getItemImage().getId());
-
+        dto.setTimeAgo(review.getTimeAgo());
         return dto;
     }
 

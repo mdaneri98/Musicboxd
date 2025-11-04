@@ -111,10 +111,19 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
-        return reviewDao.findPaginated(filterType, page, pageSize).stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        return findPaginated(filterType, page, pageSize, null);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ReviewDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
+        List<Review> reviews = reviewDao.findPaginated(filterType, page, pageSize);
+        setIsLiked(reviews, loggedUserId);
+        setTimeAgo(reviews);
+        return reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override 
     @Transactional
     public ReviewDTO create(ReviewDTO review) {
         LOGGER.info("Creating new review: {}", review);
@@ -206,11 +215,8 @@ public class ReviewServiceImpl implements ReviewService {
         Boolean res = reviewDao.delete(id);
         updateRatingForItem(reviewMapper.toDTO(review));
         userService.updateUserReviewAmount(review.getUser().getId());
-        if (res) {
-            LOGGER.info("Review with ID: {} deleted successfully", id);
-        } else {
-            LOGGER.warn("Failed to delete review with ID: {}", id);
-        }
+        if (res) LOGGER.info("Review with ID: {} deleted successfully", id);
+        else LOGGER.warn("Failed to delete review with ID: {}", id);
         return res;
     }
 

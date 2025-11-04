@@ -48,7 +48,7 @@ public class CommentController extends BaseController {
         
         List<CommentDTO> commentDTOs = commentService.findPaginated(filter, page, size);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
-        Long totalCount = commentService.countAll();
+        Integer totalCount = commentService.countAll().intValue();
         
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
                 commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks);
@@ -59,7 +59,7 @@ public class CommentController extends BaseController {
     private Response getCommentBySubstring(String substring, Integer page, Integer size) {
         List<CommentDTO> commentDTOs = commentService.findBySubstring(substring, page, size);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
-        Long totalCount = commentService.countAll();
+        Integer totalCount = commentService.countAll().intValue();
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
                 commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks);
         return buildResponse(collection);

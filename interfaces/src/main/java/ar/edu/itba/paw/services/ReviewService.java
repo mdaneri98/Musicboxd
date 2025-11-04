@@ -3,9 +3,12 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.models.dtos.ReviewDTO;
 import java.util.List;
+import ar.edu.itba.paw.models.FilterType;
 
 
 public interface ReviewService extends CrudService<ReviewDTO> {
+
+    List<ReviewDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId);
 
     ReviewDTO findArtistReviewById(Long id, Long loggedUserId);
     ReviewDTO findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId);

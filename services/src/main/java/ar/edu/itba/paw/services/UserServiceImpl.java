@@ -25,7 +25,6 @@ import javax.mail.MessagingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import ar.edu.itba.paw.services.utils.MergeUtils;
@@ -144,18 +143,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserDTO> getFollowers(Long userId, Integer pageNumber, Integer pageSize) {
-        if (userId == null || userDao.findById(userId).isEmpty()) {
-            throw new UserNotFoundException(userId);
-        }
+        if (userId == null || userDao.findById(userId).isEmpty()) throw new UserNotFoundException(userId);  
         return userMapper.toDTOList(userDao.getFollowers(userId, pageNumber, pageSize));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<UserDTO> getFollowings(Long userId, Integer pageNumber, Integer pageSize) {
-        if (userId == null || userDao.findById(userId).isEmpty()) {
-            throw new UserNotFoundException(userId);
-        }
+        if (userId == null || userDao.findById(userId).isEmpty()) throw new UserNotFoundException(userId);  
         return userMapper.toDTOList(userDao.getFollowings(userId, pageNumber, pageSize));
     }
 
@@ -234,11 +229,8 @@ public class UserServiceImpl implements UserService {
     public Long verify(VerificationType type, String code) {
         LOGGER.info("Verifying user with type: {} and code: {}", type, code);
         Long result = userVerificationDao.verify(type, code);
-        if (result != null) {
-            LOGGER.info("User verified successfully");
-        } else {
-            LOGGER.warn("User verification failed");
-        }
+        if (result != null) LOGGER.info("User verified successfully");
+        else LOGGER.warn("User verification failed");
         return result;
     }
 
@@ -273,11 +265,8 @@ public class UserServiceImpl implements UserService {
     public Integer deleteById(Long id) {
         LOGGER.info("Deleting user with ID: {}", id);
         int result = userDao.deleteById(id);
-        if (result > 0) {
-            LOGGER.info("User with ID: {} deleted successfully", id);
-        } else {
-            LOGGER.warn("Failed to delete user with ID: {}", id);
-        }
+        if (result > 0) LOGGER.info("User with ID: {} deleted successfully", id);
+        else LOGGER.warn("Failed to delete user with ID: {}", id);
         return result;
     }
 
@@ -296,11 +285,8 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         boolean result = userDao.addFavoriteArtist(userId, artistId);
-        if (result) {
-            LOGGER.info("Favorite artist added successfully");
-        } else {
-            LOGGER.warn("Failed to add favorite artist");
-        }
+        if (result) LOGGER.info("Favorite artist added successfully");
+        else LOGGER.warn("Failed to add favorite artist");
         return result;
     }
 
@@ -309,11 +295,8 @@ public class UserServiceImpl implements UserService {
     public Boolean removeFavoriteArtist(Long userId, Long artistId) {
         LOGGER.info("Removing favorite artist with ID: {} for user with ID: {}", artistId, userId);
         boolean result = userDao.removeFavoriteArtist(userId, artistId);
-        if (result) {
-            LOGGER.info("Favorite artist removed successfully");
-        } else {
-            LOGGER.warn("Failed to remove favorite artist");
-        }
+        if (result) LOGGER.info("Favorite artist removed successfully");
+        else LOGGER.warn("Failed to remove favorite artist");
         return result;
     }
 
@@ -338,11 +321,8 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         boolean result = userDao.addFavoriteAlbum(userId, albumId);
-        if (result) {
-            LOGGER.info("Favorite album added successfully");
-        } else {
-            LOGGER.warn("Failed to add favorite album");
-        }
+        if (result) LOGGER.info("Favorite album added successfully");
+        else LOGGER.warn("Failed to add favorite album");
         return result;
     }
 
@@ -351,11 +331,8 @@ public class UserServiceImpl implements UserService {
     public Boolean removeFavoriteAlbum(Long userId, Long albumId) {
         LOGGER.info("Removing favorite album with ID: {} for user with ID: {}", albumId, userId);
         boolean result = userDao.removeFavoriteAlbum(userId, albumId);
-        if (result) {
-            LOGGER.info("Favorite album removed successfully");
-        } else {
-            LOGGER.warn("Failed to remove favorite album");
-        }
+        if (result) LOGGER.info("Favorite album removed successfully");
+        else LOGGER.warn("Failed to remove favorite album");
         return result;
     }
 
@@ -380,11 +357,8 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         boolean result = userDao.addFavoriteSong(userId, songId);
-        if (result) {
-            LOGGER.info("Favorite song added successfully");
-        } else {
-            LOGGER.warn("Failed to add favorite song");
-        }
+        if (result) LOGGER.info("Favorite song added successfully");
+        else LOGGER.warn("Failed to add favorite song");
         return result;
     }
 
@@ -393,11 +367,8 @@ public class UserServiceImpl implements UserService {
     public Boolean removeFavoriteSong(Long userId, Long songId) {
         LOGGER.info("Removing favorite song with ID: {} for user with ID: {}", songId, userId);
         boolean result = userDao.removeFavoriteSong(userId, songId);
-        if (result) {
-            LOGGER.info("Favorite song removed successfully");
-        } else {
-            LOGGER.warn("Failed to remove favorite song");
-        }
+        if (result) LOGGER.info("Favorite song removed successfully");
+        else LOGGER.warn("Failed to remove favorite song");
         return result;
     }
 

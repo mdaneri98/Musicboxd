@@ -78,12 +78,8 @@ public class ArtistServiceImpl implements ArtistService {
         Integer ratingAmount = reviews.size();
         Boolean updated = artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
         
-        if (updated) {
-            LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        } else {
-            LOGGER.error("Failed to update artist rating");
-            LOGGER.error("Artist rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        }
+        if (updated) LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        else LOGGER.error("Artist rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
         return updated;
     }
 
@@ -103,11 +99,8 @@ public class ArtistServiceImpl implements ArtistService {
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         Boolean deleted = artistDao.delete(id);
         imageService.delete(artist.getImage().getId());
-        if (deleted) {
-            LOGGER.info("Artist with ID {} deleted successfully", id);
-        } else {
-            LOGGER.error("Failed to delete artist with ID {}", id);
-        }
+        if (deleted) LOGGER.info("Artist with ID {} deleted successfully", id);
+        else LOGGER.error("Failed to delete artist with ID {}", id);
         return deleted;
     }
 

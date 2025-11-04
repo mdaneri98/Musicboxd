@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import ar.edu.itba.paw.services.mappers.SongMapper;
@@ -94,11 +93,8 @@ public class SongServiceImpl implements SongService {
         songDao.deleteReviewsFromSong(id);
         userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
         boolean result = songDao.delete(id);
-        if (result) {
-            LOGGER.info("Song deleted successfully");
-        } else {
-            LOGGER.warn("Failed to delete song with ID: {}", id);
-        }
+        if (result) LOGGER.info("Song deleted successfully");
+        else LOGGER.warn("Failed to delete song with ID: {}", id);
         return result;
     }
 
@@ -122,14 +118,12 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional
-        public Boolean createAll(List<SongDTO> songsDTO, Album album) {
-            LOGGER.info("Creating multiple songs for album: {}", album.getId());
+    public Boolean createAll(List<SongDTO> songsDTO, Album album) {
+        LOGGER.info("Creating multiple songs for album: {}", album.getId());
         for (SongDTO songDTO : songsDTO) {
             songDTO.setAlbumId(album.getId());
             songDTO.setArtistId(album.getArtist().getId());
-            if (!songDTO.isDeleted()) {
-                create(songDTO);
-            }
+            if (!songDTO.isDeleted()) create(songDTO);
         }
         LOGGER.info("All songs created successfully for album: {}", album.getId());
         return true;
@@ -186,12 +180,8 @@ public class SongServiceImpl implements SongService {
         int ratingAmount = reviews.size();
         Boolean updated = songDao.updateRating(songId, roundedAvgRating, ratingAmount);
 
-        if (updated) {
-            LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        } else {
-            LOGGER.error("Failed to update song rating");
-            LOGGER.error("Song rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        }
+        if (updated) LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        else LOGGER.error("Song rating not updated. average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
         return updated;
     }
 }

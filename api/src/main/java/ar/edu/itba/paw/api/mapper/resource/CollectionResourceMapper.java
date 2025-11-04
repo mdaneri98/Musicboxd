@@ -14,9 +14,9 @@ public class CollectionResourceMapper {
      * Creates a collection resource with HATEOAS links for CRUD operations
      */
     public <R> CollectionResource<R> createCollection(
-            List<R> resources, Long totalCount, int page, int size, String baseUrl, String resourcePath, CollectionLinkManager collectionLinkManager, Long id) {
+            List<R> resources, Integer totalCount, Integer page, Integer size, String baseUrl, String resourcePath, CollectionLinkManager collectionLinkManager, Long id) {
         
-        CollectionResource<R> collection = new CollectionResource<>(resources, totalCount, size, page);
+        CollectionResource<R> collection = new CollectionResource<>(resources, totalCount.longValue(), size, page);
         
         // Add collection-level links
         HATEOASUtils.addCollectionCrudLinks(collection, baseUrl, resourcePath, id, collectionLinkManager);
@@ -26,7 +26,7 @@ public class CollectionResourceMapper {
     }
 
     public <R> CollectionResource<R> createCollection(
-        List<R> resources, Long totalCount, int page, int size, String baseUrl, String resourcePath, CollectionLinkManager collectionLinkManager) { // No id
+        List<R> resources, Integer totalCount, Integer page, Integer size, String baseUrl, String resourcePath, CollectionLinkManager collectionLinkManager) { // No id
         return createCollection(resources, totalCount, page, size, baseUrl, resourcePath, collectionLinkManager, null);
     }
 }
