@@ -7,7 +7,7 @@ public class ApiUriConstants {
 
     /* Base */
     public static final String API_BASE = EMPTY + "/api";
-    public static final String ID = "/{id:\\d+}";
+    public static final String ID = "/{" + ControllerUtils.ID_PARAM_NAME + ":\\d+}";
 
     /* AUTH */
     public static final String AUTH_BASE = API_BASE + "/auth";
