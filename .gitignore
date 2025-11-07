@@ -95,4 +95,6 @@ nb-configuration.xml
 ##############################
 .DS_Store
 
-ai/
+ai/PRD.md
+ai/TASKS.md
+ai/CLAUDE.md
