@@ -36,7 +36,7 @@ class NotificationRepository {
    * @returns Collection of notifications with pagination metadata
    */
   async getNotifications(
-    page: number = 0,
+    page: number = 1,
     size: number = 20
   ): Promise<Collection<HALResource<Notification>>> {
     try {

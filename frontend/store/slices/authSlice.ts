@@ -64,9 +64,6 @@ export const registerAsync = createAsyncThunk<
 >('auth/register', async (userData, { rejectWithValue }) => {
   try {
     const response = await authRepository.register(userData);
-    if (!response.data) {
-      return rejectWithValue('Invalid registration response');
-    }
     return response.data;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Registration failed');
@@ -96,10 +93,7 @@ export const getCurrentUserAsync = createAsyncThunk<User, void, { rejectValue: s
   async (_, { rejectWithValue }) => {
     try {
       const response = await authRepository.getCurrentUser();
-      if (!response.data) {
-        return rejectWithValue('Invalid user response');
-      }
-      return response.data;
+      return response.data as User;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to get current user');
     }
@@ -111,7 +105,7 @@ export const getCurrentUserAsync = createAsyncThunk<User, void, { rejectValue: s
  */
 export const checkAuthAsync = createAsyncThunk<User | null, void, { rejectValue: string }>(
   'auth/checkAuth',
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       // Check if user has valid access token
       if (!authRepository.isAuthenticated()) {
@@ -120,11 +114,14 @@ export const checkAuthAsync = createAsyncThunk<User | null, void, { rejectValue:
 
       // Try to get current user to verify token is still valid
       const response = await authRepository.getCurrentUser();
-      return response.data || null;
+      if (!response.data) {
+        return rejectWithValue('Invalid user response');
+      }
+      return response.data as User;
     } catch (error: any) {
       // Token is invalid, clear auth state
       authRepository.clearAuth();
-      return null;
+      return rejectWithValue('Failed to get current user');
     }
   }
 );
@@ -168,7 +165,7 @@ const authSlice = createSlice({
     setCurrentUser: (state, action: PayloadAction<User>) => {
       state.currentUser = action.payload;
       state.isAuthenticated = true;
-      state.isModerator = action.payload.isModerator;
+      state.isModerator = action.payload.is_moderator;
     },
 
     /**
@@ -193,7 +190,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.currentUser = action.payload.user as User;
         state.isAuthenticated = true;
-        state.isModerator = action.payload.user.isModerator;
+        state.isModerator = action.payload.user.is_moderator;
         state.error = null;
       })
       .addCase(loginAsync.rejected, (state, action) => {
@@ -250,7 +247,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.currentUser = action.payload;
         state.isAuthenticated = true;
-        state.isModerator = action.payload.isModerator;
+        state.isModerator = action.payload.is_moderator;
         state.error = null;
       })
       .addCase(getCurrentUserAsync.rejected, (state, action) => {
@@ -271,7 +268,7 @@ const authSlice = createSlice({
         if (action.payload) {
           state.currentUser = action.payload;
           state.isAuthenticated = true;
-          state.isModerator = action.payload.isModerator;
+          state.isModerator = action.payload.is_moderator;
         } else {
           state.currentUser = null;
           state.isAuthenticated = false;

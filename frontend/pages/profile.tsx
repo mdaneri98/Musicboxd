@@ -21,7 +21,7 @@ const ProfilePage = () => {
   const [favoriteAlbums, setFavoriteAlbums] = useState<Album[]>([]);
   const [favoriteSongs, setFavoriteSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
-  const [reviewsPage, setReviewsPage] = useState(0);
+  const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const ProfilePage = () => {
   const handleTabChange = (tab: 'favorites' | 'reviews') => {
     setActiveTab(tab);
     if (tab === 'reviews') {
-      setReviewsPage(0);
+      setReviewsPage(1);
     }
   };
 
@@ -148,13 +148,13 @@ const ProfilePage = () => {
                       <Link href={`/artists/${artist.id}`} className="music-item-link">
                         <div className="music-item-image-container">
                           <img
-                            src={artist.imageId ? imageRepository.getImageUrl(artist.imageId) : '/assets/default-artist.png'}
+                            src={artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png'}
                             alt={artist.name}
                             className="music-item-image"
                           />
-                          {artist.averageRating !== undefined && (
+                          {artist.avg_rating !== undefined && (
                             <div className="rating-badge">
-                              <span className="rating">{artist.averageRating.toFixed(1)}</span>
+                              <span className="rating">{artist.avg_rating.toFixed(1)}</span>
                               <span className="star">&#9733;</span>
                             </div>
                           )}
@@ -181,13 +181,13 @@ const ProfilePage = () => {
                       <Link href={`/albums/${album.id}`} className="music-item-link">
                         <div className="music-item-image-container">
                           <img
-                            src={album.imageId ? imageRepository.getImageUrl(album.imageId) : '/assets/default-album.png'}
+                            src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
                             alt={album.title}
                             className="music-item-image"
                           />
-                          {album.averageRating !== undefined && (
+                          {album.avg_rating !== undefined && (
                             <div className="rating-badge">
-                              <span className="rating">{album.averageRating.toFixed(1)}</span>
+                              <span className="rating">{album.avg_rating.toFixed(1)}</span>
                               <span className="star">&#9733;</span>
                             </div>
                           )}
@@ -213,9 +213,9 @@ const ProfilePage = () => {
                     <Link href={`/songs/${song.id}`} className="song-item">
                       <span className="song-number">{index + 1}</span>
                       <span className="song-title">{song.title}</span>
-                      {song.averageRating !== undefined && (
+                      {song.avg_rating !== 0 && (
                         <div className="rating-badge">
-                          <span className="rating">{song.averageRating.toFixed(1)}</span>
+                          <span className="rating">{song.avg_rating.toFixed(1)}</span>
                           <span className="star">&#9733;</span>
                         </div>
                       )}
@@ -246,7 +246,7 @@ const ProfilePage = () => {
 
                 {/* Pagination */}
                 <div className="pagination">
-                  {reviewsPage > 0 && (
+                  {reviewsPage > 1 && (
                     <button
                       onClick={() => setReviewsPage(reviewsPage - 1)}
                       className="btn btn-secondary"

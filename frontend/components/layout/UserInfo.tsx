@@ -7,7 +7,7 @@ interface UserInfoProps {
 }
 
 export const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
-  const userImgUrl = user.imageId ? imageRepository.getImageUrl(user.imageId) : '/assets/default-user.png';
+  const userImgUrl = user.image_id ? imageRepository.getImageUrl(user.image_id) : '/assets/default-user.png';
   
   return (
     <section className="user-profile-header">
@@ -18,10 +18,10 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
         <div className="user-profile-info">
           <div className="entity-type">User</div>
           <div className="user-badges">
-            {user.isVerified && (
+            {user.is_verified && (
               <span className="badge badge-verified">Verified</span>
             )}
-            {user.isModerator && (
+            {user.is_moderator && (
               <span className="badge badge-moderator">Moderator</span>
             )}
           </div>
@@ -35,17 +35,17 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
 
           <div className="user-profile-stats">
             <Link href={`/users/${user.id}?tab=reviews`} className="stat-link">
-              <span className="stat-value">{user.reviewsAmount || 0}</span>
+              <span className="stat-value">{user.review_amount || 0}</span>
               <span className="stat-label">Reviews</span>
             </Link>
 
             <Link href={`/users/${user.id}/followers`} className="stat-link">
-              <span className="stat-value">{user.followersAmount || 0}</span>
+              <span className="stat-value">{user.followers_amount || 0}</span>
               <span className="stat-label">Followers</span>
             </Link>
 
             <Link href={`/users/${user.id}/following`} className="stat-link">
-              <span className="stat-value">{user.followingAmount || 0}</span>
+              <span className="stat-value">{user.following_amount || 0}</span>
               <span className="stat-label">Following</span>
             </Link>
           </div>

@@ -11,7 +11,7 @@ import {
   userRepository,
   imageRepository,
 } from '@/repositories';
-import { Artist, Album, Song, User } from '@/types';
+import { Artist, Album, Song, User, HALResource } from '@/types';
 
 type SearchResultItem = {
   id: number;
@@ -49,8 +49,8 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchRecommendedUsers = async () => {
       try {
-        const usersData = await userRepository.getUsers(0, 6);
-        setRecommendedUsers(usersData.items);
+        const usersData = await userRepository.getUsers(1, 6);
+        setRecommendedUsers(usersData.items.map((user: HALResource<User>) => user.data as User));
       } catch (error) {
         console.error('Failed to fetch recommended users:', error);
       }
@@ -87,42 +87,42 @@ export default function SearchPage() {
       setError(null);
 
       const [artistsData, albumsData, songsData, usersData] = await Promise.all([
-        artistRepository.getArtists(0, 10, query),
-        albumRepository.getAlbums(0, 10, query),
-        songRepository.getSongs(0, 10, query),
-        userRepository.getUsers(0, 10, query),
+        artistRepository.getArtists(1, 10, query),
+        albumRepository.getAlbums(1, 10, query),
+        songRepository.getSongs(1, 10, query),
+        userRepository.getUsers(1, 10, query),
       ]);
 
-      const artistResults: SearchResultItem[] = artistsData.items.map((artist: Artist) => ({
-        id: artist.id,
-        name: artist.name,
+      const artistResults: SearchResultItem[] = artistsData.items.map((artist: HALResource<Artist>  ) => ({
+        id: artist.data.id,
+        name: artist.data.name,
         type: 'artist' as const,
-        imgId: artist.imageId,
-        imageUrl: artist.imageId ? imageRepository.getImageUrl(artist.imageId) : undefined,
+        imgId: artist.data.image_id,
+        imageUrl: artist.data.image_id ? imageRepository.getImageUrl(artist.data.image_id) : undefined,
       }));
 
-      const albumResults: SearchResultItem[] = albumsData.items.map((album: Album) => ({
-        id: album.id,
-        name: album.title,
+      const albumResults: SearchResultItem[] = albumsData.items.map((album: HALResource<Album>) => ({
+        id: album.data.id,
+        name: album.data.title,
         type: 'album' as const,
-        imgId: album.imageId,
-        imageUrl: album.imageId ? imageRepository.getImageUrl(album.imageId) : undefined,
+        imgId: album.data.image_id,
+        imageUrl: album.data.image_id ? imageRepository.getImageUrl(album.data.image_id) : undefined,
       }));
 
-      const songResults: SearchResultItem[] = songsData.items.map((song: Song) => ({
-        id: song.id,
-        name: song.title,
+      const songResults: SearchResultItem[] = songsData.items.map((song: HALResource<Song>) => ({
+        id: song.data.id,
+        name: song.data.title,
         type: 'song' as const,
         imgId: undefined, // Song model doesn't include album image
         imageUrl: undefined,
       }));
 
-      const userResults: SearchResultItem[] = usersData.items.map((user: User) => ({
-        id: user.id,
-        name: user.name || user.username,
+      const userResults: SearchResultItem[] = usersData.items.map((user: HALResource<User>) => ({
+        id: user.data.id,
+        name: user.data.name || user.data.username,
         type: 'user' as const,
-        imgId: user.imageId,
-        imageUrl: user.imageId ? imageRepository.getImageUrl(user.imageId) : undefined,
+        imgId: user.data.image_id,
+        imageUrl: user.data.image_id ? imageRepository.getImageUrl(user.data.image_id) : undefined,
       }));
 
       // Filter and sort based on active tab

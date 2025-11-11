@@ -38,7 +38,7 @@ const initialState: CommentState = {
   comments: {},
   currentComment: null,
   pagination: {
-    page: 0,
+    page: 1,
     size: 20,
     totalCount: 0,
   },
@@ -58,7 +58,7 @@ export const fetchCommentsAsync = createAsyncThunk<
   Collection<HALResource<Comment>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('comments/fetchCommentsAsync', async ({ page = 0, size = 20, search, filter }, { rejectWithValue }) => {
+>('comments/fetchCommentsAsync', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
   try {
     const response = await commentRepository.getComments(page, size, search, filter);
     return response as Collection<HALResource<Comment>>;

@@ -5,6 +5,7 @@
  */
 
 import Link from 'next/link';
+import { imageRepository } from '@/repositories';
 import { User } from '@/types';
 
 interface UserCardProps {
@@ -12,8 +13,8 @@ interface UserCardProps {
 }
 
 const UserCard = ({ user }: UserCardProps) => {
-  const profileImageUrl = user.imageId
-    ? `/api/images/${user.imageId}`
+  const profileImageUrl = user.image_id
+    ? imageRepository.getImageUrl(user.image_id)
     : '/assets/default-avatar.png';
 
   return (
@@ -28,7 +29,7 @@ const UserCard = ({ user }: UserCardProps) => {
           <h3 className="user-card-username">{user.username}</h3>
           {user.bio && <p className="user-card-name">{user.bio}</p>}
         </div>
-        {user.isModerator && (
+        {user.is_moderator && (
           <div className="user-card-badges">
             <span className="badge badge-moderator">Moderator</span>
           </div>
@@ -39,15 +40,15 @@ const UserCard = ({ user }: UserCardProps) => {
 
       <div className="user-card-stats">
         <div className="user-card-stat">
-          <span className="user-card-stat-value">{user.reviewsAmount}</span>
+          <span className="user-card-stat-value">{user.review_amount}</span>
           <span className="user-card-stat-label">Reviews</span>
         </div>
         <div className="user-card-stat">
-          <span className="user-card-stat-value">{user.followersAmount}</span>
+          <span className="user-card-stat-value">{user.followers_amount}</span>
           <span className="user-card-stat-label">Followers</span>
         </div>
         <div className="user-card-stat">
-          <span className="user-card-stat-value">{user.followingAmount}</span>
+          <span className="user-card-stat-value">{user.following_amount}</span>
           <span className="user-card-stat-label">Following</span>
         </div>
       </div>

@@ -24,18 +24,18 @@ export function Pagination({
   // Don't render if there's only one page
   if (totalPages <= 1) return null;
 
-  const canGoPrev = currentPage > 0;
+  const canGoPrev = currentPage > 1;
   const canGoNext = currentPage < totalPages - 1;
 
   // Calculate visible page numbers
   const getVisiblePages = (): number[] => {
     const pages: number[] = [];
-    let start = Math.max(0, currentPage - Math.floor(maxVisible / 2));
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
     const end = Math.min(totalPages - 1, start + maxVisible - 1);
 
     // Adjust start if we're near the end
     if (end - start < maxVisible - 1) {
-      start = Math.max(0, end - maxVisible + 1);
+      start = Math.max(1, end - maxVisible + 1);
     }
 
     for (let i = start; i <= end; i++) {
@@ -51,10 +51,10 @@ export function Pagination({
     <nav className={`pagination ${className}`} aria-label="Pagination">
       <ul className="pagination-list">
         {/* First Page */}
-        {showFirstLast && currentPage > 0 && (
+        {showFirstLast && currentPage > 1 && (
           <li>
             <button
-              onClick={() => onPageChange(0)}
+              onClick={() => onPageChange(1)}
               className="pagination-btn pagination-first"
               aria-label="Go to first page"
               type="button"

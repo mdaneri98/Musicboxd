@@ -5,7 +5,7 @@ import { NotificationCard } from '@/components/cards';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices';
 import { notificationRepository } from '@/repositories';
-import { Notification } from '@/types';
+import { HALResource, Notification } from '@/types';
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -33,16 +33,16 @@ export default function NotificationsPage() {
     const fetchNotifications = async () => {
       try {
         setLoading(true);
-        const [notificationsData, unreadCountData] = await Promise.all([
+        const [notificationsData] = await Promise.all([
           notificationRepository.getNotifications(page, pageSize),
-          notificationRepository.getUnreadCount(),
+          // notificationRepository.getUnreadCount(),
         ]);
 
-        setNotifications(notificationsData.items);
-        setUnreadCount(unreadCountData);
+        setNotifications(notificationsData.items.map((item: HALResource<Notification>) => item.data as Notification));
+        // setUnreadCount(unreadCountData);
         
         // Pagination
-        setShowPrevious(page > 0);
+        setShowPrevious(page > 1);
         setShowNext(notificationsData.items.length === pageSize);
       } catch (error) {
         console.error('Failed to fetch notifications:', error);
@@ -63,7 +63,7 @@ export default function NotificationsPage() {
       
       // Refresh notifications
       const notificationsData = await notificationRepository.getNotifications(page, pageSize);
-      setNotifications(notificationsData.items);
+      setNotifications(notificationsData.items.map((item: HALResource<Notification>) => item.data as Notification));
       setUnreadCount(0);
     } catch (error) {
       console.error('Failed to mark all as read:', error);

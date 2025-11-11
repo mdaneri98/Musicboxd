@@ -4,7 +4,7 @@ import { Layout } from '@/components/layout';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
 import { artistRepository, albumRepository, imageRepository } from '@/repositories';
-import { Artist, Album } from '@/types';
+import { Artist, Album, HALResource } from '@/types';
 
 type TabType = 'artists' | 'albums' | 'songs';
 
@@ -35,7 +35,7 @@ export default function ModeratorDashboardPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/landing');
-    } else if (currentUser && !currentUser.isModerator) {
+    } else if (currentUser && !currentUser.is_moderator) {
       router.push('/');
     }
   }, [isAuthenticated, currentUser, router]);
@@ -68,14 +68,14 @@ export default function ModeratorDashboardPage() {
 
         if (activeTab === 'albums') {
           // Search for artists (to select artist for album)
-          const artistsData = await artistRepository.getArtists(0, 10, query);
+          const artistsData = await artistRepository.getArtists(1, 10, query);
 
-          const results: SearchResultItem[] = artistsData.items.map((artist: Artist) => ({
-            id: artist.id,
-            name: artist.name,
+          const results: SearchResultItem[] = artistsData.items.map((item: HALResource<Artist>) => ({
+            id: item.data.id,
+            name: item.data.name,
             type: 'artist' as const,
-            imgId: artist.imageId,
-            imageUrl: artist.imageId ? imageRepository.getImageUrl(artist.imageId) : undefined,
+            imgId: item.data.image_id,
+            imageUrl: item.data.image_id ? imageRepository.getImageUrl(item.data.image_id) : undefined,
           }));
 
           // Sort by relevance
@@ -104,14 +104,14 @@ export default function ModeratorDashboardPage() {
           }
         } else if (activeTab === 'songs') {
           // Search for albums (to select album for song)
-          const albumsData = await albumRepository.getAlbums(0, 10, query);
+          const albumsData = await albumRepository.getAlbums(1, 10, query);
 
-          const results: SearchResultItem[] = albumsData.items.map((album: Album) => ({
-            id: album.id,
-            name: album.title,
+          const results: SearchResultItem[] = albumsData.items.map((item: HALResource<Album>) => ({
+            id: item.data.id,
+            name: item.data.title,
             type: 'album' as const,
-            imgId: album.imageId,
-            imageUrl: album.imageId ? imageRepository.getImageUrl(album.imageId) : undefined,
+            imgId: item.data.image_id,
+            imageUrl: item.data.image_id ? imageRepository.getImageUrl(item.data.image_id) : undefined,
           }));
 
           // Sort by relevance
@@ -219,7 +219,7 @@ export default function ModeratorDashboardPage() {
     }
   };
 
-  if (!isAuthenticated || (currentUser && !currentUser.isModerator)) {
+  if (!isAuthenticated || (currentUser && !currentUser.is_moderator)) {
     return null; // Will redirect in useEffect
   }
 

@@ -45,7 +45,7 @@ const initialState: AlbumState = {
   albumSongs: [],
   albumReviews: [],
   pagination: {
-    page: 0,
+    page: 1,
     size: 20,
     totalCount: 0,
   },
@@ -64,7 +64,7 @@ export const fetchAlbumsAsync = createAsyncThunk<
   Collection<HALResource<Album>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('albums/fetchAlbumsAsync', async ({ page = 0, size = 20, search, filter }, { rejectWithValue }) => {
+>('albums/fetchAlbumsAsync', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
   try {
     const response = await albumRepository.getAlbums(page, size, search, filter);
     return response as Collection<HALResource<Album>>;
@@ -129,7 +129,7 @@ export const fetchAlbumSongsAsync = createAsyncThunk<
   Collection<HALResource<Song>>,
   { albumId: number; page?: number; size?: number },
   { rejectValue: string }
->('albums/fetchAlbumSongs', async ({ albumId, page = 0, size = 20 }, { rejectWithValue }) => {
+>('albums/fetchAlbumSongs', async ({ albumId, page = 1, size = 20 }, { rejectWithValue }) => {
   try {
     const response = await albumRepository.getAlbumSongs(albumId, page, size);
     return response as Collection<HALResource<Song>>;
@@ -142,7 +142,7 @@ export const fetchAlbumReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { albumId: number; page?: number; size?: number; filter?: string },
   { rejectValue: string }
->('albums/fetchAlbumReviews', async ({ albumId, page = 0, size = 20, filter }, { rejectWithValue }) => {
+>('albums/fetchAlbumReviews', async ({ albumId, page = 1, size = 20, filter }, { rejectWithValue }) => {
   try {
     const response = await albumRepository.getAlbumReviews(albumId, page, size, filter);
     return response as Collection<HALResource<Review>>;

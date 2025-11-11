@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { Layout, UserInfo } from '@/components/layout';
 import { UserCard } from '@/components/cards';
 import { userRepository } from '@/repositories';
-import type { User } from '@/types';
+import type { HALResource, User } from '@/types';
 
 const FollowersPage = () => {
   const router = useRouter();
@@ -12,7 +12,7 @@ const FollowersPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [followers, setFollowers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
@@ -29,8 +29,8 @@ const FollowersPage = () => {
           userRepository.getFollowers(userId, page, 20),
         ]);
         
-        setUser(userData);
-        setFollowers(followersData.items);
+        setUser(userData.data as User);
+        setFollowers(followersData.items.map((item: HALResource<User>) => item.data as User));
         setHasMore(followersData.items.length === 20);
       } catch (error) {
         console.error('Failed to fetch followers:', error);
@@ -78,7 +78,7 @@ const FollowersPage = () => {
 
             {/* Pagination */}
             <div className="pagination">
-              {page > 0 && (
+              {page > 1 && (
                 <button
                   onClick={() => setPage(page - 1)}
                   className="btn btn-secondary"

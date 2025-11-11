@@ -8,7 +8,7 @@ import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
 import { reviewRepository, commentRepository, imageRepository } from '@/repositories';
-import type { Review, Comment, User, CommentFormData } from '@/types';
+import type { Review, Comment, User, CommentFormData, HALResource } from '@/types';
 
 type TabType = 'comments' | 'likes';
 
@@ -22,7 +22,7 @@ const ReviewDetailPage = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [likedUsers, setLikedUsers] = useState<User[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>('comments');
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
@@ -47,7 +47,7 @@ const ReviewDetailPage = () => {
         setLoading(true);
         const reviewId = parseInt(id as string);
         const reviewData = await reviewRepository.getReviewById(reviewId);
-        setReview(reviewData);
+        setReview(reviewData.data as Review);
       } catch (error) {
         console.error('Failed to fetch review:', error);
       } finally {
@@ -68,11 +68,11 @@ const ReviewDetailPage = () => {
 
         if (activeTab === 'comments') {
           const commentsData = await reviewRepository.getReviewComments(reviewId, page, 20);
-          setComments(commentsData.items);
+          setComments(commentsData.items.map((item: HALResource<Comment>) => item.data as Comment));
           setHasMore(commentsData.items.length === 20);
         } else if (activeTab === 'likes') {
           const likesData = await reviewRepository.getReviewLikes(reviewId, page, 20);
-          setLikedUsers(likesData.items);
+          setLikedUsers(likesData.items.map((item: HALResource<User>) => item.data as User));
           setHasMore(likesData.items.length === 20);
         }
       } catch (error) {
@@ -87,8 +87,8 @@ const ReviewDetailPage = () => {
 
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
-    setPage(0);
-    router.push(`/reviews/${id}?tab=${tab}&pageNum=0`, undefined, { shallow: true });
+    setPage(1);
+    router.push(`/reviews/${id}?tab=${tab}&pageNum=1`, undefined, { shallow: true });
   }, [id, router]);
 
   const handlePageChange = useCallback((newPage: number) => {
@@ -103,16 +103,16 @@ const ReviewDetailPage = () => {
       setSubmitLoading(true);
       await commentRepository.createComment({
         content: data.content,
-        reviewId: review.id,
+        review_id: review.id,
       });
 
       // Refresh comments
       const reviewId = parseInt(id as string);
       const commentsData = await reviewRepository.getReviewComments(reviewId, page, 20);
-      setComments(commentsData.items);
+      setComments(commentsData.items.map((item: HALResource<Comment>) => item.data as Comment));
 
       // Update review comment count
-      setReview({ ...review, commentsCount: (review.commentsCount || 0) + 1 });
+      setReview({ ...review, comment_amount: (review.comment_amount || 0) + 1 });
     } catch (error) {
       console.error('Failed to create comment:', error);
     } finally {
@@ -129,11 +129,11 @@ const ReviewDetailPage = () => {
       // Refresh comments
       const reviewId = parseInt(id as string);
       const commentsData = await reviewRepository.getReviewComments(reviewId, page, 20);
-      setComments(commentsData.items);
+      setComments(commentsData.items.map((item: HALResource<Comment>) => item.data as Comment));
 
       // Update review comment count
       if (review) {
-        setReview({ ...review, commentsCount: Math.max(0, (review.commentsCount || 0) - 1) });
+        setReview({ ...review, comment_amount: Math.max(0, (review.comment_amount || 0) - 1) });
       }
 
       setCommentToDelete(null);
@@ -144,7 +144,7 @@ const ReviewDetailPage = () => {
 
   const canDeleteComment = useCallback((comment: Comment) => {
     if (!currentUser) return false;
-    return currentUser.id === comment.userId || currentUser.isModerator;
+    return currentUser.id === comment.user_id || currentUser.is_moderator;
   }, [currentUser]);
 
   if (loading || !review) {
@@ -230,22 +230,22 @@ const ReviewDetailPage = () => {
                   {comments.map((comment) => (
                     <div key={comment.id} className="comment-card">
                       <div className="comment-header">
-                        <Link href={`/users/${comment.userId}`} className="comment-user">
+                        <Link href={`/users/${comment.user_id}`} className="comment-user">
                           <img
-                            src={comment.userImageId ? imageRepository.getImageUrl(comment.userImageId) : '/assets/default-user.png'}
+                            src={comment.user_image_id ? imageRepository.getImageUrl(comment.user_image_id) : '/assets/default-user.png'}
                             alt={comment.username}
                             className="comment-user-img"
                           />
                           <div className="user-details">
                             <span className="comment-username">@{comment.username}</span>
-                            <div className="user-badges">
-                              {comment.userIsVerified && (
+                            {/* <div className="user-badges">
+                              {comment.user_is_verified && (
                                 <span className="badge badge-verified">Verified</span>
                               )}
-                              {comment.userIsModerator && (
+                              {comment.user_is_moderator && (
                                 <span className="badge badge-moderator">Moderator</span>
                               )}
-                            </div>
+                            </div> */}
                           </div>
                         </Link>
 
@@ -259,7 +259,7 @@ const ReviewDetailPage = () => {
                           </button>
                         )}
                       </div>
-                      <span className="comment-date">{comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : ''}</span>
+                      <span className="comment-date">{comment.created_at ? new Date(comment.created_at).toLocaleDateString() : ''}</span>
                       <p className="comment-content">{comment.content}</p>
                     </div>
                   ))}
@@ -271,7 +271,7 @@ const ReviewDetailPage = () => {
 
         {/* Pagination */}
         <div className="pagination">
-          {page > 0 && (
+          {page > 1 && (
             <button
               onClick={() => handlePageChange(page - 1)}
               className="btn btn-secondary"

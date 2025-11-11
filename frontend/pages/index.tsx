@@ -103,7 +103,7 @@ const HomePage = () => {
 
               {/* Paginación */}
               <div className="pagination">
-                {page > 0 && (
+                {page > 1 && (
                   <button
                     onClick={() => setPage(page - 1)}
                     className="btn btn-secondary"

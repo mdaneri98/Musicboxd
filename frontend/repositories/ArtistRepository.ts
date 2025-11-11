@@ -43,7 +43,7 @@ class ArtistRepository {
    * @returns Collection of artists with pagination metadata
    */
   async getArtists(
-    page: number = 0,
+    page: number = 1,
     size: number = 20,
     search?: string,
     filter?: string
@@ -160,7 +160,7 @@ class ArtistRepository {
    */
   async getArtistReviews(
     id: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20,
     filter?: string
   ): Promise<Collection<HALResource<Review>>> {
@@ -215,7 +215,7 @@ class ArtistRepository {
    */
   async getArtistAlbums(
     id: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20
   ): Promise<Collection<HALResource<Album>>> {
     try {
@@ -267,7 +267,7 @@ class ArtistRepository {
    */
   async getArtistSongs(
     id: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20
   ): Promise<Collection<HALResource<Song>>> {
     try {

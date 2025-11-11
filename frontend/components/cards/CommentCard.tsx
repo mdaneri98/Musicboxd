@@ -7,8 +7,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Comment } from '@/types';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectCurrentUser } from '@/store/slices';
-import { deleteCommentAsync } from '@/store/slices';
+import { selectCurrentUser, deleteCommentAsync } from '@/store/slices';
+import { imageRepository } from '@/repositories';
 
 interface CommentCardProps {
   comment: Comment;
@@ -20,10 +20,10 @@ const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
   const currentUser = useAppSelector(selectCurrentUser);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const isOwner = currentUser?.id === comment.userId;
+  const isOwner = currentUser?.id === comment.user_id;
 
-  const userImageUrl = comment.userImageId
-    ? `/api/images/${comment.userImageId}`
+  const userImageUrl = comment.user_image_id
+    ? imageRepository.getImageUrl(comment.user_image_id)
     : '/assets/default-avatar.png';
 
   const handleDelete = async () => {
@@ -50,7 +50,7 @@ const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
   return (
     <div className="comment-card">
       <div className="comment-header">
-        <Link href={`/users/${comment.userId}`} className="comment-user">
+        <Link href={`/users/${comment.user_id}`} className="comment-user">
           <img
             src={userImageUrl}
             alt={comment.username}
@@ -59,7 +59,7 @@ const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
           <div className="comment-user-info">
             <span className="comment-username">{comment.username}</span>
             <span className="comment-timestamp">
-              {new Date(comment.createdAt).toLocaleDateString()}
+              {comment.created_at.toLocaleDateString()}
             </span>
           </div>
         </Link>

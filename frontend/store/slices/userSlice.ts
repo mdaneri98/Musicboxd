@@ -57,7 +57,7 @@ const initialState: UserState = {
   favoriteSongs: [],
   userReviews: [],
   pagination: {
-    page: 0,
+    page: 1,
     size: 20,
     totalCount: 0,
   },
@@ -81,7 +81,7 @@ export const fetchUsersAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('users/fetchUsers', async ({ page = 0, size = 20, search, filter }, { rejectWithValue }) => {
+>('users/fetchUsers', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getUsers(page, size, search, filter);
     return response as Collection<HALResource<User>>;
@@ -145,7 +145,7 @@ export const fetchFollowersAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { userId: number; page?: number; size?: number },
   { rejectValue: string }
->('users/fetchFollowers', async ({ userId, page = 0, size = 20 }, { rejectWithValue }) => {
+>('users/fetchFollowers', async ({ userId, page = 1, size = 20 }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getFollowers(userId, page, size);
     return response as Collection<HALResource<User>>;
@@ -161,7 +161,7 @@ export const fetchFollowingAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { userId: number; page?: number; size?: number },
   { rejectValue: string }
->('users/fetchFollowing', async ({ userId, page = 0, size = 20 }, { rejectWithValue }) => {
+>('users/fetchFollowing', async ({ userId, page = 1, size = 20 }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getFollowing(userId, page, size);
     return response as Collection<HALResource<User>>;
@@ -257,7 +257,7 @@ export const fetchUserReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { userId: number; page?: number; size?: number; filter?: string },
   { rejectValue: string }
->('users/fetchUserReviews', async ({ userId, page = 0, size = 20, filter }, { rejectWithValue }) => {
+>('users/fetchUserReviews', async ({ userId, page = 1, size = 20, filter }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getUserReviews(userId, page, size, filter);
     return response as Collection<HALResource<Review>>;
@@ -431,11 +431,11 @@ const userSlice = createSlice({
       .addCase(followUserAsync.fulfilled, (state, action) => {
         // Update follower count in current profile if it's the followed user
         if (state.currentProfile?.id === action.payload) {
-          state.currentProfile.followersAmount += 1;
+          state.currentProfile.followers_amount += 1;
         }
         // Update in normalized state
         if (state.users[action.payload]) {
-          state.users[action.payload].followersAmount += 1;
+          state.users[action.payload].followers_amount += 1;
         }
       })
       .addCase(followUserAsync.rejected, (state, action) => {
@@ -447,11 +447,11 @@ const userSlice = createSlice({
       .addCase(unfollowUserAsync.fulfilled, (state, action) => {
         // Update follower count in current profile if it's the unfollowed user
         if (state.currentProfile?.id === action.payload) {
-          state.currentProfile.followersAmount -= 1;
+          state.currentProfile.followers_amount -= 1;
         }
         // Update in normalized state
         if (state.users[action.payload]) {
-          state.users[action.payload].followersAmount -= 1;
+          state.users[action.payload].followers_amount -= 1;
         }
       })
       .addCase(unfollowUserAsync.rejected, (state, action) => {

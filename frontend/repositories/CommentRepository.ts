@@ -35,7 +35,7 @@ class CommentRepository {
    * @returns Collection of comments with pagination metadata
    */
   async getComments(
-    page: number = 0,
+    page: number = 1,
     size: number = 20,
     search?: string,
     filter?: string

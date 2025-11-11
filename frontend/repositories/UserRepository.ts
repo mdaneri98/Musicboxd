@@ -27,7 +27,7 @@ const USER_ENDPOINTS = {
   USER_BY_ID: (id: number) => `/users/${id}`,
   USER_REVIEWS: (id: number) => `/users/${id}/reviews`,
   USER_FOLLOWERS: (id: number) => `/users/${id}/followers`,
-  USER_FOLLOWING: (id: number) => `/users/${id}/following`,
+  USER_FOLLOWING: (id: number) => `/users/${id}/followings`,
   FOLLOW_USER: (id: number) => `/users/${id}/follow`,
   UNFOLLOW_USER: (id: number) => `/users/${id}/unfollow`,
   USER_FAVORITE_ARTISTS: (id: number) => `/users/${id}/favorites/artists`,
@@ -49,7 +49,7 @@ class UserRepository {
    * @returns Collection of users with pagination metadata
    */
   async getUsers(
-    page: number = 0,
+    page: number = 1,
     size: number = 20,
     search?: string,
     filter?: string
@@ -165,7 +165,7 @@ class UserRepository {
    */
   async getUserReviews(
     id: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20,
     filter?: string
   ): Promise<Collection<HALResource<Review>>> {
@@ -196,7 +196,7 @@ class UserRepository {
    */
   async getFollowers(
     id: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20
   ): Promise<Collection<HALResource<User>>> {
     try {
@@ -224,7 +224,7 @@ class UserRepository {
    */
   async getFollowing(
     id: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20
   ): Promise<Collection<HALResource<User>>> {
     try {

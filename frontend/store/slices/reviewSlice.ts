@@ -45,7 +45,7 @@ const initialState: ReviewState = {
   reviewComments: [],
   reviewLikes: [],
   pagination: {
-    page: 0,
+    page: 1,
     size: 20,
     totalCount: 0,
   },
@@ -67,7 +67,7 @@ export const fetchReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('reviews/fetchReviews', async ({ page = 0, size = 20, search, filter }, { rejectWithValue }) => {
+>('reviews/fetchReviews', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviews(page, size, search, filter);
     return response as Collection<HALResource<Review>>;
@@ -147,7 +147,7 @@ export const fetchReviewLikesAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { reviewId: number; page?: number; size?: number },
   { rejectValue: string }
->('reviews/fetchReviewLikes', async ({ reviewId, page = 0, size = 20 }, { rejectWithValue }) => {
+>('reviews/fetchReviewLikes', async ({ reviewId, page = 1, size = 20 }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviewLikes(reviewId, page, size);
     return response as Collection<HALResource<User>>;
@@ -195,7 +195,7 @@ export const fetchReviewCommentsAsync = createAsyncThunk<
   Collection<HALResource<Comment>>,
   { reviewId: number; page?: number; size?: number },
   { rejectValue: string }
->('reviews/fetchReviewComments', async ({ reviewId, page = 0, size = 20 }, { rejectWithValue }) => {
+>('reviews/fetchReviewComments', async ({ reviewId, page = 1, size = 20 }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviewComments(reviewId, page, size);
     return response as Collection<HALResource<Comment>>;

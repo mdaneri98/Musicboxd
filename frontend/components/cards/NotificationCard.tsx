@@ -16,7 +16,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
   const dispatch = useAppDispatch();
 
   const handleMarkAsRead = async () => {
-    if (!notification.isRead) {
+    if (!notification.is_read) {
       await dispatch(markAsReadAsync(notification.id));
     }
   };
@@ -29,13 +29,13 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
 
   const getNotificationIcon = () => {
     switch (notification.type) {
-      case 'follow':
+      case 'FOLLOW':
         return 'fa-user-plus';
-      case 'like':
+      case 'LIKE':
         return 'fa-heart';
-      case 'comment':
+      case 'COMMENT':
         return 'fa-comment';
-      case 'review':
+      case 'REVIEW':
         return 'fa-star';
       default:
         return 'fa-bell';
@@ -43,14 +43,14 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
   };
 
   const getNotificationLink = () => {
-    if (notification.relatedId) {
+    if (notification.review_id) {
       switch (notification.type) {
-        case 'follow':
-          return `/users/${notification.relatedId}`;
-        case 'like':
-        case 'comment':
-        case 'review':
-          return `/reviews/${notification.relatedId}`;
+        case 'FOLLOW':
+          return `/users/${notification.trigger_user_id}`;
+        case 'LIKE':
+        case 'COMMENT':
+        case 'REVIEW':
+          return `/reviews/${notification.review_id}`;
         default:
           return '/notifications';
       }
@@ -61,7 +61,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
   return (
     <Link
       href={getNotificationLink()}
-      className={`notification-card ${notification.isRead ? 'read' : 'unread'}`}
+      className={`notification-card ${notification.is_read ? 'read' : 'unread'}`}
       onClick={handleMarkAsRead}
     >
       <div className="notification-icon">
@@ -70,10 +70,10 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
       <div className="notification-content">
         <p className="notification-message">{notification.message}</p>
         <span className="notification-timestamp">
-          {new Date(notification.createdAt).toLocaleDateString()}
+          {notification.created_at.toLocaleDateString()}
         </span>
       </div>
-      {!notification.isRead && <div className="notification-indicator"></div>}
+      {!notification.is_read && <div className="notification-indicator"></div>}
       <button
         onClick={handleDelete}
         className="notification-delete"

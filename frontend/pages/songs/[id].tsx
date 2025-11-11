@@ -7,7 +7,7 @@ import { RatingCard } from '@/components/ui';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
 import { songRepository, albumRepository, artistRepository, imageRepository } from '@/repositories';
-import type { Song, Album, Artist, Review } from '@/types';
+import type { Song, Album, Artist, Review, HALResource } from '@/types';
 
 const SongDetailPage = () => {
   const router = useRouter();
@@ -21,7 +21,7 @@ const SongDetailPage = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
-  const [reviewsPage, setReviewsPage] = useState(0);
+  const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
@@ -39,15 +39,15 @@ const SongDetailPage = () => {
         const songId = parseInt(id as string);
         
         const songData = await songRepository.getSongById(songId);
-        setSong(songData);
-        setIsFavorite(songData.isFavorite || false);
+        setSong(songData.data as Song);
+        setIsFavorite(songData.data.is_favorite || false);
         
         // Fetch album and artist data
-        const albumData = await albumRepository.getAlbumById(songData.albumId);
-        setAlbum(albumData);
+        const albumData = await albumRepository.getAlbumById(songData.data.album_id);
+        setAlbum(albumData.data as Album);
         
-        const artistData = await artistRepository.getArtistById(songData.artistId);
-        setArtist(artistData);
+        const artistData = await artistRepository.getArtistById(songData.data.artist_id);
+        setArtist(artistData.data as Artist);
       } catch (err: any) {
         console.error('Failed to fetch song:', err);
         setError(err.message || 'Failed to load song');
@@ -67,15 +67,15 @@ const SongDetailPage = () => {
       try {
         const songId = parseInt(id as string);
         const reviewsData = await songRepository.getSongReviews(songId, reviewsPage, 20);
-        setReviews(reviewsData.items);
+        setReviews(reviewsData.items.map((item: HALResource<Review>) => item.data as Review) as Review[]);
         setHasMoreReviews(reviewsData.items.length === 20);
         
         // Check if current user has reviewed this song
         if (isAuthenticated && currentUser) {
-          const userReview = reviewsData.items.find(r => r.userId === currentUser.id);
+          const userReview = reviewsData.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
           if (userReview) {
             setIsReviewed(true);
-            setUserRating(userReview.rating);
+            setUserRating(userReview.data.rating || 0);
           }
         }
       } catch (err) {
@@ -149,8 +149,8 @@ const SongDetailPage = () => {
     );
   }
 
-  const albumImgUrl = album?.imageId ? imageRepository.getImageUrl(album.imageId) : '/assets/default-album.png';
-  const artistImgUrl = artist?.imageId ? imageRepository.getImageUrl(artist.imageId) : '/assets/default-artist.png';
+  const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
+  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
 
   return (
     <Layout title={`Musicboxd - ${song.title}`}>
@@ -162,7 +162,7 @@ const SongDetailPage = () => {
             <div className="entity-details">
               <div className="entity-type">
                 Song
-                {currentUser?.isModerator && (
+                {currentUser?.is_moderator && (
                   <Link href={`/mod/songs/${song.id}/edit`} className="edit-link">
                     <i className="fas fa-pencil-alt"></i>
                   </Link>
@@ -197,8 +197,8 @@ const SongDetailPage = () => {
           {/* Rating Card */}
           <div className="rating-card-container">
             <RatingCard
-              totalRatings={song.reviewsCount || 0}
-              averageRating={song.averageRating || 0}
+              totalRatings={song.rating_count || 0}
+              averageRating={song.avg_rating || 0}
               userRating={userRating}
               reviewed={isReviewed}
               entityType="songs"
@@ -234,7 +234,7 @@ const SongDetailPage = () => {
           <div className="song-info-grid">
             <div className="song-info-item">
               <span className="info-label">Duration:</span>
-              <span className="info-value">{formatDuration(song.duration)}</span>
+              <span className="info-value">{formatDuration(parseInt(song.duration))}</span>
             </div>
             {album?.genre && (
               <div className="song-info-item">
@@ -242,10 +242,10 @@ const SongDetailPage = () => {
                 <span className="info-value">{album.genre}</span>
               </div>
             )}
-            {album?.releaseDate && (
+            {album?.release_date && (
               <div className="song-info-item">
                 <span className="info-label">Release Date:</span>
-                <span className="info-value">{formatDate(album.releaseDate)}</span>
+                <span className="info-value">{formatDate(album.release_date)}</span>
               </div>
             )}
           </div>
@@ -263,7 +263,7 @@ const SongDetailPage = () => {
 
             {/* Pagination */}
             <div className="pagination">
-              {reviewsPage > 0 && (
+              {reviewsPage > 1 && (
                 <button
                   onClick={() => setReviewsPage(reviewsPage - 1)}
                   className="btn btn-secondary"

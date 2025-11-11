@@ -159,7 +159,7 @@ class ReviewRepository {
    */
   async getReviewLikes(
     reviewId: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20
   ): Promise<Collection<HALResource<User>>> {
     try {
@@ -213,7 +213,7 @@ class ReviewRepository {
    */
   async getReviewComments(
     reviewId: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20
   ): Promise<Collection<HALResource<Comment>>> {
     try {

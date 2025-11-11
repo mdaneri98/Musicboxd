@@ -48,7 +48,7 @@ const initialState: ArtistState = {
   artistSongs: [],
   artistReviews: [],
   pagination: {
-    page: 0,
+    page: 1,
     size: 20,
     totalCount: 0,
   },
@@ -71,7 +71,7 @@ export const fetchArtistsAsync = createAsyncThunk<
   Collection<HALResource<Artist>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('artists/fetchArtists', async ({ page = 0, size = 20, search, filter }, { rejectWithValue }) => {
+>('artists/fetchArtists', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtists(page, size, search, filter);
     return response as Collection<HALResource<Artist>>;
@@ -151,7 +151,7 @@ export const fetchArtistAlbumsAsync = createAsyncThunk<
   Collection<HALResource<Album>>,
   { artistId: number; page?: number; size?: number },
   { rejectValue: string }
->('artists/fetchArtistAlbums', async ({ artistId, page = 0, size = 20 }, { rejectWithValue }) => {
+>('artists/fetchArtistAlbums', async ({ artistId, page = 1, size = 20 }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistAlbums(artistId, page, size);
     return response as Collection<HALResource<Album>>;
@@ -167,7 +167,7 @@ export const fetchArtistSongsAsync = createAsyncThunk<
   Collection<HALResource<Song>>,
   { artistId: number; page?: number; size?: number },
   { rejectValue: string }
->('artists/fetchArtistSongs', async ({ artistId, page = 0, size = 20 }, { rejectWithValue }) => {
+>('artists/fetchArtistSongs', async ({ artistId, page = 1, size = 20 }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistSongs(artistId, page, size);
     return response as Collection<HALResource<Song>>;
@@ -183,7 +183,7 @@ export const fetchArtistReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { artistId: number; page?: number; size?: number; filter?: string },
   { rejectValue: string }
->('artists/fetchArtistReviews', async ({ artistId, page = 0, size = 20, filter }, { rejectWithValue }) => {
+>('artists/fetchArtistReviews', async ({ artistId, page = 1, size = 20, filter }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistReviews(artistId, page, size, filter);
     return response as Collection<HALResource<Review>>;

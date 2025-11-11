@@ -27,7 +27,7 @@ interface UsePaginationOptions {
 
 export function usePagination(options: UsePaginationOptions = {}) {
   const {
-    initialPage = 0,
+    initialPage = 1,
     pageSize: initialPageSize = 20,
     syncWithUrl = false,
     paramName = 'page',
@@ -66,7 +66,7 @@ export function usePagination(options: UsePaginationOptions = {}) {
 
   const goToPage = useCallback(
     (page: number) => {
-      const newPage = Math.max(0, page);
+      const newPage = Math.max(1, page);
       setCurrentPage(newPage);
       updateUrl(newPage);
     },
@@ -88,7 +88,7 @@ export function usePagination(options: UsePaginationOptions = {}) {
   const changePageSize = useCallback(
     (newSize: number) => {
       setPageSize(newSize);
-      goToPage(0); // Reset to first page when page size changes
+      goToPage(1); // Reset to first page when page size changes
     },
     [goToPage]
   );
@@ -103,7 +103,7 @@ export function usePagination(options: UsePaginationOptions = {}) {
     changePageSize,
     // Computed values
     offset: currentPage * pageSize,
-    canGoPrev: currentPage > 0,
+    canGoPrev: currentPage > 1,
   };
 }
 

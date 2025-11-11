@@ -62,7 +62,7 @@ class ImageRepository {
    * @param id Image ID
    * @returns Image metadata
    */
-  async getImageById(id: number): Promise<Image> {
+  async getImageById(id: number): Promise<HALResource<Image>> {
     try {
       const response: HALResource<Image> = await apiClient.getResource<Image>(
         IMAGE_ENDPOINTS.IMAGE_BY_ID(id)
@@ -72,7 +72,7 @@ class ImageRepository {
         throw new Error('Invalid image response: missing data');
       }
 
-      return response as Image;
+      return response as HALResource<Image>;
     } catch (error) {
       console.error(`Get image ${id} error:`, error);
       throw error;

@@ -41,7 +41,7 @@ const initialState: NotificationState = {
   notificationIds: [],
   unreadCount: 0,
   pagination: {
-    page: 0,
+    page: 1,
     size: 20,
     totalCount: 0,
   },
@@ -61,7 +61,7 @@ export const fetchNotificationsAsync = createAsyncThunk<
   Collection<HALResource<Notification>>,
   { page?: number; size?: number },
   { rejectValue: string }
->('notifications/fetchNotificationsAsync', async ({ page = 0, size = 20 }, { rejectWithValue }) => {
+>('notifications/fetchNotificationsAsync', async ({ page = 1, size = 20 }, { rejectWithValue }) => {
   try {
     const response = await notificationRepository.getNotifications(page, size);
     return response as Collection<HALResource<Notification>>;
@@ -157,7 +157,7 @@ const notificationSlice = createSlice({
       // Add to beginning of the list
       state.notificationIds = [notification.id, ...state.notificationIds];
       // Update unread count if notification is unread
-      if (!notification.isRead) {
+      if (!notification.is_read) {
         state.unreadCount += 1;
       }
       state.pagination.totalCount += 1;
@@ -171,7 +171,7 @@ const notificationSlice = createSlice({
       const notification = state.notifications[notificationId];
       
       // Update unread count if notification was unread
-      if (notification && !notification.isRead) {
+      if (notification && !notification.is_read) {
         state.unreadCount = Math.max(0, state.unreadCount - 1);
       }
       
@@ -188,7 +188,7 @@ const notificationSlice = createSlice({
       state.notificationIds = [];
       state.unreadCount = 0;
       state.pagination = {
-        page: 0,
+        page: 1,
         size: 20,
         totalCount: 0,
       };
@@ -249,8 +249,8 @@ const notificationSlice = createSlice({
         const notificationId = action.payload;
         const notification = state.notifications[notificationId];
         
-        if (notification && !notification.isRead) {
-          notification.isRead = true;
+        if (notification && !notification.is_read) {
+          notification.is_read = true;
           state.unreadCount = Math.max(0, state.unreadCount - 1);
         }
       })
@@ -263,7 +263,7 @@ const notificationSlice = createSlice({
       .addCase(markAllAsReadAsync.fulfilled, (state) => {
         // Mark all notifications as read
         Object.values(state.notifications).forEach((notification) => {
-          notification.isRead = true;
+          notification.is_read = true;
         });
         state.unreadCount = 0;
       })
@@ -283,7 +283,7 @@ const notificationSlice = createSlice({
         const notification = state.notifications[notificationId];
         
         // Update unread count if notification was unread
-        if (notification && !notification.isRead) {
+        if (notification && !notification.is_read) {
           state.unreadCount = Math.max(0, state.unreadCount - 1);
         }
         
@@ -315,7 +315,7 @@ export const selectNotificationList = (state: RootState) =>
 export const selectUnreadNotifications = (state: RootState) =>
   state.notifications.notificationIds
     .map((id) => state.notifications.notifications[id])
-    .filter((notification) => !notification.isRead);
+    .filter((notification) => !notification.is_read);
 export const selectUnreadCount = (state: RootState) => state.notifications.unreadCount;
 export const selectNotificationPagination = (state: RootState) => state.notifications.pagination;
 export const selectNotificationLoading = (state: RootState) => state.notifications.loading;

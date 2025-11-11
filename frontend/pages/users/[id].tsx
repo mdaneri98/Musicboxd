@@ -6,7 +6,7 @@ import { ReviewCard } from '@/components/cards';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
 import { userRepository } from '@/repositories';
-import type { Review, Artist, Album, Song, User } from '@/types';
+import type { Review, Artist, Album, Song, User, HALResource } from '@/types';
 import { imageRepository } from '@/repositories';
 
 const UserProfilePage = () => {
@@ -22,7 +22,7 @@ const UserProfilePage = () => {
   const [favoriteAlbums, setFavoriteAlbums] = useState<Album[]>([]);
   const [favoriteSongs, setFavoriteSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
-  const [reviewsPage, setReviewsPage] = useState(0);
+  const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
@@ -43,12 +43,12 @@ const UserProfilePage = () => {
         }
         
         const userData = await userRepository.getUserById(userId);
-        setUser(userData);
+        setUser(userData.data as User);
         
         // Check if following (only if authenticated)
         if (isAuthenticated && currentUser) {
           const followers = await userRepository.getFollowers(userId, 0, 100);
-          setIsFollowing(followers.items.some(f => f.id === currentUser.id));
+          setIsFollowing(followers.items.some((f: HALResource<User>) => f.data.id === currentUser.id));
         }
       } catch (error) {
         console.error('Failed to fetch user:', error);
@@ -73,9 +73,9 @@ const UserProfilePage = () => {
           userRepository.getFavoriteSongs(userId),
         ]);
         
-        setFavoriteArtists(artists);
-        setFavoriteAlbums(albums);
-        setFavoriteSongs(songs);
+        setFavoriteArtists(artists.items.map((item: HALResource<Artist>) => item.data as Artist));
+        setFavoriteAlbums(albums.items.map((item: HALResource<Album>) => item.data as Album));
+        setFavoriteSongs(songs.items.map((item: HALResource<Song>) => item.data as Song));
       } catch (error) {
         console.error('Failed to fetch favorites:', error);
       }
@@ -95,7 +95,7 @@ const UserProfilePage = () => {
         setLoading(true);
         const userId = parseInt(id as string);
         const response = await userRepository.getUserReviews(userId, reviewsPage, 20);
-        setReviews(response.items);
+        setReviews(response.items.map((item: HALResource<Review>) => item.data as Review));
         setHasMoreReviews(response.items.length === 20);
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
@@ -112,7 +112,7 @@ const UserProfilePage = () => {
   const handleTabChange = (tab: 'favorites' | 'reviews') => {
     setActiveTab(tab);
     if (tab === 'reviews') {
-      setReviewsPage(0);
+      setReviewsPage(1);
     }
   };
 
@@ -129,11 +129,11 @@ const UserProfilePage = () => {
       if (isFollowing) {
         await userRepository.unfollowUser(user.id);
         setIsFollowing(false);
-        setUser({ ...user, followersAmount: (user.followersAmount || 0) - 1 });
+        setUser({ ...user, followers_amount: (user.followers_amount || 0) - 1 });
       } else {
         await userRepository.followUser(user.id);
         setIsFollowing(true);
-        setUser({ ...user, followersAmount: (user.followersAmount || 0) + 1 });
+        setUser({ ...user, followers_amount: (user.followers_amount || 0) + 1 });
       }
     } catch (error) {
       console.error('Failed to toggle follow:', error);
@@ -213,13 +213,13 @@ const UserProfilePage = () => {
                         <Link href={`/artists/${artist.id}`} className="music-item-link">
                           <div className="music-item-image-container">
                             <img
-                              src={artist.imageId ? imageRepository.getImageUrl(artist.imageId) : '/assets/default-artist.png'}
+                              src={artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png'}
                               alt={artist.name}
                               className="music-item-image"
                             />
-                            {artist.averageRating !== undefined && (
+                            {artist.avg_rating && (
                               <div className="rating-badge">
-                                <span className="rating">{artist.averageRating.toFixed(1)}</span>
+                                <span className="rating">{artist.avg_rating.toFixed(1)}</span>
                                 <span className="star">&#9733;</span>
                               </div>
                             )}
@@ -244,13 +244,13 @@ const UserProfilePage = () => {
                         <Link href={`/albums/${album.id}`} className="music-item-link">
                           <div className="music-item-image-container">
                             <img
-                              src={album.imageId ? imageRepository.getImageUrl(album.imageId) : '/assets/default-album.png'}
+                              src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
                               alt={album.title}
                               className="music-item-image"
                             />
-                            {album.averageRating !== undefined && (
+                            {album.avg_rating && (
                               <div className="rating-badge">
-                                <span className="rating">{album.averageRating.toFixed(1)}</span>
+                                <span className="rating">{album.avg_rating.toFixed(1)}</span>
                                 <span className="star">&#9733;</span>
                               </div>
                             )}
@@ -274,9 +274,9 @@ const UserProfilePage = () => {
                       <Link href={`/songs/${song.id}`} className="song-item">
                         <span className="song-number">{index + 1}</span>
                         <span className="song-title">{song.title}</span>
-                        {song.averageRating !== undefined && (
+                        {song.avg_rating && (
                           <div className="rating-badge">
-                            <span className="rating">{song.averageRating.toFixed(1)}</span>
+                            <span className="rating">{song.avg_rating.toFixed(1)}</span>
                             <span className="star">&#9733;</span>
                           </div>
                         )}
@@ -308,7 +308,7 @@ const UserProfilePage = () => {
 
                 {/* Pagination */}
                 <div className="pagination">
-                  {reviewsPage > 0 && (
+                  {reviewsPage > 1 && (
                     <button
                       onClick={() => setReviewsPage(reviewsPage - 1)}
                       className="btn btn-secondary"

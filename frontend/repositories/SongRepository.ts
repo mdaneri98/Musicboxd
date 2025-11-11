@@ -39,7 +39,7 @@ class SongRepository {
    * @returns Collection of songs with pagination metadata
    */
   async getSongs(
-    page: number = 0,
+    page: number = 1,
     size: number = 20,
     search?: string,
     filter?: string
@@ -155,7 +155,7 @@ class SongRepository {
    */
   async getSongReviews(
     id: number,
-    page: number = 0,
+    page: number = 1,
     size: number = 20,
     filter?: string
   ): Promise<Collection<HALResource<Review>>> {

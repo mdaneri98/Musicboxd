@@ -7,7 +7,7 @@ import { RatingCard } from '@/components/ui';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
 import { albumRepository, artistRepository, imageRepository } from '@/repositories';
-import type { Album, Artist, Song, Review } from '@/types';
+import type { Album, Artist, Song, Review, HALResource } from '@/types';
 
 const AlbumDetailPage = () => {
   const router = useRouter();
@@ -21,7 +21,7 @@ const AlbumDetailPage = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
-  const [reviewsPage, setReviewsPage] = useState(0);
+  const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
@@ -39,12 +39,12 @@ const AlbumDetailPage = () => {
         const albumId = parseInt(id as string);
         
         const albumData = await albumRepository.getAlbumById(albumId);
-        setAlbum(albumData);
-        setIsFavorite(albumData.isFavorite || false);
+        setAlbum(albumData.data as Album);
+        setIsFavorite(albumData.data.is_favorite || false);
         
         // Fetch artist data
-        const artistData = await artistRepository.getArtistById(albumData.artistId);
-        setArtist(artistData);
+        const artistData = await artistRepository.getArtistById(albumData.data.artist_id);
+        setArtist(artistData.data as Artist);
       } catch (err: any) {
         console.error('Failed to fetch album:', err);
         setError(err.message || 'Failed to load album');
@@ -64,7 +64,7 @@ const AlbumDetailPage = () => {
       try {
         const albumId = parseInt(id as string);
         const songsData = await albumRepository.getAlbumSongs(albumId, 0, 100); // Get all songs
-        setSongs(songsData.items);
+        setSongs(songsData.items.map((item: HALResource<Song>) => item.data as Song));
       } catch (err) {
         console.error('Failed to fetch songs:', err);
       }
@@ -83,15 +83,15 @@ const AlbumDetailPage = () => {
       try {
         const albumId = parseInt(id as string);
         const reviewsData = await albumRepository.getAlbumReviews(albumId, reviewsPage, 20);
-        setReviews(reviewsData.items);
+        setReviews(reviewsData.items.map((item: HALResource<Review>) => item.data as Review));
         setHasMoreReviews(reviewsData.items.length === 20);
         
         // Check if current user has reviewed this album
         if (isAuthenticated && currentUser) {
-          const userReview = reviewsData.items.find(r => r.userId === currentUser.id);
+          const userReview = reviewsData.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
           if (userReview) {
             setIsReviewed(true);
-            setUserRating(userReview.rating);
+            setUserRating(userReview.data.rating || 0);
           }
         }
       } catch (err) {
@@ -159,8 +159,8 @@ const AlbumDetailPage = () => {
     );
   }
 
-  const albumImgUrl = album.imageId ? imageRepository.getImageUrl(album.imageId) : '/assets/default-album.png';
-  const artistImgUrl = artist?.imageId ? imageRepository.getImageUrl(artist.imageId) : '/assets/default-artist.png';
+  const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
+  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
 
   return (
     <Layout title={`Musicboxd - ${album.title}`}>
@@ -172,7 +172,7 @@ const AlbumDetailPage = () => {
             <div className="entity-details">
               <div className="entity-type">
                 Album
-                {currentUser?.isModerator && (
+                {currentUser?.is_moderator && (
                   <Link href={`/mod/albums/${album.id}/edit`} className="edit-link">
                     <i className="fas fa-pencil-alt"></i>
                   </Link>
@@ -189,8 +189,8 @@ const AlbumDetailPage = () => {
                 )}
                 <div className="album-info">
                   {album.genre && <span className="album-genre">{album.genre}</span>}
-                  {album.genre && album.releaseDate && <span className="info-separator">&bull;</span>}
-                  {album.releaseDate && <span className="album-date">{formatDate(album.releaseDate)}</span>}
+                  {album.genre && album.release_date && <span className="info-separator">&bull;</span>}
+                  {album.release_date && <span className="album-date">{formatDate(album.release_date)}</span>}
                 </div>
               </div>
             </div>
@@ -199,8 +199,8 @@ const AlbumDetailPage = () => {
           {/* Rating Card */}
           <div className="rating-card-container">
             <RatingCard
-              totalRatings={album.reviewsCount || 0}
-              averageRating={album.averageRating || 0}
+              totalRatings={album.rating_count || 0}
+              averageRating={album.avg_rating || 0}
               userRating={userRating}
               reviewed={isReviewed}
               entityType="albums"
@@ -241,9 +241,9 @@ const AlbumDetailPage = () => {
                   <Link href={`/songs/${song.id}`} className="song-item">
                     <span className="song-number">{index + 1}</span>
                     <span className="song-title">{song.title}</span>
-                    {song.averageRating !== undefined && (
+                    {song.avg_rating && (
                       <div className="rating-badge">
-                        <span className="rating">{song.averageRating.toFixed(1)}</span>
+                        <span className="rating">{song.avg_rating.toFixed(1)}</span>
                         <span className="star">&#9733;</span>
                       </div>
                     )}
@@ -266,7 +266,7 @@ const AlbumDetailPage = () => {
 
             {/* Pagination */}
             <div className="pagination">
-              {reviewsPage > 0 && (
+              {reviewsPage > 1 && (
                 <button
                   onClick={() => setReviewsPage(reviewsPage - 1)}
                   className="btn btn-secondary"

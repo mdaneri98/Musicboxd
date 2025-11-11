@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import { Artist } from '@/types';
 import { useAppDispatch } from '@/store/hooks';
+import { imageRepository } from '@/repositories';
 import {
   addArtistFavoriteAsync,
   removeArtistFavoriteAsync,
@@ -20,15 +21,15 @@ const ArtistCard = ({ artist }: ArtistCardProps) => {
 
   const handleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (artist.isFavorite) {
+    if (artist.is_favorite) {
       await dispatch(removeArtistFavoriteAsync(artist.id));
     } else {
       await dispatch(addArtistFavoriteAsync(artist.id));
     }
   };
 
-  const artistImageUrl = artist.imageId
-    ? `/api/images/${artist.imageId}`
+  const artistImageUrl = artist.image_id
+    ? imageRepository.getImageUrl(artist.image_id)
     : '/assets/default-artist.png';
 
   return (
@@ -40,22 +41,22 @@ const ArtistCard = ({ artist }: ArtistCardProps) => {
         <div className="music-card-info">
           <h3 className="music-card-title">{artist.name}</h3>
           <p className="music-card-subtitle">
-            {artist.albumsCount} {artist.albumsCount === 1 ? 'album' : 'albums'}
+            {artist.rating_count} {artist.rating_count === 1 ? 'album' : 'albums'}
           </p>
-          {artist.averageRating && (
+          {artist.avg_rating !== 0 && (
             <div className="music-card-rating">
               <span className="star filled">&#9733;</span>
-              <span className="rating-value">{artist.averageRating.toFixed(1)}</span>
+              <span className="rating-value">{artist.avg_rating.toFixed(1)}</span>
             </div>
           )}
         </div>
       </Link>
       <button
         onClick={handleFavorite}
-        className={`favorite-btn ${artist.isFavorite ? 'active' : ''}`}
-        title={artist.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+        className={`favorite-btn ${artist.is_favorite ? 'active' : ''}`}
+        title={artist.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
       >
-        <i className={`fa-${artist.isFavorite ? 'solid' : 'regular'} fa-heart`}></i>
+        <i className={`fa-${artist.is_favorite ? 'solid' : 'regular'} fa-heart`}></i>
       </button>
     </div>
   );

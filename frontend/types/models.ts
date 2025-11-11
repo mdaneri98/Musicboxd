@@ -1,3 +1,4 @@
+import { Float } from './../node_modules/type-fest/source/numeric.d';
 /**
  * Domain Models
  * TypeScript interfaces for all domain entities
@@ -12,14 +13,14 @@ export interface User {
   email: string;
   name?: string;
   bio?: string;
-  imageId?: number;
-  followersAmount: number;
-  followingAmount: number;
-  reviewsAmount: number;
-  isFollowing?: boolean; // Context-dependent
-  isModerator: boolean;
-  isVerified: boolean;
-  createdAt: Date;
+  image_id?: number;
+  followers_amount: number;
+  following_amount: number;
+  review_amount: number;
+  is_following?: boolean; // Context-dependent
+  is_moderator: boolean;
+  is_verified: boolean;
+  created_at: Date;
 }
 
 // ============================================================================
@@ -29,12 +30,12 @@ export interface Artist {
   id: number;
   name: string;
   bio?: string;
-  imageId?: number;
-  albumsCount: number;
-  songsCount: number;
-  reviewsCount: number;
-  averageRating?: number;
-  isFavorite?: boolean; // Context-dependent
+  image_id?: number;
+  rating_count: number;
+  avg_rating: number;
+  created_at: number;
+  updated_at?: number;
+  is_favorite?: boolean; // Context-dependent
 }
 
 // ============================================================================
@@ -43,15 +44,17 @@ export interface Artist {
 export interface Album {
   id: number;
   title: string;
-  artistId: number;
-  artistName: string;
-  releaseDate?: Date;
+  artist_id: number;
+  artist_name: string;
+  release_date?: Date;
   genre?: string;
-  imageId?: number;
-  songsCount: number;
-  reviewsCount: number;
-  averageRating?: number;
-  isFavorite?: boolean; // Context-dependent
+  image_id?: number;
+  rating_count: number;
+  avg_rating: number;
+  created_at: number;
+  updated_at?: number;
+  deleted: boolean;
+  is_favorite?: boolean; // Context-dependent
 }
 
 // ============================================================================
@@ -60,15 +63,18 @@ export interface Album {
 export interface Song {
   id: number;
   title: string;
-  albumId: number;
-  albumTitle: string;
-  artistId: number;
-  artistName: string;
-  duration: number; // seconds
-  trackNumber?: number;
-  reviewsCount: number;
-  averageRating?: number;
-  isFavorite?: boolean; // Context-dependent
+  album_id: number;
+  album_title: string;
+  artist_id: number;
+  album_image_id: number;
+  duration: string;
+  track_number?: number;
+  rating_count: number;
+  avg_rating: number;
+  created_at: number;
+  updated_at?: number;
+  deleted: boolean;
+  is_favorite?: boolean; // Context-dependent
 }
 
 // ============================================================================
@@ -106,28 +112,31 @@ export interface Review {
 // ============================================================================
 export interface Comment {
   id: number;
-  userId: number;
+  user_id: number;
   username: string;
-  userImageId?: number;
-  reviewId: number;
+  user_image_id?: number;
+  review_id: number;
   content: string;
-  createdAt: Date;
-  updatedAt?: Date;
+  created_at: Date;
 }
 
 // ============================================================================
 // Notification Model
 // ============================================================================
-export type NotificationType = 'follow' | 'like' | 'comment' | 'review';
+export type NotificationType = 'FOLLOW' | 'LIKE' | 'COMMENT' | 'REVIEW';
 
 export interface Notification {
   id: number;
-  userId: number;
+  recipient_user_id: number;
   type: NotificationType;
   message: string;
-  relatedId?: number; // e.g., review ID, user ID
-  isRead: boolean;
-  createdAt: Date;
+  recipient_username: string;
+  trigger_user_id: number;
+  trigger_username: string;
+  trigger_user_image_id: number;
+  review_id?: number;
+  is_read: boolean;
+  created_at: Date;
 }
 
 // ============================================================================
