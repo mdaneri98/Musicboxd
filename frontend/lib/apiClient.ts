@@ -4,13 +4,13 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { HALResource, APIError, APIRequestOptions } from '@/types';
+import { HALResource, APIError, APIRequestOptions, Collection } from '@/types';
 
 // ============================================================================
 // Configuration
 // ============================================================================
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api_war/api';
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = 'access_token';
@@ -212,7 +212,7 @@ class ApiClient {
   /**
    * GET request
    */
-  async get<T>(
+  async getResource<T>(
     url: string,
     options?: APIRequestOptions
   ): Promise<HALResource<T>> {
@@ -228,16 +228,12 @@ class ApiClient {
     }
   }
 
-  /**
-   * POST request
-   */
-  async post<T, D = unknown>(
+  async getCollection<T>(
     url: string,
-    data?: D,
     options?: APIRequestOptions
-  ): Promise<HALResource<T>> {
+  ): Promise<Collection<HALResource<T>>> {
     try {
-      const response: AxiosResponse<HALResource<T>> = await axiosInstance.post(url, data, {
+      const response: AxiosResponse<Collection<HALResource<T>>> = await axiosInstance.get(url, {
         headers: options?.headers,
         params: options?.params,
         signal: options?.signal,
@@ -249,9 +245,31 @@ class ApiClient {
   }
 
   /**
+   * POST request
+   */
+  async postResource<T, D = unknown>(
+    url: string,
+    data?: D,
+    options?: APIRequestOptions
+  ): Promise<HALResource<T>> {
+    try {
+      console.log("POST request to:", url);
+      const response: AxiosResponse<HALResource<T>> = await axiosInstance.post(url, data, {
+        headers: options?.headers,
+        params: options?.params,
+        signal: options?.signal,
+        withCredentials: true
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  /**
    * PUT request
    */
-  async put<T, D = unknown>(
+  async putResource<T, D = unknown>(
     url: string,
     data?: D,
     options?: APIRequestOptions
@@ -271,7 +289,7 @@ class ApiClient {
   /**
    * PATCH request
    */
-  async patch<T, D = unknown>(
+  async patchResource<T, D = unknown>(
     url: string,
     data?: D,
     options?: APIRequestOptions
@@ -291,7 +309,7 @@ class ApiClient {
   /**
    * DELETE request
    */
-  async delete<T>(
+  async deleteResource<T>(
     url: string,
     options?: APIRequestOptions
   ): Promise<HALResource<T>> {
@@ -307,20 +325,80 @@ class ApiClient {
     }
   }
 
-  /**
-   * Upload file with multipart/form-data
-   */
-  async upload<T>(
+  async get<T>(
     url: string,
-    formData: FormData,
     options?: APIRequestOptions
-  ): Promise<HALResource<T>> {
+  ): Promise<T> {
     try {
-      const response: AxiosResponse<HALResource<T>> = await axiosInstance.post(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          ...options?.headers,
-        },
+      const response: AxiosResponse<T> = await axiosInstance.get(url, {
+        headers: options?.headers,
+        params: options?.params,
+        signal: options?.signal,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  async post<T, D = unknown>(
+    url: string,
+    data?: D,
+    options?: APIRequestOptions
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await axiosInstance.post(url, data, {
+        headers: options?.headers,
+        params: options?.params,
+        signal: options?.signal,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  async put<T, D = unknown>(
+    url: string,
+    data?: D,
+    options?: APIRequestOptions
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await axiosInstance.put(url, data, {
+        headers: options?.headers,
+        params: options?.params,
+        signal: options?.signal,  
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  async patch<T, D = unknown>(
+    url: string,
+    data?: D,
+    options?: APIRequestOptions
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await axiosInstance.patch(url, data, {
+        headers: options?.headers,
+        params: options?.params,
+        signal: options?.signal,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  async delete<T>(
+    url: string,
+    options?: APIRequestOptions
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await axiosInstance.delete(url, {
+        headers: options?.headers,
         params: options?.params,
         signal: options?.signal,
       });

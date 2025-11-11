@@ -28,6 +28,8 @@ public class UserForm implements PasswordConfirmation {
     @Size(min = 8, message = "{validation.user.password.size}")
     private String repeatPassword;
 
+    public UserForm() {}
+
     public UserForm(String username, String email, String password, String repeatPassword) {
         this.username = username;
         this.email = email;

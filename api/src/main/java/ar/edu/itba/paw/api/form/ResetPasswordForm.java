@@ -16,6 +16,8 @@ public class ResetPasswordForm implements PasswordConfirmation {
     @Size(min = 8, message = "${validation.resetpassword.password.size}")
     private String repeatPassword;
 
+    public ResetPasswordForm() {}
+
     public ResetPasswordForm(String code, String password, String repeatPassword) {
         this.password = password;
         this.repeatPassword = repeatPassword;

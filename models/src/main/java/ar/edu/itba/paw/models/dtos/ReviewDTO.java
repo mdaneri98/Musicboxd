@@ -15,6 +15,8 @@ public class ReviewDTO {
 
     private String username;
 
+    private Long userImageId;
+
     @NotNull(message = "Title is required")
     @Size(min = 1, max = 50, message = "Title must be between 1 and 50 characters")
     private String title;
@@ -178,6 +180,14 @@ public class ReviewDTO {
 
     public void setTimeAgo(String timeAgo) {
         this.timeAgo = timeAgo;
+    }
+
+    public Long getUserImageId() {
+        return userImageId;
+    }
+
+    public void setUserImageId(Long userImageId) {
+        this.userImageId = userImageId;
     }
 }
 

@@ -12,6 +12,8 @@ public class ReviewForm {
     @Range(min = 0, max = 5, message = "{validation.review.rating.range}")
     private Integer rating;
 
+    public ReviewForm() {}
+
     public ReviewForm(String title, String description, Integer rating) {
         this.title = title;
         this.description = description;

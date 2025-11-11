@@ -23,7 +23,9 @@ public class UserProfileForm {
     private String bio;
 
     @Nullable
-    private final MultipartFile profilePicture;
+    private MultipartFile profilePicture;
+
+    public UserProfileForm() {}
 
     public UserProfileForm(String username, String name, String bio, MultipartFile profilePicture) {
         this.username = username;
@@ -59,4 +61,6 @@ public class UserProfileForm {
     public MultipartFile getProfilePicture() {
         return profilePicture;
     }
+
+    public void setProfilePicture(MultipartFile profilePicture) {}
 }
