@@ -22,9 +22,10 @@ public class ApiUriConstants {
     public static final String USER_REVIEWS = ID + "/reviews";
     public static final String USER_FOLLOWERS = ID + "/followers";
     public static final String USER_FOLLOWINGS = ID + "/followings";
-    public static final String USER_FAVORITE_ARTISTS = ID + "/favorite-artists";
-    public static final String USER_FAVORITE_ALBUMS = ID + "/favorite-albums";
-    public static final String USER_FAVORITE_SONGS = ID + "/favorite-songs";
+    public static final String USER_FAVORITES = ID + "/favorites";
+    public static final String USER_FAVORITE_ARTISTS = USER_FAVORITES + "/artists";
+    public static final String USER_FAVORITE_ALBUMS = USER_FAVORITES + "/albums";
+    public static final String USER_FAVORITE_SONGS = USER_FAVORITES + "/songs";
 
     /* ARTISTS */
     public static final String ARTISTS_BASE = API_BASE + "/artists";

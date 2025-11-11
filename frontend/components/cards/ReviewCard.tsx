@@ -6,6 +6,7 @@
 
 import Link from 'next/link';
 import { Review, ReviewItemTypeEnum } from '@/types';
+import { imageRepository } from '@/repositories';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsModerator } from '@/store/slices';
 import {
@@ -42,11 +43,11 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   };
 
   const itemImageUrl = review.item_id
-    ? `/api/images/${review.item_id}`
+    ? imageRepository.getImageUrl(review.item_id)
     : '/assets/default-album.png';
 
   const userImageUrl = review.user_image_id
-    ? `/api/images/${review.user_image_id}`
+    ? imageRepository.getImageUrl(review.user_image_id)
     : '/assets/default-avatar.png';
 
   const getItemUrl = () => {

@@ -198,7 +198,7 @@ export {
 // Notification Slice
 export {
   fetchNotificationsAsync,
-  fetchUnreadCountAsync,
+  // fetchUnreadCountAsync,
   markAsReadAsync,
   markAllAsReadAsync,
   deleteNotificationAsync,
@@ -219,27 +219,27 @@ export {
 } from './notificationSlice';
 
 // Search Slice
-export {
-  searchAsync,
-  searchUsersAsync,
-  searchArtistsAsync,
-  searchAlbumsAsync,
-  searchSongsAsync,
-  searchReviewsAsync,
-  setQuery,
-  setFilters,
-  clearSearch,
-  clearError as clearSearchError,
-  addRecentSearch,
-  clearRecentSearches,
-  selectSearchQuery,
-  selectSearchResults,
-  selectSearchFilters,
-  selectIsSearching,
-  selectSearchError,
-  selectRecentSearches,
-  selectHasResults,
-} from './searchSlice';
+// export {
+//   searchAsync,
+//   searchUsersAsync,
+//   searchArtistsAsync,
+//   searchAlbumsAsync,
+//   searchSongsAsync,
+//   searchReviewsAsync,
+//   setQuery,
+//   setFilters,
+//   clearSearch,
+//   clearError as clearSearchError,
+//   addRecentSearch,
+//   clearRecentSearches,
+//   selectSearchQuery,
+//   selectSearchResults,
+//   selectSearchFilters,
+//   selectIsSearching,
+//   selectSearchError,
+//   selectRecentSearches,
+//   selectHasResults,
+// } from './searchSlice';
 
 // UI Slice
 export {

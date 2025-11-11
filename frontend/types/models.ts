@@ -74,7 +74,11 @@ export interface Song {
 // ============================================================================
 // Review Model
 // ============================================================================
-export type ReviewItemType = 'Artist' | 'Album' | 'Song';
+export enum ReviewItemType {
+  ARTIST = 'Artist',
+  ALBUM = 'Album',
+  SONG = 'Song',
+}
 
 export interface Review {
   id: number;

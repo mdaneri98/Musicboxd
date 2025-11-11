@@ -16,6 +16,7 @@ import {
   FilterParams,
   PaginationParams,
 } from '@/types';
+import { FilterType } from '@/types/enums';
 
 // ============================================================================
 // API Endpoints
@@ -56,7 +57,7 @@ class UserRepository {
     try {
       const params: FilterParams = { page, size };
       if (search) params.search = search;
-      if (filter) params.filter = filter as any;
+      if (filter) params.filter = filter as FilterType;
 
       const url = buildUrl(USER_ENDPOINTS.USERS, params as Record<string, string | number | boolean>);
       const response: Collection<HALResource<User>> = await apiClient.getCollection<User>(url);
@@ -101,7 +102,7 @@ class UserRepository {
    */
   async createUser(userData: Partial<User>): Promise<HALResource<User>> {
     try {
-      const response: HALResource<User> = await apiClient.post<User>(
+      const response: HALResource<User> = await apiClient.postResource<User>(
         USER_ENDPOINTS.USERS,
         userData
       );
@@ -125,7 +126,7 @@ class UserRepository {
    */
   async updateUser(id: number, userData: Partial<User>): Promise<HALResource<User>> {
     try {
-      const response: HALResource<User> = await apiClient.put<User>(
+      const response: HALResource<User> = await apiClient.putResource<User>(
         USER_ENDPOINTS.USER_BY_ID(id),
         userData
       );
@@ -147,7 +148,7 @@ class UserRepository {
    */
   async deleteUser(id: number): Promise<void> {
     try {
-      await apiClient.delete(USER_ENDPOINTS.USER_BY_ID(id));
+      await apiClient.deleteResource<User>(USER_ENDPOINTS.USER_BY_ID(id));
     } catch (error) {
       console.error(`Delete user ${id} error:`, error);
       throw error;
@@ -248,7 +249,7 @@ class UserRepository {
    */
   async followUser(id: number): Promise<void> {
     try {
-      await apiClient.post(USER_ENDPOINTS.FOLLOW_USER(id));
+      await apiClient.postResource<User>(USER_ENDPOINTS.FOLLOW_USER(id));
     } catch (error) {
       console.error(`Follow user ${id} error:`, error);
       throw error;
@@ -261,7 +262,7 @@ class UserRepository {
    */
   async unfollowUser(id: number): Promise<void> {
     try {
-      await apiClient.delete(USER_ENDPOINTS.UNFOLLOW_USER(id));
+      await apiClient.deleteResource<User>(USER_ENDPOINTS.UNFOLLOW_USER(id));
     } catch (error) {
       console.error(`Unfollow user ${id} error:`, error);
       throw error;

@@ -4,6 +4,7 @@
  */
 
 import { User } from '@/types/models';
+import { FilterType } from './enums';
 
 // ============================================================================
 // HAL (Hypertext Application Language) Types
@@ -53,20 +54,16 @@ export interface PaginationParams {
   size?: number;
 }
 
+export interface FilterParams extends PaginationParams {
+  filter?: FilterType;
+  search?: string;
+}
+
 /**
  * Search parameters
  */
 export interface SearchParams extends PaginationParams {
   search?: string;
-}
-
-/**
- * Filter parameters
- */
-export type FilterType = "POPULAR" | "RECENT" | "OLDEST" | "LIKES" | "NEWEST" | "FIRST" | "RATING" | "USERNAME" | "EMAIL" | "NAME" | "BIO" | "IMAGE_ID" | "FOLLOWERS_AMOUNT" | "FOLLOWING_AMOUNT" | "REVIEW_AMOUNT" | "UPDATED_AT";
-
-export interface FilterParams extends SearchParams {
-  filter?: FilterType;
 }
 
 // ============================================================================

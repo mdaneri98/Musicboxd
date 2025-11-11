@@ -10,21 +10,21 @@ import { apiClient } from '@/lib/apiClient';
 // Link Extraction
 // ============================================================================
 
-// /**
-//  * Get a link by relation from HAL resource
-//  */
-// export const getLink = (resource: HALResource, rel: string): HALLink | null => {
-//   if (!resource._links) return null;
-//   return resource._links[rel] || null;
-// };
+/**
+ * Get a link by relation from HAL resource
+ */
+export const getLink = (resource: HALResource, rel: string): HALLink | null => {
+  if (!resource._links) return null;
+  return resource._links.find((link) => link.rel === rel) || null;
+};
 
-// /**
-//  * Get link href by relation
-//  */
-// export const getLinkHref = (resource: HALResource, rel: string): string | null => {
-//   const link = getLink(resource, rel);
-//   return link?.href || null;
-// };
+/**
+ * Get link href by relation
+ */
+export const getLinkHref = (resource: HALResource, rel: string): string | null => {
+  const link = getLink(resource, rel);
+  return link?.href || null;
+};
 
 // /**
 //  * Check if a link exists
@@ -37,23 +37,23 @@ import { apiClient } from '@/lib/apiClient';
 // // Link Navigation
 // // ============================================================================
 
-// /**
-//  * Follow a link by relation and make GET request
-//  */
-// export const followLink = async <T>(
-//   resource: HALResource,
-//   rel: string
-// ): Promise<HALResource<T> | null> => {
-//   const href = getLinkHref(resource, rel);
-//   if (!href) return null;
+/**
+ * Follow a link by relation and make GET request
+ */
+export const followLink = async <T>(
+  resource: HALResource<T>,
+  rel: string
+): Promise<HALResource<T> | null> => {
+  const href = getLinkHref(resource, rel);
+  if (!href) return null;
 
-//   try {
-//     return await apiClient.get<T>(href);
-//   } catch (error) {
-//     console.error(`Error following link '${rel}':`, error);
-//     throw error;
-//   }
-// };
+  try {
+    return await apiClient.getResource<T>(href);
+  } catch (error) {
+    console.error(`Error following link '${rel}':`, error);
+    throw error;
+  }
+};
 
 // /**
 //  * Follow multiple links in parallel

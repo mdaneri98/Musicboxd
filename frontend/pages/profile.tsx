@@ -48,9 +48,9 @@ const ProfilePage = () => {
           userRepository.getFavoriteSongs(currentUser.id),
         ]);
         
-        setFavoriteArtists(artists);
-        setFavoriteAlbums(albums);
-        setFavoriteSongs(songs);
+        setFavoriteArtists(artists.items.map((item) => item.data));
+        setFavoriteAlbums(albums.items.map((item) => item.data));
+        setFavoriteSongs(songs.items.map((item) => item.data));
       } catch (error) {
         console.error('Failed to fetch favorites:', error);
       } finally {
@@ -71,7 +71,7 @@ const ProfilePage = () => {
       try {
         setLoading(true);
         const response = await userRepository.getUserReviews(currentUser.id, reviewsPage, 20);
-        setReviews(response.items);
+        setReviews(response.items.map((item) => item.data));
         setHasMoreReviews(response.items.length === 20);
       } catch (error) {
         console.error('Failed to fetch reviews:', error);

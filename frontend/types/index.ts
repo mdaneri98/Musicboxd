@@ -24,8 +24,6 @@ export type {
   Collection,
   PaginationParams,
   SearchParams,
-  FilterParams,
-  FilterType,
   LoginCredentials,
   LoginResponse,
   RegisterData,
@@ -34,6 +32,7 @@ export type {
   ValidationError,
   APIResponse,
   APIRequestOptions,
+  FilterParams,
 } from './api';
 
 // Enums

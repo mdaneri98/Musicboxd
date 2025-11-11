@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { artistRepository, albumRepository, songRepository, imageRepository } from '@/repositories';
-import type { Artist, Album, Song } from '@/types';
+import { Artist, Album, Song, FilterTypeEnum } from '@/types';
 
 type Tab = 'popular' | 'topRated';
 
@@ -27,27 +27,27 @@ const MusicDiscoveryPage = () => {
         
         // Fetch artists
         const [topArtists, popArtists] = await Promise.all([
-          artistRepository.getArtists(0, 10, undefined, 'rating'),
-          artistRepository.getArtists(0, 10, undefined, 'popular'),
+          artistRepository.getArtists(1, 10, undefined, FilterTypeEnum.RATING),
+          artistRepository.getArtists(1, 10, undefined, FilterTypeEnum.POPULAR),
         ]);
-        setTopRatedArtists(topArtists.items);
-        setPopularArtists(popArtists.items);
+        setTopRatedArtists(topArtists.items.map((item) => item.data));
+        setPopularArtists(popArtists.items.map((item) => item.data));
         
         // Fetch albums
         const [topAlbums, popAlbums] = await Promise.all([
-          albumRepository.getAlbums(0, 10, undefined, 'rating'),
-          albumRepository.getAlbums(0, 10, undefined, 'popular'),
+          albumRepository.getAlbums(1, 10, undefined, FilterTypeEnum.RATING),
+          albumRepository.getAlbums(1, 10, undefined, FilterTypeEnum.POPULAR),
         ]);
-        setTopRatedAlbums(topAlbums.items);
-        setPopularAlbums(popAlbums.items);
+        setTopRatedAlbums(topAlbums.items.map((item) => item.data));
+        setPopularAlbums(popAlbums.items.map((item) => item.data));
         
         // Fetch songs
         const [topSongs, popSongs] = await Promise.all([
-          songRepository.getSongs(0, 10, undefined, 'rating'),
-          songRepository.getSongs(0, 10, undefined, 'popular'),
+          songRepository.getSongs(1, 10, undefined, FilterTypeEnum.RATING),
+          songRepository.getSongs(1, 10, undefined, FilterTypeEnum.POPULAR),
         ]);
-        setTopRatedSongs(topSongs.items);
-        setPopularSongs(popSongs.items);
+        setTopRatedSongs(topSongs.items.map((item) => item.data));
+        setPopularSongs(popSongs.items.map((item) => item.data));
       } catch (error) {
         console.error('Failed to fetch discovery content:', error);
       } finally {

@@ -57,25 +57,11 @@ export function useHATEOAS() {
     return links;
   }, []);
 
-  /**
-   * Get embedded resources by rel
-   */
-  const getEmbedded = useCallback(
-    <T, E = unknown>(resource: HALResource<T>, rel: string): E[] | null => {
-      if (!resource._embedded || !resource._embedded[rel]) {
-        return null;
-      }
-      return resource._embedded[rel] as E[];
-    },
-    []
-  );
-
   return {
     getLink,
     follow,
     hasLink,
     getAllLinks,
-    getEmbedded,
   };
 }
 
