@@ -1,4 +1,4 @@
-import { FilterType } from '@/types';
+import { FilterTypeEnum } from '@/types';
 
 /**
  * Filter Bar Component
@@ -7,26 +7,26 @@ import { FilterType } from '@/types';
  */
 
 interface FilterOption {
-  value: FilterType;
+  value: FilterTypeEnum;
   label: string;
 }
 
 interface FilterBarProps {
-  value: FilterType;
-  onChange: (filter: FilterType) => void;
+  value: FilterTypeEnum;
+  onChange: (filter: FilterTypeEnum) => void;
   options?: FilterOption[];
   label?: string;
   className?: string;
 }
 
 const defaultOptions: FilterOption[] = [
-  { value: 'POPULAR', label: 'Popular' },
-  { value: 'RECENT', label: 'Most Recent' },
-  { value: 'RATING', label: 'Rating' },
-  { value: 'LIKES', label: 'Likes' },
-  { value: 'FIRST', label: 'First' },
-  { value: 'NEWEST', label: 'Newest' },
-  { value: 'OLDEST', label: 'Oldest' },
+  { value: FilterTypeEnum.POPULAR, label: 'Popular' },
+  { value: FilterTypeEnum.RECENT, label: 'Most Recent' },
+  { value: FilterTypeEnum.RATING, label: 'Rating' },
+  { value: FilterTypeEnum.LIKES, label: 'Likes' },
+  { value: FilterTypeEnum.FIRST, label: 'First' },
+  { value: FilterTypeEnum.NEWEST, label: 'Newest' },
+  { value: FilterTypeEnum.OLDEST, label: 'Oldest' },
 ];
 
 export function FilterBar({
@@ -37,7 +37,7 @@ export function FilterBar({
   className = '',
 }: FilterBarProps) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(e.target.value as FilterType);
+    onChange(e.target.value as FilterTypeEnum);
   };
 
   return (
