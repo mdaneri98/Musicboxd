@@ -24,7 +24,7 @@ public class UserMapper {
         dto.setImageId(user.getImage().getId());
         dto.setFollowersAmount(user.getFollowersAmount());
         dto.setFollowingAmount(user.getFollowingAmount());
-        dto.setReviewsAmount(user.getReviewAmount());
+        dto.setReviewAmount(user.getReviewAmount());
         dto.setCreatedAt(user.getCreatedAt());
         dto.setUpdatedAt(user.getUpdatedAt());
         dto.setVerified(user.isVerified());
@@ -63,7 +63,7 @@ public class UserMapper {
 
         user.setFollowersAmount(dto.getFollowersAmount());
         user.setFollowingAmount(dto.getFollowingAmount());
-        user.setReviewAmount(dto.getReviewsAmount());
+        user.setReviewAmount(dto.getReviewAmount());
         user.setCreatedAt(dto.getCreatedAt());
         user.setUpdatedAt(dto.getUpdatedAt());
         user.setVerified(dto.getVerified());

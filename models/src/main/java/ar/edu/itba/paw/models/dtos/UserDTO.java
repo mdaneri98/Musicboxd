@@ -26,7 +26,7 @@ public class UserDTO {
 
     private Integer followersAmount;
     private Integer followingAmount;
-    private Integer reviewsAmount;
+    private Integer reviewAmount;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -111,12 +111,12 @@ public class UserDTO {
         this.followingAmount = followingAmount;
     }
 
-    public Integer getReviewsAmount() {
-        return reviewsAmount;
+    public Integer getReviewAmount() {
+        return reviewAmount;
     }
 
-    public void setReviewsAmount(Integer reviewsAmount) {
-        this.reviewsAmount = reviewsAmount;
+    public void setReviewAmount(Integer reviewsAmount) {
+        this.reviewAmount = reviewsAmount;
     }
 
     public LocalDateTime getCreatedAt() {

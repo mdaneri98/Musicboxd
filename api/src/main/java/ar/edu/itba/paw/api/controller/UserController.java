@@ -149,7 +149,7 @@ public class UserController extends BaseController {
         List<ReviewDTO> reviews = reviewService.findReviewsByUserPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, user.getReviewsAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_REVIEWS, ControllerUtils.userReviewsCollectionLinks, id);
+                reviewResources, user.getReviewAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_REVIEWS, ControllerUtils.userReviewsCollectionLinks, id);
         return buildResponse(collection);
     }
 
