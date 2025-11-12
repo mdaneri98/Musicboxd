@@ -17,7 +17,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import javax.ws.rs.core.MediaType;
 /**
  * Mapper para ConstraintViolationException.
  * Maneja errores de validación Bean Validation (400).
@@ -55,6 +55,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
         );
 
         return Response.status(Response.Status.BAD_REQUEST)
+                .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(error)
                 .build();
     }

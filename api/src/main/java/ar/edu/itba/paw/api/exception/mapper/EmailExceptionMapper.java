@@ -13,7 +13,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import ar.edu.itba.paw.exception.email.EmailException;
-
+import javax.ws.rs.core.MediaType;
 /**
  * Mapper para excepciones relacionadas con el envío de emails (500).
  * Maneja errores que ocurren al intentar enviar correos electrónicos.
@@ -46,6 +46,7 @@ public class EmailExceptionMapper implements ExceptionMapper<EmailException> {
         );
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(error)
                 .build();
     }

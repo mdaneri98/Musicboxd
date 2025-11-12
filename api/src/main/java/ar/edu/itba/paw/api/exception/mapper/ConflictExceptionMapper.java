@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
+import javax.ws.rs.core.MediaType;
 /**
  * Mapper para ConflictException y todas sus subclases.
  * Maneja excepciones de conflicto de recursos (409).
@@ -48,6 +48,7 @@ public class ConflictExceptionMapper implements ExceptionMapper<ConflictExceptio
         );
 
         return Response.status(Response.Status.CONFLICT)
+                .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(error)
                 .build();
     }

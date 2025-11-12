@@ -60,8 +60,8 @@ const ArtistDetailPage = () => {
       try {
         const artistId = parseInt(id as string);
         const [albumsData, songsData] = await Promise.all([
-          artistRepository.getArtistAlbums(artistId, 0, 10),
-          artistRepository.getArtistSongs(artistId, 0, 10),
+          artistRepository.getArtistAlbums(artistId, 1, 10),
+          artistRepository.getArtistSongs(artistId, 1, 10),
         ]);
         
         setAlbums(albumsData.items.map((item: HALResource<Album>) => item.data as Album));

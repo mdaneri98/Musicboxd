@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
+import javax.ws.rs.core.MediaType;
 /**
  * Mapper para EntityNotFoundException y todas sus subclases.
  * Maneja excepciones de recursos no encontrados (404).
@@ -53,6 +53,7 @@ public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotF
         );
 
         return Response.status(Response.Status.NOT_FOUND)
+                .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(error)
                 .build();
     }

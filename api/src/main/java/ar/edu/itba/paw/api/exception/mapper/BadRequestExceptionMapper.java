@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
+import javax.ws.rs.core.MediaType;
 /**
  * Mapper para excepciones de Bad Request (400).
  * Maneja errores de solicitudes mal formadas o inválidas.
@@ -46,6 +46,7 @@ public class BadRequestExceptionMapper implements ExceptionMapper<UnkownReviewTy
         );
 
         return Response.status(Response.Status.BAD_REQUEST)
+                .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(error)
                 .build();
     }

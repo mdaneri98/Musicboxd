@@ -35,12 +35,12 @@ const ArtistReviewPage = () => {
         setLoading(true);
         const artistId = parseInt(id as string);
         const artistData = await artistRepository.getArtistById(artistId);
-        setArtist(artistData);
+        setArtist(artistData.data);
 
         // Check if user already reviewed this artist
         if (currentUser) {
           const reviews = await artistRepository.getArtistReviews(artistId, 0, 100);
-          const userReview = reviews.items.find(r => r.userId === currentUser.id);
+          const userReview = reviews.items.find(r => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {
             // User already reviewed, redirect to edit
@@ -122,7 +122,7 @@ const ArtistReviewPage = () => {
     );
   }
 
-  const artistImgUrl = artist.imageId ? imageRepository.getImageUrl(artist.imageId) : '/assets/default-artist.png';
+  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
 
   return (
     <Layout title={`Musicboxd - Review ${artist.name}`}>
