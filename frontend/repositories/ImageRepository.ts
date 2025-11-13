@@ -24,7 +24,7 @@ class ImageRepository {
    * @returns Full image URL
    */
   getImageUrl(id: number): string {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api_war/api';
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api';
     return `${baseUrl}${IMAGE_ENDPOINTS.IMAGE_BY_ID(id)}`;
   }
 }

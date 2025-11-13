@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.api.exception;
 
 import ar.edu.itba.paw.models.dtos.ErrorResponseDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +20,28 @@ import java.util.List;
 @Component
 public class ErrorResponseBuilder {
 
+    @Autowired
+    private MessageSource messageSource;
+
+    private String resolveMessage(String codeOrMessage, String defaultMessage) {
+        if (codeOrMessage == null || codeOrMessage.isBlank()) {
+            return defaultMessage;
+        }
+        try {
+            return messageSource.getMessage(codeOrMessage, null, LocaleContextHolder.getLocale());
+        } catch (Exception ignored) {
+            return codeOrMessage;
+        }
+    }
+
+    private String resolveCode(String code, String defaultMessage) {
+        try {
+            return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
+        } catch (Exception ignored) {
+            return defaultMessage;
+        }
+    }
+
     /**
      * Construye una respuesta de error básica.
      *
@@ -29,7 +54,7 @@ public class ErrorResponseBuilder {
         return new ErrorResponseDTO(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                message,
+                resolveMessage(message, httpStatus.getReasonPhrase()),
                 getPath(uriInfo)
         );
     }
@@ -47,7 +72,7 @@ public class ErrorResponseBuilder {
         return new ErrorResponseDTO(
                 code,
                 status,
-                message,
+                resolveMessage(message, status),
                 getPath(uriInfo)
         );
     }
@@ -69,7 +94,7 @@ public class ErrorResponseBuilder {
         return new ErrorResponseDTO(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                message,
+                resolveMessage(message, httpStatus.getReasonPhrase()),
                 getPath(uriInfo),
                 validationErrors
         );
@@ -89,8 +114,37 @@ public class ErrorResponseBuilder {
             Throwable exception,
             String defaultMessage,
             UriInfo uriInfo) {
-        String message = exception.getMessage() != null ? exception.getMessage() : defaultMessage;
-        return build(httpStatus, message, uriInfo);
+        final String raw = exception.getMessage() != null ? exception.getMessage() : defaultMessage;
+        final String localized = resolveMessage(raw, defaultMessage);
+        return new ErrorResponseDTO(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                localized,
+                getPath(uriInfo)
+        );
+    }
+
+    /**
+     * Construye una respuesta de error con un código de mensaje.
+     *
+     * @param httpStatus Estado HTTP
+     * @param messageCode Código de mensaje para localizar
+     * @param defaultMessage Mensaje por defecto si no se encuentra el código
+     * @param uriInfo Información de la URI del request (puede ser null)
+     * @return ErrorResponseDTO construido
+     */
+    public ErrorResponseDTO buildWithCode(
+            HttpStatus httpStatus,
+            String messageCode,
+            String defaultMessage,
+            UriInfo uriInfo) {
+        final String localized = resolveCode(messageCode, defaultMessage);
+        return new ErrorResponseDTO(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                localized,
+                getPath(uriInfo)
+        );
     }
 
     /**

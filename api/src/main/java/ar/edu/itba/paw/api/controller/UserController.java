@@ -12,6 +12,7 @@ import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.services.ReviewService;
@@ -133,6 +134,7 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.deleteById(id);
         

@@ -75,6 +75,7 @@
                 ar.edu.itba.paw.api.mapper,
                 ar.edu.itba.paw.api.filter,
                 ar.edu.itba.paw.api.config,
+                ar.edu.itba.paw.api.context,
                 ar.edu.itba.paw.api.exception.mapper,
                 ar.edu.itba.paw.api.exception
             </param-value>

@@ -8,12 +8,12 @@ public class SongDTO {
 
     private Long id;
 
-    @NotNull(message = "Song title is required")
-    @Size(min = 1, max = 100, message = "Song title must be between 1 and 100 characters")
+    @NotNull(message = "{validation.song.title.notnull}")
+    @Size(min = 1, max = 100, message = "{validation.song.title.size}")
     private String title;
 
-    @NotNull(message = "Duration is required")
-    @Size(max = 10, message = "Duration must not exceed 10 characters")
+    @NotNull(message = "{validation.song.duration.notnull}")
+    @Size(max = 10, message = "{validation.song.duration.size}")
     private String duration;
 
     private Integer trackNumber;

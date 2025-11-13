@@ -48,7 +48,7 @@ public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotF
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.NOT_FOUND,
                 exception,
-                "Entity not found",
+                "exception.EntityNotFound",
                 uriInfo
         );
 

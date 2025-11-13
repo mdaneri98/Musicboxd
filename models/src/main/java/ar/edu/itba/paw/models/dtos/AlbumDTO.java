@@ -10,11 +10,11 @@ public class AlbumDTO {
 
     private Long id;
 
-    @NotNull(message = "Album title is required")
-    @Size(min = 1, max = 100, message = "Album title must be between 1 and 100 characters")
+    @NotNull(message = "{validation.album.title.notnull}")
+    @Size(min = 1, max = 100, message = "{validation.album.title.size}")
     private String title;
 
-    @Size(max = 50, message = "Genre must not exceed 50 characters")
+    @Size(max = 50, message = "{validation.album.genre.size}")
     private String genre;
 
     private LocalDate releaseDate;

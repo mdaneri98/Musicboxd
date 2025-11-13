@@ -25,6 +25,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Path(ApiUriConstants.SONGS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -84,6 +85,7 @@ public class SongController extends BaseController {
     }
 
     @POST
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response createSong(
             @Valid ModSongForm modSongForm) {
         SongDTO songDTO = modSongFormMapper.toDTO(modSongForm);
@@ -102,6 +104,7 @@ public class SongController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response updateSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
@@ -114,6 +117,7 @@ public class SongController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         songService.delete(id);
         return buildNoContentResponse();

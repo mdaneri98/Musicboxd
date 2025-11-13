@@ -14,7 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -39,6 +39,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         
+        // Clear any existing authentication to prevent stale data
+        SecurityContextHolder.clearContext();
+        
         String token = JwtUtils.extractTokenFromRequest(request);
         
         if (token != null) {
@@ -48,24 +51,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String username = jwtService.extractUsername(token);
                     String roles = jwtService.extractRoles(token);
                     
-                    // Create authorities from roles
-                    List<SimpleGrantedAuthority> authorities = Arrays.asList(
-                        new SimpleGrantedAuthority("ROLE_USER")
-                    );
+                    LOGGER.info("Processing JWT for path: {}, extracted roles: {}", requestPath, roles);
                     
-                    if (roles != null && roles.contains("MODERATOR")) {
-                        authorities = Arrays.asList(
-                            new SimpleGrantedAuthority("ROLE_USER"),
-                            new SimpleGrantedAuthority("ROLE_MODERATOR")
-                        );
+                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    
+                    if (roles != null && !roles.isEmpty()) {
+                        String[] roleArray = roles.split(",");
+                        for (String role : roleArray) {
+                            String trimmedRole = role.trim();
+                            if (!trimmedRole.startsWith("ROLE_")) {
+                                trimmedRole = "ROLE_" + trimmedRole;
+                            }
+                            authorities.add(new SimpleGrantedAuthority(trimmedRole));
+                        }
+                    }
+                    
+                    // If no roles found, default to ROLE_USER
+                    if (authorities.isEmpty()) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
                     }
                     
                     // Set authentication in SecurityContext
                     UsernamePasswordAuthenticationToken authentication = 
                         new UsernamePasswordAuthenticationToken(userId.toString(), null, authorities);
+                    authentication.setAuthenticated(true);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     
-                    LOGGER.debug("JWT authentication successful for user: {}", username);
+                    LOGGER.info("JWT authentication successful for user: {} (ID: {}) with roles: {}", username, userId, roles);
+                    LOGGER.info("Authorities set in SecurityContext: {}", authorities);
                 } else {
                     LOGGER.warn("Invalid JWT token");
                 }

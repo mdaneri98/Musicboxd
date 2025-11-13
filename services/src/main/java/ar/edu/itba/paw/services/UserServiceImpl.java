@@ -266,8 +266,12 @@ public class UserServiceImpl implements UserService {
     public Integer deleteById(Long id) {
         LOGGER.info("Deleting user with ID: {}", id);
         int result = userDao.deleteById(id);
-        if (result > 0) LOGGER.info("User with ID: {} deleted successfully", id);
-        else LOGGER.warn("Failed to delete user with ID: {}", id);
+        if (result > 0) {
+            LOGGER.info("User with ID: {} deleted successfully", id);
+        } else {
+            LOGGER.warn("Failed to delete user with ID: {}", id);
+            throw new UserNotFoundException(id);
+        }
         return result;
     }
 

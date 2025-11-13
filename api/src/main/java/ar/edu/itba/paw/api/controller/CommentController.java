@@ -13,6 +13,7 @@ import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.api.form.CommentForm;
 import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -85,6 +86,7 @@ public class CommentController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         commentService.delete(id);
         return buildNoContentResponse();

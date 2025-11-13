@@ -43,7 +43,7 @@ public class ConflictExceptionMapper implements ExceptionMapper<ConflictExceptio
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.CONFLICT,
                 exception,
-                "Resource already exists",
+                "exception.BadRequest",
                 uriInfo
         );
 
