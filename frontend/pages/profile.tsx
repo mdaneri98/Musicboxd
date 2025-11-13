@@ -4,10 +4,9 @@ import Link from 'next/link';
 import { Layout, UserInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync } from '@/store/slices';
-import { userRepository } from '@/repositories';
-import type { Review, Artist, Album, Song } from '@/types';
+import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, selectUserPagination, fetchFavoriteArtistsAsync, fetchFavoriteAlbumsAsync, fetchFavoriteSongsAsync, fetchUserReviewsAsync, selectFavoriteArtists, selectFavoriteAlbums, selectFavoriteSongs, selectUserReviews, selectLoadingFavorites, selectLoadingReviews } from '@/store/slices';
 import { imageRepository } from '@/repositories';
+import { ProfileTabEnum } from '@/types';
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -15,14 +14,15 @@ const ProfilePage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  const [activeTab, setActiveTab] = useState<'favorites' | 'reviews'>('favorites');
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [favoriteArtists, setFavoriteArtists] = useState<Artist[]>([]);
-  const [favoriteAlbums, setFavoriteAlbums] = useState<Album[]>([]);
-  const [favoriteSongs, setFavoriteSongs] = useState<Song[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [reviewsPage, setReviewsPage] = useState(1);
-  const [hasMoreReviews, setHasMoreReviews] = useState(true);
+  const [activeTab, setActiveTab] = useState<ProfileTabEnum>(ProfileTabEnum.FAVORITES);
+  const favoriteArtists = useAppSelector(selectFavoriteArtists);
+  const favoriteAlbums = useAppSelector(selectFavoriteAlbums);
+  const favoriteSongs = useAppSelector(selectFavoriteSongs);
+  const reviews = useAppSelector(selectUserReviews);
+  const loadingFavorites = useAppSelector(selectLoadingFavorites);
+  const loadingReviews = useAppSelector(selectLoadingReviews);
+  const pagination = useAppSelector(selectUserPagination); 
+
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -35,61 +35,17 @@ const ProfilePage = () => {
     }
   }, [isAuthenticated, currentUser, dispatch, router]);
 
-  // Fetch favorites
   useEffect(() => {
-    const fetchFavorites = async () => {
-      if (!currentUser) return;
-      
-      try {
-        setLoading(true);
-        const [artists, albums, songs] = await Promise.all([
-          userRepository.getFavoriteArtists(currentUser.id),
-          userRepository.getFavoriteAlbums(currentUser.id),
-          userRepository.getFavoriteSongs(currentUser.id),
-        ]);
-        
-        setFavoriteArtists(artists.items.map((item) => item.data));
-        setFavoriteAlbums(albums.items.map((item) => item.data));
-        setFavoriteSongs(songs.items.map((item) => item.data));
-      } catch (error) {
-        console.error('Failed to fetch favorites:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (currentUser) {
-      fetchFavorites();
+      dispatch(fetchFavoriteArtistsAsync(currentUser.id));
+      dispatch(fetchFavoriteAlbumsAsync(currentUser.id));
+      dispatch(fetchFavoriteSongsAsync(currentUser.id));
+      dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: pagination.page, size: pagination.size }));
     }
-  }, [currentUser]);
+  }, [currentUser, dispatch]);
 
-  // Fetch reviews when tab is active
-  useEffect(() => {
-    const fetchReviews = async () => {
-      if (!currentUser || activeTab !== 'reviews') return;
-      
-      try {
-        setLoading(true);
-        const response = await userRepository.getUserReviews(currentUser.id, reviewsPage, 20);
-        setReviews(response.items.map((item) => item.data));
-        setHasMoreReviews(response.items.length === 20);
-      } catch (error) {
-        console.error('Failed to fetch reviews:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (currentUser && activeTab === 'reviews') {
-      fetchReviews();
-    }
-  }, [currentUser, activeTab, reviewsPage]);
-
-  const handleTabChange = (tab: 'favorites' | 'reviews') => {
+  const handleTabChange = (tab: ProfileTabEnum) => {
     setActiveTab(tab);
-    if (tab === 'reviews') {
-      setReviewsPage(1);
-    }
   };
 
   if (!isAuthenticated || !currentUser) {
@@ -115,16 +71,16 @@ const ProfilePage = () => {
         <div className="tabs">
           <span
             id="favoritesButton"
-            className={`tab ${activeTab === 'favorites' ? 'active' : ''}`}
-            onClick={() => handleTabChange('favorites')}
+            className={`tab ${activeTab === ProfileTabEnum.FAVORITES ? 'active' : ''}`}
+            onClick={() => handleTabChange(ProfileTabEnum.FAVORITES)}
             style={{ cursor: 'pointer' }}
           >
             Favorites
           </span>
           <span
             id="reviewsButton"
-            className={`tab ${activeTab === 'reviews' ? 'active' : ''}`}
-            onClick={() => handleTabChange('reviews')}
+            className={`tab ${activeTab === ProfileTabEnum.REVIEWS ? 'active' : ''}`}
+            onClick={() => handleTabChange(ProfileTabEnum.REVIEWS)}
             style={{ cursor: 'pointer' }}
           >
             Reviews
@@ -132,18 +88,21 @@ const ProfilePage = () => {
         </div>
 
         {/* Favorites Section */}
-        {activeTab === 'favorites' && (
+        {loadingFavorites ? (
+          <div className="loading">Loading favorites...</div>
+        ) : (
+          activeTab === ProfileTabEnum.FAVORITES && (
           <section className="favorites-section">
             {/* Favorite Artists */}
             <h2>Favorite Artists</h2>
-            {favoriteArtists.length === 0 ? (
+            {Object.values(favoriteArtists).length === 0 ? (
               <div className="empty-state">
                 <p className="add-favorites">Add up to 5 favorite artists to your profile</p>
               </div>
             ) : (
               <div className="carousel-container">
                 <div className="carousel">
-                  {favoriteArtists.map((artist) => (
+                  {Object.values(favoriteArtists).map((artist) => (
                     <div key={artist.id} className="music-item artist-item">
                       <Link href={`/artists/${artist.id}`} className="music-item-link">
                         <div className="music-item-image-container">
@@ -169,14 +128,14 @@ const ProfilePage = () => {
 
             {/* Favorite Albums */}
             <h2>Favorite Albums</h2>
-            {favoriteAlbums.length === 0 ? (
+            {Object.values(favoriteAlbums).length === 0 ? (
               <div className="empty-state">
                 <p className="add-favorites">Add up to 5 favorite albums to your profile</p>
               </div>
             ) : (
               <div className="carousel-container">
                 <div className="carousel">
-                  {favoriteAlbums.map((album) => (
+                  {Object.values(favoriteAlbums).map((album) => (
                     <div key={album.id} className="music-item album-item">
                       <Link href={`/albums/${album.id}`} className="music-item-link">
                         <div className="music-item-image-container">
@@ -202,13 +161,13 @@ const ProfilePage = () => {
 
             {/* Favorite Songs */}
             <h2>Favorite Songs</h2>
-            {favoriteSongs.length === 0 ? (
+            {Object.values(favoriteSongs).length === 0 ? (
               <div className="empty-state">
                 <p className="add-favorites">Add up to 5 favorite songs to your profile</p>
               </div>
             ) : (
               <ul className="song-list">
-                {favoriteSongs.map((song, index) => (
+                {Object.values(favoriteSongs).map((song, index) => (
                   <li key={song.id}>
                     <Link href={`/songs/${song.id}`} className="song-item">
                       <span className="song-number">{index + 1}</span>
@@ -225,38 +184,38 @@ const ProfilePage = () => {
               </ul>
             )}
           </section>
-        )}
+        ))}
 
         {/* Reviews Section */}
-        {activeTab === 'reviews' && (
+        {activeTab === ProfileTabEnum.REVIEWS && (
           <section className="reviews-section">
-            {loading ? (
+            {loadingReviews ? (
               <div className="loading">Loading reviews...</div>
-            ) : reviews.length === 0 ? (
+            ) : Object.values(reviews).length === 0 ? (
               <div className="empty-state">
                 <h3>No reviews found</h3>
               </div>
             ) : (
               <>
                 <div className="reviews-grid">
-                  {reviews.map((review) => (
+                  {Object.values(reviews).map((review) => (
                     <ReviewCard key={review.id} review={review} />
                   ))}
                 </div>
 
                 {/* Pagination */}
                 <div className="pagination">
-                  {reviewsPage > 1 && (
+                  {pagination.page > 1 && (
                     <button
-                      onClick={() => setReviewsPage(reviewsPage - 1)}
+                      onClick={() => dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: pagination.page - 1, size: pagination.size }))}
                       className="btn btn-secondary"
                     >
                       Previous Page
                     </button>
                   )}
-                  {hasMoreReviews && (
+                  {pagination.totalCount > pagination.page * pagination.size && (
                     <button
-                      onClick={() => setReviewsPage(reviewsPage + 1)}
+                      onClick={() => dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: pagination.page + 1, size: pagination.size }))}
                       className="btn btn-secondary"
                     >
                       Next Page

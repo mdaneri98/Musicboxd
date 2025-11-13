@@ -1,25 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { NotificationCard } from '@/components/cards';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated } from '@/store/slices';
-import { notificationRepository } from '@/repositories';
-import { HALResource, Notification } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { selectIsAuthenticated, fetchNotificationsAsync, markAllAsReadAsync, selectNotificationPagination, selectNotifications, selectUnreadCount, selectNotificationLoading } from '@/store/slices';
 
 export default function NotificationsPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const { pageNum = '0' } = router.query;
-  
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [showPrevious, setShowPrevious] = useState(false);
-  const [showNext, setShowNext] = useState(false);
-  
-  const page = parseInt(pageNum as string);
-  const pageSize = 20;
+  const notifications = useAppSelector(selectNotifications);
+  const unreadCount = useAppSelector(selectUnreadCount);
+  const loadingNotifications = useAppSelector(selectNotificationLoading);
+  const pagination = useAppSelector(selectNotificationPagination);
 
   // Redirect to landing if not authenticated
   useEffect(() => {
@@ -32,39 +25,24 @@ export default function NotificationsPage() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        setLoading(true);
-        const [notificationsData] = await Promise.all([
-          notificationRepository.getNotifications(page, pageSize),
-          // notificationRepository.getUnreadCount(),
-        ]);
-
-        setNotifications(notificationsData.items.map((item: HALResource<Notification>) => item.data as Notification));
-        // setUnreadCount(unreadCountData);
-        
-        // Pagination
-        setShowPrevious(page > 1);
-        setShowNext(notificationsData.items.length === pageSize);
+        await dispatch(fetchNotificationsAsync({ page: pagination.page, size: pagination.size })).unwrap();
       } catch (error) {
         console.error('Failed to fetch notifications:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
     if (isAuthenticated) {
       fetchNotifications();
     }
-  }, [isAuthenticated, page]);
+  }, [isAuthenticated, pagination, dispatch]);
 
   // Mark all as read
   const handleMarkAllAsRead = async () => {
     try {
-      await notificationRepository.markAllAsRead();
+      await dispatch(markAllAsReadAsync()).unwrap();
       
       // Refresh notifications
-      const notificationsData = await notificationRepository.getNotifications(page, pageSize);
-      setNotifications(notificationsData.items.map((item: HALResource<Notification>) => item.data as Notification));
-      setUnreadCount(0);
+      await dispatch(fetchNotificationsAsync({ page: pagination.page, size: pagination.size })).unwrap();
     } catch (error) {
       console.error('Failed to mark all as read:', error);
     }
@@ -73,11 +51,11 @@ export default function NotificationsPage() {
 
   // Handle page navigation
   const handlePreviousPage = () => {
-    router.push(`/notifications?pageNum=${page - 1}`);
+    dispatch(fetchNotificationsAsync({ page: pagination.page - 1, size: pagination.size })).unwrap();
   };
 
   const handleNextPage = () => {
-    router.push(`/notifications?pageNum=${page + 1}`);
+    dispatch(fetchNotificationsAsync({ page: pagination.page + 1, size: pagination.size })).unwrap();
   };
 
   if (!isAuthenticated) {
@@ -96,13 +74,13 @@ export default function NotificationsPage() {
           )}
         </div>
 
-        {loading ? (
+        {loadingNotifications ? (
           <div className="loading">Loading notifications...</div>
-        ) : notifications.length === 0 ? (
+        ) : Object.values(notifications).length === 0 ? (
           <p className="no-results">No notifications</p>
         ) : (
           <div className="notifications-list">
-            {notifications.map((notification) => (
+            {Object.values(notifications).map((notification) => (
               <NotificationCard
                 key={notification.id}
                 notification={notification}
@@ -112,14 +90,14 @@ export default function NotificationsPage() {
         )}
 
         {/* Pagination */}
-        {(showPrevious || showNext) && (
+        {pagination.totalCount > pagination.page * pagination.size && (
           <div className="pagination">
-            {showPrevious && (
+            {pagination.page > 1 && (
               <button onClick={handlePreviousPage} className="btn btn-secondary">
                 Previous Page
               </button>
             )}
-            {showNext && (
+            {pagination.totalCount > pagination.page * pagination.size && (
               <button onClick={handleNextPage} className="btn btn-secondary">
                 Next Page
               </button>

@@ -8,13 +8,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated } from '@/store/slices';
-import { reviewRepository } from '@/repositories';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { selectIsAuthenticated, fetchReviewsAsync } from '@/store/slices';
 import { Review, FilterTypeEnum } from '@/types';
 
 const HomePage = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const HomePage = () => {
         // For now, we'll fetch all reviews
         // TODO: Implement "For You" (popular) and "Following" (from followed users) logic in backend
         const filter = activeTab === 'forYou' ? FilterTypeEnum.LIKES : FilterTypeEnum.RECENT;
-        const response = await reviewRepository.getReviews(page, 20, undefined, filter);
+        const response = await dispatch(fetchReviewsAsync({ page, size: 20, filter })).unwrap();
         const reviews = response.items.map((item) => item.data);
         setReviews(reviews);
         setHasMore(reviews.length === 20);
@@ -50,7 +50,7 @@ const HomePage = () => {
     if (isAuthenticated) {
       fetchReviews();
     }
-  }, [isAuthenticated, page, activeTab]);
+  }, [isAuthenticated, page, activeTab, dispatch]);
 
   const handleTabChange = (tab: 'forYou' | 'following') => {
     setActiveTab(tab);

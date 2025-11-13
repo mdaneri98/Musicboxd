@@ -28,6 +28,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path(ApiUriConstants.REVIEWS_BASE)
@@ -66,9 +67,11 @@ public class ReviewController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
+        List<ReviewDTO> reviewDTOs;
         if (search != null && !search.isEmpty()) return getReviewBySubstring(search, page, size);
-        
-        List<ReviewDTO> reviewDTOs = reviewService.findPaginated(filter, page, size, SecurityContextUtils.getCurrentUserId());
+        if (filter == FilterType.FOLLOWING) reviewDTOs = reviewService.getReviewsFromFollowedUsersPaginated(page,size, SecurityContextUtils.getCurrentUserId());
+        else reviewDTOs = reviewService.findPaginated(filter, page, size, SecurityContextUtils.getCurrentUserId());
+
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Integer totalCount = reviewService.countAll().intValue();
         

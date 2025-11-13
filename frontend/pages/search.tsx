@@ -2,32 +2,26 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { UserCard } from '@/components/cards';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated } from '@/store/slices';
-import {
-  artistRepository,
-  albumRepository,
-  songRepository,
-  userRepository,
-  imageRepository,
-} from '@/repositories';
-import { Artist, Album, Song, User, HALResource } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { selectIsAuthenticated, fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, fetchUsersAsync } from '@/store/slices';
+import { imageRepository } from '@/repositories';
+import { Artist, Album, Song, User, HALResource, SearchTypeEnum, SearchTabEnum } from '@/types';
 
 type SearchResultItem = {
   id: number;
   name: string;
-  type: 'artist' | 'album' | 'song' | 'user';
+  type: SearchTypeEnum;
   imgId?: number;
   imageUrl?: string;
 };
 
-type TabType = 'music' | 'users';
 
 export default function SearchPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   
-  const [activeTab, setActiveTab] = useState<TabType>('music');
+  const [activeTab, setActiveTab] = useState<SearchTabEnum>(SearchTabEnum.MUSIC);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [recommendedUsers, setRecommendedUsers] = useState<User[]>([]);
@@ -49,7 +43,7 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchRecommendedUsers = async () => {
       try {
-        const usersData = await userRepository.getUsers(1, 6);
+        const usersData = await dispatch(fetchUsersAsync({ page: 1, size: 6 })).unwrap();
         setRecommendedUsers(usersData.items.map((user: HALResource<User>) => user.data as User));
       } catch (error) {
         console.error('Failed to fetch recommended users:', error);
@@ -59,7 +53,7 @@ export default function SearchPage() {
     if (isAuthenticated) {
       fetchRecommendedUsers();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, dispatch]);
 
   // Close results when clicking outside
   useEffect(() => {
@@ -87,16 +81,16 @@ export default function SearchPage() {
       setError(null);
 
       const [artistsData, albumsData, songsData, usersData] = await Promise.all([
-        artistRepository.getArtists(1, 10, query),
-        albumRepository.getAlbums(1, 10, query),
-        songRepository.getSongs(1, 10, query),
-        userRepository.getUsers(1, 10, query),
+        dispatch(fetchArtistsAsync({ page: 1, size: 10, search: query })).unwrap(),
+        dispatch(fetchAlbumsAsync({ page: 1, size: 10, search: query })).unwrap(),
+        dispatch(fetchSongsAsync({ page: 1, size: 10, search: query })).unwrap(),
+        dispatch(fetchUsersAsync({ page: 1, size: 10, search: query })).unwrap(),
       ]);
 
       const artistResults: SearchResultItem[] = artistsData.items.map((artist: HALResource<Artist>  ) => ({
         id: artist.data.id,
         name: artist.data.name,
-        type: 'artist' as const,
+        type: SearchTypeEnum.ARTISTS,
         imgId: artist.data.image_id,
         imageUrl: artist.data.image_id ? imageRepository.getImageUrl(artist.data.image_id) : undefined,
       }));
@@ -104,7 +98,7 @@ export default function SearchPage() {
       const albumResults: SearchResultItem[] = albumsData.items.map((album: HALResource<Album>) => ({
         id: album.data.id,
         name: album.data.title,
-        type: 'album' as const,
+        type: SearchTypeEnum.ALBUMS,
         imgId: album.data.image_id,
         imageUrl: album.data.image_id ? imageRepository.getImageUrl(album.data.image_id) : undefined,
       }));
@@ -112,7 +106,7 @@ export default function SearchPage() {
       const songResults: SearchResultItem[] = songsData.items.map((song: HALResource<Song>) => ({
         id: song.data.id,
         name: song.data.title,
-        type: 'song' as const,
+        type: SearchTypeEnum.SONGS,
         imgId: undefined, // Song model doesn't include album image
         imageUrl: undefined,
       }));
@@ -120,14 +114,14 @@ export default function SearchPage() {
       const userResults: SearchResultItem[] = usersData.items.map((user: HALResource<User>) => ({
         id: user.data.id,
         name: user.data.name || user.data.username,
-        type: 'user' as const,
+        type: SearchTypeEnum.USERS,
         imgId: user.data.image_id,
         imageUrl: user.data.image_id ? imageRepository.getImageUrl(user.data.image_id) : undefined,
       }));
 
       // Filter and sort based on active tab
       let results: SearchResultItem[] = [];
-      if (activeTab === 'music') {
+      if (activeTab === SearchTabEnum.MUSIC) {
         results = [...artistResults, ...albumResults, ...songResults];
       } else {
         results = userResults;
@@ -162,7 +156,7 @@ export default function SearchPage() {
       setError('Error al buscar');
       setSearchResults([]);
     }
-  }, [activeTab]);
+  }, [activeTab, dispatch]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,7 +167,7 @@ export default function SearchPage() {
   };
 
   // Handle tab change
-  const handleTabChange = (tab: TabType) => {
+  const handleTabChange = (tab: SearchTabEnum) => {
     setActiveTab(tab);
     setShowResults(false);
     setError(null);
@@ -228,14 +222,14 @@ export default function SearchPage() {
         {/* Tabs */}
         <div className="tabs">
           <span
-            className={`tab ${activeTab === 'music' ? 'active' : ''}`}
-            onClick={() => handleTabChange('music')}
+            className={`tab ${activeTab === SearchTabEnum.MUSIC ? 'active' : ''}`}
+            onClick={() => handleTabChange(SearchTabEnum.MUSIC)}
           >
             Music
           </span>
           <span
-            className={`tab ${activeTab === 'users' ? 'active' : ''}`}
-            onClick={() => handleTabChange('users')}
+            className={`tab ${activeTab === SearchTabEnum.USERS ? 'active' : ''}`}
+            onClick={() => handleTabChange(SearchTabEnum.USERS)}
           >
             Users
           </span>

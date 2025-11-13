@@ -165,7 +165,7 @@ const authSlice = createSlice({
     setCurrentUser: (state, action: PayloadAction<User>) => {
       state.currentUser = action.payload;
       state.isAuthenticated = true;
-      state.isModerator = action.payload.is_moderator;
+      state.isModerator = action.payload.moderator;
     },
 
     /**
@@ -190,7 +190,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.currentUser = action.payload.user as User;
         state.isAuthenticated = true;
-        state.isModerator = action.payload.user.is_moderator;
+        state.isModerator = action.payload.user.moderator;
         state.error = null;
       })
       .addCase(loginAsync.rejected, (state, action) => {
@@ -247,7 +247,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.currentUser = action.payload;
         state.isAuthenticated = true;
-        state.isModerator = action.payload.is_moderator;
+        state.isModerator = action.payload.moderator;
         state.error = null;
       })
       .addCase(getCurrentUserAsync.rejected, (state, action) => {
@@ -268,7 +268,7 @@ const authSlice = createSlice({
         if (action.payload) {
           state.currentUser = action.payload;
           state.isAuthenticated = true;
-          state.isModerator = action.payload.is_moderator;
+          state.isModerator = action.payload.moderator;
         } else {
           state.currentUser = null;
           state.isAuthenticated = false;

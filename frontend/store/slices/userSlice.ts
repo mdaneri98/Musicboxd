@@ -38,6 +38,9 @@ export interface UserState {
   loadingFollowers: boolean;
   loadingFollowing: boolean;
   loadingFavorites: boolean;
+  loadingFavoriteArtists: boolean;
+  loadingFavoriteAlbums: boolean;
+  loadingFavoriteSongs: boolean;
   loadingReviews: boolean;
   // Error state
   error: string | null;
@@ -66,6 +69,9 @@ const initialState: UserState = {
   loadingFollowers: false,
   loadingFollowing: false,
   loadingFavorites: false,
+  loadingFavoriteArtists: false,
+  loadingFavoriteAlbums: false,
+  loadingFavoriteSongs: false,
   loadingReviews: false,
   error: null,
 };
@@ -461,63 +467,45 @@ const userSlice = createSlice({
     // Fetch Favorite Artists
     builder
       .addCase(fetchFavoriteArtistsAsync.pending, (state) => {
-        state.loadingFavorites = true;
+        state.loadingFavoriteArtists = true;
         state.error = null;
       })
       .addCase(fetchFavoriteArtistsAsync.fulfilled, (state, action) => {
-        state.loadingFavorites = false;
-        action.payload.items.forEach((artist) => {
-          state.favoriteArtists.push(artist.data as Artist);
-        });
-        // Add to normalized state
-        action.payload.items.forEach((artist) => {
-          state.favoriteArtists[artist.data.id] = artist.data as Artist;
-        });
+        state.loadingFavoriteArtists = false;
+        state.favoriteArtists = action.payload.items.map((artist) => artist.data as Artist);
       })
       .addCase(fetchFavoriteArtistsAsync.rejected, (state, action) => {
-        state.loadingFavorites = false;
+        state.loadingFavoriteArtists = false;
         state.error = action.payload || 'Failed to fetch favorite artists';
       });
 
     // Fetch Favorite Albums
     builder
       .addCase(fetchFavoriteAlbumsAsync.pending, (state) => {
-        state.loadingFavorites = true;
+        state.loadingFavoriteAlbums = true;
         state.error = null;
       })
       .addCase(fetchFavoriteAlbumsAsync.fulfilled, (state, action) => {
-        state.loadingFavorites = false;
-        action.payload.items.forEach((album) => {
-          state.favoriteAlbums.push(album.data as Album);
-        });
-        // Add to normalized state
-        action.payload.items.forEach((album) => {
-          state.favoriteAlbums[album.data.id] = album.data as Album;
-        });
+        state.loadingFavoriteAlbums = false;
+        state.favoriteAlbums = action.payload.items.map((album) => album.data as Album);
       })
       .addCase(fetchFavoriteAlbumsAsync.rejected, (state, action) => {
-        state.loadingFavorites = false;
+        state.loadingFavoriteAlbums = false;
         state.error = action.payload || 'Failed to fetch favorite albums';
       });
 
     // Fetch Favorite Songs
     builder
       .addCase(fetchFavoriteSongsAsync.pending, (state) => {
-        state.loadingFavorites = true;
+        state.loadingFavoriteSongs = true;
         state.error = null;
       })
       .addCase(fetchFavoriteSongsAsync.fulfilled, (state, action) => {
-        state.loadingFavorites = false;
-        action.payload.items.forEach((song) => {
-          state.favoriteSongs.push(song.data as Song);
-        });
-        // Add to normalized state
-        action.payload.items.forEach((song) => {
-          state.favoriteSongs[song.data.id] = song.data as Song;
-        });
+        state.loadingFavoriteSongs = false;
+        state.favoriteSongs = action.payload.items.map((song) => song.data as Song);
       })
       .addCase(fetchFavoriteSongsAsync.rejected, (state, action) => {
-        state.loadingFavorites = false;
+        state.loadingFavoriteSongs = false;
         state.error = action.payload || 'Failed to fetch favorite songs';
       });
 
@@ -529,13 +517,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        action.payload.items.forEach((review) => {
-          state.userReviews[review.data.id] = review.data as Review;
-        });
-        // Add to normalized state
-        action.payload.items.forEach((review) => {
-          state.userReviews[review.data.id] = review.data as Review;
-        });
+        state.userReviews = action.payload.items.map((review) => review.data as Review);
       })
       .addCase(fetchUserReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;
@@ -570,7 +552,7 @@ export const selectUserError = (state: RootState) => state.users.error;
 export const selectLoadingProfile = (state: RootState) => state.users.loadingProfile;
 export const selectLoadingFollowers = (state: RootState) => state.users.loadingFollowers;
 export const selectLoadingFollowing = (state: RootState) => state.users.loadingFollowing;
-export const selectLoadingFavorites = (state: RootState) => state.users.loadingFavorites;
+export const selectLoadingFavorites = (state: RootState) => state.users.loadingFavoriteArtists || state.users.loadingFavoriteAlbums || state.users.loadingFavoriteSongs;
 export const selectLoadingReviews = (state: RootState) => state.users.loadingReviews;
 
 // ============================================================================

@@ -10,6 +10,7 @@
  * Filter type for sorting/filtering lists
  */
 export enum FilterType {
+  FOLLOWING = 'FOLLOWING',
   POPULAR = 'POPULAR',
   RECENT = 'RECENT',
   OLDEST = 'OLDEST',
@@ -29,11 +30,6 @@ export enum FilterType {
   CREATED_AT = 'CREATED_AT',
 }
 
-/**
- * Filter type as union
- */
-export type FilterTypeUnion = 'POPULAR' | 'RECENT' | 'OLDEST' | 'LIKES' | 'NEWEST' | 'FIRST' | 'RATING' | 'USERNAME' | 'EMAIL' | 'NAME' | 'BIO' | 'IMAGE_ID' | 'FOLLOWERS_AMOUNT' | 'FOLLOWING_AMOUNT' | 'REVIEW_AMOUNT' | 'UPDATED_AT' | 'CREATED_AT';
-
 // ============================================================================
 // Review Item Types
 // ============================================================================
@@ -47,10 +43,6 @@ export enum ReviewItemType {
   SONG = 'Song',
 }
 
-/**
- * Review item type as union
- */
-export type ReviewItemTypeUnion = 'Artist' | 'Album' | 'Song';
 
 // ============================================================================
 // Notification Types
@@ -66,11 +58,6 @@ export enum NotificationType {
   REVIEW = 'review',
 }
 
-/**
- * Notification type as union
- */
-export type NotificationTypeUnion = 'follow' | 'like' | 'comment' | 'review';
-
 // ============================================================================
 // Search Types
 // ============================================================================
@@ -79,18 +66,11 @@ export type NotificationTypeUnion = 'follow' | 'like' | 'comment' | 'review';
  * Search entity type
  */
 export enum SearchType {
-  ALL = 'all',
   USERS = 'users',
   ARTISTS = 'artists',
   ALBUMS = 'albums',
   SONGS = 'songs',
-  REVIEWS = 'reviews',
 }
-
-/**
- * Search type as union
- */
-export type SearchTypeUnion = 'all' | 'users' | 'artists' | 'albums' | 'songs' | 'reviews';
 
 // ============================================================================
 // Theme Types
@@ -106,11 +86,6 @@ export enum Theme {
   FOREST = 'forest',
   KAWAII = 'kawaii',
 }
-
-/**
- * Theme as union
- */
-export type ThemeUnion = 'dark' | 'sepia' | 'ocean' | 'forest' | 'kawaii';
 
 // ============================================================================
 // Language Types
@@ -129,8 +104,64 @@ export enum Language {
   PT = 'pt',
 }
 
-/**
- * Language as union
- */
-export type LanguageUnion = 'en' | 'es' | 'de' | 'fr' | 'it' | 'ja' | 'pt';
+// ============================================================================
+// Profile Tab Types
+// ============================================================================
 
+/**
+ * Profile tab type enum
+ */
+export enum ProfileTab {
+  FAVORITES = 'favorites',
+  REVIEWS = 'reviews',
+}
+
+// ============================================================================
+// Review Tab Types
+// ============================================================================
+
+/**
+ * Review tab type enum
+ */
+export enum ReviewTab {
+  LIKES = 'likes',
+  COMMENTS = 'comments',
+}
+
+
+// ============================================================================
+// Search Tab Types
+// ============================================================================
+
+/**
+ * Search tab type enum
+ */
+export enum SearchTab {
+  MUSIC = 'music',
+  USERS = 'users',
+}
+
+
+// ============================================================================
+// Music Tab Types
+// ============================================================================
+
+/**
+ * Music tab type enum
+ */
+export enum MusicTab {
+  POPULAR = 'popular',
+  TOP_RATED = 'top_rated',
+}
+
+// ============================================================================
+// Home Tab Types
+// ============================================================================
+
+/**
+ * Home tab type enum
+ */
+export enum HomeTab {
+  FOR_YOU = 'for_you',
+  FOLLOWING = 'following',
+}

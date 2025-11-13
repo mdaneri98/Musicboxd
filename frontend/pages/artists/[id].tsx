@@ -4,87 +4,78 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { RatingCard } from '@/components/ui';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { artistRepository, imageRepository } from '@/repositories';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser, 
+  fetchArtistByIdAsync, 
+  fetchArtistAlbumsAsync, 
+  fetchArtistSongsAsync, 
+  fetchArtistReviewsAsync, 
+  addArtistFavoriteAsync, 
+  removeArtistFavoriteAsync,
+  selectCurrentArtist,
+  selectArtistAlbums,
+  selectArtistSongs,
+  selectArtistReviews,
+  selectLoadingArtist,
+  selectLoadingAlbums,
+  selectLoadingSongs,
+  selectLoadingArtistReviews,
+  selectArtistError,
+  clearCurrentArtist
+} from '@/store/slices';
+import { imageRepository } from '@/repositories';
 import type { Artist, Album, Song, Review, HALResource } from '@/types';
 
 const ArtistDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  const [artist, setArtist] = useState<Artist | null>(null);
-  const [albums, setAlbums] = useState<Album[]>([]);
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | undefined>();
+  // Use Redux selectors instead of useState
+  const artist = useAppSelector(selectCurrentArtist);
+  const albums = useAppSelector(selectArtistAlbums);
+  const songs = useAppSelector(selectArtistSongs);
+  const reviews = useAppSelector(selectArtistReviews);
+  const loading = useAppSelector(selectLoadingArtist);
+  const error = useAppSelector(selectArtistError);
+  
   const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [userRating, setUserRating] = useState<number | undefined>();
   const [isReviewed, setIsReviewed] = useState(false);
+  
+  const isFavorite = artist?.is_favorite || false;
+
+  // Clear artist data when component unmounts or id changes
+  useEffect(() => {
+    return () => {
+      dispatch(clearCurrentArtist());
+    };
+  }, [dispatch]);
 
   // Fetch artist data
   useEffect(() => {
-    const fetchArtist = async () => {
-      if (!id) return;
-      
-      try {
-        setLoading(true);
-        setError(undefined);
-        const artistId = parseInt(id as string);
-        
-        const artistData = await artistRepository.getArtistById(artistId);
-        setArtist(artistData.data as Artist);
-        setIsFavorite(artistData.data.is_favorite || false);
-      } catch (err: any) {
-        console.error('Failed to fetch artist:', err);
-        setError(err.message || 'Failed to load artist');
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!id) return;
+    
+    const artistId = parseInt(id as string);
+    dispatch(fetchArtistByIdAsync(artistId));
+    dispatch(fetchArtistAlbumsAsync({ artistId, page: 1, size: 10 }));
+    dispatch(fetchArtistSongsAsync({ artistId, page: 1, size: 10 }));
+  }, [id, dispatch]);
 
-    fetchArtist();
-  }, [id]);
-
-  // Fetch albums and songs
+  // Fetch reviews with pagination
   useEffect(() => {
-    const fetchMusicData = async () => {
-      if (!id) return;
-      
-      try {
-        const artistId = parseInt(id as string);
-        const [albumsData, songsData] = await Promise.all([
-          artistRepository.getArtistAlbums(artistId, 1, 10),
-          artistRepository.getArtistSongs(artistId, 1, 10),
-        ]);
-        
-        setAlbums(albumsData.items.map((item: HALResource<Album>) => item.data as Album));
-        setSongs(songsData.items.map((item: HALResource<Song>) => item.data as Song));
-      } catch (err) {
-        console.error('Failed to fetch music data:', err);
-      }
-    };
-
-    if (id) {
-      fetchMusicData();
-    }
-  }, [id]);
-
-  // Fetch reviews
-  useEffect(() => {
-    const fetchReviews = async () => {
-      if (!id) return;
-      
-      try {
-        const artistId = parseInt(id as string);
-        const reviewsData = await artistRepository.getArtistReviews(artistId, reviewsPage, 20);
-        setReviews(reviewsData.items.map((item: HALResource<Review>) => item.data as Review));
+    if (!id) return;
+    
+    const artistId = parseInt(id as string);
+    dispatch(fetchArtistReviewsAsync({ artistId, page: reviewsPage, size: 20 }))
+      .unwrap()
+      .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
         
         // Check if current user has reviewed this artist
@@ -95,15 +86,11 @@ const ArtistDetailPage = () => {
             setUserRating(userReview.data.rating || 0);
           }
         }
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error('Failed to fetch reviews:', err);
-      }
-    };
-
-    if (id) {
-      fetchReviews();
-    }
-  }, [id, reviewsPage, isAuthenticated, currentUser]);
+      });
+  }, [id, reviewsPage, isAuthenticated, currentUser, dispatch]);
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {
@@ -116,11 +103,9 @@ const ArtistDetailPage = () => {
     try {
       setFavoriteLoading(true);
       if (isFavorite) {
-        await artistRepository.removeArtistFavorite(artist.id);
-        setIsFavorite(false);
+        await dispatch(removeArtistFavoriteAsync(artist.id)).unwrap();
       } else {
-        await artistRepository.addArtistFavorite(artist.id);
-        setIsFavorite(true);
+        await dispatch(addArtistFavoriteAsync(artist.id)).unwrap();
       }
     } catch (err) {
       console.error('Failed to toggle favorite:', err);
@@ -163,7 +148,7 @@ const ArtistDetailPage = () => {
             <div className="entity-details">
               <div className="entity-type">
                 Artist
-                {currentUser?.is_moderator && (
+                {currentUser?.moderator && (
                   <Link href={`/mod/artists/${artist.id}/edit`} className="edit-link">
                     <i className="fas fa-pencil-alt"></i>
                   </Link>
@@ -300,4 +285,3 @@ const ArtistDetailPage = () => {
 };
 
 export default ArtistDetailPage;
-

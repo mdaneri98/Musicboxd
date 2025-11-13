@@ -4,14 +4,15 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { artistRepository, reviewRepository, imageRepository } from '@/repositories';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { selectIsAuthenticated, selectCurrentUser, fetchArtistByIdAsync, fetchArtistReviewsAsync, updateReviewAsync, deleteReviewAsync } from '@/store/slices';
+import { imageRepository } from '@/repositories';
 import type { Artist, ReviewFormData } from '@/types';
 
 const ArtistReviewPage = () => {
   const router = useRouter();
   const { id, edit } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
@@ -34,12 +35,12 @@ const ArtistReviewPage = () => {
       try {
         setLoading(true);
         const artistId = parseInt(id as string);
-        const artistData = await artistRepository.getArtistById(artistId);
+        const artistData = await dispatch(fetchArtistByIdAsync(artistId)).unwrap();
         setArtist(artistData.data);
 
         // Check if user already reviewed this artist
         if (currentUser) {
-          const reviews = await artistRepository.getArtistReviews(artistId, 0, 100);
+          const reviews = await dispatch(fetchArtistReviewsAsync({ artistId, page: 0, size: 100 })).unwrap();
           const userReview = reviews.items.find(r => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {
@@ -64,7 +65,7 @@ const ArtistReviewPage = () => {
     };
 
     fetchData();
-  }, [id, isAuthenticated, currentUser, isEditMode, router]);
+  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!artist) return;
@@ -74,13 +75,18 @@ const ArtistReviewPage = () => {
 
       if (isEditMode && existingReview) {
         // Update existing review
-        await reviewRepository.updateReview(existingReview.id, {
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-        });
+        await dispatch(updateReviewAsync({
+          id: existingReview.id,
+          reviewData: {
+            title: data.title,
+            description: data.description,
+            rating: data.rating,
+          }
+        })).unwrap();
       } else {
-        // Create new review
+        // Create new review - Note: This needs to be handled by artist repository
+        // as it's artist-specific review creation
+        const { artistRepository } = await import('@/repositories');
         await artistRepository.createArtistReview(artist.id, {
           title: data.title,
           description: data.description,
@@ -101,7 +107,7 @@ const ArtistReviewPage = () => {
     if (!existingReview) return;
 
     try {
-      await reviewRepository.deleteReview(existingReview.id);
+      await dispatch(deleteReviewAsync(existingReview.id)).unwrap();
       router.push(`/artists/${id}`);
     } catch (error) {
       console.error('Failed to delete review:', error);

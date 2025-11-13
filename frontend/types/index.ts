@@ -38,20 +38,16 @@ export type {
 // Enums
 export {
   FilterType as FilterTypeEnum,
+  HomeTab as HomeTabEnum,
   ReviewItemType as ReviewItemTypeEnum,
   NotificationType as NotificationTypeEnum,
-  SearchType,
-  Theme,
-  Language,
-} from './enums';
-
-export type {
-  FilterTypeUnion,
-  ReviewItemTypeUnion,
-  NotificationTypeUnion,
-  SearchTypeUnion,
-  ThemeUnion,
-  LanguageUnion,
+  SearchType as SearchTypeEnum,
+  Theme as ThemeEnum,
+  Language as LanguageEnum,
+  ProfileTab as ProfileTabEnum,
+  ReviewTab as ReviewTabEnum,
+  SearchTab as SearchTabEnum,
+  MusicTab as MusicTabEnum,
 } from './enums';
 
 // Form Types

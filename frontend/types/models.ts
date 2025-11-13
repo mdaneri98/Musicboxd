@@ -18,8 +18,8 @@ export interface User {
   following_amount: number;
   review_amount: number;
   is_following?: boolean; // Context-dependent
-  is_moderator: boolean;
-  is_verified: boolean;
+  moderator: boolean;
+  verified: boolean;
   created_at: Date;
 }
 
@@ -97,7 +97,7 @@ export interface Review {
   item_image_id: number;
   title: string;
   description: string;
-  rating: number; // 1-5, step 0.5
+  rating: number; // 1-5, step 1
   likes: number;
   comment_amount: number;
   is_liked?: boolean; // Context-dependent
