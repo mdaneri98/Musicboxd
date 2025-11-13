@@ -28,8 +28,6 @@ const USER_ENDPOINTS = {
   USER_REVIEWS: (id: number) => `/users/${id}/reviews`,
   USER_FOLLOWERS: (id: number) => `/users/${id}/followers`,
   USER_FOLLOWING: (id: number) => `/users/${id}/followings`,
-  FOLLOW_USER: (id: number) => `/users/${id}/follow`,
-  UNFOLLOW_USER: (id: number) => `/users/${id}/unfollow`,
   USER_FAVORITE_ARTISTS: (id: number) => `/users/${id}/favorites/artists`,
   USER_FAVORITE_ALBUMS: (id: number) => `/users/${id}/favorites/albums`,
   USER_FAVORITE_SONGS: (id: number) => `/users/${id}/favorites/songs`,
@@ -249,7 +247,7 @@ class UserRepository {
    */
   async followUser(id: number): Promise<void> {
     try {
-      await apiClient.postResource<User>(USER_ENDPOINTS.FOLLOW_USER(id));
+      await apiClient.post<void>(USER_ENDPOINTS.USER_FOLLOWERS(id));
     } catch (error) {
       console.error(`Follow user ${id} error:`, error);
       throw error;
@@ -262,7 +260,7 @@ class UserRepository {
    */
   async unfollowUser(id: number): Promise<void> {
     try {
-      await apiClient.deleteResource<User>(USER_ENDPOINTS.UNFOLLOW_USER(id));
+      await apiClient.delete<void>(USER_ENDPOINTS.USER_FOLLOWERS(id));
     } catch (error) {
       console.error(`Unfollow user ${id} error:`, error);
       throw error;
