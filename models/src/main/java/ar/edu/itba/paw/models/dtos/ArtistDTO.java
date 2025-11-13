@@ -9,11 +9,11 @@ public class ArtistDTO {
 
     private Long id;
 
-    @NotNull(message = "Artist name is required")
-    @Size(min = 1, max = 100, message = "Artist name must be between 1 and 100 characters")
+    @NotNull(message = "{validation.artist.name.notnull}")
+    @Size(min = 1, max = 100, message = "{validation.artist.name.size}")
     private String name;
 
-    @Size(max = 2048, message = "Bio must not exceed 2048 characters")
+    @Size(max = 2048, message = "{validation.artist.bio.size}")
     private String bio;
 
     private Integer ratingCount;

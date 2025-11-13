@@ -9,18 +9,18 @@ public class UserDTO {
 
     private Long id;
     
-    @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters")
-    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "Username must start with a letter and contain only letters and numbers")
+    @Size(min = 4, max = 50, message = "{validation.user.username.size}")
+    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.user.username.pattern}")
     private String username;
     
-    @Email(message = "Email must be valid")
-    @Size(max = 100, message = "Email must not exceed 100 characters")
+    @Email(message = "{validation.user.email.invalid}")
+    @Size(max = 100, message = "{validation.user.email.size}")
     private String email;
     
-    @Size(max = 100, message = "Name must not exceed 100 characters")
+    @Size(max = 100, message = "{validation.user.name.size}")
     private String name;
     
-    @Size(max = 500, message = "Bio must not exceed 500 characters")
+    @Size(max = 500, message = "{validation.user.bio.size}")
     private String bio;
     private Long imageId;
 
@@ -34,10 +34,10 @@ public class UserDTO {
     private Boolean isVerified;
     private Boolean isModerator;
 
-    @Size(max = 20, message = "Preferred language must not exceed 20 characters")
+    @Size(max = 20, message = "{validation.user.preferredLanguage.size}")
     private String preferredLanguage;
     
-    @Size(max = 20, message = "Preferred theme must not exceed 20 characters")
+    @Size(max = 20, message = "{validation.user.preferredTheme.size}")
     private String preferredTheme;
 
     private Boolean hasFollowNotificationsEnabled;

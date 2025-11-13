@@ -8,17 +8,17 @@ public class CommentDTO {
 
     private Long id;
 
-    @NotNull(message = "User ID is required")
+    @NotNull(message = "{validation.comment.userId.notnull}")
     private Long userId;
 
     private String username;
     private Long userImageId;
 
-    @NotNull(message = "Review ID is required")
+    @NotNull(message = "{validation.comment.reviewId.notnull}")
     private Long reviewId;
 
-    @NotNull(message = "Content is required")
-    @Size(min = 1, max = 255, message = "Content must be between 1 and 255 characters")
+    @NotNull(message = "{validation.comment.content.notnull}")
+    @Size(min = 1, max = 255, message = "{validation.comment.content.size}")
     private String content;
 
     private LocalDateTime createdAt;

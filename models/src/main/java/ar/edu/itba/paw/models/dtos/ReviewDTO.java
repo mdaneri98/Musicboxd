@@ -10,24 +10,24 @@ public class ReviewDTO {
 
     private Long id;
 
-    @NotNull(message = "User ID is required")
+    @NotNull(message = "{validation.review.userId.notnull}")
     private Long userId;
 
     private String username;
 
     private Long userImageId;
 
-    @NotNull(message = "Title is required")
-    @Size(min = 1, max = 50, message = "Title must be between 1 and 50 characters")
+    @NotNull(message = "{validation.review.title.notnull}")
+    @Size(min = 1, max = 50, message = "{validation.review.title.size}")
     private String title;
 
-    @NotNull(message = "Description is required")
-    @Size(min = 1, max = 2000, message = "Description must be between 1 and 2000 characters")
+    @NotNull(message = "{validation.review.description.notnull}")
+    @Size(min = 1, max = 2000, message = "{validation.review.description.size}")
     private String description;
 
-    @NotNull(message = "Rating is required")
-    @Min(value = 1, message = "Rating must be at least 1")
-    @Max(value = 5, message = "Rating must not exceed 5")
+    @NotNull(message = "{validation.review.rating.notnull}")
+    @Min(value = 1, message = "{validation.review.rating.min}")
+    @Max(value = 5, message = "{validation.review.rating.max}")
     private Integer rating;
 
     private LocalDateTime createdAt;
@@ -43,13 +43,13 @@ public class ReviewDTO {
     private String timeAgo;
 
     // Campos polimórficos para el item relacionado
-    @NotNull(message = "Item type is required")
+    @NotNull(message = "{validation.review.itemType.notnull}")
     private String itemType; 
-    @NotNull(message = "Item ID is required")
+    @NotNull(message = "{validation.review.itemId.notnull}")
     private Long itemId;
-    @NotNull(message = "Item name is required")
+    @NotNull(message = "{validation.review.itemName.notnull}")
     private String itemName;
-    @NotNull(message = "Item image ID is required")
+    @NotNull(message = "{validation.review.itemImageId.notnull}")
     private Long itemImageId;
 
     public ReviewDTO() {}

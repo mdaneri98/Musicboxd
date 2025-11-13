@@ -5,12 +5,12 @@ import javax.validation.constraints.Size;
 
 public class LoginRequestDTO {
     
-    @NotBlank(message = "Username is required")
-    @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters")
+    @NotBlank(message = "{login.username.NotBlank}")
+    @Size(min = 4, max = 50, message = "{login.username.Size}")
     private String username;
     
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    @NotBlank(message = "{login.password.NotBlank}")
+    @Size(min = 6, message = "{login.password.Size}")
     private String password;
 
     public LoginRequestDTO() {}

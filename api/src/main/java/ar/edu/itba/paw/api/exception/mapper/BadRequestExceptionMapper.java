@@ -41,7 +41,7 @@ public class BadRequestExceptionMapper implements ExceptionMapper<UnkownReviewTy
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.BAD_REQUEST,
                 exception,
-                "Bad request",
+                "exception.BadRequest",
                 uriInfo
         );
 

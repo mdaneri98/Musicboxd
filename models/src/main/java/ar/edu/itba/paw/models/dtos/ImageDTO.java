@@ -5,11 +5,11 @@ import javax.validation.constraints.Size;
 
 public class ImageDTO {
 
-    @NotNull(message = "Base64 is required")
-    @Size(max = 14000000, message = "Base64 must not exceed 5000000 characters")
+    @NotNull(message = "{validation.image.base64.notnull}")
+    @Size(max = 14000000, message = "{validation.image.base64.size}")
     private String base64;
     
-    @NotNull(message = "Content type is required")
+    @NotNull(message = "{validation.image.contentType.notnull}")
     private String contentType;
 
     private String fileName;

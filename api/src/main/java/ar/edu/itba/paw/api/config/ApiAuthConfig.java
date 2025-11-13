@@ -3,6 +3,8 @@ package ar.edu.itba.paw.api.config;
 import ar.edu.itba.paw.api.filter.JwtAuthenticationFilter;
 import ar.edu.itba.paw.services.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 
 @EnableWebSecurity
@@ -30,6 +34,27 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private MessageSource messageSource;
+
+    private static final Set<String> SUPPORTED_LANGS = Set.of("en", "es");
+
+    private Locale resolveLocaleFromHeader(javax.servlet.http.HttpServletRequest request) {
+        final String header = request.getHeader("Accept-Language");
+        if (header == null || header.isBlank()) {
+            return Locale.ENGLISH;
+        }
+        String[] parts = header.split(",");
+        for (String part : parts) {
+            String tag = part.trim().split(";")[0];
+            if ("*".equals(tag)) tag = "en";
+            String lang = tag.split("-")[0].toLowerCase();
+            if (SUPPORTED_LANGS.contains(lang)) {
+                return Locale.forLanguageTag(lang);
+            }
+        }
+        return Locale.ENGLISH;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -113,10 +138,33 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint((request, response, ex) -> {
-                    response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
+                    final Locale locale = resolveLocaleFromHeader(request);
+                    LocaleContextHolder.setLocale(locale);
+                    String message;
+                    try {
+                        message = messageSource.getMessage(ex.getMessage(), null, locale);
+                    } catch (Exception e) {
+                        try {
+                            message = messageSource.getMessage("exception.AuthenticationException", null, locale);
+                        } catch (Exception ignored) {
+                            message = "Unauthorized";
+                        }
+                    }
+                    response.setHeader("WWW-Authenticate", "Basic realm=\"API\", Bearer realm=\"API\"");
+                    response.setHeader("Content-Language", locale.toLanguageTag());
+                    response.sendError(HttpStatus.UNAUTHORIZED.value(), message);
                 })
                 .accessDeniedHandler((request, response, ex) -> {
-                    response.sendError(HttpStatus.FORBIDDEN.value(), "Forbidden");
+                    final Locale locale = resolveLocaleFromHeader(request);
+                    LocaleContextHolder.setLocale(locale);
+                    String message;
+                    try {
+                        message = messageSource.getMessage("exception.AccessDeniedException", null, locale);
+                    } catch (Exception ignored) {
+                        message = "Forbidden";
+                    }
+                    response.setHeader("Content-Language", locale.toLanguageTag());
+                    response.sendError(HttpStatus.FORBIDDEN.value(), message);
                 })
 
                 // Disable client-side cache handling

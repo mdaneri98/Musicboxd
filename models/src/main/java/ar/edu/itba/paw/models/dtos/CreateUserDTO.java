@@ -6,12 +6,12 @@ import javax.validation.constraints.Size;
 
 public class CreateUserDTO {
 
-    @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters")
-    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "Username must start with a letter and contain only letters and numbers")
+    @Size(min = 4, max = 50, message = "{validation.user.username.size}")
+    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.user.username.pattern}")
     private String username;
 
-    @Email(message = "Email must be valid")
-    @Size(max = 100, message = "Email must not exceed 100 characters")
+    @Email(message = "{validation.user.email.invalid}")
+    @Size(max = 100, message = "{validation.user.email.size}")
     private String email;
 
     private String password;

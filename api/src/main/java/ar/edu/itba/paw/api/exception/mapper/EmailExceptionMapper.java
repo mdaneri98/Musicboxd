@@ -41,7 +41,7 @@ public class EmailExceptionMapper implements ExceptionMapper<EmailException> {
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 exception,
-                "Email sending failed",
+                "exception.InternalServerError",
                 uriInfo
         );
 
