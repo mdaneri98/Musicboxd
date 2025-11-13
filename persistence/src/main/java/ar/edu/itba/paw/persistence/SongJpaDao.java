@@ -36,7 +36,7 @@ public class SongJpaDao implements SongDao {
                 "SELECT s.id FROM song s " +
                 "JOIN album a ON s.album_id = a.id " +
                 "WHERE a.artist_id = :artistId " +
-                filterType.getFilter()
+                filterType.getFilter().replace("ORDER BY ", "ORDER BY s.") // Force ORDER BY to act on the song to remove ambiguity
         );
         nativeQuery.setParameter("artistId", artistId);
         nativeQuery.setFirstResult(offset);
