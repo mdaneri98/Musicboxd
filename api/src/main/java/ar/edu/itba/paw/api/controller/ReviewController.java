@@ -22,6 +22,7 @@ import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import ar.edu.itba.paw.api.utils.ControllerUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -103,6 +104,7 @@ public class ReviewController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         reviewService.delete(id);
         return buildNoContentResponse();
@@ -180,6 +182,7 @@ public class ReviewController extends BaseController {
 
     @PATCH
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response updateBlockReviewStatus(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, Boolean isBlocked) {
         if (isBlocked) reviewService.block(reviewId);
         else reviewService.unblock(reviewId);

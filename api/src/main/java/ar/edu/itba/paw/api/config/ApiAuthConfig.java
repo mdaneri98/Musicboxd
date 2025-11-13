@@ -5,7 +5,9 @@ import ar.edu.itba.paw.services.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -17,19 +19,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 
 @EnableWebSecurity
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtService jwtService;
 
-    @Autowired
-    private Environment environment;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -66,51 +66,67 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
                 // Public endpoints
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/images/**").permitAll()
-                .antMatchers("GET", "/api/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/**").permitAll()
                 
-                // Moderator-only endpoints - Content Management
-                .antMatchers("POST", "/api/artists").hasRole("MODERATOR")
-                .antMatchers("PUT", "/api/artists/*").hasRole("MODERATOR")
-                .antMatchers("DELETE", "/api/artists/*").hasRole("MODERATOR")
-                .antMatchers("POST", "/api/artists/*/albums").hasRole("MODERATOR")
-                .antMatchers("POST", "/api/albums").hasRole("MODERATOR")
-                .antMatchers("PUT", "/api/albums/*").hasRole("MODERATOR")
-                .antMatchers("DELETE", "/api/albums/*").hasRole("MODERATOR")
-                .antMatchers("POST", "/api/albums/*/songs").hasRole("MODERATOR")
-                .antMatchers("POST", "/api/songs").hasRole("MODERATOR")
-                .antMatchers("PUT", "/api/songs/*").hasRole("MODERATOR")
-                .antMatchers("DELETE", "/api/songs/*").hasRole("MODERATOR")
-                .antMatchers("PATCH", "/api/reviews/*").hasRole("MODERATOR")
-                .antMatchers("DELETE", "/api/users/*").hasRole("MODERATOR")
-                .antMatchers("DELETE", "/api/reviews/*").hasRole("MODERATOR")
-                .antMatchers("DELETE", "/api/comments/*").hasRole("MODERATOR")
-
-                // User-only endpoints - Reviews and Comments
-                .antMatchers("POST", "/api/reviews").hasRole("USER")
-                .antMatchers("POST", "/api/reviews/*/comments").hasRole("USER")
-                .antMatchers("PUT", "/api/reviews/*").hasRole("USER")
-                .antMatchers("POST", "/api/reviews/*/likes").hasRole("USER")
-                .antMatchers("DELETE", "/api/reviews/*/likes").hasRole("USER")
-                .antMatchers("POST", "/api/comments").hasRole("USER")
-                .antMatchers("PUT", "/api/comments/*").hasRole("USER")
-
-
-                // User-only endpoints - User Profile and Social
-                .antMatchers("PUT", "/api/users/*").hasRole("USER")
-                .antMatchers("POST", "/api/users/*/followers").hasRole("USER")
-                .antMatchers("DELETE", "/api/users/*/followers").hasRole("USER")
+                // ROLE_MODERATOR-only endpoints - Content Management
+                .antMatchers(HttpMethod.POST, "/api/artists").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.PUT, "/api/artists/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.DELETE, "/api/artists/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.POST, "/api/artists/*/albums").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.POST, "/api/albums").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.PUT, "/api/albums/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.DELETE, "/api/albums/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.POST, "/api/albums/*/songs").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.POST, "/api/songs").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.PUT, "/api/songs/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.DELETE, "/api/songs/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.PATCH, "/api/reviews/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.DELETE, "/api/users/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.DELETE, "/api/reviews/*").hasRole("MODERATOR")
+                .antMatchers(HttpMethod.DELETE, "/api/comments/*").hasRole("MODERATOR")
                 
-                // User-only endpoints - Favorites
-                .antMatchers("POST", "/api/artists/*/favorite").hasRole("USER")
-                .antMatchers("DELETE", "/api/artists/*/favorite").hasRole("USER")
-                .antMatchers("POST", "/api/albums/*/favorite").hasRole("USER")
-                .antMatchers("DELETE", "/api/albums/*/favorite").hasRole("USER")
-                .antMatchers("POST", "/api/songs/*/favorite").hasRole("USER")
-                .antMatchers("DELETE", "/api/songs/*/favorite").hasRole("USER")
+                // ROLE_USER-only endpoints - Reviews and Comments
+                .antMatchers(HttpMethod.POST, "/api/reviews").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/api/reviews/*/comments").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/api/reviews/*").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/api/reviews/*/likes").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/api/reviews/*/likes").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/api/comments").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/api/comments/*").hasRole("USER")
+
+                // ROLE_USER-only endpoints - User Profile and Social
+                .antMatchers(HttpMethod.PUT, "/api/users/*").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/api/users/*/followers").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/api/users/*/followers").hasRole("USER")
+                
+                // ROLE_USER-only endpoints - Favorites
+                .antMatchers(HttpMethod.POST, "/api/artists/*/favorite").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/api/artists/*/favorite").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/api/albums/*/favorite").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/api/albums/*/favorite").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/api/songs/*/favorite").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/api/songs/*/favorite").hasRole("USER")
                 
                 // Fallback: any other request requires authentication
                 .anyRequest().authenticated()
+
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .exceptionHandling()
+                .authenticationEntryPoint((request, response, ex) -> {
+                    response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
+                })
+                .accessDeniedHandler((request, response, ex) -> {
+                    response.sendError(HttpStatus.FORBIDDEN.value(), "Forbidden");
+                })
+
+                // Disable client-side cache handling
+                .and().headers().cacheControl().disable()
+
+                .and()
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                    
+                // Enable CORS and disable csrf rules
+                .cors().and().csrf().disable();
+
     }
 }

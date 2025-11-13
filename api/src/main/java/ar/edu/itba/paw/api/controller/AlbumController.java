@@ -26,6 +26,7 @@ import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModSongFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import ar.edu.itba.paw.services.ImageService;
 import javax.validation.Valid;
@@ -103,6 +104,7 @@ public class AlbumController extends BaseController {
     }
 
     @POST
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response createAlbum(@Valid ModAlbumForm modAlbumForm) {
         AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
         albumDTO.setImageId(imageService.handleImage(modAlbumForm.getAlbumImage()));
@@ -121,6 +123,7 @@ public class AlbumController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response updateAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModAlbumForm modAlbumForm) {
         AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
         albumDTO.setImageId(imageService.handleImage(modAlbumForm.getAlbumImage()));
@@ -132,6 +135,7 @@ public class AlbumController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         albumService.delete(id);
         return buildNoContentResponse();
@@ -182,6 +186,7 @@ public class AlbumController extends BaseController {
 
     @POST
     @Path(ApiUriConstants.ALBUM_SONGS)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response createAlbumSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {

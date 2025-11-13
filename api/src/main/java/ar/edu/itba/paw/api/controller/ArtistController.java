@@ -31,6 +31,7 @@ import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModArtistFormMapper;
 import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.api.utils.ControllerUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -114,6 +115,7 @@ public class ArtistController extends BaseController {
     }
 
     @POST
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response createArtist(@Valid ModArtistForm modArtistForm) {
         ArtistDTO artistDTO = modArtistFormMapper.toDTO(modArtistForm);
         artistDTO.setImageId(imageService.handleImage(modArtistForm.getArtistImage()));
@@ -132,6 +134,7 @@ public class ArtistController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModArtistForm modArtistForm) {
         ArtistDTO artistDTO = modArtistFormMapper.toDTO(modArtistForm);
         artistDTO.setImageId(imageService.handleImage(modArtistForm.getArtistImage()));
@@ -143,6 +146,7 @@ public class ArtistController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         artistService.delete(id);
         return buildNoContentResponse();
@@ -200,6 +204,7 @@ public class ArtistController extends BaseController {
 
     @POST
     @Path(ApiUriConstants.ARTIST_ALBUMS)
+    @PreAuthorize("hasRole('MODERATOR')")
     public Response createArtistAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModAlbumForm modAlbumForm) {
