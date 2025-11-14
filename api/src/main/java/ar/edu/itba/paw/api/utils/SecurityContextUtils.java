@@ -9,24 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 public class SecurityContextUtils {
     
     /**
-     * Get the current authenticated user from SecurityContext
-     * @param userService the UserService to fetch user details
-     * @return Optional containing the current user, empty if not authenticated
-     */
-    public static UserDTO getCurrentUser(UserService userService) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
-        if (authentication != null && authentication.isAuthenticated() 
-            && !"anonymousUser".equals(authentication.getPrincipal())) {
-            
-            String username = authentication.getName();
-            return userService.findByUsername(username);
-        }
-
-        return null;
-    }
-    
-    /**
      * Get the current authenticated user ID from SecurityContext
      * @return the user ID, or null if not authenticated
      */
