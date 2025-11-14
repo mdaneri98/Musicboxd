@@ -101,10 +101,7 @@ const ReviewDetailPage = () => {
 
     try {
       setSubmitLoading(true);
-      await commentRepository.createComment({
-        content: data.content,
-        review_id: review.id,
-      });
+      await commentRepository.createComment(data);
 
       // Refresh comments
       const reviewId = parseInt(id as string);
@@ -144,7 +141,7 @@ const ReviewDetailPage = () => {
 
   const canDeleteComment = useCallback((comment: Comment) => {
     if (!currentUser) return false;
-    return currentUser.id === comment.user_id || currentUser.is_moderator;
+    return currentUser.id === comment.user_id || currentUser.moderator;
   }, [currentUser]);
 
   if (loading || !review) {

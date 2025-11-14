@@ -4,15 +4,16 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { songRepository, albumRepository, reviewRepository, imageRepository } from '@/repositories';
-import type { Song, Album, ReviewFormData } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { selectIsAuthenticated, selectCurrentUser, fetchSongByIdAsync, fetchAlbumByIdAsync, fetchSongReviewsAsync, updateReviewAsync, createReviewAsync, deleteReviewAsync } from '@/store/slices';
+import { imageRepository } from '@/repositories';
+import type { Song, Album, ReviewFormData, HALResource, Review } from '@/types';
 
 const SongReviewPage = () => {
   const router = useRouter();
   const { id, edit } = router.query;
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectCurrentUser);
 
   const [song, setSong] = useState<Song | null>(null);
@@ -41,17 +42,17 @@ const SongReviewPage = () => {
       try {
         setLoading(true);
         const songId = parseInt(id as string);
-        const songData = await songRepository.getSongById(songId);
-        setSong(songData);
+        const songData = await dispatch(fetchSongByIdAsync(songId)).unwrap();
+        setSong(songData.data as Song);
 
         // Fetch album for image
-        const albumData = await albumRepository.getAlbumById(songData.albumId);
-        setAlbum(albumData);
+        const albumData = await dispatch(fetchAlbumByIdAsync(songData.data.album_id)).unwrap();
+        setAlbum(albumData.data as Album);
 
         // Check if user already reviewed this song
         if (currentUser) {
-          const reviews = await songRepository.getSongReviews(songId, 0, 100);
-          const userReview = reviews.items.find(r => r.userId === currentUser.id);
+          const reviews = await dispatch(fetchSongReviewsAsync({ songId, page: 0, size: 100 })).unwrap();
+          const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {
             router.push(`/songs/${id}/reviews?edit=true`);
@@ -82,17 +83,9 @@ const SongReviewPage = () => {
       setSubmitLoading(true);
 
       if (isEditMode && existingReview) {
-        await reviewRepository.updateReview(existingReview.id, {
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-        });
+        await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       } else {
-        await songRepository.createSongReview(song.id, {
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-        });
+        await dispatch(createReviewAsync(data)).unwrap();
       }
 
       router.push(`/songs/${song.id}`);
@@ -107,7 +100,7 @@ const SongReviewPage = () => {
     if (!existingReview) return;
 
     try {
-      await reviewRepository.deleteReview(existingReview.id);
+      await dispatch(deleteReviewAsync(existingReview.id)).unwrap();
       router.push(`/songs/${id}`);
     } catch (error) {
       console.error('Failed to delete review:', error);
@@ -128,7 +121,7 @@ const SongReviewPage = () => {
     );
   }
 
-  const albumImgUrl = album?.imageId ? imageRepository.getImageUrl(album.imageId) : '/assets/default-album.png';
+  const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
 
   return (
     <Layout title={`Musicboxd - Review ${song.title}`}>
@@ -143,7 +136,7 @@ const SongReviewPage = () => {
             <img src={albumImgUrl} alt={song.title} className="review-preview-image" />
             <div className="review-preview-info">
               <h2 className="review-preview-title">{song.title}</h2>
-              <p className="review-preview-subtitle">{formatDuration(song.duration)}</p>
+              <p className="review-preview-subtitle">{formatDuration(parseInt(song.duration))}</p>
             </div>
           </Link>
         </div>

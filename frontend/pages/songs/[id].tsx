@@ -162,7 +162,7 @@ const SongDetailPage = () => {
             <div className="entity-details">
               <div className="entity-type">
                 Song
-                {currentUser?.is_moderator && (
+                {currentUser && currentUser.moderator && (
                   <Link href={`/mod/songs/${song.id}/edit`} className="edit-link">
                     <i className="fas fa-pencil-alt"></i>
                   </Link>

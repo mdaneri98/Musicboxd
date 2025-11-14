@@ -5,7 +5,7 @@ import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, fetchArtistByIdAsync, fetchArtistReviewsAsync, updateReviewAsync, deleteReviewAsync } from '@/store/slices';
+import { selectIsAuthenticated, selectCurrentUser, fetchArtistByIdAsync, fetchArtistReviewsAsync, updateReviewAsync, deleteReviewAsync, createReviewAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import type { Artist, ReviewFormData } from '@/types';
 
@@ -75,27 +75,10 @@ const ArtistReviewPage = () => {
 
       if (isEditMode && existingReview) {
         // Update existing review
-        await dispatch(updateReviewAsync({
-          id: existingReview.id,
-          reviewData: {
-            title: data.title,
-            description: data.description,
-            rating: data.rating,
-          }
-        })).unwrap();
+        await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       } else {
-        // Create new review - Note: This needs to be handled by artist repository
-        // as it's artist-specific review creation
-        const { artistRepository } = await import('@/repositories');
-        await artistRepository.createArtistReview(artist.id, {
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-        });
+        await dispatch(createReviewAsync(data)).unwrap();
       }
-
-      // Redirect to artist page
-      router.push(`/artists/${artist.id}`);
     } catch (error) {
       console.error('Failed to submit review:', error);
     } finally {

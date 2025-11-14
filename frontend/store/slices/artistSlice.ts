@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { artistRepository } from '@/repositories';
-import { Artist, Album, Song, Review, Collection, HALResource } from '@/types';
+import { Artist, Album, Song, Review, Collection, HALResource, EditArtistFormData, CreateArtistFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -101,11 +101,11 @@ export const fetchArtistByIdAsync = createAsyncThunk<
  */
 export const createArtistAsync = createAsyncThunk<
   HALResource<Artist>,
-  Partial<Artist>,
+  CreateArtistFormData,
   { rejectValue: string }
 >('artists/createArtistAsync', async (artistData, { rejectWithValue }) => {
   try {
-    const artist = await artistRepository.createArtist(artistData);
+    const artist = await artistRepository.createArtist(artistData as CreateArtistFormData);
     return artist as HALResource<Artist>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create artist');
@@ -117,7 +117,7 @@ export const createArtistAsync = createAsyncThunk<
  */
 export const updateArtistAsync = createAsyncThunk<
   HALResource<Artist>,
-  { id: number; artistData: Partial<Artist> },
+  { id: number; artistData: EditArtistFormData },
   { rejectValue: string }
 >('artists/updateArtistAsync', async ({ id, artistData }, { rejectWithValue }) => {
   try {

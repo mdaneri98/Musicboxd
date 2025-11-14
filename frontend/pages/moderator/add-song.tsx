@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { songRepository, albumRepository } from '@/repositories';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { selectIsAuthenticated, selectCurrentUser, fetchAlbumByIdAsync, selectCurrentAlbum, createSongAsync } from '@/store/slices';
+import { Album } from '@/types/models';
+import { CreateSongFormData } from '@/types/forms';
 
 export default function AddSongPage() {
   const router = useRouter();
@@ -11,8 +12,8 @@ export default function AddSongPage() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const [albumId, setAlbumId] = useState<number | null>(null);
-  const [albumTitle, setAlbumTitle] = useState<string>('');
+  const album = useAppSelector(selectCurrentAlbum) as Album;
+  const dispatch = useAppDispatch();
   const [title, setTitle] = useState('');
   const [duration, setDuration] = useState('');
   const [trackNumber, setTrackNumber] = useState('');
@@ -23,7 +24,7 @@ export default function AddSongPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/landing');
-    } else if (currentUser && !currentUser.isModerator) {
+    } else if (currentUser && !currentUser.moderator) {
       router.push('/');
     }
   }, [isAuthenticated, currentUser, router]);
@@ -34,9 +35,7 @@ export default function AddSongPage() {
       if (albumIdParam) {
         try {
           const id = parseInt(albumIdParam as string);
-          const album = await albumRepository.getAlbumById(id);
-          setAlbumId(id);
-          setAlbumTitle(album.title);
+          await dispatch(fetchAlbumByIdAsync(id)).unwrap();
         } catch (error) {
           console.error('Failed to fetch album:', error);
           setErrors({ album: 'Failed to load album information' });
@@ -65,7 +64,7 @@ export default function AddSongPage() {
 
     // Basic validation
     const newErrors: { title?: string; duration?: string; trackNumber?: string; album?: string } = {};
-    if (!albumId) {
+    if (!album) {
       newErrors.album = 'Album is required';
     }
     if (!title.trim()) {
@@ -93,13 +92,13 @@ export default function AddSongPage() {
         title: title.trim(),
         duration: parseDurationToSeconds(duration),
         trackNumber: trackNumber ? parseInt(trackNumber) : undefined,
-        albumId: albumId!,
-      };
+        albumId: album.id,
+      } as CreateSongFormData;
 
-      const newSong = await songRepository.createSong(songData);
+      const newSong = await dispatch(createSongAsync(songData as CreateSongFormData)).unwrap();
 
       // Redirect to song page
-      router.push(`/songs/${newSong.id}`);
+      router.push(`/songs/${newSong.data?.id}`);
     } catch (error) {
       console.error('Failed to create song:', error);
       setErrors({ title: 'Failed to create song. Please try again.' });
@@ -108,7 +107,7 @@ export default function AddSongPage() {
     }
   };
 
-  if (!isAuthenticated || (currentUser && !currentUser.isModerator)) {
+  if (!isAuthenticated || (currentUser && !currentUser.moderator)) {
     return null; // Will redirect in useEffect
   }
 
@@ -117,9 +116,9 @@ export default function AddSongPage() {
       <div className="mod-form-container">
         <h1 className="mod-form-title">Add Song</h1>
 
-        {albumTitle && (
+        {album.title && (
           <p className="mod-form-subtitle">
-            for album: <strong>{albumTitle}</strong>
+            for album: <strong>{album.title}</strong>
           </p>
         )}
 
@@ -188,7 +187,7 @@ export default function AddSongPage() {
             </button>
 
             {/* Submit Button */}
-            <button type="submit" className="btn btn-primary" disabled={loading || !albumId}>
+            <button type="submit" className="btn btn-primary" disabled={loading || !album.id}>
               {loading ? 'Creating...' : 'Create Song'}
             </button>
           </div>

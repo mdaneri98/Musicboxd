@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { albumRepository } from '@/repositories';
-import { Album, Song, Review, Collection, HALResource } from '@/types';
+import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -88,7 +88,7 @@ export const fetchAlbumByIdAsync = createAsyncThunk<
 
 export const createAlbumAsync = createAsyncThunk<
   HALResource<Album>,
-  Partial<Album>,
+  CreateAlbumFormData,
   { rejectValue: string }
 >('albums/createAlbumAsync', async (albumData, { rejectWithValue }) => {
   try {
@@ -101,7 +101,7 @@ export const createAlbumAsync = createAsyncThunk<
 
 export const updateAlbumAsync = createAsyncThunk<
   HALResource<Album>,
-  { id: number; albumData: Partial<Album> },
+  { id: number; albumData: EditAlbumFormData },
   { rejectValue: string }
 >('albums/updateAlbumAsync', async ({ id, albumData }, { rejectWithValue }) => {
   try {

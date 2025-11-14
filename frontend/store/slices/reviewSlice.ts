@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { reviewRepository } from '@/repositories';
-import { Review, User, Comment, Collection, HALResource } from '@/types';
+import { Review, User, Comment, Collection, HALResource, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -97,11 +97,11 @@ export const fetchReviewByIdAsync = createAsyncThunk<
  */
 export const createReviewAsync = createAsyncThunk<
     HALResource<Review> ,
-  Partial<Review>,
+  ReviewFormData,
   { rejectValue: string }
 >('reviews/createReview', async (reviewData, { rejectWithValue }) => {
   try {
-    const review = await reviewRepository.createReview(reviewData);
+    const review = await reviewRepository.createReview(reviewData as ReviewFormData);
     return review as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create review');
@@ -113,7 +113,7 @@ export const createReviewAsync = createAsyncThunk<
  */
 export const updateReviewAsync = createAsyncThunk<
   HALResource<Review>,
-  { id: number; reviewData: Partial<Review> },
+  { id: number; reviewData: ReviewFormData },
   { rejectValue: string }
 >('reviews/updateReview', async ({ id, reviewData }, { rejectWithValue }) => {
   try {

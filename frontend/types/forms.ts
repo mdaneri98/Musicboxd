@@ -3,7 +3,7 @@
  * TypeScript interfaces for all form data (14 forms)
  */
 
-import { ReviewItemTypeUnion, SearchTypeUnion } from './enums';
+import { ReviewItemType, SearchType } from './enums';
 
 // ============================================================================
 // Authentication Forms (4)
@@ -70,7 +70,7 @@ export interface ReviewFormData {
   description: string;
   rating: number; // 1-5, step 0.5
   itemId: number; // Hidden field
-  itemType: ReviewItemTypeUnion; // Hidden field
+  itemType: ReviewItemType; // Hidden field
 }
 
 /**
@@ -145,7 +145,7 @@ export interface EditSongFormData extends CreateSongFormData {
  */
 export interface SearchFormData {
   query: string;
-  type?: SearchTypeUnion;
+  type?: SearchType;
 }
 
 // ============================================================================

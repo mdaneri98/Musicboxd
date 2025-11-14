@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { userRepository } from '@/repositories';
-import { User, Artist, Album, Song, Review, Collection, HALResource } from '@/types';
+import { User, Artist, Album, Song, Review, Collection, HALResource, EditProfileFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -117,7 +117,7 @@ export const fetchUserByIdAsync = createAsyncThunk<
  */
 export const updateUserAsync = createAsyncThunk<
   HALResource<User>,
-  { id: number; userData: Partial<User> },
+  { id: number; userData: EditProfileFormData },
   { rejectValue: string }
 >('users/updateUser', async ({ id, userData }, { rejectWithValue }) => {
   try {

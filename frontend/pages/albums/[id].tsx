@@ -172,7 +172,7 @@ const AlbumDetailPage = () => {
             <div className="entity-details">
               <div className="entity-type">
                 Album
-                {currentUser?.is_moderator && (
+                {currentUser && currentUser.moderator && (
                   <Link href={`/mod/albums/${album.id}/edit`} className="edit-link">
                     <i className="fas fa-pencil-alt"></i>
                   </Link>

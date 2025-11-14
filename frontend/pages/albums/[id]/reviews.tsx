@@ -1,35 +1,29 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useAppDispatch } from '@/store/hooks';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { albumRepository, reviewRepository, imageRepository } from '@/repositories';
+import { selectIsAuthenticated, selectCurrentUser, updateReviewAsync, createReviewAsync, fetchAlbumByIdAsync, selectCurrentAlbum, fetchAlbumReviewsAsync, deleteReviewAsync } from '@/store/slices';
+import { imageRepository } from '@/repositories';
 import type { Album, ReviewFormData } from '@/types';
 
 const AlbumReviewPage = () => {
   const router = useRouter();
   const { id, edit } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const [album, setAlbum] = useState<Album | null>(null);
+  const album = useAppSelector(selectCurrentAlbum) as Album;
   const [existingReview, setExistingReview] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const isEditMode = edit === 'true';
 
-  const formatDate = (date?: Date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -43,13 +37,11 @@ const AlbumReviewPage = () => {
       try {
         setLoading(true);
         const albumId = parseInt(id as string);
-        const albumData = await albumRepository.getAlbumById(albumId);
-        setAlbum(albumData);
-
+        await dispatch(fetchAlbumByIdAsync(albumId)).unwrap();
         // Check if user already reviewed this album
         if (currentUser) {
-          const reviews = await albumRepository.getAlbumReviews(albumId, 0, 100);
-          const userReview = reviews.items.find(r => r.userId === currentUser.id);
+          const reviews = await dispatch(fetchAlbumReviewsAsync({ albumId, page: 0, size: 100 })).unwrap();
+          const userReview = reviews.items.find((r: any) => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {
             router.push(`/albums/${id}/reviews?edit=true`);
@@ -71,29 +63,18 @@ const AlbumReviewPage = () => {
     };
 
     fetchData();
-  }, [id, isAuthenticated, currentUser, isEditMode, router]);
+  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
-    if (!album) return;
-
     try {
       setSubmitLoading(true);
 
       if (isEditMode && existingReview) {
-        await reviewRepository.updateReview(existingReview.id, {
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-        });
+        // Update existing review
+        await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       } else {
-        await albumRepository.createAlbumReview(album.id, {
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-        });
+        await dispatch(createReviewAsync(data)).unwrap();
       }
-
-      router.push(`/albums/${album.id}`);
     } catch (error) {
       console.error('Failed to submit review:', error);
     } finally {
@@ -105,7 +86,7 @@ const AlbumReviewPage = () => {
     if (!existingReview) return;
 
     try {
-      await reviewRepository.deleteReview(existingReview.id);
+      await dispatch(deleteReviewAsync(existingReview.id)).unwrap();
       router.push(`/albums/${id}`);
     } catch (error) {
       console.error('Failed to delete review:', error);
@@ -126,7 +107,7 @@ const AlbumReviewPage = () => {
     );
   }
 
-  const albumImgUrl = album.imageId ? imageRepository.getImageUrl(album.imageId) : '/assets/default-album.png';
+  const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
 
   return (
     <Layout title={`Musicboxd - Review ${album.title}`}>
@@ -141,8 +122,8 @@ const AlbumReviewPage = () => {
             <img src={albumImgUrl} alt={album.title} className="review-preview-image" />
             <div className="review-preview-info">
               <h2 className="review-preview-title">{album.title}</h2>
-              {album.releaseDate && (
-                <p className="review-preview-subtitle">{formatDate(album.releaseDate)}</p>
+              {album.release_date && (
+                  <p className="review-preview-subtitle">{album.release_date.toLocaleDateString()}</p>
               )}
             </div>
           </Link>

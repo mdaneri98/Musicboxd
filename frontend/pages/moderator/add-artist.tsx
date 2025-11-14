@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { artistRepository, imageRepository } from '@/repositories';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { selectIsAuthenticated, selectCurrentUser, createArtistAsync } from '@/store/slices';
+import { CreateArtistFormData } from '@/types/forms';
 
 export default function AddArtistPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
@@ -21,7 +22,7 @@ export default function AddArtistPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/landing');
-    } else if (currentUser && !currentUser.isModerator) {
+    } else if (currentUser && !currentUser.moderator) {
       router.push('/');
     }
   }, [isAuthenticated, currentUser, router]);
@@ -61,24 +62,17 @@ export default function AddArtistPage() {
     try {
       setLoading(true);
 
-      // Upload image if provided
-      let uploadedImageId: number | undefined;
-      if (imageFile) {
-        const uploadedImage = await imageRepository.uploadImage(imageFile);
-        uploadedImageId = uploadedImage.id;
-      }
-
       // Create artist
       const artistData = {
         name: name.trim(),
         bio: bio.trim(),
-        imageId: uploadedImageId,
-      };
+        artistImage: imageFile,
+      } as CreateArtistFormData;
 
-      const newArtist = await artistRepository.createArtist(artistData);
+      const newArtist = await dispatch(createArtistAsync(artistData as CreateArtistFormData)).unwrap();
 
       // Redirect to artist page
-      router.push(`/artists/${newArtist.id}`);
+      router.push(`/artists/${newArtist.data?.id}`);
     } catch (error) {
       console.error('Failed to create artist:', error);
       setErrors({ name: 'Failed to create artist. Please try again.' });
@@ -87,7 +81,7 @@ export default function AddArtistPage() {
     }
   };
 
-  if (!isAuthenticated || (currentUser && !currentUser.isModerator)) {
+    if (!isAuthenticated || (currentUser && !currentUser.moderator)) {
     return null; // Will redirect in useEffect
   }
 

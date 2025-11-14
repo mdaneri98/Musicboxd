@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { EditProfileForm } from '@/components/forms';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync } from '@/store/slices';
-import { userRepository, imageRepository } from '@/repositories';
+import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, updateUserAsync } from '@/store/slices';
 import type { EditProfileFormData } from '@/types';
+import { imageRepository } from '@/repositories';
 
 const EditProfilePage = () => {
   const router = useRouter();
@@ -27,8 +27,8 @@ const EditProfilePage = () => {
       dispatch(getCurrentUserAsync());
     } else {
       // Set initial image preview
-      if (currentUser.imageId) {
-        setImagePreview(imageRepository.getImageUrl(currentUser.imageId));
+      if (currentUser.image_id) {
+        setImagePreview(imageRepository.getImageUrl(currentUser.image_id));
       }
     }
   }, [isAuthenticated, currentUser, dispatch, router]);
@@ -40,20 +40,8 @@ const EditProfilePage = () => {
       setLoading(true);
       setError(undefined);
 
-      // Upload image if provided
-      let imageId = currentUser.imageId;
-      if (data.profilePicture && data.profilePicture instanceof File) {
-        const uploadedImage = await imageRepository.uploadImage(data.profilePicture);
-        imageId = uploadedImage.id;
-      }
-
       // Update user profile
-      await userRepository.updateUser(currentUser.id, {
-        username: data.username,
-        name: data.name,
-        bio: data.bio,
-        imageId: imageId,
-      });
+      await dispatch(updateUserAsync({ id: currentUser.id, userData: data }));
 
       // Refresh current user data
       await dispatch(getCurrentUserAsync());

@@ -5,8 +5,9 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { songRepository } from '@/repositories';
-import { Song, Review, Collection, HALResource } from '@/types';
+import { Song, Review, Collection, HALResource, CreateSongFormData } from '@/types';
 import type { RootState } from '../index';
+import { EditSongFormData } from '@/types/forms';
 
 // ============================================================================
 // State Interface
@@ -84,11 +85,11 @@ export const fetchSongByIdAsync = createAsyncThunk<
 
 export const createSongAsync = createAsyncThunk<
   HALResource<Song>,
-  Partial<Song>,
+  CreateSongFormData,
   { rejectValue: string }
 >('songs/createSong', async (songData, { rejectWithValue }) => {
   try {
-    const song = await songRepository.createSong(songData);
+    const song = await songRepository.createSong(songData as CreateSongFormData);
     return song as HALResource<Song>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create song');
@@ -97,7 +98,7 @@ export const createSongAsync = createAsyncThunk<
 
 export const updateSongAsync = createAsyncThunk<
   HALResource<Song>,
-  { id: number; songData: Partial<Song> },
+  { id: number; songData: EditSongFormData },
   { rejectValue: string }
 >('songs/updateSong', async ({ id, songData }, { rejectWithValue }) => {
   try {

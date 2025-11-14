@@ -13,6 +13,7 @@ import {
   HALResource,
   FilterParams,
   PaginationParams,
+  ReviewFormData,
 } from '@/types';
 
 // ============================================================================
@@ -95,7 +96,7 @@ class ReviewRepository {
    * @param reviewData Review data
    * @returns Created review
    */
-  async createReview(reviewData: Partial<Review>): Promise<HALResource<Review>> {
+  async createReview(reviewData: ReviewFormData): Promise<HALResource<Review>> {
     try {
       const response: HALResource<Review> = await apiClient.postResource<Review>(
         REVIEW_ENDPOINTS.REVIEWS,
@@ -119,7 +120,7 @@ class ReviewRepository {
    * @param reviewData Updated review data
    * @returns Updated review
    */
-  async updateReview(id: number, reviewData: Partial<Review>): Promise<HALResource<Review>> {
+  async updateReview(id: number, reviewData: ReviewFormData): Promise<HALResource<Review>> {
     try {
       const response: HALResource<Review> = await apiClient.putResource<Review>(
         REVIEW_ENDPOINTS.REVIEW_BY_ID(id),

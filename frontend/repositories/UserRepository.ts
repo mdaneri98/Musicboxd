@@ -15,6 +15,7 @@ import {
   HALResource,
   FilterParams,
   PaginationParams,
+  EditProfileFormData,
 } from '@/types';
 import { FilterType } from '@/types/enums';
 
@@ -122,7 +123,7 @@ class UserRepository {
    * @param userData Updated user data
    * @returns Updated user
    */
-  async updateUser(id: number, userData: Partial<User>): Promise<HALResource<User>> {
+  async updateUser(id: number, userData: EditProfileFormData): Promise<HALResource<User>> {
     try {
       const response: HALResource<User> = await apiClient.putResource<User>(
         USER_ENDPOINTS.USER_BY_ID(id),

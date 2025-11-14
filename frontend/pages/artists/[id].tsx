@@ -19,14 +19,11 @@ import {
   selectArtistSongs,
   selectArtistReviews,
   selectLoadingArtist,
-  selectLoadingAlbums,
-  selectLoadingSongs,
-  selectLoadingArtistReviews,
   selectArtistError,
   clearCurrentArtist
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
-import type { Artist, Album, Song, Review, HALResource } from '@/types';
+import type { Review, HALResource } from '@/types';
 
 const ArtistDetailPage = () => {
   const router = useRouter();
@@ -148,7 +145,7 @@ const ArtistDetailPage = () => {
             <div className="entity-details">
               <div className="entity-type">
                 Artist
-                {currentUser?.moderator && (
+                {currentUser && currentUser.moderator && (
                   <Link href={`/mod/artists/${artist.id}/edit`} className="edit-link">
                     <i className="fas fa-pencil-alt"></i>
                   </Link>

@@ -66,6 +66,7 @@ export enum NotificationType {
  * Search entity type
  */
 export enum SearchType {
+  MUSIC = 'music',
   USERS = 'users',
   ARTISTS = 'artists',
   ALBUMS = 'albums',

@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { authRepository } from '@/repositories';
-import { User, LoginResponse } from '@/types';
+import { User, LoginResponse, RegisterFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -59,11 +59,11 @@ export const loginAsync = createAsyncThunk<
  */
 export const registerAsync = createAsyncThunk<
   User,
-  { username: string; email: string; password: string, repeat_password: string },
+  RegisterFormData,
   { rejectValue: string }
->('auth/register', async (userData, { rejectWithValue }) => {
+>('auth/register', async (registerData, { rejectWithValue }) => {
   try {
-    const response = await authRepository.register(userData);
+    const response = await authRepository.register(registerData);
     return response.data;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Registration failed');

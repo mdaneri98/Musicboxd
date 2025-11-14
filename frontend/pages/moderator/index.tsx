@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { artistRepository, albumRepository, imageRepository } from '@/repositories';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { selectIsAuthenticated, selectCurrentUser, fetchAlbumsAsync } from '@/store/slices';
 import { Artist, Album, HALResource } from '@/types';
+import { fetchArtistsAsync } from '@/store/slices';
+import { imageRepository } from '@/repositories';
 
 type TabType = 'artists' | 'albums' | 'songs';
 
@@ -18,6 +19,7 @@ type SearchResultItem = {
 
 export default function ModeratorDashboardPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
@@ -35,7 +37,7 @@ export default function ModeratorDashboardPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/landing');
-    } else if (currentUser && !currentUser.is_moderator) {
+    } else if (currentUser && !currentUser.moderator) {
       router.push('/');
     }
   }, [isAuthenticated, currentUser, router]);
@@ -68,15 +70,15 @@ export default function ModeratorDashboardPage() {
 
         if (activeTab === 'albums') {
           // Search for artists (to select artist for album)
-          const artistsData = await artistRepository.getArtists(1, 10, query);
-
-          const results: SearchResultItem[] = artistsData.items.map((item: HALResource<Artist>) => ({
-            id: item.data.id,
-            name: item.data.name,
+          const artistsData = await dispatch(fetchArtistsAsync({ page: 1, size: 10, search: query })).unwrap();
+          const artists = artistsData.items.map((item: HALResource<Artist>) => item.data);
+          const results: SearchResultItem[] = artists.map((artist: Artist) => ({
+            id: artist.id,
+            name: artist.name,
             type: 'artist' as const,
-            imgId: item.data.image_id,
-            imageUrl: item.data.image_id ? imageRepository.getImageUrl(item.data.image_id) : undefined,
-          }));
+            imgId: artist.image_id,
+            imageUrl: artist.image_id ? imageRepository.getImageUrl(artist.image_id) : undefined,
+          })) as SearchResultItem[];
 
           // Sort by relevance
           const query_lower = query.toLowerCase();
@@ -104,15 +106,15 @@ export default function ModeratorDashboardPage() {
           }
         } else if (activeTab === 'songs') {
           // Search for albums (to select album for song)
-          const albumsData = await albumRepository.getAlbums(1, 10, query);
-
-          const results: SearchResultItem[] = albumsData.items.map((item: HALResource<Album>) => ({
-            id: item.data.id,
-            name: item.data.title,
+          const albumsData = await dispatch(fetchAlbumsAsync({ page: 1, size: 10, search: query })).unwrap();
+          const albums = albumsData.items.map((item: HALResource<Album>) => item.data);
+          const results: SearchResultItem[] = albums.map((album: Album) => ({
+            id: album.id,
+            name: album.title,
             type: 'album' as const,
-            imgId: item.data.image_id,
-            imageUrl: item.data.image_id ? imageRepository.getImageUrl(item.data.image_id) : undefined,
-          }));
+            imgId: album.image_id,
+            imageUrl: album.image_id ? imageRepository.getImageUrl(album.image_id) : undefined,
+          })) as SearchResultItem[];
 
           // Sort by relevance
           const query_lower = query.toLowerCase();
@@ -219,7 +221,7 @@ export default function ModeratorDashboardPage() {
     }
   };
 
-  if (!isAuthenticated || (currentUser && !currentUser.is_moderator)) {
+  if (!isAuthenticated || (currentUser && !currentUser.moderator)) {
     return null; // Will redirect in useEffect
   }
 

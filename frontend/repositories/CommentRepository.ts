@@ -10,6 +10,7 @@ import {
   Collection,
   HALResource,
   FilterParams,
+  CommentFormData,
 } from '@/types';
 
 // ============================================================================
@@ -86,7 +87,7 @@ class CommentRepository {
    * @param commentData Comment data
    * @returns Created comment
    */
-  async createComment(commentData: Partial<Comment>): Promise<HALResource<Comment>> {
+  async createComment(commentData: CommentFormData): Promise<HALResource<Comment>> {
     try {
       const response: HALResource<Comment> = await apiClient.postResource<Comment>(
         COMMENT_ENDPOINTS.COMMENTS,
@@ -110,7 +111,7 @@ class CommentRepository {
    * @param commentData Updated comment data
    * @returns Updated comment
    */
-    async updateComment(id: number, commentData: Partial<Comment>): Promise<HALResource<Comment>> {
+    async updateComment(id: number, commentData: CommentFormData): Promise<HALResource<Comment>> {
     try {
       const response: HALResource<Comment> = await apiClient.putResource<Comment>(
         COMMENT_ENDPOINTS.COMMENT_BY_ID(id),

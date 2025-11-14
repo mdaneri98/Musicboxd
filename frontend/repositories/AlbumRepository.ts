@@ -12,6 +12,10 @@ import {
   Collection,
   HALResource,
   FilterParams,
+  CreateAlbumFormData,
+  EditAlbumFormData,
+  ReviewFormData,
+  CreateSongFormData,
 } from '@/types';
 
 // ============================================================================
@@ -92,7 +96,7 @@ class AlbumRepository {
    * @param albumData Album data
    * @returns Created album
    */
-  async createAlbum(albumData: Partial<Album>): Promise<HALResource<Album>> {
+  async createAlbum(albumData: CreateAlbumFormData): Promise<HALResource<Album>> {
     try {
       const response: HALResource<Album> = await apiClient.postResource<Album>(
         ALBUM_ENDPOINTS.ALBUMS,
@@ -116,7 +120,7 @@ class AlbumRepository {
    * @param albumData Updated album data
    * @returns Updated album
    */
-  async updateAlbum(id: number, albumData: Partial<Album>): Promise<HALResource<Album>> {
+    async updateAlbum(id: number, albumData: EditAlbumFormData): Promise<HALResource<Album>> {
     try {
       const response: HALResource<Album> = await apiClient.putResource<Album>(
         ALBUM_ENDPOINTS.ALBUM_BY_ID(id),
@@ -185,7 +189,7 @@ class AlbumRepository {
    * @param reviewData Review data
    * @returns Created review
    */
-  async createAlbumReview(albumId: number, reviewData: Partial<Review>): Promise<HALResource<Review>> {
+  async createAlbumReview(albumId: number, reviewData: ReviewFormData): Promise<HALResource<Review>> {
     try {
       const response: HALResource<Review> = await apiClient.postResource<Review>(
         ALBUM_ENDPOINTS.ALBUM_REVIEWS(albumId),
@@ -237,7 +241,7 @@ class AlbumRepository {
    * @param songData Song data
    * @returns Created song
    */
-  async createAlbumSong(albumId: number, songData: Partial<Song>): Promise<HALResource<Song>> {
+  async createAlbumSong(albumId: number, songData: CreateSongFormData): Promise<HALResource<Song>> {
     try {
       const response: HALResource<Song> = await apiClient.postResource<Song>(
         ALBUM_ENDPOINTS.ALBUM_SONGS(albumId),
