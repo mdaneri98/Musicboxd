@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { searchSchema } from '@/utils/validationSchemas';
 import { SearchFormData } from '@/types';
+import { SearchType } from '@/types/enums';
 
 interface SearchFormProps {
   onSubmit: (data: SearchFormData) => void;
@@ -16,7 +17,7 @@ interface SearchFormProps {
 
 const SearchForm = ({
   onSubmit,
-  defaultValues = { type: 'all' },
+  defaultValues = { type: SearchType.MUSIC },
   isLoading,
 }: SearchFormProps) => {
   const {

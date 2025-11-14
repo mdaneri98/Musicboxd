@@ -8,11 +8,11 @@ import {
   User,
   LoginCredentials,
   LoginResponse,
-  RegisterData,
   RefreshTokenResponse,
   HALResource,
 } from '@/types';
 import { setCurrentUser } from '@/store/slices/authSlice';
+import { RegisterFormData } from '@/types/forms';
 
 // ============================================================================
 // API Endpoints
@@ -71,11 +71,11 @@ class AuthRepository {
    * @param userData Registration data
    * @returns Created user
    */
-  async register(userData: RegisterData): Promise<HALResource<User>> {
+  async register(registerData: RegisterFormData): Promise<HALResource<User>> {
     try {
       const response = await apiClient.postResource<User>(
         AUTH_ENDPOINTS.REGISTER,
-        userData
+        registerData
       );
 
       if (!response) {

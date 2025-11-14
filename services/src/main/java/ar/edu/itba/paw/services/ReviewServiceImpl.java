@@ -376,8 +376,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId) {
-        List<Review> list = reviewDao.getReviewsFromFollowedUsersPaginated(userId, page, pageSize);
+    public List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId) {
+        List<Review> list = reviewDao.getReviewsFromFollowedUsersPaginated(loggedUserId, page, pageSize);
         setIsLiked(list, loggedUserId);
         setTimeAgo(list);
         return list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());

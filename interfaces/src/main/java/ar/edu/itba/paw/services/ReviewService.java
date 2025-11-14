@@ -25,7 +25,7 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     Void removeLike(Long userId, Long reviewId);
     Boolean isLiked(Long userId, Long reviewId);
 
-    List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);
+    List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId);
     List<ReviewDTO> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId);
     
     List<ReviewDTO> findBySubstring(String substring, Integer page, Integer size);

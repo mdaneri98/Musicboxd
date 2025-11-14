@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { albumRepository, artistRepository, imageRepository } from '@/repositories';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { selectIsAuthenticated, selectCurrentUser, fetchArtistByIdAsync, createAlbumAsync } from '@/store/slices';
+import { CreateAlbumFormData } from '@/types/forms';
 
 export default function AddAlbumPage() {
   const router = useRouter();
   const { artistId: artistIdParam } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
@@ -25,29 +26,27 @@ export default function AddAlbumPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/landing');
-    } else if (currentUser && !currentUser.isModerator) {
+    } else if (currentUser && !currentUser.moderator) {
       router.push('/');
     }
   }, [isAuthenticated, currentUser, router]);
 
   // Load artist info if artistId is provided
   useEffect(() => {
-    const fetchArtist = async () => {
-      if (artistIdParam) {
-        try {
-          const id = parseInt(artistIdParam as string);
-          const artist = await artistRepository.getArtistById(id);
+    if (artistIdParam) {
+      const id = parseInt(artistIdParam as string);
+      dispatch(fetchArtistByIdAsync(id))
+        .unwrap()
+        .then((artist) => {
           setArtistId(id);
-          setArtistName(artist.name);
-        } catch (error) {
+          setArtistName(artist.data.name);
+        })
+        .catch((error) => {
           console.error('Failed to fetch artist:', error);
           setErrors({ artist: 'Failed to load artist information' });
-        }
-      }
-    };
-
-    fetchArtist();
-  }, [artistIdParam]);
+        });
+    }
+  }, [artistIdParam, dispatch]);
 
   // Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,26 +89,17 @@ export default function AddAlbumPage() {
     try {
       setLoading(true);
 
-      // Upload image if provided
-      let uploadedImageId: number | undefined;
-      if (imageFile) {
-        const uploadedImage = await imageRepository.uploadImage(imageFile);
-        uploadedImageId = uploadedImage.id;
-      }
-
-      // Create album
       const albumData = {
         title: title.trim(),
         genre: genre.trim(),
-        releaseDate: new Date(releaseDate),
+        releaseDate: releaseDate,
         artistId: artistId!,
-        imageId: uploadedImageId,
-      };
+        albumImage: imageFile,
+      } as CreateAlbumFormData;
 
-      const newAlbum = await albumRepository.createAlbum(albumData);
+      const newAlbum = await dispatch(createAlbumAsync(albumData)).unwrap();
 
-      // Redirect to album page
-      router.push(`/albums/${newAlbum.id}`);
+      router.push(`/albums/${newAlbum.data?.id}`);
     } catch (error) {
       console.error('Failed to create album:', error);
       setErrors({ title: 'Failed to create album. Please try again.' });
@@ -118,7 +108,7 @@ export default function AddAlbumPage() {
     }
   };
 
-  if (!isAuthenticated || (currentUser && !currentUser.isModerator)) {
+  if (!isAuthenticated || (currentUser && !currentUser.moderator)) {
     return null; // Will redirect in useEffect
   }
 

@@ -23,8 +23,8 @@ export function useAuth() {
   return {
     user: currentUser,
     isAuthenticated,
-    isModerator: currentUser?.isModerator || false,
-    isVerified: currentUser?.isVerified || false,
+    isModerator: currentUser?.moderator || false,
+    isVerified: currentUser?.verified || false,
     loading,
     error,
   };

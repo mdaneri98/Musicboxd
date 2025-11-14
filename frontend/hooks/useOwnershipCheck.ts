@@ -29,7 +29,7 @@ export function useOwnershipCheck(
 
   // Determine if user has access
   const isOwner = currentUser?.id === resourceOwnerId;
-  const isModerator = currentUser?.isModerator || false;
+  const isModerator = currentUser && currentUser.moderator || false;
   const hasAccess = isOwner || (allowModerators && isModerator);
 
   useEffect(() => {

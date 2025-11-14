@@ -8,19 +8,19 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated } from '@/store/slices';
-import { reviewRepository } from '@/repositories';
-import { Review, FilterTypeEnum } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { selectIsAuthenticated, fetchReviewsAsync, selectReviews, selectLoadingReviews, selectReviewPagination } from '@/store/slices';
+import { FilterTypeEnum, HomeTabEnum  } from '@/types';
 
 const HomePage = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
+  const reviews = useAppSelector(selectReviews);
+  const loadingReviews = useAppSelector(selectLoadingReviews);
+  const pagination = useAppSelector(selectReviewPagination);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [activeTab, setActiveTab] = useState<'forYou' | 'following'>('forYou');
+  const [activeTab, setActiveTab] = useState<HomeTabEnum>(HomeTabEnum.FOR_YOU);
 
   useEffect(() => {
     // Redirect to landing page if not authenticated
@@ -32,27 +32,21 @@ const HomePage = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        setLoading(true);
         // For now, we'll fetch all reviews
         // TODO: Implement "For You" (popular) and "Following" (from followed users) logic in backend
-        const filter = activeTab === 'forYou' ? FilterTypeEnum.LIKES : FilterTypeEnum.RECENT;
-        const response = await reviewRepository.getReviews(page, 20, undefined, filter);
-        const reviews = response.items.map((item) => item.data);
-        setReviews(reviews);
-        setHasMore(reviews.length === 20);
+        const filter = activeTab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING;
+        await dispatch(fetchReviewsAsync({ page, size: 20, filter })).unwrap();
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
     if (isAuthenticated) {
       fetchReviews();
     }
-  }, [isAuthenticated, page, activeTab]);
+  }, [isAuthenticated, page, activeTab, dispatch]);
 
-  const handleTabChange = (tab: 'forYou' | 'following') => {
+  const handleTabChange = (tab: HomeTabEnum) => {
     setActiveTab(tab);
     setPage(1);
   };
@@ -68,15 +62,15 @@ const HomePage = () => {
         <div className="section-header-home">
           <div className="tabs">
             <span
-              className={`tab ${activeTab === 'forYou' ? 'active' : ''}`}
-              onClick={() => handleTabChange('forYou')}
+              className={`tab ${activeTab === HomeTabEnum.FOR_YOU ? 'active' : ''}`}
+              onClick={() => handleTabChange(HomeTabEnum.FOR_YOU)}
               style={{ cursor: 'pointer' }}
             >
               For You
             </span>
             <span
-              className={`tab ${activeTab === 'following' ? 'active' : ''}`}
-              onClick={() => handleTabChange('following')}
+              className={`tab ${activeTab === HomeTabEnum.FOLLOWING ? 'active' : ''}`}
+              onClick={() => handleTabChange(HomeTabEnum.FOLLOWING)}
               style={{ cursor: 'pointer' }}
             >
               Following
@@ -86,9 +80,9 @@ const HomePage = () => {
 
         {/* Contenido principal */}
         <section className="reviews-section">
-          {loading ? (
+          {loadingReviews ? (
             <div className="loading">Loading reviews...</div>
-          ) : reviews.length === 0 ? (
+          ) : Object.values(reviews).length === 0 ? (
             <div className="empty-state">
               <h3>No reviews found</h3>
               <h4>Try the previous page or switch tabs</h4>
@@ -96,25 +90,25 @@ const HomePage = () => {
           ) : (
             <>
               <div className="reviews-grid">
-                {reviews.map((review) => (
+                {Object.values(reviews).map((review) => (
                   <ReviewCard key={review.id} review={review} />
                 ))}
               </div>
 
               {/* Paginación */}
               <div className="pagination">
-                {page > 1 && (
+                {pagination.page > 1 && (
                   <button
-                    onClick={() => setPage(page - 1)}
+                    onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page - 1, size: pagination.size, filter: FilterTypeEnum.RECENT }))}
                     className="btn btn-secondary"
                   >
                     Previous Page
                   </button>
                 )}
-                {hasMore && (
+                {pagination.totalCount > pagination.page * pagination.size && (
                   <button
-                    onClick={() => setPage(page + 1)}
-                    className="btn btn-secondary"
+                    onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page + 1, size: pagination.size, filter: FilterTypeEnum.RECENT }))}
+                    className="btn btn-primary"
                   >
                     Next Page
                   </button>

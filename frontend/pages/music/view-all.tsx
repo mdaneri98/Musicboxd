@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Layout } from '@/components/layout';
-import { artistRepository, albumRepository, songRepository, imageRepository } from '@/repositories';
+import { useAppDispatch } from '@/store/hooks';
+import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync } from '@/store/slices';
+import { imageRepository } from '@/repositories';
 import { Artist, Album, Song, FilterTypeEnum, ReviewItemTypeEnum } from '@/types';
-
 
 const ViewAllMusicPage = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { tab: queryTab, filter: queryFilter, page: queryPage } = router.query;
   
   const [activeTab, setActiveTab] = useState<ReviewItemTypeEnum>(ReviewItemTypeEnum.ARTIST);
@@ -40,18 +42,29 @@ const ViewAllMusicPage = () => {
       try {
         setLoading(true);
         const pageSize = 20;
-        
 
         if (activeTab === ReviewItemTypeEnum.ARTIST) {
-          const response = await artistRepository.getArtists(page, pageSize, undefined, FilterTypeEnum.POPULAR);
+          const response = await dispatch(fetchArtistsAsync({ 
+            page, 
+            size: pageSize, 
+            filter: FilterTypeEnum.POPULAR 
+          })).unwrap();
           setArtists(response.items.map((item) => item.data));
           setHasMore(response.items.length === pageSize);
         } else if (activeTab === ReviewItemTypeEnum.ALBUM) {
-          const response = await albumRepository.getAlbums(page, pageSize, undefined, FilterTypeEnum.POPULAR);
+          const response = await dispatch(fetchAlbumsAsync({ 
+            page, 
+            size: pageSize, 
+            filter: FilterTypeEnum.POPULAR 
+          })).unwrap();
           setAlbums(response.items.map((item) => item.data));
           setHasMore(response.items.length === pageSize);
         } else if (activeTab === ReviewItemTypeEnum.SONG) {
-          const response = await songRepository.getSongs(page, pageSize, undefined, FilterTypeEnum.POPULAR);
+          const response = await dispatch(fetchSongsAsync({ 
+            page, 
+            size: pageSize, 
+            filter: FilterTypeEnum.POPULAR 
+          })).unwrap();
           setSongs(response.items.map((item) => item.data));
           setHasMore(response.items.length === pageSize);
         }
@@ -63,7 +76,7 @@ const ViewAllMusicPage = () => {
     };
 
     fetchData();
-  }, [activeTab, filter, page]);
+  }, [activeTab, filter, page, dispatch]);
 
   const handleTabChange = (tab: ReviewItemTypeEnum) => {
     setActiveTab(tab);

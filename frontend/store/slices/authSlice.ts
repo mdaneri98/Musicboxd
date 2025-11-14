@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { authRepository } from '@/repositories';
-import { User, LoginResponse } from '@/types';
+import { User, LoginResponse, RegisterFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -59,11 +59,11 @@ export const loginAsync = createAsyncThunk<
  */
 export const registerAsync = createAsyncThunk<
   User,
-  { username: string; email: string; password: string, repeat_password: string },
+  RegisterFormData,
   { rejectValue: string }
->('auth/register', async (userData, { rejectWithValue }) => {
+>('auth/register', async (registerData, { rejectWithValue }) => {
   try {
-    const response = await authRepository.register(userData);
+    const response = await authRepository.register(registerData);
     return response.data;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Registration failed');
@@ -165,7 +165,7 @@ const authSlice = createSlice({
     setCurrentUser: (state, action: PayloadAction<User>) => {
       state.currentUser = action.payload;
       state.isAuthenticated = true;
-      state.isModerator = action.payload.is_moderator;
+      state.isModerator = action.payload.moderator;
     },
 
     /**
@@ -190,7 +190,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.currentUser = action.payload.user as User;
         state.isAuthenticated = true;
-        state.isModerator = action.payload.user.is_moderator;
+        state.isModerator = action.payload.user.moderator;
         state.error = null;
       })
       .addCase(loginAsync.rejected, (state, action) => {
@@ -247,7 +247,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.currentUser = action.payload;
         state.isAuthenticated = true;
-        state.isModerator = action.payload.is_moderator;
+        state.isModerator = action.payload.moderator;
         state.error = null;
       })
       .addCase(getCurrentUserAsync.rejected, (state, action) => {
@@ -268,7 +268,7 @@ const authSlice = createSlice({
         if (action.payload) {
           state.currentUser = action.payload;
           state.isAuthenticated = true;
-          state.isModerator = action.payload.is_moderator;
+          state.isModerator = action.payload.moderator;
         } else {
           state.currentUser = null;
           state.isAuthenticated = false;

@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { commentRepository } from '@/repositories';
-import { Comment, Collection, HALResource } from '@/types';
+import { Comment, Collection, HALResource, CommentFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -88,7 +88,7 @@ export const fetchCommentByIdAsync = createAsyncThunk<
  */
 export const createCommentAsync = createAsyncThunk<
   HALResource<Comment>,
-  Partial<Comment>,
+  CommentFormData,
   { rejectValue: string }
 >('comments/createCommentAsync', async (commentData, { rejectWithValue }) => {
   try {
@@ -104,7 +104,7 @@ export const createCommentAsync = createAsyncThunk<
  */
 export const updateCommentAsync = createAsyncThunk<
   HALResource<Comment>,
-  { id: number; commentData: Partial<Comment> },
+  { id: number; commentData: CommentFormData },
   { rejectValue: string }
 >('comments/updateCommentAsync', async ({ id, commentData }, { rejectWithValue }) => {
   try {

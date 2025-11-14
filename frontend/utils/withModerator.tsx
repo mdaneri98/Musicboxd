@@ -39,7 +39,7 @@ export function withModerator<P extends object>(Component: ComponentType<P>) {
           router.push(`/login?redirect=${encodeURIComponent(router.asPath)}`);
         }
         // Redirect to 403 if authenticated but not moderator
-        else if (currentUser && !currentUser.isModerator) {
+        else if (currentUser && !currentUser.moderator) {
           router.push('/403');
         }
       }
@@ -55,7 +55,7 @@ export function withModerator<P extends object>(Component: ComponentType<P>) {
     }
 
     // Don't render component if not authenticated or not moderator
-    if (!isAuthenticated || !currentUser || !currentUser.isModerator) {
+    if (!isAuthenticated || !currentUser || !currentUser.moderator) {
       return null;
     }
 

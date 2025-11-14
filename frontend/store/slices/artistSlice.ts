@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { artistRepository } from '@/repositories';
-import { Artist, Album, Song, Review, Collection, HALResource } from '@/types';
+import { Artist, Album, Song, Review, Collection, HALResource, EditArtistFormData, CreateArtistFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -101,11 +101,11 @@ export const fetchArtistByIdAsync = createAsyncThunk<
  */
 export const createArtistAsync = createAsyncThunk<
   HALResource<Artist>,
-  Partial<Artist>,
+  CreateArtistFormData,
   { rejectValue: string }
 >('artists/createArtistAsync', async (artistData, { rejectWithValue }) => {
   try {
-    const artist = await artistRepository.createArtist(artistData);
+    const artist = await artistRepository.createArtist(artistData as CreateArtistFormData);
     return artist as HALResource<Artist>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create artist');
@@ -117,7 +117,7 @@ export const createArtistAsync = createAsyncThunk<
  */
 export const updateArtistAsync = createAsyncThunk<
   HALResource<Artist>,
-  { id: number; artistData: Partial<Artist> },
+  { id: number; artistData: EditArtistFormData },
   { rejectValue: string }
 >('artists/updateArtistAsync', async ({ id, artistData }, { rejectWithValue }) => {
   try {
@@ -189,6 +189,22 @@ export const fetchArtistReviewsAsync = createAsyncThunk<
     return response as Collection<HALResource<Review>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch artist reviews');
+  }
+});
+
+/**
+ * Create artist review
+ */
+export const createArtistReviewAsync = createAsyncThunk<
+  HALResource<Review>,
+  { artistId: number; reviewData: Omit<ReviewFormData, 'itemId' | 'itemType'> },
+  { rejectValue: string }
+>('artists/createArtistReview', async ({ artistId, reviewData }, { rejectWithValue }) => {
+  try {
+    const response = await artistRepository.createArtistReview(artistId, reviewData as any);
+    return response as HALResource<Review>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to create artist review');
   }
 });
 
@@ -362,9 +378,8 @@ const artistSlice = createSlice({
       })
       .addCase(fetchArtistAlbumsAsync.fulfilled, (state, action) => {
         state.loadingAlbums = false;
-        action.payload.items.forEach((album) => {
-          state.artistAlbums[album.data.id] = album.data as Album;
-        });
+        // Sobrescribir el array completo en lugar de acumular
+        state.artistAlbums = action.payload.items.map((album) => album.data as Album);
       })
       .addCase(fetchArtistAlbumsAsync.rejected, (state, action) => {
         state.loadingAlbums = false;
@@ -379,9 +394,8 @@ const artistSlice = createSlice({
       })
       .addCase(fetchArtistSongsAsync.fulfilled, (state, action) => {
         state.loadingSongs = false;
-        action.payload.items.forEach((song) => {
-          state.artistSongs[song.data.id] = song.data as Song;
-        });
+        // Sobrescribir el array completo en lugar de acumular
+        state.artistSongs = action.payload.items.map((song) => song.data as Song);
       })
       .addCase(fetchArtistSongsAsync.rejected, (state, action) => {
         state.loadingSongs = false;
@@ -396,9 +410,8 @@ const artistSlice = createSlice({
       })
       .addCase(fetchArtistReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        action.payload.items.forEach((review) => {
-          state.artistReviews[review.data.id] = review.data as Review;
-        });
+        // Sobrescribir el array completo en lugar de acumular
+        state.artistReviews = action.payload.items.map((review) => review.data as Review);
       })
       .addCase(fetchArtistReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;

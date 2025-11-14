@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Layout } from '@/components/layout';
-import { artistRepository, albumRepository, songRepository, imageRepository } from '@/repositories';
-import { Artist, Album, Song, FilterTypeEnum } from '@/types';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistLoading, selectAlbumLoading, selectSongLoading } from '@/store/slices';
+import { imageRepository } from '@/repositories';
+import { Artist, Album, Song, FilterTypeEnum, MusicTabEnum } from '@/types';
 
-type Tab = 'popular' | 'topRated';
 
 const MusicDiscoveryPage = () => {
-  const [artistTab, setArtistTab] = useState<Tab>('popular');
-  const [albumTab, setAlbumTab] = useState<Tab>('popular');
-  const [songTab, setSongTab] = useState<Tab>('popular');
+  const dispatch = useAppDispatch();
+  const artistLoading = useAppSelector(selectArtistLoading);
+  const albumLoading = useAppSelector(selectAlbumLoading);
+  const songLoading = useAppSelector(selectSongLoading);
+  const loading = artistLoading || albumLoading || songLoading;
+  
+  const [artistTab, setArtistTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
+  const [albumTab, setAlbumTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
+  const [songTab, setSongTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
   
   const [topRatedArtists, setTopRatedArtists] = useState<Artist[]>([]);
   const [popularArtists, setPopularArtists] = useState<Artist[]>([]);
@@ -17,46 +24,41 @@ const MusicDiscoveryPage = () => {
   const [popularAlbums, setPopularAlbums] = useState<Album[]>([]);
   const [topRatedSongs, setTopRatedSongs] = useState<Song[]>([]);
   const [popularSongs, setPopularSongs] = useState<Song[]>([]);
-  
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDiscoveryContent = async () => {
-      try {
-        setLoading(true);
-        
+      try {        
         // Fetch artists
         const [topArtists, popArtists] = await Promise.all([
-          artistRepository.getArtists(1, 10, undefined, FilterTypeEnum.RATING),
-          artistRepository.getArtists(1, 10, undefined, FilterTypeEnum.POPULAR),
+          dispatch(fetchArtistsAsync({ page: 1, size: 10, filter: FilterTypeEnum.RATING })).unwrap(),
+          dispatch(fetchArtistsAsync({ page: 1, size: 10, filter: FilterTypeEnum.POPULAR })).unwrap(),
         ]);
         setTopRatedArtists(topArtists.items.map((item) => item.data));
         setPopularArtists(popArtists.items.map((item) => item.data));
         
         // Fetch albums
         const [topAlbums, popAlbums] = await Promise.all([
-          albumRepository.getAlbums(1, 10, undefined, FilterTypeEnum.RATING),
-          albumRepository.getAlbums(1, 10, undefined, FilterTypeEnum.POPULAR),
+          dispatch(fetchAlbumsAsync({ page: 1, size: 10, filter: FilterTypeEnum.RATING })).unwrap(),
+          dispatch(fetchAlbumsAsync({ page: 1, size: 10, filter: FilterTypeEnum.POPULAR })).unwrap(),
         ]);
         setTopRatedAlbums(topAlbums.items.map((item) => item.data));
         setPopularAlbums(popAlbums.items.map((item) => item.data));
         
         // Fetch songs
         const [topSongs, popSongs] = await Promise.all([
-          songRepository.getSongs(1, 10, undefined, FilterTypeEnum.RATING),
-          songRepository.getSongs(1, 10, undefined, FilterTypeEnum.POPULAR),
+          dispatch(fetchSongsAsync({ page: 1, size: 10, filter: FilterTypeEnum.RATING })).unwrap(),
+          dispatch(fetchSongsAsync({ page: 1, size: 10, filter: FilterTypeEnum.POPULAR })).unwrap(),
         ]);
         setTopRatedSongs(topSongs.items.map((item) => item.data));
         setPopularSongs(popSongs.items.map((item) => item.data));
+
       } catch (error) {
         console.error('Failed to fetch discovery content:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchDiscoveryContent();
-  }, []);
+  }, [dispatch]);
 
   return (
     <Layout title="Musicboxd - Music Discovery">
@@ -78,16 +80,16 @@ const MusicDiscoveryPage = () => {
                 <div className="tabs">
                   <span
                     id="popularArtistButton"
-                    className={`tab ${artistTab === 'popular' ? 'active' : ''}`}
-                    onClick={() => setArtistTab('popular')}
+                    className={`tab ${artistTab === MusicTabEnum.POPULAR ? 'active' : ''}`}
+                    onClick={() => setArtistTab(MusicTabEnum.POPULAR)}
                     style={{ cursor: 'pointer' }}
                   >
                     Most Popular
                   </span>
                   <span
                     id="topRatedArtistButton"
-                    className={`tab ${artistTab === 'topRated' ? 'active' : ''}`}
-                    onClick={() => setArtistTab('topRated')}
+                    className={`tab ${artistTab === MusicTabEnum.TOP_RATED ? 'active' : ''}`}
+                    onClick={() => setArtistTab(MusicTabEnum.TOP_RATED)}
                     style={{ cursor: 'pointer' }}
                   >
                     Top Rated
@@ -95,7 +97,7 @@ const MusicDiscoveryPage = () => {
                 </div>
               </div>
 
-              {artistTab === 'topRated' && topRatedArtists.length > 0 && (
+              {artistTab === MusicTabEnum.TOP_RATED && topRatedArtists.length > 0 && (
                 <div id="topRatedArtistTab" className="tab-content">
                   <h2>
                     Top Rated Artists
@@ -130,7 +132,7 @@ const MusicDiscoveryPage = () => {
                 </div>
               )}
 
-              {artistTab === 'popular' && popularArtists.length > 0 && (
+              {artistTab === MusicTabEnum.POPULAR && popularArtists.length > 0 && (
                 <div id="popularArtistTab" className="tab-content">
                   <h2>
                     Most Popular Artists
@@ -172,16 +174,16 @@ const MusicDiscoveryPage = () => {
                 <div className="tabs">
                   <span
                     id="popularAlbumButton"
-                    className={`tab ${albumTab === 'popular' ? 'active' : ''}`}
-                    onClick={() => setAlbumTab('popular')}
+                    className={`tab ${albumTab === MusicTabEnum.POPULAR ? 'active' : ''}`}
+                    onClick={() => setAlbumTab(MusicTabEnum.POPULAR)}
                     style={{ cursor: 'pointer' }}
                   >
                     Most Popular
                   </span>
                   <span
                     id="topRatedAlbumButton"
-                    className={`tab ${albumTab === 'topRated' ? 'active' : ''}`}
-                    onClick={() => setAlbumTab('topRated')}
+                    className={`tab ${albumTab === MusicTabEnum.TOP_RATED ? 'active' : ''}`}
+                    onClick={() => setAlbumTab(MusicTabEnum.TOP_RATED)}
                     style={{ cursor: 'pointer' }}
                   >
                     Top Rated
@@ -189,7 +191,7 @@ const MusicDiscoveryPage = () => {
                 </div>
               </div>
 
-              {albumTab === 'topRated' && topRatedAlbums.length > 0 && (
+              {albumTab === MusicTabEnum.TOP_RATED && topRatedAlbums.length > 0 && (
                 <div id="topRatedAlbumTab" className="tab-content">
                   <h2>
                     Top Rated Albums
@@ -224,7 +226,7 @@ const MusicDiscoveryPage = () => {
                 </div>
               )}
 
-              {albumTab === 'popular' && popularAlbums.length > 0 && (
+              {albumTab === MusicTabEnum.POPULAR && popularAlbums.length > 0 && (
                 <div id="popularAlbumTab" className="tab-content">
                   <h2>
                     Most Popular Albums
@@ -266,16 +268,16 @@ const MusicDiscoveryPage = () => {
                 <div className="tabs">
                   <span
                     id="popularSongButton"
-                    className={`tab ${songTab === 'popular' ? 'active' : ''}`}
-                    onClick={() => setSongTab('popular')}
+                      className={`tab ${songTab === MusicTabEnum.POPULAR ? 'active' : ''}`}
+                    onClick={() => setSongTab(MusicTabEnum.POPULAR)}
                     style={{ cursor: 'pointer' }}
                   >
                     Most Popular
                   </span>
                   <span
                     id="topRatedSongButton"
-                    className={`tab ${songTab === 'topRated' ? 'active' : ''}`}
-                    onClick={() => setSongTab('topRated')}
+                    className={`tab ${songTab === MusicTabEnum.TOP_RATED ? 'active' : ''}`}
+                    onClick={() => setSongTab(MusicTabEnum.TOP_RATED)}
                     style={{ cursor: 'pointer' }}
                   >
                     Top Rated
@@ -283,7 +285,7 @@ const MusicDiscoveryPage = () => {
                 </div>
               </div>
 
-              {songTab === 'topRated' && topRatedSongs.length > 0 && (
+              {songTab === MusicTabEnum.TOP_RATED && topRatedSongs.length > 0 && (
                 <div id="topRatedSongTab" className="tab-content">
                   <h2>
                     Top Rated Songs
@@ -310,7 +312,7 @@ const MusicDiscoveryPage = () => {
                 </div>
               )}
 
-              {songTab === 'popular' && popularSongs.length > 0 && (
+              {songTab === MusicTabEnum.POPULAR && popularSongs.length > 0 && (
                 <div id="popularSongTab" className="tab-content">
                   <h2>
                     Most Popular Songs

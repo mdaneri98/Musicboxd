@@ -77,52 +77,52 @@ class NotificationRepository {
     }
   }
 
-  /**
-   * Create a new notification
-   * @param notificationData Notification data
-   * @returns Created notification
-   */
-  async createNotification(notificationData: Partial<Notification>): Promise<HALResource<Notification>> {
-    try {
-      const response: HALResource<Notification> = await apiClient.postResource<Notification>(
-        NOTIFICATION_ENDPOINTS.NOTIFICATIONS,
-        notificationData
-      );
+  // /**
+  //  * Create a new notification
+  //  * @param notificationData Notification data
+  //  * @returns Created notification
+  //  */
+  // async createNotification(notificationData: Partial<Notification>): Promise<HALResource<Notification>> {
+  //   try {
+  //     const response: HALResource<Notification> = await apiClient.postResource<Notification>(
+  //       NOTIFICATION_ENDPOINTS.NOTIFICATIONS,
+  //       notificationData
+  //     );
 
-      if (!response) {
-        throw new Error('Invalid create notification response: missing data');
-      }
+  //     if (!response) {
+  //       throw new Error('Invalid create notification response: missing data');
+  //     }
 
-      return response as HALResource<Notification>;
-    } catch (error) {
-      console.error('Create notification error:', error);
-      throw error;
-    }
-  }
+  //     return response as HALResource<Notification>;
+  //   } catch (error) {
+  //     console.error('Create notification error:', error);
+  //     throw error;
+  //   }
+  // }
 
-  /**
-   * Update notification
-   * @param id Notification ID
-   * @param notificationData Updated notification data
-   * @returns Updated notification
-   */
-  async updateNotification(id: number, notificationData: Partial<Notification>): Promise<HALResource<Notification>> {
-    try {
-      const response: HALResource<Notification> = await apiClient.putResource<Notification>(
-        NOTIFICATION_ENDPOINTS.NOTIFICATION_BY_ID(id),
-        notificationData
-      );
+  // /**
+  //  * Update notification
+  //  * @param id Notification ID
+  //  * @param notificationData Updated notification data
+  //  * @returns Updated notification
+  //  */
+  // async updateNotification(id: number, notificationData: Partial<Notification>): Promise<HALResource<Notification>> {
+  //   try {
+  //     const response: HALResource<Notification> = await apiClient.putResource<Notification>(
+  //       NOTIFICATION_ENDPOINTS.NOTIFICATION_BY_ID(id),
+  //       notificationData
+  //     );
 
-      if (!response) {
-        throw new Error('Invalid update notification response: missing data');
-      }
+  //     if (!response) {
+  //       throw new Error('Invalid update notification response: missing data');
+  //     }
 
-      return response as HALResource<Notification>;
-    } catch (error) {
-      console.error(`Update notification ${id} error:`, error);
-      throw error;
-    }
-  }
+  //     return response as HALResource<Notification>;
+  //   } catch (error) {
+  //     console.error(`Update notification ${id} error:`, error);
+  //     throw error;
+  //   }
+  // }
 
   /**
    * Delete notification

@@ -12,6 +12,7 @@ import {
   selectCurrentUser,
 } from '@/store/slices';
 import { selectUnreadCount } from '@/store/slices';
+import { imageRepository } from '@/repositories';
 
 const Sidebar = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -19,8 +20,8 @@ const Sidebar = () => {
   const currentUser = useAppSelector(selectCurrentUser);
   const unreadCount = useAppSelector(selectUnreadCount);
 
-  const profileImageUrl = currentUser?.imageId
-    ? `/api/images/${currentUser.imageId}`
+  const profileImageUrl = currentUser && currentUser.image_id
+    ? imageRepository.getImageUrl(currentUser.image_id)
     : '/assets/default-avatar.png';
 
   return (

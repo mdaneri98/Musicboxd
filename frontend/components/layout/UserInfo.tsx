@@ -18,10 +18,10 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
         <div className="user-profile-info">
           <div className="entity-type">User</div>
           <div className="user-badges">
-            {user.is_verified && (
+            {user.verified && (
               <span className="badge badge-verified">Verified</span>
             )}
-            {user.is_moderator && (
+            {user.moderator && (
               <span className="badge badge-moderator">Moderator</span>
             )}
           </div>

@@ -4,73 +4,82 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { RatingCard } from '@/components/ui';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { songRepository, albumRepository, artistRepository, imageRepository } from '@/repositories';
-import type { Song, Album, Artist, Review, HALResource } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser,
+  fetchSongByIdAsync,
+  fetchAlbumByIdAsync,
+  fetchArtistByIdAsync,
+  fetchSongReviewsAsync,
+  addSongFavoriteAsync,
+  removeSongFavoriteAsync,
+  selectCurrentSong,
+  selectSongReviews,
+  selectLoadingSong,
+  selectSongError,
+  clearCurrentSong
+} from '@/store/slices';
+import { imageRepository } from '@/repositories';
+import type { Album, Artist, Review, HALResource } from '@/types';
 
 const SongDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  const [song, setSong] = useState<Song | null>(null);
+  const song = useAppSelector(selectCurrentSong);
+  const reviews = useAppSelector(selectSongReviews);
+  const loading = useAppSelector(selectLoadingSong);
+  const error = useAppSelector(selectSongError);
+  
   const [album, setAlbum] = useState<Album | null>(null);
   const [artist, setArtist] = useState<Artist | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | undefined>();
   const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [userRating, setUserRating] = useState<number | undefined>();
   const [isReviewed, setIsReviewed] = useState(false);
+  
+  const isFavorite = song?.is_favorite || false;
 
-  // Fetch song data
   useEffect(() => {
-    const fetchSong = async () => {
-      if (!id) return;
-      
-      try {
-        setLoading(true);
-        setError(undefined);
-        const songId = parseInt(id as string);
-        
-        const songData = await songRepository.getSongById(songId);
-        setSong(songData.data as Song);
-        setIsFavorite(songData.data.is_favorite || false);
-        
-        // Fetch album and artist data
-        const albumData = await albumRepository.getAlbumById(songData.data.album_id);
-        setAlbum(albumData.data as Album);
-        
-        const artistData = await artistRepository.getArtistById(songData.data.artist_id);
-        setArtist(artistData.data as Artist);
-      } catch (err: any) {
-        console.error('Failed to fetch song:', err);
-        setError(err.message || 'Failed to load song');
-      } finally {
-        setLoading(false);
-      }
+    return () => {
+      dispatch(clearCurrentSong());
     };
+  }, [dispatch]);
 
-    fetchSong();
-  }, [id]);
-
-  // Fetch reviews
   useEffect(() => {
-    const fetchReviews = async () => {
-      if (!id) return;
-      
-      try {
-        const songId = parseInt(id as string);
-        const reviewsData = await songRepository.getSongReviews(songId, reviewsPage, 20);
-        setReviews(reviewsData.items.map((item: HALResource<Review>) => item.data as Review) as Review[]);
+    if (!id) return;
+    
+    const songId = parseInt(id as string);
+    dispatch(fetchSongByIdAsync(songId))
+      .unwrap()
+      .then((songData) => {
+        dispatch(fetchAlbumByIdAsync(songData.data.album_id))
+          .unwrap()
+          .then((albumData) => setAlbum(albumData.data))
+          .catch((err) => console.error('Failed to fetch album:', err));
+        
+        dispatch(fetchArtistByIdAsync(songData.data.artist_id))
+          .unwrap()
+          .then((artistData) => setArtist(artistData.data))
+          .catch((err) => console.error('Failed to fetch artist:', err));
+      })
+      .catch((err) => console.error('Failed to fetch song:', err));
+  }, [id, dispatch]);
+
+  useEffect(() => {
+    if (!id) return;
+    
+    const songId = parseInt(id as string);
+    dispatch(fetchSongReviewsAsync({ songId, page: reviewsPage, size: 20 }))
+      .unwrap()
+      .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
         
-        // Check if current user has reviewed this song
         if (isAuthenticated && currentUser) {
           const userReview = reviewsData.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
           if (userReview) {
@@ -78,15 +87,9 @@ const SongDetailPage = () => {
             setUserRating(userReview.data.rating || 0);
           }
         }
-      } catch (err) {
-        console.error('Failed to fetch reviews:', err);
-      }
-    };
-
-    if (id) {
-      fetchReviews();
-    }
-  }, [id, reviewsPage, isAuthenticated, currentUser]);
+      })
+      .catch((err) => console.error('Failed to fetch reviews:', err));
+  }, [id, reviewsPage, isAuthenticated, currentUser, dispatch]);
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {
@@ -99,11 +102,9 @@ const SongDetailPage = () => {
     try {
       setFavoriteLoading(true);
       if (isFavorite) {
-        await songRepository.removeSongFavorite(song.id);
-        setIsFavorite(false);
+        await dispatch(removeSongFavoriteAsync(song.id)).unwrap();
       } else {
-        await songRepository.addSongFavorite(song.id);
-        setIsFavorite(true);
+        await dispatch(addSongFavoriteAsync(song.id)).unwrap();
       }
     } catch (err) {
       console.error('Failed to toggle favorite:', err);
@@ -162,7 +163,7 @@ const SongDetailPage = () => {
             <div className="entity-details">
               <div className="entity-type">
                 Song
-                {currentUser?.is_moderator && (
+                {currentUser && currentUser.moderator && (
                   <Link href={`/mod/songs/${song.id}/edit`} className="edit-link">
                     <i className="fas fa-pencil-alt"></i>
                   </Link>

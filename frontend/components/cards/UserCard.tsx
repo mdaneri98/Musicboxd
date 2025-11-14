@@ -29,7 +29,7 @@ const UserCard = ({ user }: UserCardProps) => {
           <h3 className="user-card-username">{user.username}</h3>
           {user.bio && <p className="user-card-name">{user.bio}</p>}
         </div>
-        {user.is_moderator && (
+        {user.moderator && (
           <div className="user-card-badges">
             <span className="badge badge-moderator">Moderator</span>
           </div>

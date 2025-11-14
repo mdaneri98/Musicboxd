@@ -28,15 +28,8 @@ const RegisterPage = () => {
   }, [isAuthenticated, router]);
 
   const handleRegister = async (data: RegisterFormData) => {
-    const result = await dispatch(registerAsync({
-      username: data.username,
-      email: data.email,
-      password: data.password,
-    }));
-    
-    if (registerAsync.fulfilled.match(result)) {
-      router.push('/');
-    }
+    await dispatch(registerAsync(data)).unwrap();
+    router.push('/');
   };
 
   return (

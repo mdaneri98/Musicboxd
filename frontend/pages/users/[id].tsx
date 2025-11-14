@@ -3,118 +3,91 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Layout, UserInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { userRepository } from '@/repositories';
-import type { Review, Artist, Album, Song, User, HALResource } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser,
+  fetchUserByIdAsync,
+  fetchFollowersAsync,
+  fetchFavoriteArtistsAsync,
+  fetchFavoriteAlbumsAsync,
+  fetchFavoriteSongsAsync,
+  fetchUserReviewsAsync,
+  followUserAsync,
+  unfollowUserAsync,
+  selectCurrentProfile,
+  selectFavoriteArtists,
+  selectFavoriteAlbums,
+  selectFavoriteSongs,
+  selectUserReviews,
+  selectLoadingProfile,
+  clearCurrentProfile
+} from '@/store/slices';
+import type { HALResource, User } from '@/types';
 import { imageRepository } from '@/repositories';
 
 const UserProfilePage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  const [user, setUser] = useState<User | null>(null);
+  const user = useAppSelector(selectCurrentProfile);
+  const favoriteArtists = useAppSelector(selectFavoriteArtists);
+  const favoriteAlbums = useAppSelector(selectFavoriteAlbums);
+  const favoriteSongs = useAppSelector(selectFavoriteSongs);
+  const reviews = useAppSelector(selectUserReviews);
+  const loading = useAppSelector(selectLoadingProfile);
+  
   const [activeTab, setActiveTab] = useState<'favorites' | 'reviews'>('favorites');
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [favoriteArtists, setFavoriteArtists] = useState<Artist[]>([]);
-  const [favoriteAlbums, setFavoriteAlbums] = useState<Album[]>([]);
-  const [favoriteSongs, setFavoriteSongs] = useState<Song[]>([]);
-  const [loading, setLoading] = useState(true);
   const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
-  // Fetch user data
   useEffect(() => {
-    const fetchUser = async () => {
-      if (!id) return;
-      
-      try {
-        setLoading(true);
-        const userId = parseInt(id as string);
-        
-        // Check if viewing own profile
-        if (currentUser && currentUser.id === userId) {
-          router.push('/profile');
-          return;
-        }
-        
-        const userData = await userRepository.getUserById(userId);
-        setUser(userData.data as User);
-        
-        // Check if following (only if authenticated)
-        if (isAuthenticated && currentUser) {
-          const followers = await userRepository.getFollowers(userId, 0, 100);
+    return () => {
+      dispatch(clearCurrentProfile());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!id) return;
+    
+    const userId = parseInt(id as string);
+    
+    if (currentUser && currentUser.id === userId) {
+      router.push('/profile');
+      return;
+    }
+    
+    dispatch(fetchUserByIdAsync(userId));
+    dispatch(fetchFavoriteArtistsAsync({ userId }));
+    dispatch(fetchFavoriteAlbumsAsync({ userId }));
+    dispatch(fetchFavoriteSongsAsync({ userId }));
+    
+    if (isAuthenticated && currentUser) {
+      dispatch(fetchFollowersAsync({ userId, page: 0, size: 100 }))
+        .unwrap()
+        .then((followers) => {
           setIsFollowing(followers.items.some((f: HALResource<User>) => f.data.id === currentUser.id));
-        }
-      } catch (error) {
-        console.error('Failed to fetch user:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+        })
+        .catch((err) => console.error('Failed to fetch followers:', err));
+    }
+  }, [id, currentUser, isAuthenticated, router, dispatch]);
 
-    fetchUser();
-  }, [id, currentUser, isAuthenticated, router]);
-
-  // Fetch favorites
   useEffect(() => {
-    const fetchFavorites = async () => {
-      if (!id) return;
-      
-      try {
-        const userId = parseInt(id as string);
-        const [artists, albums, songs] = await Promise.all([
-          userRepository.getFavoriteArtists(userId),
-          userRepository.getFavoriteAlbums(userId),
-          userRepository.getFavoriteSongs(userId),
-        ]);
-        
-        setFavoriteArtists(artists.items.map((item: HALResource<Artist>) => item.data as Artist));
-        setFavoriteAlbums(albums.items.map((item: HALResource<Album>) => item.data as Album));
-        setFavoriteSongs(songs.items.map((item: HALResource<Song>) => item.data as Song));
-      } catch (error) {
-        console.error('Failed to fetch favorites:', error);
-      }
-    };
-
-    if (id) {
-      fetchFavorites();
-    }
-  }, [id]);
-
-  // Fetch reviews when tab is active
-  useEffect(() => {
-    const fetchReviews = async () => {
-      if (!id || activeTab !== 'reviews') return;
-      
-      try {
-        setLoading(true);
-        const userId = parseInt(id as string);
-        const response = await userRepository.getUserReviews(userId, reviewsPage, 20);
-        setReviews(response.items.map((item: HALResource<Review>) => item.data as Review));
-        setHasMoreReviews(response.items.length === 20);
-      } catch (error) {
-        console.error('Failed to fetch reviews:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id && activeTab === 'reviews') {
-      fetchReviews();
-    }
-  }, [id, activeTab, reviewsPage]);
-
-  const handleTabChange = (tab: 'favorites' | 'reviews') => {
-    setActiveTab(tab);
-    if (tab === 'reviews') {
-      setReviewsPage(1);
-    }
-  };
+    if (!id || activeTab !== 'reviews') return;
+    
+    const userId = parseInt(id as string);
+    dispatch(fetchUserReviewsAsync({ userId, page: reviewsPage, size: 20 }))
+      .unwrap()
+      .then((reviewsData) => {
+        setHasMoreReviews(reviewsData.items.length === 20);
+      })
+      .catch((err) => console.error('Failed to fetch reviews:', err));
+  }, [id, reviewsPage, activeTab, dispatch]);
 
   const handleFollowToggle = async () => {
     if (!isAuthenticated) {
@@ -127,13 +100,11 @@ const UserProfilePage = () => {
     try {
       setFollowLoading(true);
       if (isFollowing) {
-        await userRepository.unfollowUser(user.id);
+        await dispatch(unfollowUserAsync(user.id)).unwrap();
         setIsFollowing(false);
-        setUser({ ...user, followers_amount: (user.followers_amount || 0) - 1 });
       } else {
-        await userRepository.followUser(user.id);
+        await dispatch(followUserAsync(user.id)).unwrap();
         setIsFollowing(true);
-        setUser({ ...user, followers_amount: (user.followers_amount || 0) + 1 });
       }
     } catch (error) {
       console.error('Failed to toggle follow:', error);
@@ -146,159 +117,114 @@ const UserProfilePage = () => {
     return (
       <Layout title="Loading...">
         <div className="content-wrapper">
-          <div className="loading">Loading user profile...</div>
+          <div className="loading">Loading profile...</div>
         </div>
       </Layout>
     );
   }
 
+  const userImgUrl = user.image_id ? imageRepository.getImageUrl(user.image_id) : '/assets/default-user.png';
+
   return (
-    <Layout title={`Musicboxd - @${user.username}`}>
+    <Layout title={`Musicboxd - ${user.username}'s Profile`}>
       <div className="content-wrapper">
-        {/* User Info Header */}
-        <div className="profile-header">
-          <header>
-            <UserInfo user={user} />
-          </header>
+        <UserInfo
+          user={user}
+          userImgUrl={userImgUrl}
+          isOwnProfile={false}
+          isAuthenticated={isAuthenticated}
+          isFollowing={isFollowing}
+          followLoading={followLoading}
+          onFollowToggle={handleFollowToggle}
+        />
 
-          {/* Follow/Unfollow Button */}
-          <div className="user-actions">
-            {!isAuthenticated ? (
-              <Link href="/login" className="btn btn-primary">
-                Login to Follow
-              </Link>
-            ) : (
-              <button
-                onClick={handleFollowToggle}
-                disabled={followLoading}
-                className={`btn ${isFollowing ? 'btn-secondary' : 'btn-primary'}`}
-              >
-                {followLoading ? 'Loading...' : isFollowing ? 'Unfollow' : 'Follow'}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="tabs">
-          <span
-            id="favoritesButton"
+        <div className="profile-tabs">
+          <button
             className={`tab ${activeTab === 'favorites' ? 'active' : ''}`}
-            onClick={() => handleTabChange('favorites')}
-            style={{ cursor: 'pointer' }}
+            onClick={() => setActiveTab('favorites')}
           >
             Favorites
-          </span>
-          <span
-            id="reviewsButton"
+          </button>
+          <button
             className={`tab ${activeTab === 'reviews' ? 'active' : ''}`}
-            onClick={() => handleTabChange('reviews')}
-            style={{ cursor: 'pointer' }}
+            onClick={() => setActiveTab('reviews')}
           >
-            Reviews
-          </span>
+            Reviews ({user.review_amount})
+          </button>
         </div>
 
-        {/* Favorites Section */}
         {activeTab === 'favorites' && (
-          <section className="favorites-section">
-            {/* Favorite Artists */}
+          <div className="favorites-section">
             {favoriteArtists.length > 0 && (
-              <>
+              <section className="entity-section">
                 <h2>Favorite Artists</h2>
-                <div className="carousel-container">
-                  <div className="carousel">
-                    {favoriteArtists.map((artist) => (
-                      <div key={artist.id} className="music-item artist-item">
-                        <Link href={`/artists/${artist.id}`} className="music-item-link">
-                          <div className="music-item-image-container">
-                            <img
-                              src={artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png'}
-                              alt={artist.name}
-                              className="music-item-image"
-                            />
-                            {artist.avg_rating && (
-                              <div className="rating-badge">
-                                <span className="rating">{artist.avg_rating.toFixed(1)}</span>
-                                <span className="star">&#9733;</span>
-                              </div>
-                            )}
-                          </div>
-                          <p className="music-item-title">{artist.name}</p>
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Favorite Albums */}
-            {favoriteAlbums.length > 0 && (
-              <>
-                <h2>Favorite Albums</h2>
-                <div className="carousel-container">
-                  <div className="carousel">
-                    {favoriteAlbums.map((album) => (
-                      <div key={album.id} className="music-item album-item">
-                        <Link href={`/albums/${album.id}`} className="music-item-link">
-                          <div className="music-item-image-container">
-                            <img
-                              src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
-                              alt={album.title}
-                              className="music-item-image"
-                            />
-                            {album.avg_rating && (
-                              <div className="rating-badge">
-                                <span className="rating">{album.avg_rating.toFixed(1)}</span>
-                                <span className="star">&#9733;</span>
-                              </div>
-                            )}
-                          </div>
-                          <p className="music-item-title">{album.title}</p>
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Favorite Songs */}
-            {favoriteSongs.length > 0 && (
-              <>
-                <h2>Favorite Songs</h2>
-                <ul className="song-list">
-                  {favoriteSongs.map((song, index) => (
-                    <li key={song.id}>
-                      <Link href={`/songs/${song.id}`} className="song-item">
-                        <span className="song-number">{index + 1}</span>
-                        <span className="song-title">{song.title}</span>
-                        {song.avg_rating && (
-                          <div className="rating-badge">
-                            <span className="rating">{song.avg_rating.toFixed(1)}</span>
-                            <span className="star">&#9733;</span>
-                          </div>
-                        )}
-                      </Link>
-                    </li>
+                <div className="entity-grid">
+                  {favoriteArtists.map((artist) => (
+                    <Link key={artist.id} href={`/artists/${artist.id}`} className="entity-card">
+                      <img
+                        src={artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png'}
+                        alt={artist.name}
+                        className="entity-image"
+                      />
+                      <h3 className="entity-name">{artist.name}</h3>
+                      <p className="entity-rating">⭐ {artist.avg_rating.toFixed(1)}</p>
+                    </Link>
                   ))}
-                </ul>
-              </>
+                </div>
+              </section>
             )}
-          </section>
+
+            {favoriteAlbums.length > 0 && (
+              <section className="entity-section">
+                <h2>Favorite Albums</h2>
+                <div className="entity-grid">
+                  {favoriteAlbums.map((album) => (
+                    <Link key={album.id} href={`/albums/${album.id}`} className="entity-card">
+                      <img
+                        src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
+                        alt={album.title}
+                        className="entity-image"
+                      />
+                      <h3 className="entity-name">{album.title}</h3>
+                      <p className="entity-artist">{album.artist_name}</p>
+                      <p className="entity-rating">⭐ {album.avg_rating.toFixed(1)}</p>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {favoriteSongs.length > 0 && (
+              <section className="entity-section">
+                <h2>Favorite Songs</h2>
+                <div className="entity-grid">
+                  {favoriteSongs.map((song) => (
+                    <Link key={song.id} href={`/songs/${song.id}`} className="entity-card">
+                      <img
+                        src={song.album_image_id ? imageRepository.getImageUrl(song.album_image_id) : '/assets/default-album.png'}
+                        alt={song.title}
+                        className="entity-image"
+                      />
+                      <h3 className="entity-name">{song.title}</h3>
+                      <p className="entity-artist">{song.album_title}</p>
+                      <p className="entity-rating">⭐ {song.avg_rating.toFixed(1)}</p>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {favoriteArtists.length === 0 && favoriteAlbums.length === 0 && favoriteSongs.length === 0 && (
+              <div className="empty-state">
+                <p>No favorites yet</p>
+              </div>
+            )}
+          </div>
         )}
 
-        {/* Reviews Section */}
         {activeTab === 'reviews' && (
-          <section className="reviews-section">
-            {loading ? (
-              <div className="loading">Loading reviews...</div>
-            ) : reviews.length === 0 ? (
-              <div className="empty-state">
-                <h3>No reviews found</h3>
-              </div>
-            ) : (
+          <div className="reviews-section">
+            {reviews.length > 0 ? (
               <>
                 <div className="reviews-grid">
                   {reviews.map((review) => (
@@ -306,7 +232,6 @@ const UserProfilePage = () => {
                   ))}
                 </div>
 
-                {/* Pagination */}
                 <div className="pagination">
                   {reviewsPage > 1 && (
                     <button
@@ -326,8 +251,12 @@ const UserProfilePage = () => {
                   )}
                 </div>
               </>
+            ) : (
+              <div className="empty-state">
+                <p>No reviews yet</p>
+              </div>
             )}
-          </section>
+          </div>
         )}
       </div>
     </Layout>
@@ -335,4 +264,3 @@ const UserProfilePage = () => {
 };
 
 export default UserProfilePage;
-

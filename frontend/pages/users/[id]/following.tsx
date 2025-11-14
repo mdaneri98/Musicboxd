@@ -2,45 +2,50 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, UserInfo } from '@/components/layout';
 import { UserCard } from '@/components/cards';
-import { userRepository } from '@/repositories';
-import type { HALResource, User } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { 
+  fetchUserByIdAsync,
+  fetchFollowingAsync,
+  selectCurrentProfile,
+  selectFollowing,
+  selectLoadingProfile,
+  selectLoadingFollowing,
+  clearCurrentProfile
+} from '@/store/slices';
 
 const FollowingPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const dispatch = useAppDispatch();
   
-  const [user, setUser] = useState<User | null>(null);
-  const [following, setFollowing] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const user = useAppSelector(selectCurrentProfile);
+  const following = useAppSelector(selectFollowing);
+  const loadingProfile = useAppSelector(selectLoadingProfile);
+  const loadingFollowing = useAppSelector(selectLoadingFollowing);
+  const loading = loadingProfile || loadingFollowing;
+  
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!id) return;
-      
-      try {
-        setLoading(true);
-        const userId = parseInt(id as string);
-        
-        // Fetch user and following in parallel
-        const [userData, followingData] = await Promise.all([
-          userRepository.getUserById(userId),
-          userRepository.getFollowing(userId, page, 20),
-        ]);
-        
-        setUser(userData.data as User);
-        setFollowing(followingData.items.map((item: HALResource<User>) => item.data as User));
-        setHasMore(followingData.items.length === 20);
-      } catch (error) {
-        console.error('Failed to fetch following:', error);
-      } finally {
-        setLoading(false);
-      }
+    return () => {
+      dispatch(clearCurrentProfile());
     };
+  }, [dispatch]);
 
-    fetchData();
-  }, [id, page]);
+  useEffect(() => {
+    if (!id) return;
+    
+    const userId = parseInt(id as string);
+    dispatch(fetchUserByIdAsync(userId));
+    
+    dispatch(fetchFollowingAsync({ userId, page, size: 20 }))
+      .unwrap()
+      .then((followingData) => {
+        setHasMore(followingData.items.length === 20);
+      })
+      .catch((err) => console.error('Failed to fetch following:', err));
+  }, [id, page, dispatch]);
 
   if (loading || !user) {
     return (
@@ -55,28 +60,24 @@ const FollowingPage = () => {
   return (
     <Layout title={`Musicboxd - @${user.username} Following`}>
       <div className="content-wrapper">
-        {/* User Info Header */}
         <div className="profile-header">
           <header>
             <UserInfo user={user} />
           </header>
         </div>
 
-        {/* Section Title */}
         <h1 className="page-title">Following</h1>
 
-        {/* Users Grid */}
         {following.length === 0 ? (
           <p className="no-results">Not following anyone yet</p>
         ) : (
           <>
             <div className="users-grid">
-              {following.map((user) => (
-                <UserCard key={user.id} user={user} />
+              {following.map((followedUser) => (
+                <UserCard key={followedUser.id} user={followedUser} />
               ))}
             </div>
 
-            {/* Pagination */}
             <div className="pagination">
               {page > 1 && (
                 <button
@@ -103,4 +104,3 @@ const FollowingPage = () => {
 };
 
 export default FollowingPage;
-

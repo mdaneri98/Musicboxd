@@ -4,23 +4,45 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { artistRepository, reviewRepository, imageRepository } from '@/repositories';
-import type { Artist, ReviewFormData } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser, 
+  fetchArtistByIdAsync, 
+  fetchArtistReviewsAsync, 
+  updateReviewAsync, 
+  deleteReviewAsync, 
+  createArtistReviewAsync,
+  selectCurrentArtist,
+  selectLoadingArtist,
+  clearCurrentArtist
+} from '@/store/slices';
+import { imageRepository } from '@/repositories';
+import type { ReviewFormData } from '@/types';
 
 const ArtistReviewPage = () => {
   const router = useRouter();
   const { id, edit } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
+  
+  // Usar selector de Redux en lugar de useState
+  const artist = useAppSelector(selectCurrentArtist);
+  const loadingArtist = useAppSelector(selectLoadingArtist);
 
-  const [artist, setArtist] = useState<Artist | null>(null);
   const [existingReview, setExistingReview] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const isEditMode = edit === 'true';
+
+  // Limpiar el artista al desmontar
+  useEffect(() => {
+    return () => {
+      dispatch(clearCurrentArtist());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -34,12 +56,11 @@ const ArtistReviewPage = () => {
       try {
         setLoading(true);
         const artistId = parseInt(id as string);
-        const artistData = await artistRepository.getArtistById(artistId);
-        setArtist(artistData.data);
+        await dispatch(fetchArtistByIdAsync(artistId)).unwrap();
 
         // Check if user already reviewed this artist
         if (currentUser) {
-          const reviews = await artistRepository.getArtistReviews(artistId, 0, 100);
+          const reviews = await dispatch(fetchArtistReviewsAsync({ artistId, page: 0, size: 100 })).unwrap();
           const userReview = reviews.items.find(r => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {
@@ -49,7 +70,7 @@ const ArtistReviewPage = () => {
           }
           
           if (userReview) {
-            setExistingReview(userReview);
+            setExistingReview(userReview.data);
           } else if (isEditMode) {
             // No review to edit, redirect to create
             router.push(`/artists/${id}/reviews`);
@@ -64,7 +85,7 @@ const ArtistReviewPage = () => {
     };
 
     fetchData();
-  }, [id, isAuthenticated, currentUser, isEditMode, router]);
+  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!artist) return;
@@ -74,21 +95,19 @@ const ArtistReviewPage = () => {
 
       if (isEditMode && existingReview) {
         // Update existing review
-        await reviewRepository.updateReview(existingReview.id, {
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-        });
+        await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       } else {
         // Create new review
-        await artistRepository.createArtistReview(artist.id, {
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-        });
+        await dispatch(createArtistReviewAsync({ 
+          artistId: artist.id, 
+          reviewData: {
+            title: data.title,
+            description: data.description,
+            rating: data.rating
+          }
+        })).unwrap();
       }
-
-      // Redirect to artist page
+      
       router.push(`/artists/${artist.id}`);
     } catch (error) {
       console.error('Failed to submit review:', error);
@@ -101,7 +120,7 @@ const ArtistReviewPage = () => {
     if (!existingReview) return;
 
     try {
-      await reviewRepository.deleteReview(existingReview.id);
+      await dispatch(deleteReviewAsync(existingReview.id)).unwrap();
       router.push(`/artists/${id}`);
     } catch (error) {
       console.error('Failed to delete review:', error);
@@ -112,7 +131,7 @@ const ArtistReviewPage = () => {
     return null; // Will redirect
   }
 
-  if (loading || !artist) {
+  if (loading || loadingArtist || !artist) {
     return (
       <Layout title="Loading...">
         <div className="content-wrapper">

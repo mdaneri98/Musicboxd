@@ -10,7 +10,7 @@ import { HALResource, APIError, APIRequestOptions, Collection } from '@/types';
 // Configuration
 // ============================================================================
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api_war/api';
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = 'access_token';

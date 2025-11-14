@@ -11,6 +11,9 @@ import {
   Collection,
   HALResource,
   FilterParams,
+  EditSongFormData,
+  CreateSongFormData,
+  ReviewFormData,
 } from '@/types';
 
 // ============================================================================
@@ -90,7 +93,7 @@ class SongRepository {
    * @param songData Song data
    * @returns Created song
    */
-  async createSong(songData: Partial<Song>): Promise<HALResource<Song>> {
+  async createSong(songData: CreateSongFormData): Promise<HALResource<Song>> {
     try {
       const response: HALResource<Song> = await apiClient.postResource<Song>(
         SONG_ENDPOINTS.SONGS,
@@ -114,7 +117,7 @@ class SongRepository {
    * @param songData Updated song data
    * @returns Updated song
    */
-  async updateSong(id: number, songData: Partial<Song>): Promise<HALResource<Song>> {
+    async updateSong(id: number, songData: EditSongFormData): Promise<HALResource<Song>> {
     try {
       const response: HALResource<Song> = await apiClient.putResource<Song>(
         SONG_ENDPOINTS.SONG_BY_ID(id),
@@ -183,7 +186,7 @@ class SongRepository {
    * @param reviewData Review data
    * @returns Created review
    */
-  async createSongReview(songId: number, reviewData: Partial<Review>): Promise<Review> {
+  async createSongReview(songId: number, reviewData: ReviewFormData): Promise<Review> {
     try {
       const response: HALResource<Review> = await apiClient.postResource<Review>(
         SONG_ENDPOINTS.SONG_REVIEWS(songId),

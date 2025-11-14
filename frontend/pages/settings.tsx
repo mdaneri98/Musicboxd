@@ -2,12 +2,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync } from '@/store/slices';
+import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, deleteUserAsync } from '@/store/slices';
 import { ConfirmationModal } from '@/components/ui';
-import { userRepository } from '@/repositories';
-
-type Theme = 'dark' | 'kawaii' | 'sepia' | 'ocean' | 'forest';
-type Language = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja';
+import { ThemeEnum, LanguageEnum } from '@/types';
 
 interface NotificationSettings {
   followNotificationsEnabled: boolean;
@@ -23,8 +20,8 @@ export default function SettingsPage() {
   const currentUser = useAppSelector(selectCurrentUser);
 
   // Local state for settings (would normally come from user object)
-  const [theme, setTheme] = useState<Theme>('dark');
-  const [language, setLanguage] = useState<Language>('en');
+  const [theme, setTheme] = useState<ThemeEnum>(ThemeEnum.DARK);
+  const [language, setLanguage] = useState<LanguageEnum>(LanguageEnum.EN);
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
     followNotificationsEnabled: true,
     likeNotificationsEnabled: true,
@@ -66,7 +63,7 @@ export default function SettingsPage() {
   }, [currentUser]);
 
   // Handle theme change
-  const handleThemeChange = async (newTheme: Theme) => {
+  const handleThemeChange = async (newTheme: ThemeEnum) => {
     setTheme(newTheme);
     try {
       setSaving(true);
@@ -81,7 +78,7 @@ export default function SettingsPage() {
   };
 
   // Handle language change
-  const handleLanguageChange = async (newLanguage: Language) => {
+  const handleLanguageChange = async (newLanguage: LanguageEnum) => {
     setLanguage(newLanguage);
     try {
       setSaving(true);
@@ -125,7 +122,7 @@ export default function SettingsPage() {
     if (!currentUser) return;
 
     try {
-      await userRepository.deleteUser(currentUser.id);
+      await dispatch(deleteUserAsync(currentUser.id)).unwrap();
       router.push('/landing');
     } catch (error) {
       console.error('Failed to delete account:', error);
@@ -156,7 +153,7 @@ export default function SettingsPage() {
                 </div>
                 <select
                   value={theme}
-                  onChange={(e) => handleThemeChange(e.target.value as Theme)}
+                  onChange={(e) => handleThemeChange(e.target.value as ThemeEnum)}
                   className="theme-select"
                   disabled={saving}
                 >
@@ -181,7 +178,7 @@ export default function SettingsPage() {
                 </div>
                 <select
                   value={language}
-                  onChange={(e) => handleLanguageChange(e.target.value as Language)}
+                  onChange={(e) => handleLanguageChange(e.target.value as LanguageEnum)}
                   className="theme-select"
                   disabled={saving}
                 >

@@ -32,7 +32,7 @@ export function requireGuest(user: User | null): boolean {
  * @returns True if moderator
  */
 export function requireModerator(user: User | null): boolean {
-  return user !== null && user.isModerator;
+    return user !== null && user.moderator;
 }
 
 /**
