@@ -4,86 +4,90 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { RatingCard } from '@/components/ui';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { albumRepository, artistRepository, imageRepository } from '@/repositories';
-import type { Album, Artist, Song, Review, HALResource } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser,
+  fetchAlbumByIdAsync,
+  fetchArtistByIdAsync,
+  fetchAlbumSongsAsync,
+  fetchAlbumReviewsAsync,
+  addAlbumFavoriteAsync,
+  removeAlbumFavoriteAsync,
+  selectCurrentAlbum,
+  selectAlbumSongs,
+  selectAlbumReviews,
+  selectLoadingAlbum,
+  selectAlbumError,
+  clearCurrentAlbum
+} from '@/store/slices';
+import { imageRepository } from '@/repositories';
+import type { Review, HALResource, Artist } from '@/types';
 
 const AlbumDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  const [album, setAlbum] = useState<Album | null>(null);
+  // Usar selectores de Redux
+  const album = useAppSelector(selectCurrentAlbum);
+  const songs = useAppSelector(selectAlbumSongs);
+  const reviews = useAppSelector(selectAlbumReviews);
+  const loading = useAppSelector(selectLoadingAlbum);
+  const error = useAppSelector(selectAlbumError);
+  
   const [artist, setArtist] = useState<Artist | null>(null);
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | undefined>();
   const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [userRating, setUserRating] = useState<number | undefined>();
   const [isReviewed, setIsReviewed] = useState(false);
+  
+  const isFavorite = album?.is_favorite || false;
+
+  // Limpiar al desmontar
+  useEffect(() => {
+    return () => {
+      dispatch(clearCurrentAlbum());
+    };
+  }, [dispatch]);
 
   // Fetch album data
   useEffect(() => {
-    const fetchAlbum = async () => {
-      if (!id) return;
-      
-      try {
-        setLoading(true);
-        setError(undefined);
-        const albumId = parseInt(id as string);
-        
-        const albumData = await albumRepository.getAlbumById(albumId);
-        setAlbum(albumData.data as Album);
-        setIsFavorite(albumData.data.is_favorite || false);
-        
+    if (!id) return;
+    
+    const albumId = parseInt(id as string);
+    dispatch(fetchAlbumByIdAsync(albumId))
+      .unwrap()
+      .then((albumData) => {
         // Fetch artist data
-        const artistData = await artistRepository.getArtistById(albumData.data.artist_id);
-        setArtist(artistData.data as Artist);
-      } catch (err: any) {
+        dispatch(fetchArtistByIdAsync(albumData.data.artist_id))
+          .unwrap()
+          .then((artistData) => {
+            setArtist(artistData.data);
+          })
+          .catch((err) => {
+            console.error('Failed to fetch artist:', err);
+          });
+      })
+      .catch((err) => {
         console.error('Failed to fetch album:', err);
-        setError(err.message || 'Failed to load album');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAlbum();
-  }, [id]);
-
-  // Fetch songs
-  useEffect(() => {
-    const fetchSongs = async () => {
-      if (!id) return;
-      
-      try {
-        const albumId = parseInt(id as string);
-        const songsData = await albumRepository.getAlbumSongs(albumId, 0, 100); // Get all songs
-        setSongs(songsData.items.map((item: HALResource<Song>) => item.data as Song));
-      } catch (err) {
-        console.error('Failed to fetch songs:', err);
-      }
-    };
-
-    if (id) {
-      fetchSongs();
-    }
-  }, [id]);
+      });
+    
+    // Fetch songs
+    dispatch(fetchAlbumSongsAsync({ albumId, page: 0, size: 100 }));
+  }, [id, dispatch]);
 
   // Fetch reviews
   useEffect(() => {
-    const fetchReviews = async () => {
-      if (!id) return;
-      
-      try {
-        const albumId = parseInt(id as string);
-        const reviewsData = await albumRepository.getAlbumReviews(albumId, reviewsPage, 20);
-        setReviews(reviewsData.items.map((item: HALResource<Review>) => item.data as Review));
+    if (!id) return;
+    
+    const albumId = parseInt(id as string);
+    dispatch(fetchAlbumReviewsAsync({ albumId, page: reviewsPage, size: 20 }))
+      .unwrap()
+      .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
         
         // Check if current user has reviewed this album
@@ -94,15 +98,11 @@ const AlbumDetailPage = () => {
             setUserRating(userReview.data.rating || 0);
           }
         }
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error('Failed to fetch reviews:', err);
-      }
-    };
-
-    if (id) {
-      fetchReviews();
-    }
-  }, [id, reviewsPage, isAuthenticated, currentUser]);
+      });
+  }, [id, reviewsPage, isAuthenticated, currentUser, dispatch]);
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {
@@ -115,11 +115,9 @@ const AlbumDetailPage = () => {
     try {
       setFavoriteLoading(true);
       if (isFavorite) {
-        await albumRepository.removeAlbumFavorite(album.id);
-        setIsFavorite(false);
+        await dispatch(removeAlbumFavoriteAsync(album.id)).unwrap();
       } else {
-        await albumRepository.addAlbumFavorite(album.id);
-        setIsFavorite(true);
+        await dispatch(addAlbumFavoriteAsync(album.id)).unwrap();
       }
     } catch (err) {
       console.error('Failed to toggle favorite:', err);

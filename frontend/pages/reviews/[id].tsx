@@ -1,34 +1,52 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { ReviewCard, UserCard } from '@/components/cards';
 import { CommentForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
-import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser } from '@/store/slices';
-import { reviewRepository, commentRepository, imageRepository } from '@/repositories';
-import type { Review, Comment, User, CommentFormData, HALResource } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser,
+  fetchReviewByIdAsync,
+  fetchReviewCommentsAsync,
+  fetchReviewLikesAsync,
+  createCommentAsync,
+  deleteCommentAsync,
+  selectCurrentReview,
+  selectReviewComments,
+  selectReviewLikes,
+  selectLoadingReview,
+  selectLoadingComments,
+  selectLoadingLikes,
+  clearCurrentReview
+} from '@/store/slices';
+import type { Comment, CommentFormData } from '@/types';
 
 type TabType = 'comments' | 'likes';
 
 const ReviewDetailPage = () => {
   const router = useRouter();
   const { id, tab: queryTab, pageNum: queryPage } = router.query;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const [review, setReview] = useState<Review | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [likedUsers, setLikedUsers] = useState<User[]>([]);
+  const review = useAppSelector(selectCurrentReview);
+  const comments = useAppSelector(selectReviewComments);
+  const likedUsers = useAppSelector(selectReviewLikes);
+  const loadingReview = useAppSelector(selectLoadingReview);
+  const loadingComments = useAppSelector(selectLoadingComments);
+  const loadingLikes = useAppSelector(selectLoadingLikes);
+  
   const [activeTab, setActiveTab] = useState<TabType>('comments');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // Update state from query params
+  const loading = loadingReview || (activeTab === 'comments' ? loadingComments : loadingLikes);
+
   useEffect(() => {
     if (queryTab) {
       setActiveTab(queryTab as TabType);
@@ -38,52 +56,40 @@ const ReviewDetailPage = () => {
     }
   }, [queryTab, queryPage]);
 
-  // Fetch review data
   useEffect(() => {
-    const fetchReview = async () => {
-      if (!id) return;
-
-      try {
-        setLoading(true);
-        const reviewId = parseInt(id as string);
-        const reviewData = await reviewRepository.getReviewById(reviewId);
-        setReview(reviewData.data as Review);
-      } catch (error) {
-        console.error('Failed to fetch review:', error);
-      } finally {
-        setLoading(false);
-      }
+    return () => {
+      dispatch(clearCurrentReview());
     };
+  }, [dispatch]);
 
-    fetchReview();
-  }, [id]);
-
-  // Fetch tab content
   useEffect(() => {
-    const fetchTabContent = async () => {
-      if (!id || !review) return;
+    if (!id) return;
+    
+    const reviewId = parseInt(id as string);
+    dispatch(fetchReviewByIdAsync(reviewId));
+  }, [id, dispatch]);
 
-      try {
-        const reviewId = parseInt(id as string);
+  useEffect(() => {
+    if (!id || !review) return;
 
-        if (activeTab === 'comments') {
-          const commentsData = await reviewRepository.getReviewComments(reviewId, page, 20);
-          setComments(commentsData.items.map((item: HALResource<Comment>) => item.data as Comment));
+    const reviewId = parseInt(id as string);
+
+    if (activeTab === 'comments') {
+      dispatch(fetchReviewCommentsAsync({ reviewId, page, size: 20 }))
+        .unwrap()
+        .then((commentsData) => {
           setHasMore(commentsData.items.length === 20);
-        } else if (activeTab === 'likes') {
-          const likesData = await reviewRepository.getReviewLikes(reviewId, page, 20);
-          setLikedUsers(likesData.items.map((item: HALResource<User>) => item.data as User));
+        })
+        .catch((err) => console.error('Failed to fetch comments:', err));
+    } else if (activeTab === 'likes') {
+      dispatch(fetchReviewLikesAsync({ reviewId, page, size: 20 }))
+        .unwrap()
+        .then((likesData) => {
           setHasMore(likesData.items.length === 20);
-        }
-      } catch (error) {
-        console.error('Failed to fetch tab content:', error);
-      }
-    };
-
-    if (review) {
-      fetchTabContent();
+        })
+        .catch((err) => console.error('Failed to fetch likes:', err));
     }
-  }, [id, review, activeTab, page]);
+  }, [id, review, activeTab, page, dispatch]);
 
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
@@ -101,15 +107,11 @@ const ReviewDetailPage = () => {
 
     try {
       setSubmitLoading(true);
-      await commentRepository.createComment(data);
+      await dispatch(createCommentAsync(data)).unwrap();
 
       // Refresh comments
       const reviewId = parseInt(id as string);
-      const commentsData = await reviewRepository.getReviewComments(reviewId, page, 20);
-      setComments(commentsData.items.map((item: HALResource<Comment>) => item.data as Comment));
-
-      // Update review comment count
-      setReview({ ...review, comment_amount: (review.comment_amount || 0) + 1 });
+      await dispatch(fetchReviewCommentsAsync({ reviewId, page, size: 20 }));
     } catch (error) {
       console.error('Failed to create comment:', error);
     } finally {
@@ -121,18 +123,12 @@ const ReviewDetailPage = () => {
     if (!commentToDelete) return;
 
     try {
-      await commentRepository.deleteComment(commentToDelete);
+      await dispatch(deleteCommentAsync(commentToDelete)).unwrap();
 
       // Refresh comments
       const reviewId = parseInt(id as string);
-      const commentsData = await reviewRepository.getReviewComments(reviewId, page, 20);
-      setComments(commentsData.items.map((item: HALResource<Comment>) => item.data as Comment));
-
-      // Update review comment count
-      if (review) {
-        setReview({ ...review, comment_amount: Math.max(0, (review.comment_amount || 0) - 1) });
-      }
-
+      await dispatch(fetchReviewCommentsAsync({ reviewId, page, size: 20 }));
+      
       setCommentToDelete(null);
     } catch (error) {
       console.error('Failed to delete comment:', error);
@@ -144,7 +140,7 @@ const ReviewDetailPage = () => {
     return currentUser.id === comment.user_id || currentUser.moderator;
   }, [currentUser]);
 
-  if (loading || !review) {
+  if (loadingReview || !review) {
     return (
       <Layout title="Loading...">
         <div className="content-wrapper">
@@ -157,12 +153,10 @@ const ReviewDetailPage = () => {
   return (
     <Layout title={`Musicboxd - ${review.title}`}>
       <div className="content-wrapper">
-        {/* Review Card */}
         <div className="review-detail">
           <ReviewCard review={review} />
         </div>
 
-        {/* Tabs Navigation */}
         <div className="section-header-home">
           <div className="tabs">
             <span
@@ -182,10 +176,8 @@ const ReviewDetailPage = () => {
           </div>
         </div>
 
-        {/* Tab Content */}
         {activeTab === 'likes' ? (
           <>
-            {/* Likes Tab Content */}
             {likedUsers.length === 0 ? (
               <p className="no-results">No likes yet</p>
             ) : (
@@ -198,96 +190,74 @@ const ReviewDetailPage = () => {
           </>
         ) : (
           <>
-            {/* Comments Tab Content */}
-            <section className="comments-section">
-              <h3>Comments</h3>
+            {isAuthenticated ? (
+              <div className="comment-form-section">
+                <h3>Add a Comment</h3>
+                <CommentForm
+                  onSubmit={handleCommentSubmit}
+                  isLoading={submitLoading}
+                />
+              </div>
+            ) : (
+              <div className="auth-prompt">
+                <p>Please log in to comment</p>
+              </div>
+            )}
 
-              {/* Comment Form */}
-              {isAuthenticated ? (
-                <div className="comment-form">
-                  <CommentForm
-                    onSubmit={handleCommentSubmit}
-                    isLoading={submitLoading}
-                    placeholder="Write a comment..."
-                  />
-                </div>
-              ) : (
-                <div className="auth-prompt">
-                  <Link href="/login" className="btn btn-primary">
-                    Login to Comment
-                  </Link>
-                </div>
-              )}
-
-              {/* Comments List */}
-              {comments.length === 0 ? (
-                <p className="no-results">No comments yet. Be the first to comment!</p>
-              ) : (
-                <div className="comments-list">
-                  {comments.map((comment) => (
-                    <div key={comment.id} className="comment-card">
-                      <div className="comment-header">
-                        <Link href={`/users/${comment.user_id}`} className="comment-user">
-                          <img
-                            src={comment.user_image_id ? imageRepository.getImageUrl(comment.user_image_id) : '/assets/default-user.png'}
-                            alt={comment.username}
-                            className="comment-user-img"
-                          />
-                          <div className="user-details">
-                            <span className="comment-username">@{comment.username}</span>
-                            {/* <div className="user-badges">
-                              {comment.user_is_verified && (
-                                <span className="badge badge-verified">Verified</span>
-                              )}
-                              {comment.user_is_moderator && (
-                                <span className="badge badge-moderator">Moderator</span>
-                              )}
-                            </div> */}
-                          </div>
-                        </Link>
-
-                        {canDeleteComment(comment) && (
-                          <button
-                            type="button"
-                            onClick={() => setCommentToDelete(comment.id)}
-                            className="btn btn-danger btn-sm"
-                          >
-                            Delete
-                          </button>
-                        )}
+            {loading ? (
+              <div className="loading">Loading comments...</div>
+            ) : comments.length === 0 ? (
+              <p className="no-results">No comments yet</p>
+            ) : (
+              <div className="comments-list">
+                {comments.map((comment) => (
+                  <div key={comment.id} className="comment-card">
+                    <div className="comment-header">
+                      <div className="comment-user">
+                        <span className="comment-username">{comment.username}</span>
+                        <span className="comment-date">
+                          {new Date(comment.created_at).toLocaleDateString()}
+                        </span>
                       </div>
-                      <span className="comment-date">{comment.created_at ? new Date(comment.created_at).toLocaleDateString() : ''}</span>
-                      <p className="comment-content">{comment.content}</p>
+                      {canDeleteComment(comment) && (
+                        <button
+                          onClick={() => setCommentToDelete(comment.id)}
+                          className="btn btn-danger btn-sm"
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
-                  ))}
-                </div>
-              )}
-            </section>
+                    <div className="comment-content">{comment.content}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
 
-        {/* Pagination */}
-        <div className="pagination">
-          {page > 1 && (
-            <button
-              onClick={() => handlePageChange(page - 1)}
-              className="btn btn-secondary"
-            >
-              Previous Page
-            </button>
-          )}
-          {hasMore && (
-            <button
-              onClick={() => handlePageChange(page + 1)}
-              className="btn btn-secondary"
-            >
-              Next Page
-            </button>
-          )}
-        </div>
+        {!loading && (
+          <div className="pagination">
+            {page > 1 && (
+              <button
+                onClick={() => handlePageChange(page - 1)}
+                className="btn btn-secondary"
+              >
+                Previous Page
+              </button>
+            )}
+            {hasMore && (
+              <button
+                onClick={() => handlePageChange(page + 1)}
+                className="btn btn-secondary"
+              >
+                Next Page
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={commentToDelete !== null}
         message="Are you sure you want to delete this comment?"
@@ -301,4 +271,3 @@ const ReviewDetailPage = () => {
 };
 
 export default ReviewDetailPage;
-

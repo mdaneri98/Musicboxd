@@ -13,6 +13,10 @@ import {
   Collection,
   HALResource,
   FilterParams,
+  ReviewFormData,
+  CreateAlbumFormData,
+  EditArtistFormData,
+  CreateArtistFormData,
 } from '@/types';
 
 // ============================================================================
@@ -94,7 +98,7 @@ class ArtistRepository {
    * @param artistData Artist data
    * @returns Created artist
    */
-  async createArtist(artistData: Partial<Artist>): Promise<HALResource<Artist>> {
+  async createArtist(artistData: CreateArtistFormData): Promise<HALResource<Artist>> {
     try {
       const response: HALResource<Artist> = await apiClient.postResource<Artist>(
         ARTIST_ENDPOINTS.ARTISTS,
@@ -118,7 +122,7 @@ class ArtistRepository {
    * @param artistData Updated artist data
    * @returns Updated artist
    */
-  async updateArtist(id: number, artistData: Partial<Artist>): Promise<HALResource<Artist>> {
+  async updateArtist(id: number, artistData: EditArtistFormData): Promise<HALResource<Artist>> {
     try {
       const response: HALResource<Artist> = await apiClient.putResource<Artist>(
         ARTIST_ENDPOINTS.ARTIST_BY_ID(id),
@@ -188,7 +192,7 @@ class ArtistRepository {
    * @param reviewData Review data
    * @returns Created review
    */
-  async createArtistReview(artistId: number, reviewData: Partial<Review>): Promise<HALResource<Review>> {
+  async createArtistReview(artistId: number, reviewData: ReviewFormData): Promise<HALResource<Review>> {
     try {
       const response: HALResource<Review> = await apiClient.postResource<Review>(
         ARTIST_ENDPOINTS.ARTIST_REVIEWS(artistId),
@@ -240,7 +244,7 @@ class ArtistRepository {
    * @param albumData Album data
    * @returns Created album
    */
-  async createArtistAlbum(artistId: number, albumData: Partial<Album>): Promise<HALResource<Album>> {
+  async createArtistAlbum(artistId: number, albumData: CreateAlbumFormData): Promise<HALResource<Album>> {
     try {
       const response: HALResource<Album> = await apiClient.postResource<Album>(
         ARTIST_ENDPOINTS.ARTIST_ALBUMS(artistId),

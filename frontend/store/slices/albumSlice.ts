@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { albumRepository } from '@/repositories';
-import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData } from '@/types';
+import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -151,6 +151,19 @@ export const fetchAlbumReviewsAsync = createAsyncThunk<
   }
 });
 
+export const createAlbumReviewAsync = createAsyncThunk<
+  HALResource<Review>,
+  { albumId: number; reviewData: Omit<ReviewFormData, 'itemId' | 'itemType'> },
+  { rejectValue: string }
+>('albums/createAlbumReview', async ({ albumId, reviewData }, { rejectWithValue }) => {
+  try {
+    const response = await albumRepository.createAlbumReview(albumId, reviewData as any);
+    return response as HALResource<Review>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to create album review');
+  }
+});
+
 export const addAlbumFavoriteAsync = createAsyncThunk<
   HALResource<Album>,
   number,
@@ -292,9 +305,8 @@ const albumSlice = createSlice({
       })
       .addCase(fetchAlbumSongsAsync.fulfilled, (state, action) => {
         state.loadingSongs = false;
-        action.payload.items.forEach((song) => {
-          state.albumSongs.push(song.data as Song);
-        });
+        // Sobrescribir el array completo en lugar de acumular
+        state.albumSongs = action.payload.items.map((song) => song.data as Song);
       })
       .addCase(fetchAlbumSongsAsync.rejected, (state, action) => {
         state.loadingSongs = false;
@@ -308,9 +320,8 @@ const albumSlice = createSlice({
       })
       .addCase(fetchAlbumReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        action.payload.items.forEach((review) => {
-          state.albumReviews[review.data.id] = review.data as Review;
-        });
+        // Sobrescribir el array completo en lugar de acumular
+        state.albumReviews = action.payload.items.map((review) => review.data as Review);
       })
       .addCase(fetchAlbumReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;

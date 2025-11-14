@@ -2,45 +2,50 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, UserInfo } from '@/components/layout';
 import { UserCard } from '@/components/cards';
-import { userRepository } from '@/repositories';
-import type { HALResource, User } from '@/types';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { 
+  fetchUserByIdAsync,
+  fetchFollowersAsync,
+  selectCurrentProfile,
+  selectFollowers,
+  selectLoadingProfile,
+  selectLoadingFollowers,
+  clearCurrentProfile
+} from '@/store/slices';
 
 const FollowersPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const dispatch = useAppDispatch();
   
-  const [user, setUser] = useState<User | null>(null);
-  const [followers, setFollowers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const user = useAppSelector(selectCurrentProfile);
+  const followers = useAppSelector(selectFollowers);
+  const loadingProfile = useAppSelector(selectLoadingProfile);
+  const loadingFollowers = useAppSelector(selectLoadingFollowers);
+  const loading = loadingProfile || loadingFollowers;
+  
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!id) return;
-      
-      try {
-        setLoading(true);
-        const userId = parseInt(id as string);
-        
-        // Fetch user and followers in parallel
-        const [userData, followersData] = await Promise.all([
-          userRepository.getUserById(userId),
-          userRepository.getFollowers(userId, page, 20),
-        ]);
-        
-        setUser(userData.data as User);
-        setFollowers(followersData.items.map((item: HALResource<User>) => item.data as User));
-        setHasMore(followersData.items.length === 20);
-      } catch (error) {
-        console.error('Failed to fetch followers:', error);
-      } finally {
-        setLoading(false);
-      }
+    return () => {
+      dispatch(clearCurrentProfile());
     };
+  }, [dispatch]);
 
-    fetchData();
-  }, [id, page]);
+  useEffect(() => {
+    if (!id) return;
+    
+    const userId = parseInt(id as string);
+    dispatch(fetchUserByIdAsync(userId));
+    
+    dispatch(fetchFollowersAsync({ userId, page, size: 20 }))
+      .unwrap()
+      .then((followersData) => {
+        setHasMore(followersData.items.length === 20);
+      })
+      .catch((err) => console.error('Failed to fetch followers:', err));
+  }, [id, page, dispatch]);
 
   if (loading || !user) {
     return (
@@ -55,17 +60,14 @@ const FollowersPage = () => {
   return (
     <Layout title={`Musicboxd - @${user.username} Followers`}>
       <div className="content-wrapper">
-        {/* User Info Header */}
         <div className="profile-header">
           <header>
             <UserInfo user={user} />
           </header>
         </div>
 
-        {/* Section Title */}
         <h1 className="page-title">Followers</h1>
 
-        {/* Users Grid */}
         {followers.length === 0 ? (
           <p className="no-results">No followers yet</p>
         ) : (
@@ -76,7 +78,6 @@ const FollowersPage = () => {
               ))}
             </div>
 
-            {/* Pagination */}
             <div className="pagination">
               {page > 1 && (
                 <button
@@ -103,4 +104,3 @@ const FollowersPage = () => {
 };
 
 export default FollowersPage;
-

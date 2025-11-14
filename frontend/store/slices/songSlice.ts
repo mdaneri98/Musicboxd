@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { songRepository } from '@/repositories';
-import { Song, Review, Collection, HALResource, CreateSongFormData } from '@/types';
+import { Song, Review, Collection, HALResource, CreateSongFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 import { EditSongFormData } from '@/types/forms';
 
@@ -132,6 +132,21 @@ export const fetchSongReviewsAsync = createAsyncThunk<
     return response as Collection<HALResource<Review>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch song reviews');
+  }
+});
+
+export const createSongReviewAsync = createAsyncThunk<
+  HALResource<Review>,
+  { songId: number; reviewData: Omit<ReviewFormData, 'itemId' | 'itemType'> },
+  { rejectValue: string }
+>('songs/createSongReview', async ({ songId, reviewData }, { rejectWithValue }) => {
+  try {
+    const response = await songRepository.createSongReview(songId, reviewData as any);
+    // El repositorio retorna Review, pero necesitamos HALResource<Review>
+    // Lo envolvemos con la estructura HAL
+    return { data: response, _links: {} } as HALResource<Review>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to create song review');
   }
 });
 
@@ -275,9 +290,8 @@ const songSlice = createSlice({
       })
       .addCase(fetchSongReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        action.payload.items.forEach((review) => {
-          state.songReviews[review.data.id] = review.data as Review;
-        });
+        // Sobrescribir el array completo en lugar de acumular
+        state.songReviews = action.payload.items.map((review) => review.data as Review);
       })
       .addCase(fetchSongReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;

@@ -398,9 +398,8 @@ const userSlice = createSlice({
       })
       .addCase(fetchFollowersAsync.fulfilled, (state, action) => {
         state.loadingFollowers = false;
-        action.payload.items.forEach((user) => {
-          state.followers.push(user.data as User);
-        });
+        // Sobrescribir el array completo en lugar de acumular
+        state.followers = action.payload.items.map((user) => user.data as User);
         // Add to normalized state
         action.payload.items.forEach((user) => {
           state.users[user.data.id] = user.data as User;
@@ -419,9 +418,8 @@ const userSlice = createSlice({
       })
       .addCase(fetchFollowingAsync.fulfilled, (state, action) => {
         state.loadingFollowing = false;
-        action.payload.items.forEach((user) => {
-          state.following.push(user.data as User);
-        });
+        // Sobrescribir el array completo en lugar de acumular
+        state.following = action.payload.items.map((user) => user.data as User);
         // Add to normalized state
         action.payload.items.forEach((user) => {
           state.users[user.data.id] = user.data as User;

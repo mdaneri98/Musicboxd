@@ -6,9 +6,20 @@ import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, updateReviewAsync, createReviewAsync, fetchAlbumByIdAsync, selectCurrentAlbum, fetchAlbumReviewsAsync, deleteReviewAsync } from '@/store/slices';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser, 
+  updateReviewAsync, 
+  createAlbumReviewAsync, 
+  fetchAlbumByIdAsync, 
+  selectCurrentAlbum, 
+  selectLoadingAlbum,
+  fetchAlbumReviewsAsync, 
+  deleteReviewAsync,
+  clearCurrentAlbum
+} from '@/store/slices';
 import { imageRepository } from '@/repositories';
-import type { Album, ReviewFormData } from '@/types';
+import type { ReviewFormData } from '@/types';
 
 const AlbumReviewPage = () => {
   const router = useRouter();
@@ -17,13 +28,20 @@ const AlbumReviewPage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const album = useAppSelector(selectCurrentAlbum) as Album;
+  const album = useAppSelector(selectCurrentAlbum);
+  const loadingAlbum = useAppSelector(selectLoadingAlbum);
   const [existingReview, setExistingReview] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const isEditMode = edit === 'true';
 
+  // Limpiar al desmontar
+  useEffect(() => {
+    return () => {
+      dispatch(clearCurrentAlbum());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -49,7 +67,7 @@ const AlbumReviewPage = () => {
           }
           
           if (userReview) {
-            setExistingReview(userReview);
+            setExistingReview(userReview.data);
           } else if (isEditMode) {
             router.push(`/albums/${id}/reviews`);
             return;
@@ -66,6 +84,8 @@ const AlbumReviewPage = () => {
   }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
+    if (!album) return;
+    
     try {
       setSubmitLoading(true);
 
@@ -73,8 +93,18 @@ const AlbumReviewPage = () => {
         // Update existing review
         await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       } else {
-        await dispatch(createReviewAsync(data)).unwrap();
+        // Create new review
+        await dispatch(createAlbumReviewAsync({ 
+          albumId: album.id, 
+          reviewData: {
+            title: data.title,
+            description: data.description,
+            rating: data.rating
+          }
+        })).unwrap();
       }
+      
+      router.push(`/albums/${album.id}`);
     } catch (error) {
       console.error('Failed to submit review:', error);
     } finally {
@@ -97,7 +127,7 @@ const AlbumReviewPage = () => {
     return null;
   }
 
-  if (loading || !album) {
+  if (loading || loadingAlbum || !album) {
     return (
       <Layout title="Loading...">
         <div className="content-wrapper">

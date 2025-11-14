@@ -5,24 +5,43 @@ import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, fetchSongByIdAsync, fetchAlbumByIdAsync, fetchSongReviewsAsync, updateReviewAsync, createReviewAsync, deleteReviewAsync } from '@/store/slices';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser, 
+  fetchSongByIdAsync, 
+  fetchAlbumByIdAsync, 
+  fetchSongReviewsAsync, 
+  updateReviewAsync, 
+  createSongReviewAsync, 
+  deleteReviewAsync,
+  selectCurrentSong,
+  selectLoadingSong,
+  clearCurrentSong
+} from '@/store/slices';
 import { imageRepository } from '@/repositories';
-import type { Song, Album, ReviewFormData, HALResource, Review } from '@/types';
+import type { Album, ReviewFormData, HALResource, Review } from '@/types';
 
 const SongReviewPage = () => {
   const router = useRouter();
   const { id, edit } = router.query;
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const [song, setSong] = useState<Song | null>(null);
+  const song = useAppSelector(selectCurrentSong);
+  const loadingSong = useAppSelector(selectLoadingSong);
   const [album, setAlbum] = useState<Album | null>(null);
   const [existingReview, setExistingReview] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const isEditMode = edit === 'true';
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearCurrentSong());
+    };
+  }, [dispatch]);
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -42,28 +61,27 @@ const SongReviewPage = () => {
       try {
         setLoading(true);
         const songId = parseInt(id as string);
-        const songData = await dispatch(fetchSongByIdAsync(songId)).unwrap();
-        setSong(songData.data as Song);
+        await dispatch(fetchSongByIdAsync(songId)).unwrap();
 
-        // Fetch album for image
-        const albumData = await dispatch(fetchAlbumByIdAsync(songData.data.album_id)).unwrap();
-        setAlbum(albumData.data as Album);
+        if (song) {
+          const albumData = await dispatch(fetchAlbumByIdAsync(song.album_id)).unwrap();
+          setAlbum(albumData.data);
 
-        // Check if user already reviewed this song
-        if (currentUser) {
-          const reviews = await dispatch(fetchSongReviewsAsync({ songId, page: 0, size: 100 })).unwrap();
-          const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
-          
-          if (userReview && !isEditMode) {
-            router.push(`/songs/${id}/reviews?edit=true`);
-            return;
-          }
-          
-          if (userReview) {
-            setExistingReview(userReview);
-          } else if (isEditMode) {
-            router.push(`/songs/${id}/reviews`);
-            return;
+          if (currentUser) {
+            const reviews = await dispatch(fetchSongReviewsAsync({ songId, page: 0, size: 100 })).unwrap();
+            const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
+            
+            if (userReview && !isEditMode) {
+              router.push(`/songs/${id}/reviews?edit=true`);
+              return;
+            }
+            
+            if (userReview) {
+              setExistingReview(userReview.data);
+            } else if (isEditMode) {
+              router.push(`/songs/${id}/reviews`);
+              return;
+            }
           }
         }
       } catch (error) {
@@ -74,7 +92,7 @@ const SongReviewPage = () => {
     };
 
     fetchData();
-  }, [id, isAuthenticated, currentUser, isEditMode, router]);
+  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch, song]);
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!song) return;
@@ -85,7 +103,14 @@ const SongReviewPage = () => {
       if (isEditMode && existingReview) {
         await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       } else {
-        await dispatch(createReviewAsync(data)).unwrap();
+        await dispatch(createSongReviewAsync({ 
+          songId: song.id, 
+          reviewData: {
+            title: data.title,
+            description: data.description,
+            rating: data.rating
+          }
+        })).unwrap();
       }
 
       router.push(`/songs/${song.id}`);
@@ -111,7 +136,7 @@ const SongReviewPage = () => {
     return null;
   }
 
-  if (loading || !song) {
+  if (loading || loadingSong || !song) {
     return (
       <Layout title="Loading...">
         <div className="content-wrapper">
