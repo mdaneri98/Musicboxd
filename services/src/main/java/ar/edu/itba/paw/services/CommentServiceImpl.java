@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ar.edu.itba.paw.persistence.ReviewDao;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import ar.edu.itba.paw.services.mappers.CommentMapper;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
@@ -75,10 +78,18 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CommentDTO create(CommentDTO commentDTO) {
         if (commentDTO.getUserId() == null || commentDTO.getReviewId() == null) throw new IllegalArgumentException("User ID and review ID are required");
-        Comment savedComment = commentDao.create(commentMapper.toEntity(commentDTO));
-        updateReviewCommentAmount(commentDTO.getReviewId());
+
+        Comment createdComment = commentMapper.toEntity(commentDTO);
+
         User user = userDao.findById(commentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException(commentDTO.getUserId()));
         Review review = reviewDao.findById(commentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException(commentDTO.getReviewId()));
+        createdComment.setUser(user);
+        createdComment.setReview(review);
+        createdComment.setCreatedAt(LocalDateTime.now());
+
+        Comment savedComment = commentDao.create(createdComment);
+
+        updateReviewCommentAmount(commentDTO.getReviewId());
         notificationService.notifyComment(review, user);
         return commentMapper.toDTO(savedComment);
     }

@@ -23,6 +23,7 @@ import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import ar.edu.itba.paw.api.utils.ControllerUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -151,9 +152,13 @@ public class ReviewController extends BaseController {
     @POST
     @Path(ApiUriConstants.REVIEW_COMMENTS)
     public Response createReviewComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid CommentForm commentForm) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+
         CommentDTO commentDTO = commentFormMapper.toDTO(commentForm);
         commentDTO.setReviewId(id);
+        commentDTO.setUserId(loggedUserId);
         CommentDTO responseDTO = commentService.create(commentDTO);
+
         CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(commentResource);
     }
@@ -162,7 +167,7 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.REVIEW_LIKES)
     public Response getReviewLikes(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, 
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
-            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {  
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
         ReviewDTO reviewDTO = reviewService.findById(reviewId);
         List<UserDTO> userDTOs = reviewService.likedBy(reviewId, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
