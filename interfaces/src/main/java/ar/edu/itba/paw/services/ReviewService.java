@@ -47,5 +47,6 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     
     Long countReviewsByUser(Long userId);
     Long countAll();
+    Long countReviewsFromFollowedUsers(Long loggedUserId);
 
 }

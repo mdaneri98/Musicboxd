@@ -20,7 +20,7 @@ const HomePage = () => {
   const loadingReviews = useAppSelector(selectLoadingReviews);
   const pagination = useAppSelector(selectReviewPagination);
   const [activeTab, setActiveTab] = useState<HomeTabEnum>(HomeTabEnum.FOR_YOU);
-  const [filter, setFilter] = useState<FilterTypeEnum>();
+  const [filter, setFilter] = useState<FilterTypeEnum>(activeTab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING);
 
   useEffect(() => {
     // Redirect to landing page if not authenticated
@@ -32,23 +32,18 @@ const HomePage = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const computedFilter =
-        activeTab === HomeTabEnum.FOR_YOU
-          ? FilterTypeEnum.LIKES
-          : FilterTypeEnum.FOLLOWING;
-
-        setFilter(computedFilter);
-        await dispatch(fetchReviewsAsync({ page:1, size: pagination.size, filter: computedFilter })).unwrap();
+        await dispatch(fetchReviewsAsync({ page:1, size: pagination.size, filter: filter })).unwrap();
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
       }
     };
 
     fetchReviews();
-  }, [isAuthenticated, activeTab, dispatch]);
+  }, [isAuthenticated, activeTab, filter, dispatch]);
 
   const handleTabChange = (tab: HomeTabEnum) => {
     setActiveTab(tab);
+    setFilter(tab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING);
   };
 
   if (!isAuthenticated) {

@@ -541,4 +541,18 @@ public class ReviewJpaDao implements ReviewDao {
         return query.getResultList();
     }
 
+    @Override
+    public Long countReviewsFromFollowedUsers(Long userId) {
+        Query nativeQuery = em.createNativeQuery(
+        "SELECT COUNT(DISTINCT r.id) " +
+        "FROM review r " +
+        "JOIN cuser u ON r.user_id = u.id " +
+        "JOIN follower f ON u.id = f.following " +
+        "WHERE f.user_id = :userId " +
+        "AND r.isblocked = false"
+    );
+    nativeQuery.setParameter("userId", userId);
+    return ((Number) nativeQuery.getSingleResult()).longValue();
+    }
+
 }
