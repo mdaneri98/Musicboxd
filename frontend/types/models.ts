@@ -118,6 +118,7 @@ export interface Comment {
   review_id: number;
   content: string;
   created_at: Date;
+  time_ago: string;
 }
 
 // ============================================================================

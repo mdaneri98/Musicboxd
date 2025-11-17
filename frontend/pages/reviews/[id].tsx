@@ -11,7 +11,7 @@ import {
   fetchReviewByIdAsync,
   fetchReviewCommentsAsync,
   fetchReviewLikesAsync,
-  createCommentAsync,
+  postCommentAsync,
   deleteCommentAsync,
   selectCurrentReview,
   selectReviewComments,
@@ -106,8 +106,9 @@ const ReviewDetailPage = () => {
     if (!review) return;
 
     try {
+      console.log('Creating comment:', data);
       setSubmitLoading(true);
-      await dispatch(createCommentAsync(data)).unwrap();
+      await dispatch(postCommentAsync(data)).unwrap();
 
       // Refresh comments
       const reviewId = parseInt(id as string);
@@ -196,6 +197,7 @@ const ReviewDetailPage = () => {
                 <CommentForm
                   onSubmit={handleCommentSubmit}
                   isLoading={submitLoading}
+                  reviewId={review.id}
                 />
               </div>
             ) : (

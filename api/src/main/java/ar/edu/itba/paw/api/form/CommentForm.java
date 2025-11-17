@@ -8,6 +8,9 @@ public class CommentForm {
     @Size(min = 2, message = "{validation.comment.content.size}")
     private String content;
 
+    private Long reviewId;
+    private Long userId;
+
     public CommentForm() {
     }
 
@@ -17,5 +20,21 @@ public class CommentForm {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Long getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(Long reviewId) {
+        this.reviewId = reviewId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

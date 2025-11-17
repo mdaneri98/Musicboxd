@@ -14,6 +14,7 @@ import {
   FilterParams,
   PaginationParams,
   ReviewFormData,
+  CommentFormData,
 } from '@/types';
 
 // ============================================================================
@@ -229,6 +230,19 @@ class ReviewRepository {
       return response as Collection<HALResource<Comment>>;
     } catch (error) {
       console.error(`Get review ${reviewId} comments error:`, error);
+      throw error;
+    }
+  }
+
+async postComment(commentData: CommentFormData): Promise<HALResource<Comment>> {
+    try {
+      const response: HALResource<Comment> = await apiClient.postResource<Comment>(REVIEW_ENDPOINTS.REVIEW_COMMENTS(commentData.reviewId), commentData);
+      if (!response) {
+        throw new Error('Invalid post comment response: missing data');
+      }
+      return response as HALResource<Comment>;
+    } catch (error) {
+      console.error(`Post comment ${commentData.reviewId} error:`, error);
       throw error;
     }
   }

@@ -41,7 +41,7 @@ const UserProfilePage = () => {
   const favoriteSongs = useAppSelector(selectFavoriteSongs);
   const reviews = useAppSelector(selectUserReviews);
   const loadingFavorites = useAppSelector(selectLoadingFavorites);
-  const loadingReviews = useAppSelector(selectLoadingReviews);
+  const   loadingReviews = useAppSelector(selectLoadingReviews);
   const reviewsPagination = useAppSelector(selectUserReviewsPagination); 
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);

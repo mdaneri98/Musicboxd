@@ -58,9 +58,11 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthen
       </div>
       {isOwnProfile ? (
         <div className="user-profile-actions">
-          <Link href="/profile/edit" className="btn btn-primary">
-            Edit Profile
-          </Link>
+            <Link href="/profile/edit">
+              <button className="btn btn-primary">
+                Edit Profile
+              </button>
+            </Link>
         </div>
       ) : (
         <div className="user-profile-actions"> 

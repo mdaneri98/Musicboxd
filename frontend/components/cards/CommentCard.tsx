@@ -59,7 +59,7 @@ const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
           <div className="comment-user-info">
             <span className="comment-username">{comment.username}</span>
             <span className="comment-timestamp">
-              {comment.created_at.toLocaleDateString()}
+              {comment.time_ago}
             </span>
           </div>
         </Link>

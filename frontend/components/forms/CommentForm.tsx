@@ -14,6 +14,7 @@ interface CommentFormProps {
   defaultValues?: Partial<CommentFormData>;
   isLoading?: boolean;
   placeholder?: string;
+  reviewId: number;
 }
 
 const CommentForm = ({
@@ -22,6 +23,7 @@ const CommentForm = ({
   defaultValues,
   isLoading,
   placeholder = 'Write a comment...',
+  reviewId,
 }: CommentFormProps) => {
   const {
     register,
@@ -34,6 +36,7 @@ const CommentForm = ({
   });
 
   const handleFormSubmit = (data: CommentFormData) => {
+    console.log('Form submitted:', data);
     onSubmit(data);
     reset();
   };
@@ -51,6 +54,7 @@ const CommentForm = ({
           <p className="form-error">{errors.content.message}</p>
         )}
       </div>
+      <input type="hidden" value={reviewId} {...register("reviewId")} />
 
       <div className="form-actions">
         {onCancel && (

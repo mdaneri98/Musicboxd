@@ -118,7 +118,6 @@ public class ArtistController extends BaseController {
     @PreAuthorize("hasRole('MODERATOR')")
     public Response createArtist(@Valid ModArtistForm modArtistForm) {
         ArtistDTO artistDTO = modArtistFormMapper.toDTO(modArtistForm);
-        artistDTO.setImageId(imageService.handleImage(modArtistForm.getArtistImage()));
         ArtistDTO responseDTO = artistService.create(artistDTO);
         ArtistResource artistResource = artistResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(artistResource);

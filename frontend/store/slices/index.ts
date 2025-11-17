@@ -160,6 +160,7 @@ export {
   likeReviewAsync,
   unlikeReviewAsync,
   fetchReviewCommentsAsync,
+  postCommentAsync,
   blockReviewAsync,
   unblockReviewAsync,
   clearError as clearReviewError,

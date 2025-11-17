@@ -153,6 +153,7 @@ public class ReviewController extends BaseController {
     public Response createReviewComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid CommentForm commentForm) {
         CommentDTO commentDTO = commentFormMapper.toDTO(commentForm);
         commentDTO.setReviewId(id);
+        commentDTO.setUserId(SecurityContextUtils.getCurrentUserId());
         CommentDTO responseDTO = commentService.create(commentDTO);
         CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(commentResource);

@@ -23,6 +23,7 @@ public class CommentMapper {
         dto.setReviewId(comment.getReview() != null ? comment.getReview().getId() : null);
         dto.setContent(comment.getContent());
         dto.setCreatedAt(comment.getCreatedAt());
+        dto.setTimeAgo(comment.getTimeAgo());
 
         return dto;
     }

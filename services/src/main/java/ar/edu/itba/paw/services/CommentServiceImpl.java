@@ -39,7 +39,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> findAll() {
-        return commentMapper.toDTOList(commentDao.findAll());
+        List<Comment> comments = commentDao.findAll();
+        setTimeAgo(comments);
+        return  commentMapper.toDTOList(comments);
     }
 
     @Override
@@ -61,7 +63,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDTO findById(Long id) {
-        return commentMapper.toDTO(commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException(id)));
+        Comment comment = commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
+        comment.setTimeAgo(TimeUtils.formatTimeAgo(comment.getCreatedAt()));
+        return commentMapper.toDTO(comment);
     }
 
     @Override
@@ -116,6 +120,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> findBySubstring(String substring, Integer page, Integer size) {
-        return commentMapper.toDTOList(commentDao.findBySubstring(substring, page, size));
+        List<Comment> comments = commentDao.findBySubstring(substring, page, size);
+        setTimeAgo(comments);
+        return commentMapper.toDTOList(comments);
     }
 }

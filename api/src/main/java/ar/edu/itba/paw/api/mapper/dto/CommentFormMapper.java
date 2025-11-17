@@ -17,6 +17,8 @@ public class CommentFormMapper {
         
         CommentDTO dto = new CommentDTO();
         dto.setContent(form.getContent());
+        dto.setReviewId(form.getReviewId());
+        dto.setUserId(form.getUserId());
         
         return dto;
     }

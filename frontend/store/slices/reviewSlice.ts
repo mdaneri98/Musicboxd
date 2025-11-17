@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { reviewRepository } from '@/repositories';
-import { Review, User, Comment, Collection, HALResource, ReviewFormData } from '@/types';
+import { Review, User, Comment, Collection, HALResource, ReviewFormData, CommentFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -201,6 +201,22 @@ export const fetchReviewCommentsAsync = createAsyncThunk<
     return response as Collection<HALResource<Comment>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch review comments');
+  }
+});
+
+/**
+ * Post a comment for a review
+ */
+export const postCommentAsync = createAsyncThunk<
+  HALResource<Comment>,
+  CommentFormData,
+  { rejectValue: string }
+>('reviews/postComment', async (commentData, { rejectWithValue }) => {
+  try {
+    const response = await reviewRepository.postComment(commentData);
+    return response as HALResource<Comment>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to post comment');
   }
 });
 
@@ -422,6 +438,22 @@ const reviewSlice = createSlice({
       .addCase(fetchReviewCommentsAsync.rejected, (state, action) => {
         state.loadingComments = false;
         state.error = action.payload || 'Failed to fetch review comments';
+      });
+
+    // Post Comment
+    builder
+      .addCase(postCommentAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(postCommentAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.reviewComments.push(action.payload.data as Comment);
+        state.reviews[action.payload.data.review_id].comment_amount += 1;
+      })
+      .addCase(postCommentAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to post comment';
       });
 
     // Block Review

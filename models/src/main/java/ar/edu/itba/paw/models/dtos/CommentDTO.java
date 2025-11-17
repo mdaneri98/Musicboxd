@@ -23,6 +23,8 @@ public class CommentDTO {
 
     private LocalDateTime createdAt;
 
+    private String timeAgo;
+
     public CommentDTO() {}
 
     public Long getId() {
@@ -79,6 +81,13 @@ public class CommentDTO {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getTimeAgo() {
+        return timeAgo;
+    }
+    public void setTimeAgo(String timeAgo) {
+        this.timeAgo = timeAgo;
     }
 }
 
