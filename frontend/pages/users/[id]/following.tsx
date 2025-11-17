@@ -10,7 +10,10 @@ import {
   selectFollowing,
   selectLoadingProfile,
   selectLoadingFollowing,
-  clearCurrentProfile
+  clearCurrentProfile,
+  selectCurrentUser,
+  selectIsAuthenticated,
+  followUserAsync
 } from '@/store/slices';
 
 const FollowingPage = () => {
@@ -18,12 +21,16 @@ const FollowingPage = () => {
   const { id } = router.query;
   const dispatch = useAppDispatch();
   
+  const loggedUser = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectCurrentProfile);
   const following = useAppSelector(selectFollowing);
   const loadingProfile = useAppSelector(selectLoadingProfile);
   const loadingFollowing = useAppSelector(selectLoadingFollowing);
+  const [isOwnProfile, setIsOwnProfile] = useState(loggedUser?.id === parseInt(id as string));
+  const [isFollowing, setIsFollowing] = useState(user?.is_followed_by_logged_user ?? false);
+  const [followLoading, setFollowLoading] = useState(false);
   const loading = loadingProfile || loadingFollowing;
-  
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -38,6 +45,7 @@ const FollowingPage = () => {
     
     const userId = parseInt(id as string);
     dispatch(fetchUserByIdAsync(userId));
+    setIsFollowing(user?.is_followed_by_logged_user ?? false);
     
     dispatch(fetchFollowingAsync({ userId, page, size: 20 }))
       .unwrap()
@@ -57,12 +65,19 @@ const FollowingPage = () => {
     );
   }
 
+  const handleFollowToggle = async () => {
+    setFollowLoading(true);
+    await dispatch(followUserAsync(user.id));
+    setIsFollowing(true);
+    setFollowLoading(false);
+  };
+
   return (
     <Layout title={`Musicboxd - @${user.username} Following`}>
       <div className="content-wrapper">
         <div className="profile-header">
           <header>
-            <UserInfo user={user} />
+            <UserInfo user={user} isOwnProfile={isOwnProfile} isAuthenticated={isAuthenticated} isFollowing={isFollowing} followLoading={followLoading} onFollowToggle={handleFollowToggle} />
           </header>
         </div>
 

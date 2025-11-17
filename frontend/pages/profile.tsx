@@ -4,24 +4,26 @@ import Link from 'next/link';
 import { Layout, UserInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, selectUserPagination, fetchFavoriteArtistsAsync, fetchFavoriteAlbumsAsync, fetchFavoriteSongsAsync, fetchUserReviewsAsync, selectFavoriteArtists, selectFavoriteAlbums, selectFavoriteSongs, selectUserReviews, selectLoadingFavorites, selectLoadingReviews } from '@/store/slices';
+import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, selectUserReviewsPagination, fetchFavoriteArtistsAsync, fetchFavoriteAlbumsAsync, fetchFavoriteSongsAsync, fetchUserReviewsAsync, selectFavoriteArtists, selectFavoriteAlbums, selectFavoriteSongs, selectUserReviews, selectLoadingFavorites, selectLoadingReviews } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { ProfileTabEnum } from '@/types';
 
 const ProfilePage = () => {
   const router = useRouter();
+  const { tab: queryTab } = router.query;
+
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  const [activeTab, setActiveTab] = useState<ProfileTabEnum>(ProfileTabEnum.FAVORITES);
+  const [activeTab, setActiveTab] = useState<ProfileTabEnum>(queryTab ? queryTab as ProfileTabEnum : ProfileTabEnum.FAVORITES);
   const favoriteArtists = useAppSelector(selectFavoriteArtists);
   const favoriteAlbums = useAppSelector(selectFavoriteAlbums);
   const favoriteSongs = useAppSelector(selectFavoriteSongs);
   const reviews = useAppSelector(selectUserReviews);
   const loadingFavorites = useAppSelector(selectLoadingFavorites);
   const loadingReviews = useAppSelector(selectLoadingReviews);
-  const pagination = useAppSelector(selectUserPagination); 
+  const pagination = useAppSelector(selectUserReviewsPagination); 
 
 
   useEffect(() => {
@@ -58,13 +60,8 @@ const ProfilePage = () => {
         {/* User Info Header */}
         <div className="profile-header">
           <header>
-            <UserInfo user={currentUser} />
+            <UserInfo user={currentUser} isOwnProfile={true} isAuthenticated={isAuthenticated} isFollowing={false} followLoading={false} onFollowToggle={() => {}} />
           </header>
-
-          {/* Edit Profile Button */}
-          <Link href="/profile/edit" className="btn btn-primary">
-            Edit Profile
-          </Link>
         </div>
 
         {/* Tabs */}

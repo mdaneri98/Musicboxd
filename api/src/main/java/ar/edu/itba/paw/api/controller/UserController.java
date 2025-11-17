@@ -104,7 +104,7 @@ public class UserController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        UserDTO user = userService.findUserById(id);
+        UserDTO user = userService.findUserById(id, SecurityContextUtils.getCurrentUserId());
         UserResource userResource = userResourceMapper.toResource(user, getBaseUrl());
         
         return buildResponse(userResource);
@@ -147,7 +147,7 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        UserDTO user = userService.findUserById(id);
+        UserDTO user = userService.findUserById(id, SecurityContextUtils.getCurrentUserId());
         List<ReviewDTO> reviews = reviewService.findReviewsByUserPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
@@ -161,7 +161,7 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        UserDTO user = userService.findUserById(id);
+        UserDTO user = userService.findUserById(id, SecurityContextUtils.getCurrentUserId());
         List<UserDTO> followers = userService.getFollowers(id, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(followers, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
@@ -173,7 +173,7 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FOLLOWINGS)
     public Response getUserFollowing(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        UserDTO user = userService.findUserById(id);
+        UserDTO user = userService.findUserById(id, SecurityContextUtils.getCurrentUserId());
         List<UserDTO> following = userService.getFollowings(id, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(following, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
@@ -185,7 +185,7 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FOLLOWERS)
     public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.createFollowing(SecurityContextUtils.getCurrentUserId(), id);
-        UserResource userResource = userResourceMapper.toResource(userService.findUserById(id), getBaseUrl());
+        UserResource userResource = userResourceMapper.toResource(userService.findUserById(id, SecurityContextUtils.getCurrentUserId()), getBaseUrl());
         return buildCreatedResponse(userResource);
     }
 

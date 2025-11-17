@@ -19,8 +19,8 @@ const HomePage = () => {
   const reviews = useAppSelector(selectReviews);
   const loadingReviews = useAppSelector(selectLoadingReviews);
   const pagination = useAppSelector(selectReviewPagination);
-  const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<HomeTabEnum>(HomeTabEnum.FOR_YOU);
+  const [filter, setFilter] = useState<FilterTypeEnum>(activeTab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING);
 
   useEffect(() => {
     // Redirect to landing page if not authenticated
@@ -32,23 +32,18 @@ const HomePage = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        // For now, we'll fetch all reviews
-        // TODO: Implement "For You" (popular) and "Following" (from followed users) logic in backend
-        const filter = activeTab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING;
-        await dispatch(fetchReviewsAsync({ page, size: 20, filter })).unwrap();
+        await dispatch(fetchReviewsAsync({ page:1, size: pagination.size, filter: filter })).unwrap();
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
       }
     };
 
-    if (isAuthenticated) {
-      fetchReviews();
-    }
-  }, [isAuthenticated, page, activeTab, dispatch]);
+    fetchReviews();
+  }, [isAuthenticated, activeTab, filter, dispatch]);
 
   const handleTabChange = (tab: HomeTabEnum) => {
     setActiveTab(tab);
-    setPage(1);
+    setFilter(tab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING);
   };
 
   if (!isAuthenticated) {
@@ -99,7 +94,7 @@ const HomePage = () => {
               <div className="pagination">
                 {pagination.page > 1 && (
                   <button
-                    onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page - 1, size: pagination.size, filter: FilterTypeEnum.RECENT }))}
+                    onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page - 1, size: pagination.size, filter: filter }))}
                     className="btn btn-secondary"
                   >
                     Previous Page
@@ -107,7 +102,7 @@ const HomePage = () => {
                 )}
                 {pagination.totalCount > pagination.page * pagination.size && (
                   <button
-                    onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page + 1, size: pagination.size, filter: FilterTypeEnum.RECENT }))}
+                    onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page + 1, size: pagination.size, filter: filter }))}
                     className="btn btn-primary"
                   >
                     Next Page

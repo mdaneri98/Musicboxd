@@ -435,6 +435,12 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.countReviewsByUser(userId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Long countReviewsFromFollowedUsers(Long loggedUserId) {
+        return reviewDao.countReviewsFromFollowedUsers(loggedUserId);
+    }
+
     private <T extends Review> void setTimeAgo(List<T> reviews) {
         for (T review : reviews) {
             review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));

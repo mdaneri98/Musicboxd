@@ -81,9 +81,9 @@ export default function SearchPage() {
       setError(null);
 
       const [artistsData, albumsData, songsData, usersData] = await Promise.all([
-        dispatch(fetchArtistsAsync({ page: 1, size: 10, search: query })).unwrap(),
-        dispatch(fetchAlbumsAsync({ page: 1, size: 10, search: query })).unwrap(),
-        dispatch(fetchSongsAsync({ page: 1, size: 10, search: query })).unwrap(),
+        dispatch(fetchArtistsAsync({ page: 1, size: 5, search: query })).unwrap(),
+        dispatch(fetchAlbumsAsync({ page: 1, size: 5, search: query })).unwrap(),
+        dispatch(fetchSongsAsync({ page: 1, size: 5, search: query })).unwrap(),
         dispatch(fetchUsersAsync({ page: 1, size: 10, search: query })).unwrap(),
       ]);
 
@@ -145,7 +145,7 @@ export default function SearchPage() {
         return indexA - indexB;
       });
 
-      setSearchResults(results.slice(0, 7)); // Limit to 7 results
+      setSearchResults(results.slice(0, Math.min(results.length, 7))); 
       setShowResults(true);
 
       if (results.length === 0) {
@@ -182,7 +182,7 @@ export default function SearchPage() {
     setSearchQuery(result.name);
     setShowResults(false);
     setError(null);
-    router.push(`/${result.type}s/${result.id}`);
+    router.push(`/${result.type}/${result.id}`);
   };
 
   // Handle keyboard navigation

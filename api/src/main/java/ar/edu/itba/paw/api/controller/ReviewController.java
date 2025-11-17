@@ -28,7 +28,6 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 
 @Path(ApiUriConstants.REVIEWS_BASE)
@@ -70,8 +69,8 @@ public class ReviewController extends BaseController {
         List<ReviewDTO> reviewDTOs;
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         if (search != null && !search.isEmpty()) return getReviewBySubstring(search, page, size);
-        if (filter == FilterType.FOLLOWING) reviewDTOs = reviewService.getReviewsFromFollowedUsersPaginated(page,size, loggedUserId);
-        else reviewDTOs = reviewService.findPaginated(filter, page, size, loggedUserId);
+        if (filter == FilterType.FOLLOWING) return getReviewsFromFollowedUsersPaginated(page, size, loggedUserId);
+        reviewDTOs = reviewService.findPaginated(filter, page, size, loggedUserId);
 
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Integer totalCount = reviewService.countAll().intValue();
@@ -79,6 +78,15 @@ public class ReviewController extends BaseController {
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         
+        return buildResponse(collection);
+    }
+
+    private Response getReviewsFromFollowedUsersPaginated(Integer page, Integer size, Long loggedUserId) {
+        List<ReviewDTO> reviewDTOs = reviewService.getReviewsFromFollowedUsersPaginated(page, size, loggedUserId);
+        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
+        Integer totalCount = reviewService.countReviewsFromFollowedUsers(loggedUserId).intValue();
+        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         return buildResponse(collection);
     }
 

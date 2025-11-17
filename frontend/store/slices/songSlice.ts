@@ -15,7 +15,7 @@ import { EditSongFormData } from '@/types/forms';
 
 export interface SongState {
   // Songs by ID (normalized state)
-  songs: Record<number, Song>;
+  songs: Song[];
   // Current song being viewed
   currentSong: Song | null;
   // Related data for current song
@@ -39,7 +39,7 @@ export interface SongState {
 // ============================================================================
 
 const initialState: SongState = {
-  songs: {},
+  songs: [],
   currentSong: null,
   songReviews: [],
   pagination: {
@@ -192,10 +192,10 @@ const songSlice = createSlice({
       state.songReviews = [];
     },
     addSong: (state, action: PayloadAction<Song>) => {
-      state.songs[action.payload.id] = action.payload;
+      state.songs.push(action.payload);
     },
     removeSong: (state, action: PayloadAction<number>) => {
-      delete state.songs[action.payload];
+      state.songs = state.songs.filter((song) => song.id !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -206,9 +206,7 @@ const songSlice = createSlice({
       })
       .addCase(fetchSongsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        action.payload.items.forEach((song) => {
-          state.songs[song.data.id] = song.data as Song;
-        });
+        state.songs = action.payload.items.map((song) => song.data as Song);
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
@@ -228,7 +226,9 @@ const songSlice = createSlice({
       .addCase(fetchSongByIdAsync.fulfilled, (state, action) => {
         state.loadingSong = false;
         state.currentSong = action.payload.data as Song;
-        state.songs[action.payload.data.id] = action.payload.data as Song;
+        if (!state.songs.some((song) => song.id === action.payload.data.id)) { //
+          state.songs.push(action.payload.data as Song);
+        }
       })
       .addCase(fetchSongByIdAsync.rejected, (state, action) => {
         state.loadingSong = false;
@@ -242,7 +242,9 @@ const songSlice = createSlice({
       })
       .addCase(createSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.songs[action.payload.data.id] = action.payload.data as Song;
+        if (!state.songs.some((song) => song.id === action.payload.data.id)) { //
+          state.songs.push(action.payload.data as Song);
+        }
       })
       .addCase(createSongAsync.rejected, (state, action) => {
         state.loading = false;
@@ -256,7 +258,9 @@ const songSlice = createSlice({
       })
       .addCase(updateSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.songs[action.payload.data.id] = action.payload.data as Song;
+        if (!state.songs.some((song) => song.id === action.payload.data.id)) { //
+          state.songs.push(action.payload.data as Song);
+        }
         if (state.currentSong?.id === action.payload.data.id) {
           state.currentSong = action.payload.data as Song;
         }
@@ -273,7 +277,7 @@ const songSlice = createSlice({
       })
       .addCase(deleteSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        delete state.songs[action.meta.arg];
+        state.songs = state.songs.filter((song) => song.id !== action.meta.arg);
         if (state.currentSong?.id === action.meta.arg) {
           state.currentSong = null;
         }
@@ -316,7 +320,7 @@ export const { clearError, clearCurrentSong, addSong, removeSong } = songSlice.a
 
 export const selectSongs = (state: RootState) => state.songs.songs;
 export const selectSongById = (songId: number) => (state: RootState) =>
-  state.songs.songs[songId] || null;
+  state.songs.songs.find((song) => song.id === songId) || null;
 export const selectCurrentSong = (state: RootState) => state.songs.currentSong;
 export const selectSongReviews = (state: RootState) => state.songs.songReviews;
 export const selectSongPagination = (state: RootState) => state.songs.pagination;

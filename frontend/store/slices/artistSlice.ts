@@ -14,7 +14,7 @@ import type { RootState } from '../index';
 
 export interface ArtistState {
   // Artists by ID (normalized state)
-  artists: Record<number, Artist>;
+  artists: Artist[];
   // Current artist being viewed
   currentArtist: Artist | null;
   // Related data for current artist
@@ -42,7 +42,7 @@ export interface ArtistState {
 // ============================================================================
 
 const initialState: ArtistState = {
-  artists: {},
+  artists: [],
   currentArtist: null,
   artistAlbums: [],
   artistSongs: [],
@@ -269,14 +269,14 @@ const artistSlice = createSlice({
      * Add artist to normalized state
      */
     addArtist: (state, action: PayloadAction<Artist>) => {
-      state.artists[action.payload.id] = action.payload;
+      state.artists.push(action.payload);
     },
 
     /**
      * Remove artist from normalized state
      */
     removeArtist: (state, action: PayloadAction<number>) => {
-      delete state.artists[action.payload];
+      state.artists = state.artists.filter((artist) => artist.id !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -289,9 +289,7 @@ const artistSlice = createSlice({
       .addCase(fetchArtistsAsync.fulfilled, (state, action) => {
         state.loading = false;
         // Add artists to normalized state
-        action.payload.items.forEach((artist) => {
-          state.artists[artist.data.id] = artist.data as Artist;
-        });
+        state.artists = action.payload.items.map((artist) => artist.data as Artist);
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
@@ -312,7 +310,9 @@ const artistSlice = createSlice({
       .addCase(fetchArtistByIdAsync.fulfilled, (state, action) => {
         state.loadingArtist = false;
         state.currentArtist = action.payload.data as Artist;
-        state.artists[action.payload.data.id] = action.payload.data as Artist;
+        if (!state.artists.some((artist) => artist.id === action.payload.data.id)) { //
+          state.artists.push(action.payload.data as Artist);
+        }
       })
       .addCase(fetchArtistByIdAsync.rejected, (state, action) => {
         state.loadingArtist = false;
@@ -447,7 +447,7 @@ export const { clearError, clearCurrentArtist, addArtist, removeArtist } = artis
 
 export const selectArtists = (state: RootState) => state.artists.artists;
 export const selectArtistById = (artistId: number) => (state: RootState) =>
-  state.artists.artists[artistId] || null;
+  state.artists.artists.find((artist) => artist.id === artistId) || null;
 export const selectCurrentArtist = (state: RootState) => state.artists.currentArtist;
 export const selectArtistAlbums = (state: RootState) => state.artists.artistAlbums;
 export const selectArtistSongs = (state: RootState) => state.artists.artistSongs;

@@ -61,10 +61,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO findUserById(Long id) {
-        return userDao.findById(id)
-                .map(userMapper::toDTO)
-                .orElseThrow(() -> new UserNotFoundException(id));
+    public UserDTO findUserById(Long id, Long loggedUserId) {
+        UserDTO userDTO = userDao.findById(id).map(userMapper::toDTO).orElseThrow(() -> new UserNotFoundException(id));
+        userDTO.setFollowedByLoggedUser(isFollowing(loggedUserId, id));
+        return userDTO;
     }
 
     @Override
@@ -158,6 +158,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public Boolean isFollowing(Long userId, Long otherId) {
+        if (userId == null || otherId == null) return false;
         return userDao.isFollowing(userId, otherId);
     }
 

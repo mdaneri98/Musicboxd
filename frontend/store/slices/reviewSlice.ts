@@ -283,9 +283,7 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        action.payload.items.forEach((review) => {
-          state.reviews[review.data.id] = review.data as Review;
-        });
+        state.reviews = action.payload.items.map((review) => review.data as Review);
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
@@ -372,9 +370,7 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewLikesAsync.fulfilled, (state, action) => {
         state.loadingLikes = false;
-        action.payload.items.forEach((like) => {
-          state.reviewLikes.push(like.data as User);
-        });
+        state.reviewLikes = action.payload.items.map((like) => like.data as User);
       })
       .addCase(fetchReviewLikesAsync.rejected, (state, action) => {
         state.loadingLikes = false;
@@ -421,9 +417,7 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewCommentsAsync.fulfilled, (state, action) => {
         state.loadingComments = false;
-        action.payload.items.forEach((comment) => {
-          state.reviewComments.push(comment.data as Comment);
-        });
+        state.reviewComments = action.payload.items.map((comment) => comment.data as Comment);
       })
       .addCase(fetchReviewCommentsAsync.rejected, (state, action) => {
         state.loadingComments = false;
