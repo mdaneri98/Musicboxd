@@ -14,7 +14,7 @@ import type { RootState } from '../index';
 
 export interface AlbumState {
   // Albums by ID (normalized state)
-  albums: Record<number, Album>;
+  albums: Album[];
   // Current album being viewed
   currentAlbum: Album | null;
   // Related data for current album
@@ -40,7 +40,7 @@ export interface AlbumState {
 // ============================================================================
 
 const initialState: AlbumState = {
-  albums: {},
+  albums: [],
   currentAlbum: null,
   albumSongs: [],
   albumReviews: [],
@@ -207,10 +207,10 @@ const albumSlice = createSlice({
       state.albumReviews = [];
     },
     addAlbum: (state, action: PayloadAction<Album>) => {
-      state.albums[action.payload.id] = action.payload;
+      state.albums.push(action.payload);
     },
     removeAlbum: (state, action: PayloadAction<number>) => {
-      delete state.albums[action.payload];
+      state.albums = state.albums.filter((album) => album.id !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -221,9 +221,7 @@ const albumSlice = createSlice({
       })
       .addCase(fetchAlbumsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        action.payload.items.forEach((album) => {
-          state.albums[album.data.id] = album.data as Album;
-        });
+        state.albums = action.payload.items.map((album) => album.data as Album);
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
@@ -346,7 +344,7 @@ export const { clearError, clearCurrentAlbum, addAlbum, removeAlbum } = albumSli
 
 export const selectAlbums = (state: RootState) => state.albums.albums;
 export const selectAlbumById = (albumId: number) => (state: RootState) =>
-  state.albums.albums[albumId] || null;
+  state.albums.albums.find((album) => album.id === albumId) || null;
 export const selectCurrentAlbum = (state: RootState) => state.albums.currentAlbum;
 export const selectAlbumSongs = (state: RootState) => state.albums.albumSongs;
 export const selectAlbumReviews = (state: RootState) => state.albums.albumReviews;

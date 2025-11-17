@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Layout } from '@/components/layout';
-import { useAppDispatch } from '@/store/hooks';
-import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync } from '@/store/slices';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistPagination, selectAlbumPagination, selectSongPagination, selectArtists, selectAlbums, selectSongs } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { Artist, Album, Song, FilterTypeEnum, ReviewItemTypeEnum } from '@/types';
 
@@ -12,61 +12,45 @@ const ViewAllMusicPage = () => {
   const dispatch = useAppDispatch();
   const { tab: queryTab, filter: queryFilter, page: queryPage } = router.query;
   
-  const [activeTab, setActiveTab] = useState<ReviewItemTypeEnum>(ReviewItemTypeEnum.ARTIST);
-  const [filter, setFilter] = useState<FilterTypeEnum>(FilterTypeEnum.POPULAR);
-  const [page, setPage] = useState(1);
-  
-  const [artists, setArtists] = useState<Artist[]>([]);
-  const [albums, setAlbums] = useState<Album[]>([]);
-  const [songs, setSongs] = useState<Song[]>([]);
-  
-  const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
+  const artists = useAppSelector(selectArtists);
+  const albums = useAppSelector(selectAlbums);
+  const songs = useAppSelector(selectSongs);
 
-  // Update state from query params
-  useEffect(() => {
-    if (queryTab) {
-      setActiveTab(queryTab as ReviewItemTypeEnum);
-    }
-    if (queryFilter) {
-      setFilter(queryFilter as FilterTypeEnum);
-    }
-    if (queryPage) {
-      setPage(parseInt(queryPage as string));
-    }
-  }, [queryTab, queryFilter, queryPage]);
+  const artistPagination = useAppSelector(selectArtistPagination);
+  const albumPagination = useAppSelector(selectAlbumPagination);
+  const songPagination = useAppSelector(selectSongPagination);
+
+  const [page, setPage] = useState<number>(queryPage ? parseInt(queryPage as string) : 1);
+  const [filter, setFilter] = useState<FilterTypeEnum>(queryFilter ? queryFilter as FilterTypeEnum : FilterTypeEnum.POPULAR);
+  const [activeTab, setActiveTab] = useState<ReviewItemTypeEnum>(queryTab ? queryTab as ReviewItemTypeEnum : ReviewItemTypeEnum.ARTIST);
+
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+
 
   // Fetch data based on active tab and filter
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const pageSize = 20;
-
         if (activeTab === ReviewItemTypeEnum.ARTIST) {
-          const response = await dispatch(fetchArtistsAsync({ 
-            page, 
-            size: pageSize, 
-            filter: FilterTypeEnum.POPULAR 
+          await dispatch(fetchArtistsAsync({ 
+            page: page, 
+            filter: filter 
           })).unwrap();
-          setArtists(response.items.map((item) => item.data));
-          setHasMore(response.items.length === pageSize);
+          setHasMore(page*artistPagination.size < artistPagination.totalCount);
         } else if (activeTab === ReviewItemTypeEnum.ALBUM) {
-          const response = await dispatch(fetchAlbumsAsync({ 
-            page, 
-            size: pageSize, 
-            filter: FilterTypeEnum.POPULAR 
+          await dispatch(fetchAlbumsAsync({ 
+            page: page,  
+            filter: filter 
           })).unwrap();
-          setAlbums(response.items.map((item) => item.data));
-          setHasMore(response.items.length === pageSize);
+          setHasMore(page*albumPagination.size < albumPagination.totalCount);
         } else if (activeTab === ReviewItemTypeEnum.SONG) {
-          const response = await dispatch(fetchSongsAsync({ 
-            page, 
-            size: pageSize, 
-            filter: FilterTypeEnum.POPULAR 
+          await dispatch(fetchSongsAsync({ 
+            page: page, 
+            filter: filter 
           })).unwrap();
-          setSongs(response.items.map((item) => item.data));
-          setHasMore(response.items.length === pageSize);
+          setHasMore(page*songPagination.size < songPagination.totalCount);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -80,26 +64,15 @@ const ViewAllMusicPage = () => {
 
   const handleTabChange = (tab: ReviewItemTypeEnum) => {
     setActiveTab(tab);
-    setPage(1);
-    router.push(`/music/view-all?tab=${tab}&filter=${filter}&page=1`, undefined, { shallow: true });
   };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newFilter = e.target.value as FilterTypeEnum;
     setFilter(newFilter);
-    setPage(1);
-    router.push(`/music/view-all?tab=${activeTab}&filter=${newFilter}&page=1`, undefined, { shallow: true });
-  };
-
-  const handleApplyFilter = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPage(1);
-    router.push(`/music/view-all?tab=${activeTab}&filter=${filter}&page=1`, undefined, { shallow: true });
   };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    router.push(`/music/view-all?tab=${activeTab}&filter=${filter}&page=${newPage}`, undefined, { shallow: true });
   };
 
   return (
@@ -135,7 +108,7 @@ const ViewAllMusicPage = () => {
 
           {/* Filters */}
           <div className="filters-container">
-            <form onSubmit={handleApplyFilter} className="filters-form">
+            <form className="filters-form">
               <div className="filter-group">
                 <label htmlFor="sort" className="filter-label">
                   Sort by
@@ -147,22 +120,22 @@ const ViewAllMusicPage = () => {
                   value={filter}
                   onChange={handleFilterChange}
                 >
-                  <option value="POPULAR">Most Popular</option>
-                  <option value="RATING">Top Rated</option>
-                  <option value="RECENT">Recently Added</option>
-                  <option value="FIRST">First Added</option>
+                  <option value={FilterTypeEnum.POPULAR}>Most Popular</option>
+                  <option value={FilterTypeEnum.RATING}>Top Rated</option>
+                  <option value={FilterTypeEnum.RECENT}>Recently Added</option>
+                  <option value={FilterTypeEnum.FIRST}>First Added</option>
                   {activeTab === ReviewItemTypeEnum.ALBUM && (
                     <>
-                      <option value="NEWEST">Newest</option>
-                      <option value="OLDEST">Oldest</option>
+                      <option value={FilterTypeEnum.NEWEST}>Newest</option>
+                      <option value={FilterTypeEnum.OLDEST}>Oldest</option>
                     </>
                   )}
                 </select>
               </div>
 
-              <button type="submit" className="btn btn-primary">
+              {/* <button type="submit" className="btn btn-primary">
                 Apply
-              </button>
+              </button> */}
             </form>
           </div>
         </div>
@@ -175,7 +148,7 @@ const ViewAllMusicPage = () => {
             <>
               {activeTab === ReviewItemTypeEnum.ARTIST && (
                 <div className="music-grid">
-                  {artists.map((artist) => (
+                  {Object.values(artists).map((artist: Artist) => (
                     <div key={artist.id} className="music-item artist-item">
                       <Link href={`/artists/${artist.id}`} className="music-item-link">
                         <div className="music-item-image-container">
@@ -200,7 +173,7 @@ const ViewAllMusicPage = () => {
 
                 {activeTab === ReviewItemTypeEnum.ALBUM && (
                 <div className="music-grid">
-                  {albums.map((album) => (
+                  {Object.values(albums).map((album: Album) => (
                     <div key={album.id} className="music-item">
                       <Link href={`/albums/${album.id}`} className="music-item-link">
                         <div className="music-item-image-container">
@@ -225,7 +198,7 @@ const ViewAllMusicPage = () => {
 
               {activeTab === ReviewItemTypeEnum.SONG && (
                 <ul className="song-list">
-                  {songs.map((song) => (
+                  {Object.values(songs).map((song: Song) => (
                     <li key={song.id}>
                       <Link href={`/songs/${song.id}`} className="song-item">
                         <span className="song-title">{song.title}</span>

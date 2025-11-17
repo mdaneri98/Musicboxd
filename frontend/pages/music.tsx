@@ -101,7 +101,7 @@ const MusicDiscoveryPage = () => {
                 <div id="topRatedArtistTab" className="tab-content">
                   <h2>
                     Top Rated Artists
-                    <Link href="/music/view-all?tab=artists" className="view-all-link">
+                    <Link href="/music/view-all?tab=Artist" className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -136,7 +136,7 @@ const MusicDiscoveryPage = () => {
                 <div id="popularArtistTab" className="tab-content">
                   <h2>
                     Most Popular Artists
-                    <Link href="/music/view-all?tab=artists" className="view-all-link">
+                    <Link href="/music/view-all?tab=Artist" className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -195,7 +195,7 @@ const MusicDiscoveryPage = () => {
                 <div id="topRatedAlbumTab" className="tab-content">
                   <h2>
                     Top Rated Albums
-                    <Link href="/music/view-all?tab=albums" className="view-all-link">
+                    <Link href="/music/view-all?tab=Album" className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -230,7 +230,7 @@ const MusicDiscoveryPage = () => {
                 <div id="popularAlbumTab" className="tab-content">
                   <h2>
                     Most Popular Albums
-                    <Link href="/music/view-all?tab=albums" className="view-all-link">
+                    <Link href="/music/view-all?tab=Album" className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -289,7 +289,7 @@ const MusicDiscoveryPage = () => {
                 <div id="topRatedSongTab" className="tab-content">
                   <h2>
                     Top Rated Songs
-                    <Link href="/music/view-all?tab=songs" className="view-all-link">
+                    <Link href="/music/view-all?tab=Song" className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -316,7 +316,7 @@ const MusicDiscoveryPage = () => {
                 <div id="popularSongTab" className="tab-content">
                   <h2>
                     Most Popular Songs
-                    <Link href="/music/view-all?tab=songs" className="view-all-link">
+                    <Link href="/music/view-all?tab=Song" className="view-all-link">
                       View All
                     </Link>
                   </h2>
