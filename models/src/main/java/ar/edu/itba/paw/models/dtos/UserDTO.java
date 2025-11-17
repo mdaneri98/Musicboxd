@@ -33,6 +33,7 @@ public class UserDTO {
 
     private Boolean isVerified;
     private Boolean isModerator;
+    private Boolean isFollowedByLoggedUser;
 
     @Size(max = 20, message = "{validation.user.preferredLanguage.size}")
     private String preferredLanguage;
@@ -197,5 +198,13 @@ public class UserDTO {
 
     public void setHasReviewsNotificationsEnabled(Boolean hasReviewsNotificationsEnabled) {
         this.hasReviewsNotificationsEnabled = hasReviewsNotificationsEnabled;
+    }
+
+    public Boolean getFollowedByLoggedUser() {
+        return isFollowedByLoggedUser;
+    }
+
+    public void setFollowedByLoggedUser(Boolean followedByLoggedUser) {
+        isFollowedByLoggedUser = followedByLoggedUser;
     }
 }

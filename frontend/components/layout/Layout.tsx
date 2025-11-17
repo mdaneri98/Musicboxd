@@ -25,9 +25,9 @@ const Layout = ({
   return (
     <>
       <Head title={title} />
-      <div className="app-container">
+      <div className="main-container">
         {showSidebar && <Sidebar />}
-        <main className={showSidebar ? 'main-content' : 'main-content-full'}>
+        <main className="content-wrapper">
           {children}
         </main>
       </div>

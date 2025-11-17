@@ -52,6 +52,7 @@ export {
   selectFavoriteSongs,
   selectUserReviews,
   selectUserPagination,
+  selectUserReviewsPagination,
   selectUserLoading,
   selectUserError,
   selectLoadingProfile,

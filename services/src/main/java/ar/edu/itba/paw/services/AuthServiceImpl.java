@@ -188,7 +188,7 @@ public class AuthServiceImpl implements AuthService {
             }
             
             Long userId = jwtService.extractUserId(accessToken);
-            return userService.findUserById(userId);
+            return userService.findUserById(userId, 0L);
             
         } catch (Exception e) {
             LOGGER.error("Error getting current user", e);

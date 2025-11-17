@@ -17,7 +17,7 @@ export interface User {
   followers_amount: number;
   following_amount: number;
   review_amount: number;
-  is_following?: boolean; // Context-dependent
+  is_followed_by_logged_user?: boolean; // Context-dependent
   moderator: boolean;
   verified: boolean;
   created_at: Date;

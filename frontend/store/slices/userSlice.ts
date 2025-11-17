@@ -32,6 +32,13 @@ export interface UserState {
     size: number;
     totalCount: number;
   };
+
+  // Reviews pagination info
+  reviewsPagination: {
+    page: number;
+    size: number;
+    totalCount: number;
+  };
   // Loading states
   loading: boolean;
   loadingProfile: boolean;
@@ -60,6 +67,11 @@ const initialState: UserState = {
   favoriteSongs: [],
   userReviews: [],
   pagination: {
+    page: 1,
+    size: 20,
+    totalCount: 0,
+  },
+  reviewsPagination: {
     page: 1,
     size: 20,
     totalCount: 0,
@@ -516,6 +528,11 @@ const userSlice = createSlice({
       .addCase(fetchUserReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
         state.userReviews = action.payload.items.map((review) => review.data as Review);
+        state.reviewsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+        };
       })
       .addCase(fetchUserReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;
@@ -545,6 +562,7 @@ export const selectFavoriteAlbums = (state: RootState) => state.users.favoriteAl
 export const selectFavoriteSongs = (state: RootState) => state.users.favoriteSongs;
 export const selectUserReviews = (state: RootState) => state.users.userReviews;
 export const selectUserPagination = (state: RootState) => state.users.pagination;
+export const selectUserReviewsPagination = (state: RootState) => state.users.reviewsPagination;
 export const selectUserLoading = (state: RootState) => state.users.loading;
 export const selectUserError = (state: RootState) => state.users.error;
 export const selectLoadingProfile = (state: RootState) => state.users.loadingProfile;

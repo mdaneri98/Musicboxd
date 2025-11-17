@@ -4,9 +4,14 @@ import { imageRepository } from '@/repositories';
 
 interface UserInfoProps {
   user: User;
+  isOwnProfile: boolean;
+  isAuthenticated: boolean;
+  isFollowing: boolean;
+  followLoading: boolean;
+  onFollowToggle: () => void;
 }
 
-export const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
+export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthenticated, isFollowing, followLoading, onFollowToggle }) => {
   const userImgUrl = user.image_id ? imageRepository.getImageUrl(user.image_id) : '/assets/default-user.png';
   
   return (
@@ -51,6 +56,21 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
           </div>
         </div>
       </div>
+      {isOwnProfile ? (
+        <div className="user-profile-actions">
+          <Link href="/profile/edit" className="btn btn-primary">
+            Edit Profile
+          </Link>
+        </div>
+      ) : (
+        <div className="user-profile-actions"> 
+          <button className={`btn ${isFollowing ? 'btn-secondary' : 'btn-primary'}`} onClick={onFollowToggle} disabled={followLoading}>
+            {followLoading ? 'Loading...' : (isFollowing ? 'Unfollow' : 'Follow')}
+          </button>
+        </div>
+      )
+      }
+
     </section>
   );
 };

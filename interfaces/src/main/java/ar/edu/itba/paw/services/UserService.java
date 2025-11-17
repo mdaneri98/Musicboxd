@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface UserService{
 
-    UserDTO findUserById(Long id);
+    UserDTO findUserById(Long id, Long loggedUserId);
     Long countUsers();
     List<UserDTO> findAll();
     List<UserDTO> findPaginated(FilterType filterType, Integer pageNumber, Integer pageSize);
