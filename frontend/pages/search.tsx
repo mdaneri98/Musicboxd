@@ -145,7 +145,7 @@ export default function SearchPage() {
         return indexA - indexB;
       });
 
-      setSearchResults(results.slice(0, 5)); // Limit to 7 results
+      setSearchResults(results.slice(0, Math.min(results.length, 7))); 
       setShowResults(true);
 
       if (results.length === 0) {

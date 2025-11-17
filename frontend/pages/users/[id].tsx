@@ -29,13 +29,13 @@ import { ProfileTabEnum } from '@/types';
 
 const UserProfilePage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, tab: queryTab } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const loggedUser = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectUserById(parseInt(id as string)));
   
-  const [activeTab, setActiveTab] = useState<ProfileTabEnum>(ProfileTabEnum.FAVORITES);
+  const [activeTab, setActiveTab] = useState<ProfileTabEnum>(queryTab ? queryTab as ProfileTabEnum : ProfileTabEnum.FAVORITES);
   const favoriteArtists = useAppSelector(selectFavoriteArtists);
   const favoriteAlbums = useAppSelector(selectFavoriteAlbums);
   const favoriteSongs = useAppSelector(selectFavoriteSongs);
@@ -58,7 +58,7 @@ const UserProfilePage = () => {
     const userId = parseInt(id as string);
 
     if (loggedUser && loggedUser.id === userId) {
-      router.push('/profile');
+      router.push(`/profile?tab=${activeTab}`);
       return;
     }
     

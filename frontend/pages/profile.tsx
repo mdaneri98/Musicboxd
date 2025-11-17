@@ -10,11 +10,13 @@ import { ProfileTabEnum } from '@/types';
 
 const ProfilePage = () => {
   const router = useRouter();
+  const { tab: queryTab } = router.query;
+
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  const [activeTab, setActiveTab] = useState<ProfileTabEnum>(ProfileTabEnum.FAVORITES);
+  const [activeTab, setActiveTab] = useState<ProfileTabEnum>(queryTab ? queryTab as ProfileTabEnum : ProfileTabEnum.FAVORITES);
   const favoriteArtists = useAppSelector(selectFavoriteArtists);
   const favoriteAlbums = useAppSelector(selectFavoriteAlbums);
   const favoriteSongs = useAppSelector(selectFavoriteSongs);
