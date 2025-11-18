@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.api.form;
 
+import org.springframework.lang.Nullable;
+
 import javax.validation.constraints.Size;
 
 public class CommentForm {
@@ -8,7 +10,10 @@ public class CommentForm {
     @Size(min = 2, message = "{validation.comment.content.size}")
     private String content;
 
+    @Nullable
     private Long reviewId;
+
+    @Nullable
     private Long userId;
 
     public CommentForm() {

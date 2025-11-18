@@ -57,19 +57,15 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthen
         </div>
       </div>
       {isOwnProfile ? (
-        <div className="user-profile-actions">
-            <Link href="/profile/edit">
-              <button className="btn btn-primary">
-                Edit Profile
-              </button>
-            </Link>
-        </div>
+          <Link href="/profile/edit">
+            <button className="btn btn-primary">
+              Edit Profile
+            </button>
+          </Link>
       ) : (
-        <div className="user-profile-actions"> 
           <button className={`btn ${isFollowing ? 'btn-secondary' : 'btn-primary'}`} onClick={onFollowToggle} disabled={followLoading}>
             {followLoading ? 'Loading...' : (isFollowing ? 'Unfollow' : 'Follow')}
           </button>
-        </div>
       )
       }
 

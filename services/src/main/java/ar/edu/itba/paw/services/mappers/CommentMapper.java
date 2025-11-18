@@ -45,6 +45,7 @@ public class CommentMapper {
 
         Comment comment = new Comment();
         comment.setId(dto.getId());
+
         comment.setContent(dto.getContent());
         comment.setCreatedAt(dto.getCreatedAt());
 

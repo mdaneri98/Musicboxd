@@ -65,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             authorities.add(new SimpleGrantedAuthority(trimmedRole));
                         }
                     }
-                    
+
                     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
                     
                     // Set authentication in SecurityContext
