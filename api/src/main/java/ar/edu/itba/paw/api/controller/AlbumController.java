@@ -116,7 +116,7 @@ public class AlbumController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        AlbumDTO albumDTO = albumService.findById(id);
+        AlbumDTO albumDTO = albumService.findById(id, SecurityContextUtils.getCurrentUserId());
         AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
         return buildResponse(albumResource);
     }
@@ -201,7 +201,7 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ALBUM_FAVORITE)
     public Response addAlbumFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.addFavoriteAlbum(SecurityContextUtils.getCurrentUserId(), id);
-        return buildCreatedResponse(albumService.findById(id));
+        return buildCreatedResponse(albumResourceMapper.toResource(albumService.findById(id, SecurityContextUtils.getCurrentUserId()), getBaseUrl()));
     }
 
     @DELETE

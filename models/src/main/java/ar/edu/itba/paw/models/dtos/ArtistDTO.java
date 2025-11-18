@@ -28,6 +28,8 @@ public class ArtistDTO {
 
     private Long imageId;
 
+    private boolean isReviewedByLoggedUser;
+
     public ArtistDTO() {}
 
     public Long getId() {
@@ -100,5 +102,13 @@ public class ArtistDTO {
 
     public void setImageId(Long imageId) {
         this.imageId = imageId;
+    }
+
+    public boolean isReviewedByLoggedUser() {
+        return isReviewedByLoggedUser;
+    }
+
+    public void setReviewedByLoggedUser(boolean reviewedByLoggedUser) {
+        isReviewedByLoggedUser = reviewedByLoggedUser;
     }
 }

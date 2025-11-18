@@ -110,7 +110,7 @@ public class ReviewController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(id), getBaseUrl());
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(id, SecurityContextUtils.getCurrentUserId()), getBaseUrl());
         return buildResponse(reviewResource);
     }
 
@@ -164,7 +164,7 @@ public class ReviewController extends BaseController {
     public Response getReviewLikes(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, 
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {  
-        ReviewDTO reviewDTO = reviewService.findById(reviewId);
+        ReviewDTO reviewDTO = reviewService.findById(reviewId, SecurityContextUtils.getCurrentUserId());
         List<UserDTO> userDTOs = reviewService.likedBy(reviewId, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
         Integer totalCount = reviewDTO.getLikes().intValue();

@@ -34,6 +34,8 @@ public class SongDTO {
 
     private Boolean isDeleted;
 
+    private Boolean reviewedByLoggedUser;
+
     public SongDTO() {}
 
     public Long getId() {
@@ -143,4 +145,14 @@ public class SongDTO {
         this.isDeleted = isDeleted;
     }
 
+    public Boolean isReviewedByLoggedUser() {
+        if (reviewedByLoggedUser == null) {
+            return false;
+        }
+        return reviewedByLoggedUser;
+    }
+
+    public void setReviewedByLoggedUser(Boolean reviewedByLoggedUser) {
+        this.reviewedByLoggedUser = reviewedByLoggedUser;
+    }
 }

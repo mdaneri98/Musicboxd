@@ -36,6 +36,8 @@ public class AlbumDTO {
 
     private Boolean isDeleted;
 
+    private Boolean reviewedByLoggedUser;
+
     public AlbumDTO() {}
 
     public Long getId() {
@@ -143,5 +145,16 @@ public class AlbumDTO {
 
     public void setIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public Boolean isReviewedByLoggedUser() {
+        if (reviewedByLoggedUser == null) {
+            return false;
+        }
+        return reviewedByLoggedUser;
+    }
+
+    public void setReviewedByLoggedUser(Boolean reviewedByLoggedUser) {
+        this.reviewedByLoggedUser = reviewedByLoggedUser;
     }
 }

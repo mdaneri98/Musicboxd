@@ -58,7 +58,7 @@ const AlbumReviewPage = () => {
         await dispatch(fetchAlbumByIdAsync(albumId)).unwrap();
         // Check if user already reviewed this album
         if (currentUser) {
-          const reviews = await dispatch(fetchAlbumReviewsAsync({ albumId, page: 0, size: 100 })).unwrap();
+          const reviews = await dispatch(fetchAlbumReviewsAsync({ albumId, page: 1, size: 100 })).unwrap();
           const userReview = reviews.items.find((r: any) => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {

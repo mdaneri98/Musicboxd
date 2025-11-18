@@ -40,10 +40,12 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional(readOnly = true)
-    public AlbumDTO findById(Long id) {
+    public AlbumDTO findById(Long id, Long loggedUserId) {
         Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
         album.setFormattedReleaseDate(TimeUtils.formatDate(album.getReleaseDate()));
-        return albumMapper.toDTO(album);
+        AlbumDTO albumDTO = albumMapper.toDTO(album);
+        if (loggedUserId != null) albumDTO.setReviewedByLoggedUser(hasUserReviewed(loggedUserId, album.getId()));
+        return albumDTO;
     }
 
     @Transactional(readOnly = true)

@@ -34,7 +34,7 @@ public class ReviewDTO {
 
     private Integer likes;
 
-    private Boolean isLiked;
+    private Boolean isLikedByLoggedUser;
 
     private Boolean isBlocked;
 
@@ -118,12 +118,15 @@ public class ReviewDTO {
         this.likes = likes;
     }
 
-    public Boolean getIsLiked() {
-        return isLiked;
+    public Boolean getIsLikedByLoggedUser() {
+        if (isLikedByLoggedUser == null) {
+            return false;
+        }
+        return isLikedByLoggedUser;
     }
 
-    public void setIsLiked(Boolean isLiked) {
-        this.isLiked = isLiked;
+    public void setIsLikedByLoggedUser(Boolean isLikedByLoggedUser) {
+        this.isLikedByLoggedUser = isLikedByLoggedUser;
     }
 
     public Boolean getIsBlocked() {

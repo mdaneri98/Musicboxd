@@ -40,8 +40,11 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     @Transactional(readOnly = true)
-    public ArtistDTO findById(Long id) {
-        return artistDao.findById(id).map(artistMapper::toDTO).orElseThrow(() -> new ArtistNotFoundException(id));
+    public ArtistDTO findById(Long id, Long loggedUserId) {
+        Artist artist = artistDao.findById(id).orElseThrow(() -> new ArtistNotFoundException(id));
+        ArtistDTO artistDTO = artistMapper.toDTO(artist);
+        if (loggedUserId != null) artistDTO.setReviewedByLoggedUser(hasUserReviewed(loggedUserId, artist.getId()));
+        return artistDTO;
     }
 
     @Override

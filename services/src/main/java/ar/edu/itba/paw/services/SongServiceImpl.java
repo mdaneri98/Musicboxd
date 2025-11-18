@@ -41,10 +41,11 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public SongDTO findById(Long id) {
+    public SongDTO findById(Long id, Long loggedUserId) {
         Song song = songDao.findById(id).orElseThrow(() -> new SongNotFoundException(id));
         song.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(song.getAlbum().getReleaseDate()));
         SongDTO songDTO = songMapper.toDTO(song);
+        if (loggedUserId != null) songDTO.setReviewedByLoggedUser(hasUserReviewed(loggedUserId, song.getId()));
         return songDTO;
     }
 

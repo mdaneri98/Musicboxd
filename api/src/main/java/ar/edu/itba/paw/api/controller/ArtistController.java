@@ -126,7 +126,7 @@ public class ArtistController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        ArtistDTO artistDTO = artistService.findById(id);
+        ArtistDTO artistDTO = artistService.findById(id, SecurityContextUtils.getCurrentUserId());
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
         return buildResponse(artistResource);
     }
@@ -232,7 +232,7 @@ public class ArtistController extends BaseController {
     @Path(ApiUriConstants.ARTIST_FAVORITE)
     public Response addArtistFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.addFavoriteArtist(SecurityContextUtils.getCurrentUserId(), id);
-        return buildCreatedResponse(artistService.findById(id));
+        return buildCreatedResponse(artistResourceMapper.toResource(artistService.findById(id, SecurityContextUtils.getCurrentUserId()), getBaseUrl()));
     }
 
     @DELETE

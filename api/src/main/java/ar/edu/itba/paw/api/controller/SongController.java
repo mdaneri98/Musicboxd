@@ -97,7 +97,7 @@ public class SongController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        SongDTO songDTO = songService.findById(id);
+        SongDTO songDTO = songService.findById(id, SecurityContextUtils.getCurrentUserId());
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
         return buildResponse(songResource);
     }
@@ -160,7 +160,7 @@ public class SongController extends BaseController {
     @Path(ApiUriConstants.SONG_FAVORITE)
     public Response addSongFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.addFavoriteSong(SecurityContextUtils.getCurrentUserId(), id);
-        return buildCreatedResponse(songService.findById(id));
+        return buildCreatedResponse(songResourceMapper.toResource(songService.findById(id, SecurityContextUtils.getCurrentUserId()), getBaseUrl()));
     }
 
     @DELETE

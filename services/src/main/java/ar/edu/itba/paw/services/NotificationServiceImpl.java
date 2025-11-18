@@ -97,10 +97,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional(readOnly = true)
     @Override
-    public NotificationDTO findById(Long id) {
+    public NotificationDTO findById(Long id, Long loggedUserId) {
         Notification notification = notificationDao.findById(id)
                 .orElseThrow(() -> new NotificationNotFoundException(id));
-        return notificationMapper.toDTO(notification);
+        NotificationDTO notificationDTO = notificationMapper.toDTO(notification);
+        notificationDTO.setIsRead(notification.isRead());
+        return notificationDTO;
     }
 
     @Transactional(readOnly = true)
