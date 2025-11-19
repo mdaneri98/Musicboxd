@@ -26,15 +26,12 @@ public class ModArtistFormMapper {
         dto.setName(form.getName());
         dto.setBio(form.getBio());
         dto.setImageId(form.getArtistImgId() > 0 ? form.getArtistImgId() : null);
-        
-        // Map nested albums if present
+
         if (form.getAlbums() != null && !form.getAlbums().isEmpty()) {
             dto.setAlbums(form.getAlbums().stream()
                     .map(albumFormMapper::toDTO)
                     .collect(Collectors.toList()));
         }
-        
-        // Note: artistImage (MultipartFile) should be handled separately in the controller
         
         return dto;
     }

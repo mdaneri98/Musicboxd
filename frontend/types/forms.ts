@@ -92,13 +92,14 @@ export interface CreateArtistFormData {
   name: string;
   bio?: string;
   artistImage?: File;
+  artistImgId?: number;
 }
 
 /**
  * Edit artist form data
  */
 export interface EditArtistFormData extends CreateArtistFormData {
-  id: number; // Hidden field
+  id: number;
 }
 
 /**
@@ -110,6 +111,7 @@ export interface CreateAlbumFormData {
   releaseDate?: string; // ISO date string
   genre?: string;
   albumImage?: File;
+  albumImageId?: number;
 }
 
 /**
