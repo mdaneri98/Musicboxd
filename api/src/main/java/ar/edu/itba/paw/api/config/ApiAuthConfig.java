@@ -82,7 +82,6 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH, "/api/reviews/*").hasRole("MODERATOR")
                 .antMatchers(HttpMethod.DELETE, "/api/users/*").hasRole("MODERATOR")
                 .antMatchers(HttpMethod.DELETE, "/api/reviews/*").hasRole("MODERATOR")
-                .antMatchers(HttpMethod.DELETE, "/api/comments/*").hasRole("MODERATOR")
                 
                 // ROLE_USER-only endpoints - Reviews and Comments
                 .antMatchers(HttpMethod.POST, "/api/reviews").hasRole("USER")
@@ -92,6 +91,7 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/api/reviews/*/likes").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/api/comments").hasRole("USER")
                 .antMatchers(HttpMethod.PUT, "/api/comments/*").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/api/comments/*").hasRole("USER")
 
                 // ROLE_USER-only endpoints - User Profile and Social
                 .antMatchers(HttpMethod.PUT, "/api/users/*").hasRole("USER")
