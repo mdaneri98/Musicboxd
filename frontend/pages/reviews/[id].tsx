@@ -218,7 +218,7 @@ const ReviewDetailPage = () => {
                       <div className="comment-user">
                         <span className="comment-username">{comment.username}</span>
                         <span className="comment-date">
-                          {new Date(comment.created_at).toLocaleDateString()}
+                          {comment.time_ago}
                         </span>
                       </div>
                       {canDeleteComment(comment) && (

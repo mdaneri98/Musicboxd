@@ -188,10 +188,10 @@ const AlbumDetailPage = () => {
                 <div className="album-info">
                   {album.genre && <span className="album-genre">{album.genre}</span>}
                   {album.genre && album.release_date && <span className="info-separator">&bull;</span>}
-                  {album.release_date && <span className="album-date">{formatDate(album.release_date)}</span>}
+                  {album.release_date && <span className="album-date">{album.release_date.getDate()}</span>}
                 </div>
               </div>
-            </div>
+            </div>  
           </div>
 
           {/* Rating Card */}

@@ -217,6 +217,11 @@ const notificationSlice = createSlice({
           }
         });
         
+        // Calculate unread count from all loaded notifications
+        state.unreadCount = Object.values(state.notifications).filter(
+          (notification) => !notification.is_read
+        ).length;
+        
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,

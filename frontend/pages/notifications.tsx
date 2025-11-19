@@ -21,11 +21,11 @@ export default function NotificationsPage() {
     }
   }, [isAuthenticated, router]);
 
-  // Fetch notifications
+  // Fetch notifications only on mount
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        await dispatch(fetchNotificationsAsync({ page: pagination.page, size: pagination.size })).unwrap();
+        await dispatch(fetchNotificationsAsync({ page: 1, size: 20 })).unwrap();
       } catch (error) {
         console.error('Failed to fetch notifications:', error);
       }
@@ -34,7 +34,7 @@ export default function NotificationsPage() {
     if (isAuthenticated) {
       fetchNotifications();
     }
-  }, [isAuthenticated, pagination, dispatch]);
+  }, [isAuthenticated, dispatch]);
 
   // Mark all as read
   const handleMarkAllAsRead = async () => {
@@ -50,12 +50,20 @@ export default function NotificationsPage() {
 
 
   // Handle page navigation
-  const handlePreviousPage = () => {
-    dispatch(fetchNotificationsAsync({ page: pagination.page - 1, size: pagination.size })).unwrap();
+  const handlePreviousPage = async () => {
+    try {
+      await dispatch(fetchNotificationsAsync({ page: pagination.page - 1, size: pagination.size })).unwrap();
+    } catch (error) {
+      console.error('Failed to fetch previous page:', error);
+    }
   };
 
-  const handleNextPage = () => {
-    dispatch(fetchNotificationsAsync({ page: pagination.page + 1, size: pagination.size })).unwrap();
+  const handleNextPage = async () => {
+    try {
+      await dispatch(fetchNotificationsAsync({ page: pagination.page + 1, size: pagination.size })).unwrap();
+    } catch (error) {
+      console.error('Failed to fetch next page:', error);
+    }
   };
 
   if (!isAuthenticated) {
@@ -90,7 +98,7 @@ export default function NotificationsPage() {
         )}
 
         {/* Pagination */}
-        {pagination.totalCount > pagination.page * pagination.size && (
+        {pagination.page > 1 && (
           <div className="pagination">
             {pagination.page > 1 && (
               <button onClick={handlePreviousPage} className="btn btn-secondary">

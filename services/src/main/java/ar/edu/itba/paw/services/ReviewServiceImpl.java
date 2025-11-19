@@ -19,6 +19,7 @@ import ar.edu.itba.paw.exception.UnkownReviewTypeException;
 import ar.edu.itba.paw.exception.not_found.ArtistNotFoundException;
 import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
 import ar.edu.itba.paw.exception.not_found.SongNotFoundException;
+import ar.edu.itba.paw.exception.conflict.LikeAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -289,7 +290,8 @@ public class ReviewServiceImpl implements ReviewService {
 
         User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Review review = reviewDao.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
-
+        if (isLiked(userId, reviewId)) throw new LikeAlreadyExistsException(userId, reviewId);
+ 
         reviewDao.createLike(userId, reviewId);
         reviewDao.updateLikeCount(reviewId);
         notificationService.notifyLike(review, user);

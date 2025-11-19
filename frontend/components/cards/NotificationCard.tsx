@@ -70,7 +70,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
       <div className="notification-content">
         <p className="notification-message">{notification.message}</p>
         <span className="notification-timestamp">
-          {notification.created_at.toLocaleDateString()}
+          {notification.time_ago}
         </span>
       </div>
       {!notification.is_read && <div className="notification-indicator"></div>}

@@ -36,7 +36,7 @@ public class SecurityContextUtils {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null && authentication.isAuthenticated() 
             && !"anonymousUser".equals(authentication.getPrincipal())
-            && authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MODERATOR")); 
+            && authentication.getAuthorities().contains(new SimpleGrantedAuthority("MODERATOR"));
     }
     
     /**

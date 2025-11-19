@@ -132,7 +132,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             />
             <div className="user-details">
               <span className="review-timestamp">
-                {new Date(review.created_at).toLocaleDateString()}
+                {review.time_ago}
               </span>
               <span className="user-name">{review.username}</span>
             </div>

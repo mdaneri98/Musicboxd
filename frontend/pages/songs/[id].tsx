@@ -119,14 +119,6 @@ const SongDetailPage = () => {
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const formatDate = (date?: Date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
 
   if (loading || !song) {
     return (
@@ -246,7 +238,7 @@ const SongDetailPage = () => {
             {album?.release_date && (
               <div className="song-info-item">
                 <span className="info-label">Release Date:</span>
-                <span className="info-value">{formatDate(album.release_date)}</span>
+                <span className="info-value">{album.release_date.getDate()}</span>
               </div>
             )}
           </div>

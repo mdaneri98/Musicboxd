@@ -138,6 +138,7 @@ export interface Notification {
   review_id?: number;
   is_read: boolean;
   created_at: Date;
+  time_ago: string;
 }
 
 // ============================================================================

@@ -155,7 +155,7 @@ class NotificationRepository {
    */
   async markAllAsRead(): Promise<void> {
     try {
-      await apiClient.postResource<Notification>(NOTIFICATION_ENDPOINTS.MARK_ALL_AS_READ);
+      await apiClient.patch<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATIONS, {markAllAsRead: true});
     } catch (error) {
       console.error('Mark all notifications as read error:', error);
       throw error;
