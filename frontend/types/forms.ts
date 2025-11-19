@@ -55,7 +55,7 @@ export interface EditProfileFormData {
   username: string;
   name?: string;
   bio?: string;
-  profilePicture?: File;
+  profilePicture?: number;
 }
 
 // ============================================================================
@@ -91,7 +91,6 @@ export interface CommentFormData {
 export interface CreateArtistFormData {
   name: string;
   bio?: string;
-  artistImage?: File;
   artistImgId?: number;
 }
 
@@ -110,7 +109,6 @@ export interface CreateAlbumFormData {
   artistId: number;
   releaseDate?: string; // ISO date string
   genre?: string;
-  albumImage?: File;
   albumImageId?: number;
 }
 
@@ -129,6 +127,7 @@ export interface CreateSongFormData {
   albumId: number;
   duration: number; // seconds
   trackNumber?: number;
+  songImageId?: number;
 }
 
 /**
