@@ -59,13 +59,13 @@ public class CommentServiceImpl implements CommentService {
         MergeUtils.mergeCommentFields(comment, commentDTO);
         CommentDTO updatedCommentDTO = commentMapper.toDTO(commentDao.update(comment));
         User user = userDao.findById(updatedCommentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException(updatedCommentDTO.getUserId()));
-        Review review = reviewDao.findById(updatedCommentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException(updatedCommentDTO.getReviewId()));
+        Review review = reviewDao.findById(updatedCommentDTO.getReviewId()).orElseThrow(() -> new ReviewNotFoundException(updatedCommentDTO.getReviewId()));
         notificationService.notifyComment(review, user);
         return updatedCommentDTO;
     }
 
     @Override
-    public CommentDTO findById(Long id) {
+    public CommentDTO findById(Long id, Long loggedUserId) {
         Comment comment = commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
         comment.setTimeAgo(TimeUtils.formatTimeAgo(comment.getCreatedAt()));
         return commentMapper.toDTO(comment);
@@ -86,7 +86,7 @@ public class CommentServiceImpl implements CommentService {
         Comment createdComment = commentMapper.toEntity(commentDTO);
 
         User user = userDao.findById(commentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException(commentDTO.getUserId()));
-        Review review = reviewDao.findById(commentDTO.getReviewId().longValue()).orElseThrow(() -> new ReviewNotFoundException(commentDTO.getReviewId()));
+        Review review = reviewDao.findById(commentDTO.getReviewId()).orElseThrow(() -> new ReviewNotFoundException(commentDTO.getReviewId()));
         createdComment.setUser(user);
         createdComment.setReview(review);
         createdComment.setCreatedAt(LocalDateTime.now());
