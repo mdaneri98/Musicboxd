@@ -61,27 +61,25 @@ const SongReviewPage = () => {
       try {
         setLoading(true);
         const songId = parseInt(id as string);
-        await dispatch(fetchSongByIdAsync(songId)).unwrap();
+        const fetchedSong = await dispatch(fetchSongByIdAsync(songId)).unwrap();
 
-        if (song) {
-          const albumData = await dispatch(fetchAlbumByIdAsync(song.album_id)).unwrap();
-          setAlbum(albumData.data);
+        const albumData = await dispatch(fetchAlbumByIdAsync(fetchedSong.data.album_id)).unwrap();
+        setAlbum(albumData.data);
 
-          if (currentUser) {
-            const reviews = await dispatch(fetchSongReviewsAsync({ songId, page: 1, size: 100 })).unwrap();
-            const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
-            
-            if (userReview && !isEditMode) {
-              router.push(`/songs/${id}/reviews?edit=true`);
-              return;
-            }
-            
-            if (userReview) {
-              setExistingReview(userReview.data);
-            } else if (isEditMode) {
-              router.push(`/songs/${id}/reviews`);
-              return;
-            }
+        if (currentUser) {
+          const reviews = await dispatch(fetchSongReviewsAsync({ songId, page: 1, size: 100 })).unwrap();
+          const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
+          
+          if (userReview && !isEditMode) {
+            router.push(`/songs/${id}/reviews?edit=true`);
+            return;
+          }
+          
+          if (userReview) {
+            setExistingReview(userReview.data);
+          } else if (isEditMode) {
+            router.push(`/songs/${id}/reviews`);
+            return;
           }
         }
       } catch (error) {
@@ -92,7 +90,7 @@ const SongReviewPage = () => {
     };
 
     fetchData();
-  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch, song]);
+  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!song) return;

@@ -1,14 +1,7 @@
-/**
- * ReviewForm Component
- * Review creation/edit form with rating input
- * Migrated from: components/review_form.jsp
- */
-
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { reviewSchema } from '@/utils/validationSchemas';
 import { ReviewFormData } from '@/types';
-import { useState } from 'react';
 
 interface ReviewFormProps {
   onSubmit: (data: ReviewFormData) => void;
@@ -23,22 +16,18 @@ const ReviewForm = ({
   defaultValues,
   isLoading,
 }: ReviewFormProps) => {
-  const [, setRating] = useState(defaultValues?.rating || 0);
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    control,
+    watch,
   } = useForm<ReviewFormData>({
     resolver: yupResolver(reviewSchema) as any,
     defaultValues,
   });
 
-  const handleRatingChange = (value: number) => {
-    setRating(value);
-    setValue('rating', value);
-  };
+  const currentRating = watch('rating');
 
   return (
     <div className="review-form-container">
@@ -76,23 +65,30 @@ const ReviewForm = ({
         <div className="form-group">
           <label className="form-label">Rating</label>
           <div className="rating-input">
-            <div className="star-rating-input">
-              {[5, 4, 3, 2, 1].map((star) => (
-                <div key={star}>
-                  <input
-                    type="radio"
-                    id={`star${star}`}
-                    {...register('rating')}
-                    value={star}
-                    className="star-radio"
-                    onChange={() => handleRatingChange(star)}
-                  />
-                  <label htmlFor={`star${star}`} className="star-label">
-                    &#9733;
-                  </label>
+            <Controller
+              name="rating"
+              control={control}
+              render={({ field }) => (
+                <div className="star-rating-input">
+                  {[5, 4, 3, 2, 1].map((star) => (
+                    <div key={star}>
+                      <input
+                        type="radio"
+                        id={`star${star}`}
+                        name={field.name}
+                        value={star}
+                        className="star-radio"
+                        checked={Number(field.value ?? currentRating ?? 0) === star}
+                        onChange={() => field.onChange(star)}
+                      />
+                      <label htmlFor={`star${star}`} className="star-label">
+                        &#9733;
+                      </label>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+            />
             {errors.rating && (
               <p className="form-error">{errors.rating.message}</p>
             )}

@@ -149,6 +149,7 @@ public class SongController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ReviewForm reviewForm) {
         ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
+        reviewDTO.setUserId(SecurityContextUtils.getCurrentUserId());
         reviewDTO.setItemId(id);
         reviewDTO.setItemType(ControllerUtils.ITEM_TYPE_SONG);
         ReviewDTO responseDTO = reviewService.create(reviewDTO);
