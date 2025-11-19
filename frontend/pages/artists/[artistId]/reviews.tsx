@@ -22,7 +22,7 @@ import type { ReviewFormData } from '@/types';
 
 const ArtistReviewPage = () => {
   const router = useRouter();
-  const { id, edit } = router.query;
+  const { artistId, edit } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -51,21 +51,21 @@ const ArtistReviewPage = () => {
     }
 
     const fetchData = async () => {
-      if (!id) return;
+      if (!artistId) return;
 
       try {
         setLoading(true);
-        const artistId = parseInt(id as string);
-        await dispatch(fetchArtistByIdAsync(artistId)).unwrap();
+        const artistIdNum = parseInt(artistId as string);
+        await dispatch(fetchArtistByIdAsync(artistIdNum)).unwrap();
 
         // Check if user already reviewed this artist
         if (currentUser) {
-          const reviews = await dispatch(fetchArtistReviewsAsync({ artistId, page: 1, size: 100 })).unwrap();
+          const reviews = await dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: 1, size: 100 })).unwrap();
           const userReview = reviews.items.find(r => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {
             // User already reviewed, redirect to edit
-            router.push(`/artists/${id}/reviews?edit=true`);
+            router.push(`/artists/${artistId}/reviews?edit=true`);
             return;
           }
           
@@ -73,7 +73,7 @@ const ArtistReviewPage = () => {
             setExistingReview(userReview.data);
           } else if (isEditMode) {
             // No review to edit, redirect to create
-            router.push(`/artists/${id}/reviews`);
+            router.push(`/artists/${artistId}/reviews`);
             return;
           }
         }
@@ -85,7 +85,7 @@ const ArtistReviewPage = () => {
     };
 
     fetchData();
-  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch]);
+  }, [artistId, isAuthenticated, currentUser, isEditMode, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!artist) return;
@@ -121,7 +121,7 @@ const ArtistReviewPage = () => {
 
     try {
       await dispatch(deleteReviewAsync(existingReview.id)).unwrap();
-      router.push(`/artists/${id}`);
+      router.push(`/artists/${artistId}`);
     } catch (error) {
       console.error('Failed to delete review:', error);
     }

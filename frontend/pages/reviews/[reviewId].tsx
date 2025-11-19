@@ -27,7 +27,7 @@ type TabType = 'comments' | 'likes';
 
 const ReviewDetailPage = () => {
   const router = useRouter();
-  const { id, tab: queryTab, pageNum: queryPage } = router.query;
+  const { reviewId, tab: queryTab, pageNum: queryPage } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -63,44 +63,44 @@ const ReviewDetailPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!reviewId) return;
     
-    const reviewId = parseInt(id as string);
-    dispatch(fetchReviewByIdAsync(reviewId));
-  }, [id, dispatch]);
+    const reviewIdNum = parseInt(reviewId as string);
+    dispatch(fetchReviewByIdAsync(reviewIdNum));
+  }, [reviewId, dispatch]);
 
   useEffect(() => {
-    if (!id || !review) return;
+    if (!reviewId || !review) return;
 
-    const reviewId = parseInt(id as string);
+    const reviewIdNum = parseInt(reviewId as string);
 
     if (activeTab === 'comments') {
-      dispatch(fetchReviewCommentsAsync({ reviewId, page, size: 20 }))
+      dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 }))
         .unwrap()
         .then((commentsData) => {
           setHasMore(commentsData.items.length === 20);
         })
         .catch((err) => console.error('Failed to fetch comments:', err));
     } else if (activeTab === 'likes') {
-      dispatch(fetchReviewLikesAsync({ reviewId, page, size: 20 }))
+      dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 }))
         .unwrap()
         .then((likesData) => {
           setHasMore(likesData.items.length === 20);
         })
         .catch((err) => console.error('Failed to fetch likes:', err));
     }
-  }, [id, review, activeTab, page, dispatch]);
+  }, [reviewId, review, activeTab, page, dispatch]);
 
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
     setPage(1);
-    router.push(`/reviews/${id}?tab=${tab}&pageNum=1`, undefined, { shallow: true });
-  }, [id, router]);
+    router.push(`/reviews/${reviewId}?tab=${tab}&pageNum=1`, undefined, { shallow: true });
+  }, [reviewId, router]);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
-    router.push(`/reviews/${id}?tab=${activeTab}&pageNum=${newPage}`, undefined, { shallow: true });
-  }, [id, activeTab, router]);
+    router.push(`/reviews/${reviewId}?tab=${activeTab}&pageNum=${newPage}`, undefined, { shallow: true });
+  }, [reviewId, activeTab, router]);
 
   const handleCommentSubmit = async (data: CommentFormData) => {
     if (!review) return;
@@ -111,8 +111,8 @@ const ReviewDetailPage = () => {
       await dispatch(postCommentAsync(data)).unwrap();
 
       // Refresh comments
-      const reviewId = parseInt(id as string);
-      await dispatch(fetchReviewCommentsAsync({ reviewId, page, size: 20 }));
+      const reviewIdNum = parseInt(reviewId as string);
+      await dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 }));
     } catch (error) {
       console.error('Failed to create comment:', error);
     } finally {
@@ -127,8 +127,8 @@ const ReviewDetailPage = () => {
       await dispatch(deleteCommentAsync(commentToDelete)).unwrap();
 
       // Refresh comments
-      const reviewId = parseInt(id as string);
-      await dispatch(fetchReviewCommentsAsync({ reviewId, page, size: 20 }));
+      const reviewIdNum = parseInt(reviewId as string);
+      await dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 }));
       
       setCommentToDelete(null);
     } catch (error) {

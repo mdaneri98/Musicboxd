@@ -26,7 +26,7 @@ import type { Review, HALResource, Artist } from '@/types';
 
 const AlbumDetailPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { albumId } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -56,10 +56,10 @@ const AlbumDetailPage = () => {
 
   // Fetch album data
   useEffect(() => {
-    if (!id) return;
+    if (!albumId) return;
     
-    const albumId = parseInt(id as string);
-    dispatch(fetchAlbumByIdAsync(albumId))
+    const albumIdNum = parseInt(albumId as string);
+    dispatch(fetchAlbumByIdAsync(albumIdNum))
       .unwrap()
       .then((albumData) => {
         // Fetch artist data
@@ -77,15 +77,15 @@ const AlbumDetailPage = () => {
       });
     
     // Fetch songs
-    dispatch(fetchAlbumSongsAsync({ albumId, page: 0, size: 100 }));
-  }, [id, dispatch]);
+    dispatch(fetchAlbumSongsAsync({ albumId: albumIdNum, page: 0, size: 100 }));
+  }, [albumId, dispatch]);
 
   // Fetch reviews
   useEffect(() => {
-    if (!id) return;
+    if (!albumId) return;
     
-    const albumId = parseInt(id as string);
-    dispatch(fetchAlbumReviewsAsync({ albumId, page: reviewsPage, size: 20 }))
+    const albumIdNum = parseInt(albumId as string);
+    dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: reviewsPage, size: 20 }))
       .unwrap()
       .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
@@ -102,7 +102,7 @@ const AlbumDetailPage = () => {
       .catch((err) => {
         console.error('Failed to fetch reviews:', err);
       });
-  }, [id, reviewsPage, isAuthenticated, currentUser, dispatch]);
+  }, [albumId, reviewsPage, isAuthenticated, currentUser, dispatch]);
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {
@@ -188,7 +188,7 @@ const AlbumDetailPage = () => {
                 <div className="album-info">
                   {album.genre && <span className="album-genre">{album.genre}</span>}
                   {album.genre && album.release_date && <span className="info-separator">&bull;</span>}
-                  {album.release_date && <span className="album-date">{album.release_date.getDate()}</span>}
+                  {album.release_date && <span className="album-date">{formatDate(album.release_date)}</span>}
                 </div>
               </div>
             </div>  

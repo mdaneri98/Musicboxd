@@ -5,31 +5,31 @@ import { UserCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { 
   fetchUserByIdAsync,
-  fetchFollowingAsync,
+  fetchFollowersAsync,
   selectCurrentProfile,
-  selectFollowing,
+  selectFollowers,
   selectLoadingProfile,
-  selectLoadingFollowing,
+  selectLoadingFollowers,
   clearCurrentProfile,
   selectCurrentUser,
   selectIsAuthenticated,
   followUserAsync
 } from '@/store/slices';
 
-const FollowingPage = () => {
+const FollowersPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { userId } = router.query;
   const dispatch = useAppDispatch();
   
   const loggedUser = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectCurrentProfile);
-  const following = useAppSelector(selectFollowing);
+  const followers = useAppSelector(selectFollowers);
   const loadingProfile = useAppSelector(selectLoadingProfile);
-  const loadingFollowing = useAppSelector(selectLoadingFollowing);
-  const [isOwnProfile, setIsOwnProfile] = useState(loggedUser?.id === parseInt(id as string));
+  const loadingFollowers = useAppSelector(selectLoadingFollowers);
+  const loading = loadingProfile || loadingFollowers;
+  const [isOwnProfile, setIsOwnProfile] = useState(loggedUser?.id === parseInt(userId as string));
   const [isFollowing, setIsFollowing] = useState(user?.is_followed_by_logged_user ?? false);
   const [followLoading, setFollowLoading] = useState(false);
-  const loading = loadingProfile || loadingFollowing;
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -41,19 +41,18 @@ const FollowingPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!userId) return;
     
-    const userId = parseInt(id as string);
-    dispatch(fetchUserByIdAsync(userId));
+    const userIdNum = parseInt(userId as string);
+    dispatch(fetchUserByIdAsync(userIdNum));
     setIsFollowing(user?.is_followed_by_logged_user ?? false);
-    
-    dispatch(fetchFollowingAsync({ userId, page, size: 20 }))
+    dispatch(fetchFollowersAsync({ userId: userIdNum, page, size: 20 }))
       .unwrap()
-      .then((followingData) => {
-        setHasMore(followingData.items.length === 20);
+      .then((followersData) => {
+        setHasMore(followersData.items.length === 20);
       })
-      .catch((err) => console.error('Failed to fetch following:', err));
-  }, [id, page, dispatch]);
+      .catch((err) => console.error('Failed to fetch followers:', err));
+  }, [userId, page, dispatch]);
 
   if (loading || !user) {
     return (
@@ -73,7 +72,7 @@ const FollowingPage = () => {
   };
 
   return (
-    <Layout title={`Musicboxd - @${user.username} Following`}>
+    <Layout title={`Musicboxd - @${user.username} Followers`}>
       <div className="content-wrapper">
         <div className="profile-header">
           <header>
@@ -81,15 +80,15 @@ const FollowingPage = () => {
           </header>
         </div>
 
-        <h1 className="page-title">Following</h1>
+        <h1 className="page-title">Followers</h1>
 
-        {following.length === 0 ? (
-          <p className="no-results">Not following anyone yet</p>
+        {followers.length === 0 ? (
+          <p className="no-results">No followers yet</p>
         ) : (
           <>
             <div className="users-grid">
-              {following.map((followedUser) => (
-                <UserCard key={followedUser.id} user={followedUser} />
+              {followers.map((follower) => (
+                <UserCard key={follower.id} user={follower} />
               ))}
             </div>
 
@@ -118,4 +117,4 @@ const FollowingPage = () => {
   );
 };
 
-export default FollowingPage;
+export default FollowersPage;

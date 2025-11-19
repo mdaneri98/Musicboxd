@@ -167,7 +167,7 @@ public class ReviewController extends BaseController {
         ReviewDTO reviewDTO = reviewService.findById(reviewId, SecurityContextUtils.getCurrentUserId());
         List<UserDTO> userDTOs = reviewService.likedBy(reviewId, page, size);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
-        Integer totalCount = reviewDTO.getLikes().intValue();
+        Integer totalCount = reviewDTO.getLikes();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE + ApiUriConstants.REVIEW_LIKES, ControllerUtils.likesCollectionLinks, reviewId);
         

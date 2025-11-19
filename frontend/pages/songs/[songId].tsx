@@ -25,7 +25,7 @@ import type { Album, Artist, Review, HALResource } from '@/types';
 
 const SongDetailPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { songId } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -52,10 +52,10 @@ const SongDetailPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!songId) return;
     
-    const songId = parseInt(id as string);
-    dispatch(fetchSongByIdAsync(songId))
+    const songIdNum = parseInt(songId as string);
+    dispatch(fetchSongByIdAsync(songIdNum))
       .unwrap()
       .then((songData) => {
         dispatch(fetchAlbumByIdAsync(songData.data.album_id))
@@ -69,13 +69,13 @@ const SongDetailPage = () => {
           .catch((err) => console.error('Failed to fetch artist:', err));
       })
       .catch((err) => console.error('Failed to fetch song:', err));
-  }, [id, dispatch]);
+  }, [songId, dispatch]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!songId) return;
     
-    const songId = parseInt(id as string);
-    dispatch(fetchSongReviewsAsync({ songId, page: reviewsPage, size: 20 }))
+    const songIdNum = parseInt(songId as string);
+    dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: reviewsPage, size: 20 }))
       .unwrap()
       .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
@@ -89,7 +89,7 @@ const SongDetailPage = () => {
         }
       })
       .catch((err) => console.error('Failed to fetch reviews:', err));
-  }, [id, reviewsPage, isAuthenticated, currentUser, dispatch]);
+  }, [songId, reviewsPage, isAuthenticated, currentUser, dispatch]);
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {
@@ -238,7 +238,7 @@ const SongDetailPage = () => {
             {album?.release_date && (
               <div className="song-info-item">
                 <span className="info-label">Release Date:</span>
-                <span className="info-value">{album.release_date.getDate()}</span>
+                <span className="info-value">{new Date(album.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
               </div>
             )}
           </div>
