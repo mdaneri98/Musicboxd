@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { authRepository } from '@/repositories';
-import { User, LoginResponse, RegisterFormData } from '@/types';
+import { User, LoginResponse, RegisterFormData, RefreshTokenResponse } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -14,6 +14,7 @@ import type { RootState } from '../index';
 
 export interface AuthState {
   currentUser: User | null;
+  jwt: { accessToken: string | null; refreshToken: string | null };
   isAuthenticated: boolean;
   isModerator: boolean;
   loading: boolean;
@@ -27,6 +28,7 @@ export interface AuthState {
 
 const initialState: AuthState = {
   currentUser: null,
+  jwt: { accessToken: null, refreshToken: null },
   isAuthenticated: false,
   isModerator: false,
   loading: false,
@@ -103,12 +105,19 @@ export const getCurrentUserAsync = createAsyncThunk<User, void, { rejectValue: s
 /**
  * Check authentication status on app initialization
  */
-export const checkAuthAsync = createAsyncThunk<User | null, void, { rejectValue: string }>(
+export const checkAuthAsync = createAsyncThunk<
+  { user: User; accessToken: string; refreshToken: string } | null,
+  void,
+  { rejectValue: string }
+>(
   'auth/checkAuth',
   async (_, { rejectWithValue }) => {
     try {
-      // Check if user has valid access token
-      if (!authRepository.isAuthenticated()) {
+      // Check if user has valid access token in localStorage
+      const accessToken = authRepository.getAccessToken();
+      const refreshToken = authRepository.getRefreshToken();
+
+      if (!accessToken || !refreshToken) {
         return null;
       }
 
@@ -117,7 +126,12 @@ export const checkAuthAsync = createAsyncThunk<User | null, void, { rejectValue:
       if (!response.data) {
         return rejectWithValue('Invalid user response');
       }
-      return response.data as User;
+
+      return {
+        user: response.data as User,
+        accessToken,
+        refreshToken,
+      };
     } catch (error: any) {
       // Token is invalid, clear auth state
       authRepository.clearAuth();
@@ -129,7 +143,11 @@ export const checkAuthAsync = createAsyncThunk<User | null, void, { rejectValue:
 /**
  * Refresh access token
  */
-export const refreshTokenAsync = createAsyncThunk<void, void, { rejectValue: string }>(
+export const refreshTokenAsync = createAsyncThunk<
+  RefreshTokenResponse,
+  void,
+  { rejectValue: string }
+>(
   'auth/refreshToken',
   async (_, { rejectWithValue }) => {
     try {
@@ -137,7 +155,8 @@ export const refreshTokenAsync = createAsyncThunk<void, void, { rejectValue: str
       if (!refreshToken) {
         throw new Error('No refresh token available');
       }
-      await authRepository.refresh(refreshToken);
+      const response = await authRepository.refresh(refreshToken);
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Token refresh failed');
     }
@@ -173,6 +192,7 @@ const authSlice = createSlice({
      */
     clearAuth: (state) => {
       state.currentUser = null;
+      state.jwt = { accessToken: null, refreshToken: null };
       state.isAuthenticated = false;
       state.isModerator = false;
       state.error = null;
@@ -189,6 +209,10 @@ const authSlice = createSlice({
       .addCase(loginAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload.user as User;
+        state.jwt = {
+          accessToken: action.payload.access_token,
+          refreshToken: action.payload.refresh_token,
+        };
         state.isAuthenticated = true;
         state.isModerator = action.payload.user.moderator;
         state.error = null;
@@ -198,6 +222,7 @@ const authSlice = createSlice({
         state.error = action.payload || 'Login failed';
         state.isAuthenticated = false;
         state.currentUser = null;
+        state.jwt = { accessToken: null, refreshToken: null };
         state.isModerator = false;
       });
 
@@ -225,6 +250,7 @@ const authSlice = createSlice({
       .addCase(logoutAsync.fulfilled, (state) => {
         state.loading = false;
         state.currentUser = null;
+        state.jwt = { accessToken: null, refreshToken: null };
         state.isAuthenticated = false;
         state.isModerator = false;
         state.error = null;
@@ -233,6 +259,7 @@ const authSlice = createSlice({
         // Even on error, clear local state
         state.loading = false;
         state.currentUser = null;
+        state.jwt = { accessToken: null, refreshToken: null };
         state.isAuthenticated = false;
         state.isModerator = false;
       });
@@ -266,11 +293,16 @@ const authSlice = createSlice({
       .addCase(checkAuthAsync.fulfilled, (state, action) => {
         state.initializing = false;
         if (action.payload) {
-          state.currentUser = action.payload;
+          state.currentUser = action.payload.user;
+          state.jwt = {
+            accessToken: action.payload.accessToken,
+            refreshToken: action.payload.refreshToken,
+          };
           state.isAuthenticated = true;
-          state.isModerator = action.payload.moderator;
+          state.isModerator = action.payload.user.moderator;
         } else {
           state.currentUser = null;
+          state.jwt = { accessToken: null, refreshToken: null };
           state.isAuthenticated = false;
           state.isModerator = false;
         }
@@ -278,6 +310,7 @@ const authSlice = createSlice({
       .addCase(checkAuthAsync.rejected, (state) => {
         state.initializing = false;
         state.currentUser = null;
+        state.jwt = { accessToken: null, refreshToken: null };
         state.isAuthenticated = false;
         state.isModerator = false;
       });
@@ -287,13 +320,18 @@ const authSlice = createSlice({
       .addCase(refreshTokenAsync.pending, (state) => {
         state.error = null;
       })
-      .addCase(refreshTokenAsync.fulfilled, (state) => {
+      .addCase(refreshTokenAsync.fulfilled, (state, action) => {
         state.error = null;
+        state.jwt = {
+          accessToken: action.payload.access_token,
+          refreshToken: action.payload.refresh_token,
+        };
       })
       .addCase(refreshTokenAsync.rejected, (state, action) => {
         state.error = action.payload || 'Token refresh failed';
         state.isAuthenticated = false;
         state.currentUser = null;
+        state.jwt = { accessToken: null, refreshToken: null };
         state.isModerator = false;
       });
   },
@@ -315,6 +353,11 @@ export const selectIsModerator = (state: RootState) => state.auth.isModerator;
 export const selectAuthLoading = (state: RootState) => state.auth.loading;
 export const selectAuthError = (state: RootState) => state.auth.error;
 export const selectAuthInitializing = (state: RootState) => state.auth.initializing;
+
+// JWT selectors
+export const selectJwtTokens = (state: RootState) => state.auth.jwt;
+export const selectAccessToken = (state: RootState) => state.auth.jwt.accessToken;
+export const selectRefreshToken = (state: RootState) => state.auth.jwt.refreshToken;
 
 // Computed selectors
 export const selectUserId = (state: RootState) => state.auth.currentUser?.id ?? null;

@@ -11,7 +11,6 @@ import {
   RefreshTokenResponse,
   HALResource,
 } from '@/types';
-import { setCurrentUser } from '@/store/slices/authSlice';
 import { RegisterFormData } from '@/types/forms';
 
 // ============================================================================
@@ -57,7 +56,6 @@ class AuthRepository {
       }
       
       tokenStorage.setTokens(data.access_token, data.refresh_token);
-      setCurrentUser(data.user);
     
       return data;
     } catch (error) {
