@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { albumRepository, imageRepository } from '@/repositories';
+import { albumRepository } from '@/repositories';
 import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 
@@ -92,25 +92,7 @@ export const createAlbumAsync = createAsyncThunk<
   { rejectValue: string }
 >('albums/createAlbumAsync', async (albumData, { rejectWithValue }) => {
   try {
-    // Handle image upload if present
-    let albumImageId: number | undefined;
-    if (albumData.albumImage) {
-      try {
-        albumImageId = await imageRepository.uploadImage(albumData.albumImage);
-      } catch (error) {
-        return rejectWithValue('Failed to upload album image');
-      }
-    }
-
-    const payload: CreateAlbumFormData = {
-      title: albumData.title,
-      artistId: albumData.artistId,
-      releaseDate: albumData.releaseDate,
-      genre: albumData.genre,
-      albumImageId: albumImageId,
-    };
-
-    const album = await albumRepository.createAlbum(payload);
+    const album = await albumRepository.createAlbum(albumData);
     return album as HALResource<Album>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create album');
@@ -123,26 +105,7 @@ export const updateAlbumAsync = createAsyncThunk<
   { rejectValue: string }
 >('albums/updateAlbumAsync', async ({ id, albumData }, { rejectWithValue }) => {
   try {
-    // Handle image upload if present
-    let albumImageId: number | undefined;
-    if (albumData.albumImage) {
-      try {
-        albumImageId = await imageRepository.uploadImage(albumData.albumImage);
-      } catch (error) {
-        return rejectWithValue('Failed to upload album image');
-      }
-    }
-
-    // Create API payload with imageId instead of File
-    const apiPayload: any = {
-      title: albumData.title,
-      artistId: albumData.artistId,
-      releaseDate: albumData.releaseDate,
-      genre: albumData.genre,
-      ...(albumImageId && { albumImageId }),
-    };
-
-    const album = await albumRepository.updateAlbum(id, apiPayload);
+    const album = await albumRepository.updateAlbum(id, albumData);
     return album as HALResource<Album>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to update album');

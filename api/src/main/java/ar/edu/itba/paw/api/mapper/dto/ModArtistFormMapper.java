@@ -22,10 +22,10 @@ public class ModArtistFormMapper {
         }
         
         ArtistDTO dto = new ArtistDTO();
-        dto.setId(form.getId() > 0 ? form.getId() : null);
+        dto.setId(form.getId());
         dto.setName(form.getName());
         dto.setBio(form.getBio());
-        dto.setImageId(form.getArtistImgId() > 0 ? form.getArtistImgId() : null);
+        dto.setImageId(form.getArtistImgId());
 
         if (form.getAlbums() != null && !form.getAlbums().isEmpty()) {
             dto.setAlbums(form.getAlbums().stream()

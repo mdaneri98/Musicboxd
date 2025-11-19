@@ -253,7 +253,6 @@ class ApiClient {
     options?: APIRequestOptions
   ): Promise<HALResource<T>> {
     try {
-      console.log("POST request to:", url);
       const response: AxiosResponse<HALResource<T>> = await axiosInstance.post(url, data, {
         headers: options?.headers,
         params: options?.params,

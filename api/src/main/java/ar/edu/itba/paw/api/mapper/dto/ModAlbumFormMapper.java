@@ -22,12 +22,12 @@ public class ModAlbumFormMapper {
         }
         
         AlbumDTO dto = new AlbumDTO();
-        dto.setId(form.getId() > 0 ? form.getId() : null);
+        dto.setId(form.getId());
         dto.setTitle(form.getTitle());
         dto.setGenre(form.getGenre());
         dto.setReleaseDate(form.getReleaseDate());
-        dto.setImageId(form.getAlbumImageId() > 0 ? form.getAlbumImageId() : null);
-        dto.setArtistId(form.getArtistId() > 0 ? form.getArtistId() : null);
+        dto.setImageId(form.getAlbumImageId());
+        dto.setArtistId(form.getArtistId());
         dto.setIsDeleted(form.isDeleted());
         
         // Map nested songs if present
@@ -36,8 +36,6 @@ public class ModAlbumFormMapper {
                     .map(songFormMapper::toDTO)
                     .collect(Collectors.toList()));
         }
-        
-        // Note: albumImage (MultipartFile) should be handled separately in the controller
         
         return dto;
     }

@@ -18,6 +18,4 @@ public interface ImageService {
 
     Long getDefaultProfileImgId();
 
-    Long handleImage(MultipartFile file);
-
 }

@@ -9,7 +9,6 @@ import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.api.models.resources.UserResource;
-import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,9 +47,6 @@ public class UserController extends BaseController {
 
     @Autowired
     private ReviewService reviewService;
-
-    @Autowired
-    private ImageService imageService;
 
     @Autowired
     private UserResourceMapper userResourceMapper;
@@ -123,7 +119,6 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response updateUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserProfileForm userProfileForm) {
         UserDTO userDTO = userProfileFormMapper.toDTO(userProfileForm);
-        userDTO.setImageId(imageService.handleImage(userProfileForm.getProfilePicture()));
         userDTO.setId(userId);
         
         UserDTO user = userService.updateUser(userDTO);

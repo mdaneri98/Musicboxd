@@ -19,7 +19,7 @@ public class UserProfileFormMapper {
         dto.setUsername(form.getUsername());
         dto.setName(form.getName());
         dto.setBio(form.getBio());
-        // Note: profilePicture (MultipartFile) should be handled separately in the controller
+        dto.setImageId(form.getImageId());
         
         return dto;
     }

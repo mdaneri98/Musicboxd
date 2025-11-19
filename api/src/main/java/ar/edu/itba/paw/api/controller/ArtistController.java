@@ -29,7 +29,6 @@ import ar.edu.itba.paw.api.form.ModArtistForm;
 import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModArtistFormMapper;
-import ar.edu.itba.paw.services.ImageService;
 import ar.edu.itba.paw.api.utils.ControllerUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -58,9 +57,6 @@ public class ArtistController extends BaseController {
     
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private ImageService imageService;
     
     @Autowired
     private SongResourceMapper songResourceMapper;
@@ -136,7 +132,7 @@ public class ArtistController extends BaseController {
     @PreAuthorize("hasRole('MODERATOR')")
     public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModArtistForm modArtistForm) {
         ArtistDTO artistDTO = modArtistFormMapper.toDTO(modArtistForm);
-        artistDTO.setImageId(imageService.handleImage(modArtistForm.getArtistImage()));
+        artistDTO.setImageId(modArtistForm.getArtistImgId());
         artistDTO.setId(id);
         ArtistDTO responseDTO = artistService.update(artistDTO);
         ArtistResource artistResource = artistResourceMapper.toResource(responseDTO, getBaseUrl());

@@ -28,7 +28,6 @@ import ar.edu.itba.paw.api.mapper.dto.ModSongFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import ar.edu.itba.paw.services.ImageService;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -51,9 +50,6 @@ public class AlbumController extends BaseController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private ImageService imageService;
 
     @Autowired
     private AlbumResourceMapper albumResourceMapper;
@@ -107,7 +103,6 @@ public class AlbumController extends BaseController {
     @PreAuthorize("hasRole('MODERATOR')")
     public Response createAlbum(@Valid ModAlbumForm modAlbumForm) {
         AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
-        albumDTO.setImageId(imageService.handleImage(modAlbumForm.getAlbumImage()));
         AlbumDTO responseDTO = albumService.create(albumDTO);
         AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(albumResource);
@@ -126,7 +121,6 @@ public class AlbumController extends BaseController {
     @PreAuthorize("hasRole('MODERATOR')")
     public Response updateAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModAlbumForm modAlbumForm) {
         AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
-        albumDTO.setImageId(imageService.handleImage(modAlbumForm.getAlbumImage()));
         albumDTO.setId(id);
         AlbumDTO responseDTO = albumService.update(albumDTO);
         AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());

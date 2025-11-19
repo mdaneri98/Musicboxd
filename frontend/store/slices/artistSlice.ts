@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { artistRepository, imageRepository } from '@/repositories';
+import { artistRepository } from '@/repositories';
 import { Artist, Album, Song, Review, Collection, HALResource, EditArtistFormData, CreateArtistFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 
@@ -105,23 +105,7 @@ export const createArtistAsync = createAsyncThunk<
   { rejectValue: string }
 >('artists/createArtistAsync', async (artistData, { rejectWithValue }) => {
   try {
-    // Handle image upload if present
-    let artistImgId: number | undefined;
-    if (artistData.artistImage) {
-      try {
-        artistImgId = await imageRepository.uploadImage(artistData.artistImage);
-      } catch (error) {
-        return rejectWithValue('Failed to upload artist image');
-      }
-    }
-
-    const payload: CreateArtistFormData = {
-      name: artistData.name,
-      bio: artistData.bio,
-      artistImgId: artistImgId,
-    };
-
-    const artist = await artistRepository.createArtist(payload);
+    const artist = await artistRepository.createArtist(artistData);
     return artist as HALResource<Artist>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create artist');
@@ -137,24 +121,7 @@ export const updateArtistAsync = createAsyncThunk<
   { rejectValue: string }
 >('artists/updateArtistAsync', async ({ id, artistData }, { rejectWithValue }) => {
   try {
-    // Handle image upload if present
-    let artistImgId: number | undefined;
-    if (artistData.artistImage) {
-      try {
-        artistImgId = await imageRepository.uploadImage(artistData.artistImage);
-      } catch (error) {
-        return rejectWithValue('Failed to upload artist image');
-      }
-    }
-
-    // Create API payload with imageId instead of File
-    const apiPayload: any = {
-      name: artistData.name,
-      bio: artistData.bio,
-      ...(artistImgId && { artistImgId }),
-    };
-
-    const artist = await artistRepository.updateArtist(id, apiPayload);
+    const artist = await artistRepository.updateArtist(id, artistData);
     return artist as HALResource<Artist>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to update artist');

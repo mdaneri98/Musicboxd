@@ -87,17 +87,14 @@ export default function AddSongPage() {
     try {
       setLoading(true);
 
-      // Create song
-      const songData = {
+      const songData: CreateSongFormData = {
         title: title.trim(),
         duration: parseDurationToSeconds(duration),
-        trackNumber: trackNumber ? parseInt(trackNumber) : undefined,
-        albumId: album.id,
-      } as CreateSongFormData;
+        track_number: trackNumber ? parseInt(trackNumber) : undefined,
+        album_id: album.id,
+      };
 
-      const newSong = await dispatch(createSongAsync(songData as CreateSongFormData)).unwrap();
-
-      // Redirect to song page
+      const newSong = await dispatch(createSongAsync(songData)).unwrap();
       router.push(`/songs/${newSong.data?.id}`);
     } catch (error) {
       console.error('Failed to create song:', error);

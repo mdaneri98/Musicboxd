@@ -1,8 +1,5 @@
 package ar.edu.itba.paw.api.form;
 
-import org.springframework.lang.Nullable;
-import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -16,36 +13,32 @@ public class ModArtistForm {
     @Size(min = 2, max = 2048, message = "{validation.artist.bio.size}")
     private String bio;
 
-    @Nullable
-    private MultipartFile artistImage;
-
     @Valid
     private List<ModAlbumForm> albums = new ArrayList<>();
 
     // Hidden inputs
-    private long id;
-    private long artistImgId;
+    private Long id;
+    private Long artistImgId;
     private boolean deleted;
 
     public ModArtistForm() {
 
     }
 
-    public ModArtistForm(long id, String name, String bio, long artistImgId, MultipartFile artistImage, List<ModAlbumForm> albums, boolean deleted) {
+    public ModArtistForm(Long id, String name, String bio, Long artistImgId, List<ModAlbumForm> albums, boolean deleted) {
         this.id = id;
         this.name = name;
         this.bio = bio;
         this.artistImgId = artistImgId;
-        this.artistImage = artistImage;
         this.albums = albums;
         this.deleted = deleted;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -65,20 +58,12 @@ public class ModArtistForm {
         this.bio = bio;
     }
 
-    public MultipartFile getArtistImage() {
-        return artistImage;
-    }
-
-    public long getArtistImgId() {
+    public Long getArtistImgId() {
         return artistImgId;
     }
 
-    public void setArtistImgId(long artistImgId) {
+    public void setArtistImgId(Long artistImgId) {
         this.artistImgId = artistImgId;
-    }
-
-    public void setArtistImage(MultipartFile artistImage) {
-        this.artistImage = artistImage;
     }
 
     public boolean isDeleted() {
