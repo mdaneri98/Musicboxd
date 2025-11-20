@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Layout } from '@/components/layout';
+import { Layout, ArtistInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
-import { RatingCard } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { 
   selectIsAuthenticated, 
@@ -133,63 +132,21 @@ const ArtistDetailPage = () => {
     );
   }
 
-  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
+
 
   return (
     <Layout title={`Musicboxd - ${artist.name}`}>
       <div className="content-wrapper">
-        {/* Artist Header */}
-        <section className="entity-header">
-          <div className="entity-main-info">
-            <img src={artistImgUrl} alt={artist.name} className="entity-image" />
-            <div className="entity-details">
-              <div className="entity-type">
-                Artist
-                {currentUser && currentUser.moderator && (
-                  <Link href={`/mod/artists/${artist.id}/edit`} className="edit-link">
-                    <i className="fas fa-pencil-alt"></i>
-                  </Link>
-                )}
-              </div>
-              <h1 className="entity-title">{artist.name}</h1>
-              {artist.bio && <p className="entity-description">{artist.bio}</p>}
-            </div>
-          </div>
-
-          {/* Rating Card */}
-          <div className="rating-card-container">
-            <RatingCard
-              totalRatings={artist.rating_count || 0}
-              averageRating={artist.avg_rating || 0}
-              userRating={userRating}
-              reviewed={isReviewed}
-              entityType="artists"
-              entityId={artist.id}
-              entityLabel="artist"
-            />
-          </div>
-        </section>
-
-        {/* Action Buttons */}
-        <section className="entity-actions">
-          {!isAuthenticated ? (
-            <Link href="/login" className="btn btn-primary">
-              Login to Add Favorite
-            </Link>
-          ) : (
-            <button
-              onClick={handleFavoriteToggle}
-              disabled={favoriteLoading}
-              className={`btn ${isFavorite ? 'btn-secondary' : 'btn-primary'}`}
-            >
-              {favoriteLoading
-                ? 'Loading...'
-                : isFavorite
-                ? 'Remove from Favorites'
-                : 'Add to Favorites'}
-            </button>
-          )}
-        </section>
+        <ArtistInfo
+          artist={artist}
+          currentUser={currentUser}
+          isAuthenticated={isAuthenticated}
+          isFavorite={isFavorite}
+          favoriteLoading={favoriteLoading}
+          userRating={userRating}
+          isReviewed={isReviewed}
+          onFavoriteToggle={handleFavoriteToggle}
+        />
 
         {/* Albums Section */}
         {albums.length > 0 && (

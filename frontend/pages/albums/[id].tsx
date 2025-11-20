@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Layout } from '@/components/layout';
+import { Layout, AlbumInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
-import { RatingCard } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { 
   selectIsAuthenticated, 
@@ -21,7 +20,6 @@ import {
   selectAlbumError,
   clearCurrentAlbum
 } from '@/store/slices';
-import { imageRepository } from '@/repositories';
 import type { Review, HALResource, Artist } from '@/types';
 
 const AlbumDetailPage = () => {
@@ -77,7 +75,7 @@ const AlbumDetailPage = () => {
       });
     
     // Fetch songs
-    dispatch(fetchAlbumSongsAsync({ albumId, page: 0, size: 100 }));
+    dispatch(fetchAlbumSongsAsync({ albumId, page: 1, size: 100 }));
   }, [id, dispatch]);
 
   // Fetch reviews
@@ -126,15 +124,6 @@ const AlbumDetailPage = () => {
     }
   };
 
-  const formatDate = (date?: Date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
   if (loading || !album) {
     return (
       <Layout title="Loading...">
@@ -157,77 +146,20 @@ const AlbumDetailPage = () => {
     );
   }
 
-  const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
-  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
-
   return (
     <Layout title={`Musicboxd - ${album.title}`}>
       <div className="content-wrapper">
-        {/* Album Header */}
-        <section className="entity-header">
-          <div className="entity-main-info">
-            <img src={albumImgUrl} alt={album.title} className="entity-image album-cover" />
-            <div className="entity-details">
-              <div className="entity-type">
-                Album
-                {currentUser && currentUser.moderator && (
-                  <Link href={`/mod/albums/${album.id}/edit`} className="edit-link">
-                    <i className="fas fa-pencil-alt"></i>
-                  </Link>
-                )}
-              </div>
-              <h1 className="entity-title">{album.title}</h1>
-              
-              <div className="album-metadata">
-                {artist && (
-                  <Link href={`/artists/${artist.id}`} className="artist-link">
-                    <img src={artistImgUrl} alt={artist.name} className="artist-thumbnail" />
-                    <span className="artist-name">{artist.name}</span>
-                  </Link>
-                )}
-                <div className="album-info">
-                  {album.genre && <span className="album-genre">{album.genre}</span>}
-                  {album.genre && album.release_date && <span className="info-separator">&bull;</span>}
-                  {album.release_date && <span className="album-date">{album.release_date.getDate()}</span>}
-                </div>
-              </div>
-            </div>  
-          </div>
-
-          {/* Rating Card */}
-          <div className="rating-card-container">
-            <RatingCard
-              totalRatings={album.rating_count || 0}
-              averageRating={album.avg_rating || 0}
-              userRating={userRating}
-              reviewed={isReviewed}
-              entityType="albums"
-              entityId={album.id}
-              entityLabel="album"
-            />
-          </div>
-        </section>
-
-        {/* Action Buttons */}
-        <section className="entity-actions">
-          {!isAuthenticated ? (
-            <Link href="/login" className="btn btn-primary">
-              Login to Add Favorite
-            </Link>
-          ) : (
-            <button
-              onClick={handleFavoriteToggle}
-              disabled={favoriteLoading}
-              className={`btn ${isFavorite ? 'btn-secondary' : 'btn-primary'}`}
-            >
-              {favoriteLoading
-                ? 'Loading...'
-                : isFavorite
-                ? 'Remove from Favorites'
-                : 'Add to Favorites'}
-            </button>
-          )}
-        </section>
+        <AlbumInfo
+          album={album}
+          artist={artist}
+          currentUser={currentUser}
+          isAuthenticated={isAuthenticated}
+          isFavorite={isFavorite}
+          favoriteLoading={favoriteLoading}
+          userRating={userRating}
+          isReviewed={isReviewed}
+          onFavoriteToggle={handleFavoriteToggle}
+        />
 
         {/* Songs Section */}
         {songs.length > 0 && (

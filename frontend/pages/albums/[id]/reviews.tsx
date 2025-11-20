@@ -153,7 +153,7 @@ const AlbumReviewPage = () => {
             <div className="review-preview-info">
               <h2 className="review-preview-title">{album.title}</h2>
               {album.release_date && (
-                  <p className="review-preview-subtitle">{album.release_date.getDate()}</p>
+                  <p className="review-preview-subtitle">{album.release_date.toString()}</p>
               )}
             </div>
           </Link>

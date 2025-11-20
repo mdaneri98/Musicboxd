@@ -12,7 +12,7 @@ const MusicDiscoveryPage = () => {
   const artistLoading = useAppSelector(selectArtistLoading);
   const albumLoading = useAppSelector(selectAlbumLoading);
   const songLoading = useAppSelector(selectSongLoading);
-  const loading = artistLoading || albumLoading || songLoading;
+  const loading = artistLoading && albumLoading && songLoading;
   
   const [artistTab, setArtistTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
   const [albumTab, setAlbumTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
