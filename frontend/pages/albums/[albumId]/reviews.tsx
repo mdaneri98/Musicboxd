@@ -23,7 +23,7 @@ import type { ReviewFormData } from '@/types';
 
 const AlbumReviewPage = () => {
   const router = useRouter();
-  const { id, edit } = router.query;
+  const { albumId, edit } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -50,26 +50,26 @@ const AlbumReviewPage = () => {
     }
 
     const fetchData = async () => {
-      if (!id) return;
+      if (!albumId) return;
 
       try {
         setLoading(true);
-        const albumId = parseInt(id as string);
-        await dispatch(fetchAlbumByIdAsync(albumId)).unwrap();
+        const albumIdNum = parseInt(albumId as string);
+        await dispatch(fetchAlbumByIdAsync(albumIdNum)).unwrap();
         // Check if user already reviewed this album
         if (currentUser) {
-          const reviews = await dispatch(fetchAlbumReviewsAsync({ albumId, page: 1, size: 100 })).unwrap();
+          const reviews = await dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 100 })).unwrap();
           const userReview = reviews.items.find((r: any) => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {
-            router.push(`/albums/${id}/reviews?edit=true`);
+            router.push(`/albums/${albumId}/reviews?edit=true`);
             return;
           }
           
           if (userReview) {
             setExistingReview(userReview.data);
           } else if (isEditMode) {
-            router.push(`/albums/${id}/reviews`);
+            router.push(`/albums/${albumId}/reviews`);
             return;
           }
         }
@@ -81,7 +81,7 @@ const AlbumReviewPage = () => {
     };
 
     fetchData();
-  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch]);
+  }, [albumId, isAuthenticated, currentUser, isEditMode, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!album) return;
@@ -117,7 +117,7 @@ const AlbumReviewPage = () => {
 
     try {
       await dispatch(deleteReviewAsync(existingReview.id)).unwrap();
-      router.push(`/albums/${id}`);
+      router.push(`/albums/${albumId}`);
     } catch (error) {
       console.error('Failed to delete review:', error);
     }
@@ -153,7 +153,11 @@ const AlbumReviewPage = () => {
             <div className="review-preview-info">
               <h2 className="review-preview-title">{album.title}</h2>
               {album.release_date && (
+<<<<<<< HEAD:frontend/pages/albums/[id]/reviews.tsx
                   <p className="review-preview-subtitle">{album.release_date.toString()}</p>
+=======
+                  <p className="review-preview-subtitle">{new Date(album.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+>>>>>>> 1eec8ecc86241f8a906cfd3d0cd3ebbe658a87bd:frontend/pages/albums/[albumId]/reviews.tsx
               )}
             </div>
           </Link>

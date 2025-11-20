@@ -4,6 +4,7 @@ import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser, fetchArtistByIdAsync, createAlbumAsync } from '@/store/slices';
 import { CreateAlbumFormData } from '@/types/forms';
+import { imageRepository } from '@/repositories';
 
 export default function AddAlbumPage() {
   const router = useRouter();
@@ -89,16 +90,27 @@ export default function AddAlbumPage() {
     try {
       setLoading(true);
 
-      const albumData = {
+      // Upload image and get ID
+      let albumImageId: number | undefined;
+      if (imageFile) {
+        try {
+          albumImageId = await imageRepository.uploadImage(imageFile);
+        } catch (error) {
+          console.error('Failed to upload image:', error);
+          setErrors({ title: 'Failed to upload image. Please try again.' });
+          return;
+        }
+      }
+
+      const albumData: CreateAlbumFormData = {
         title: title.trim(),
         genre: genre.trim(),
-        releaseDate: releaseDate,
-        artistId: artistId!,
-        albumImage: imageFile,
-      } as CreateAlbumFormData;
+        release_date: releaseDate,
+        artist_id: artistId!,
+        album_image_id: albumImageId,
+      };
 
       const newAlbum = await dispatch(createAlbumAsync(albumData)).unwrap();
-
       router.push(`/albums/${newAlbum.data?.id}`);
     } catch (error) {
       console.error('Failed to create album:', error);

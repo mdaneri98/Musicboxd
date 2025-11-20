@@ -1,19 +1,31 @@
 package ar.edu.itba.paw.api.mapper.resource;
 
 import ar.edu.itba.paw.api.models.resources.ImageResource;
+import ar.edu.itba.paw.api.models.links.managers.ImageLinkManager;
 import ar.edu.itba.paw.models.Image;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ImageResourceMapper {
+@Component
+public class ImageResourceMapper implements ResourceMapper<Image, ImageResource> {
 
-    public ImageResource toResource(Image image) {
-        return new ImageResource(image);
+    @Autowired
+    private ImageLinkManager imageLinkManager;
+
+    @Override
+    public ImageResource toResource(Image image, String baseUrl) {
+        ImageResource resource = new ImageResource(image);
+        imageLinkManager.addImageLinks(resource, baseUrl, image.getId());
+        return resource;
     }
 
-    public List<ImageResource> toResourceList(List<Image> images) {
+    @Override
+    public List<ImageResource> toResourceList(List<Image> images, String baseUrl) {
         return images.stream()
-                .map(this::toResource)
+                .map(image -> toResource(image, baseUrl))
                 .collect(Collectors.toList());
     }
 }

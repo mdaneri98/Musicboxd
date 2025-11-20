@@ -23,7 +23,7 @@ import type { Album, ReviewFormData, HALResource, Review } from '@/types';
 
 const SongReviewPage = () => {
   const router = useRouter();
-  const { id, edit } = router.query;
+  const { songId, edit } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -56,29 +56,29 @@ const SongReviewPage = () => {
     }
 
     const fetchData = async () => {
-      if (!id) return;
+      if (!songId) return;
 
       try {
         setLoading(true);
-        const songId = parseInt(id as string);
-        const fetchedSong = await dispatch(fetchSongByIdAsync(songId)).unwrap();
+        const songIdNum = parseInt(songId as string);
+        const fetchedSong = await dispatch(fetchSongByIdAsync(songIdNum)).unwrap();
 
         const albumData = await dispatch(fetchAlbumByIdAsync(fetchedSong.data.album_id)).unwrap();
         setAlbum(albumData.data);
 
         if (currentUser) {
-          const reviews = await dispatch(fetchSongReviewsAsync({ songId, page: 1, size: 100 })).unwrap();
+          const reviews = await dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 100 })).unwrap();
           const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
           
           if (userReview && !isEditMode) {
-            router.push(`/songs/${id}/reviews?edit=true`);
+            router.push(`/songs/${songId}/reviews?edit=true`);
             return;
           }
           
           if (userReview) {
             setExistingReview(userReview.data);
           } else if (isEditMode) {
-            router.push(`/songs/${id}/reviews`);
+            router.push(`/songs/${songId}/reviews`);
             return;
           }
         }
@@ -90,7 +90,7 @@ const SongReviewPage = () => {
     };
 
     fetchData();
-  }, [id, isAuthenticated, currentUser, isEditMode, router, dispatch]);
+  }, [songId, isAuthenticated, currentUser, isEditMode, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!song) return;
@@ -124,7 +124,7 @@ const SongReviewPage = () => {
 
     try {
       await dispatch(deleteReviewAsync(existingReview.id)).unwrap();
-      router.push(`/songs/${id}`);
+      router.push(`/songs/${songId}`);
     } catch (error) {
       console.error('Failed to delete review:', error);
     }

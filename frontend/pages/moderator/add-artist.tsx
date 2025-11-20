@@ -4,6 +4,7 @@ import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser, createArtistAsync } from '@/store/slices';
 import { CreateArtistFormData } from '@/types/forms';
+import { imageRepository } from '@/repositories';
 
 export default function AddArtistPage() {
   const router = useRouter();
@@ -62,16 +63,25 @@ export default function AddArtistPage() {
     try {
       setLoading(true);
 
-      // Create artist
-      const artistData = {
+      // Upload image and get ID
+      let artistImgId: number | undefined;
+      if (imageFile) {
+        try {
+          artistImgId = await imageRepository.uploadImage(imageFile);
+        } catch (error) {
+          console.error('Failed to upload image:', error);
+          setErrors({ image: 'Failed to upload image. Please try again.' });
+          return;
+        }
+      }
+
+      const artistData: CreateArtistFormData = {
         name: name.trim(),
         bio: bio.trim(),
-        artistImage: imageFile,
-      } as CreateArtistFormData;
+        artist_img_id: artistImgId,
+      };
 
-      const newArtist = await dispatch(createArtistAsync(artistData as CreateArtistFormData)).unwrap();
-
-      // Redirect to artist page
+      const newArtist = await dispatch(createArtistAsync(artistData)).unwrap();
       router.push(`/artists/${newArtist.data?.id}`);
     } catch (error) {
       console.error('Failed to create artist:', error);

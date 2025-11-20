@@ -1,15 +1,11 @@
 package ar.edu.itba.paw.api.form;
 
-import org.springframework.lang.Nullable;
-import org.springframework.web.multipart.MultipartFile;
-
 import ar.edu.itba.paw.api.form.validation.UsernameNotInUse;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class UserProfileForm {
-
 
     @Size(min = 4, max = 50, message = "{validation.profile.username.size}")
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.profile.username.pattern}")
@@ -22,16 +18,14 @@ public class UserProfileForm {
     @Size(max = 255, message = "{validation.profile.bio.size}")
     private String bio;
 
-    @Nullable
-    private MultipartFile profilePicture;
+    private Long imageId;
 
     public UserProfileForm() {}
 
-    public UserProfileForm(String username, String name, String bio, MultipartFile profilePicture) {
+    public UserProfileForm(String username, String name, String bio) {
         this.username = username;
         this.name = name;
         this.bio = bio;
-        this.profilePicture = profilePicture;
     }
 
     public String getUsername() {
@@ -58,9 +52,11 @@ public class UserProfileForm {
         this.bio = bio;
     }
 
-    public MultipartFile getProfilePicture() {
-        return profilePicture;
+    public Long getImageId() {
+        return imageId;
     }
 
-    public void setProfilePicture(MultipartFile profilePicture) {}
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
+    }
 }

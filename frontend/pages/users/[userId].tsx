@@ -29,11 +29,11 @@ import { ProfileTabEnum } from '@/types';
 
 const UserProfilePage = () => {
   const router = useRouter();
-  const { id, tab: queryTab } = router.query;
+  const { userId, tab: queryTab } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const loggedUser = useAppSelector(selectCurrentUser);
-  const user = useAppSelector(selectUserById(parseInt(id as string)));
+  const user = useAppSelector(selectUserById(parseInt(userId as string)));
   
   const [activeTab, setActiveTab] = useState<ProfileTabEnum>(queryTab ? queryTab as ProfileTabEnum : ProfileTabEnum.FAVORITES);
   const favoriteArtists = useAppSelector(selectFavoriteArtists);
@@ -53,22 +53,22 @@ const UserProfilePage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!userId) return;
 
-    const userId = parseInt(id as string);
+    const userIdNum = parseInt(userId as string);
 
-    if (loggedUser && loggedUser.id === userId) {
+    if (loggedUser && loggedUser.id === userIdNum) {
       router.push(`/profile?tab=${activeTab}`);
       return;
     }
     
-    dispatch(fetchUserByIdAsync(userId));
-    dispatch(fetchFavoriteArtistsAsync(userId));
-    dispatch(fetchFavoriteAlbumsAsync(userId));
-    dispatch(fetchFavoriteSongsAsync(userId));
-    dispatch(fetchUserReviewsAsync({ userId, page: reviewsPagination.page, size: reviewsPagination.size }))
+    dispatch(fetchUserByIdAsync(userIdNum));
+    dispatch(fetchFavoriteArtistsAsync(userIdNum));
+    dispatch(fetchFavoriteAlbumsAsync(userIdNum));
+    dispatch(fetchFavoriteSongsAsync(userIdNum));
+    dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: reviewsPagination.page, size: reviewsPagination.size }))
     setIsFollowing(user?.is_followed_by_logged_user ?? false);
-  }, [id, dispatch]);
+  }, [userId, dispatch]);
 
 
   const handleFollowToggle = async () => {

@@ -16,13 +16,13 @@ public class ModSongForm {
     private Integer trackNumber;
 
     // Hidden inputs
-    private long id;
-    private long albumId;
+    private Long id;
+    private Long albumId;
     private boolean deleted = false;
 
     public ModSongForm() {}
 
-    public ModSongForm(long id, String title, String duration, Integer trackNumber, long albumId, boolean deleted) {
+    public ModSongForm(Long id, String title, String duration, Integer trackNumber, Long albumId, boolean deleted) {
         this.id = id;
         this.title = title;
         this.duration = duration;
@@ -31,9 +31,9 @@ public class ModSongForm {
         this.deleted = deleted;
     }
 
-    public long getId() {return id;}
+    public Long getId() {return id;}
 
-    public void setId(long id) {this.id = id;}
+    public void setId(Long id) {this.id = id;}
 
     public String getTitle() {
         return title;
@@ -59,9 +59,9 @@ public class ModSongForm {
         this.trackNumber = trackNumber;
     }
 
-    public long getAlbumId() { return albumId; }
+    public Long getAlbumId() { return albumId; }
 
-    public void setAlbumId(long albumId) { this.albumId = albumId; }
+    public void setAlbumId(Long albumId) { this.albumId = albumId; }
 
     public boolean isDeleted() {return deleted;}
 

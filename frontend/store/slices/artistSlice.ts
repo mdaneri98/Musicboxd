@@ -105,7 +105,7 @@ export const createArtistAsync = createAsyncThunk<
   { rejectValue: string }
 >('artists/createArtistAsync', async (artistData, { rejectWithValue }) => {
   try {
-    const artist = await artistRepository.createArtist(artistData as CreateArtistFormData);
+    const artist = await artistRepository.createArtist(artistData);
     return artist as HALResource<Artist>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create artist');

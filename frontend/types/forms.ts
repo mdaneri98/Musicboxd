@@ -5,15 +5,11 @@
 
 import { ReviewItemType, SearchType } from './enums';
 
-// ============================================================================
-// Authentication Forms (4)
-// ============================================================================
-
 /**
  * Login form data
  */
 export interface LoginFormData {
-  username: string; // Backend uses username, not email for login
+  username: string;
   password: string;
   rememberMe?: boolean;
 }
@@ -25,7 +21,7 @@ export interface RegisterFormData {
   username: string;
   email: string;
   password: string;
-  repeatPassword: string; // Changed from confirmPassword to match JSP
+  repeatPassword: string;
 }
 
 /**
@@ -41,7 +37,7 @@ export interface ForgotPasswordFormData {
 export interface ResetPasswordFormData {
   password: string;
   confirmPassword: string;
-  token: string; // Hidden field
+  token: string;
 }
 
 // ============================================================================
@@ -55,7 +51,7 @@ export interface EditProfileFormData {
   username: string;
   name?: string;
   bio?: string;
-  profilePicture?: File;
+  profilePicture?: number;
 }
 
 // ============================================================================
@@ -69,8 +65,8 @@ export interface ReviewFormData {
   title: string;
   description: string;
   rating: number; // 1-5, step 0.5
-  itemId: number; // Hidden field
-  itemType: ReviewItemType; // Hidden field
+  itemId: number;
+  itemType: ReviewItemType;
 }
 
 /**
@@ -78,7 +74,7 @@ export interface ReviewFormData {
  */
 export interface CommentFormData {
   content: string;
-  reviewId: number; // Hidden field
+  reviewId: number;
 }
 
 // ============================================================================
@@ -91,14 +87,17 @@ export interface CommentFormData {
 export interface CreateArtistFormData {
   name: string;
   bio?: string;
-  artistImage?: File;
+  artist_img_id?: number;
 }
 
 /**
  * Edit artist form data
  */
-export interface EditArtistFormData extends CreateArtistFormData {
-  id: number; // Hidden field
+export interface EditArtistFormData {
+  id: number;
+  name: string;
+  bio?: string;
+  artist_img_id?: number;
 }
 
 /**
@@ -106,17 +105,22 @@ export interface EditArtistFormData extends CreateArtistFormData {
  */
 export interface CreateAlbumFormData {
   title: string;
-  artistId: number;
-  releaseDate?: string; // ISO date string
+  artist_id: number;
+  release_date?: string; // ISO date string
   genre?: string;
-  albumImage?: File;
+  album_image_id?: number;
 }
 
 /**
  * Edit album form data
  */
-export interface EditAlbumFormData extends CreateAlbumFormData {
-  id: number; // Hidden field
+export interface EditAlbumFormData {
+  id: number;
+  title: string;
+  artist_id: number;
+  release_date?: string; // ISO date string
+  genre?: string;
+  album_image_id?: number;
 }
 
 /**
@@ -124,16 +128,22 @@ export interface EditAlbumFormData extends CreateAlbumFormData {
  */
 export interface CreateSongFormData {
   title: string;
-  albumId: number;
+  album_id: number;
   duration: number; // seconds
-  trackNumber?: number;
+  track_number?: number;
+  song_image_id?: number;
 }
 
 /**
  * Edit song form data
  */
-export interface EditSongFormData extends CreateSongFormData {
-  id: number; // Hidden field
+export interface EditSongFormData {
+  id: number;
+  title: string;
+  album_id: number;
+  duration: number; // seconds
+  track_number?: number;
+  song_image_id?: number;
 }
 
 // ============================================================================

@@ -16,11 +16,11 @@ public class ModSongFormMapper {
         }
         
         SongDTO dto = new SongDTO();
-        dto.setId(form.getId() > 0 ? form.getId() : null);
+        dto.setId(form.getId());
         dto.setTitle(form.getTitle());
         dto.setDuration(form.getDuration());
         dto.setTrackNumber(form.getTrackNumber());
-        dto.setAlbumId(form.getAlbumId() > 0 ? form.getAlbumId() : null);
+        dto.setAlbumId(form.getAlbumId());
         dto.setIsDeleted(form.isDeleted());
         
         return dto;

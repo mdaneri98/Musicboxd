@@ -26,7 +26,7 @@ import type { Review, HALResource } from '@/types';
 
 const ArtistDetailPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { artistId } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -56,20 +56,20 @@ const ArtistDetailPage = () => {
 
   // Fetch artist data
   useEffect(() => {
-    if (!id) return;
+    if (!artistId) return;
     
-    const artistId = parseInt(id as string);
-    dispatch(fetchArtistByIdAsync(artistId));
-    dispatch(fetchArtistAlbumsAsync({ artistId, page: 1, size: 10 }));
-    dispatch(fetchArtistSongsAsync({ artistId, page: 1, size: 10 }));
-  }, [id, dispatch]);
+    const artistIdNum = parseInt(artistId as string);
+    dispatch(fetchArtistByIdAsync(artistIdNum));
+    dispatch(fetchArtistAlbumsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
+    dispatch(fetchArtistSongsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
+  }, [artistId, dispatch]);
 
   // Fetch reviews with pagination
   useEffect(() => {
-    if (!id) return;
+    if (!artistId) return;
     
-    const artistId = parseInt(id as string);
-    dispatch(fetchArtistReviewsAsync({ artistId, page: reviewsPage, size: 20 }))
+    const artistIdNum = parseInt(artistId as string);
+    dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: reviewsPage, size: 20 }))
       .unwrap()
       .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
@@ -86,7 +86,7 @@ const ArtistDetailPage = () => {
       .catch((err) => {
         console.error('Failed to fetch reviews:', err);
       });
-  }, [id, reviewsPage, isAuthenticated, currentUser, dispatch]);
+  }, [artistId, reviewsPage, isAuthenticated, currentUser, dispatch]);
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {

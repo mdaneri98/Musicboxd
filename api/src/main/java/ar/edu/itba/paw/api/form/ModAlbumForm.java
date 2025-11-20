@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.api.form;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.Nullable;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -21,13 +19,10 @@ public class ModAlbumForm {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
 
-    @Nullable
-    private MultipartFile albumImage;
-
     // Hidden inputs
-    private long id;
-    private long albumImageId;
-    private long artistId;
+    private Long id;
+    private Long albumImageId;
+    private Long artistId;
 
     @Valid
     private List<ModSongForm> songs = new ArrayList<>();
@@ -35,23 +30,22 @@ public class ModAlbumForm {
 
     public ModAlbumForm() {}
 
-    public ModAlbumForm(long id, String title, String genre, LocalDate releaseDate, long albumImageId, MultipartFile albumImage, long artistId, List<ModSongForm> songs, boolean deleted) {
+    public ModAlbumForm(Long id, String title, String genre, LocalDate releaseDate, Long albumImageId, Long artistId, List<ModSongForm> songs, boolean deleted) {
         this.id = id;
         this.title = title;
         this.genre = genre;
         this.releaseDate = releaseDate;
         this.albumImageId = albumImageId;
-        this.albumImage = albumImage;
         this.artistId = artistId;
         this.songs = songs;
         this.deleted = deleted;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -75,21 +69,13 @@ public class ModAlbumForm {
 
     public void setReleaseDate(LocalDate releaseDate) { this.releaseDate = releaseDate; }
 
-    public long getAlbumImageId() { return albumImageId; }
+    public Long getAlbumImageId() { return albumImageId; }
 
-    public void setAlbumImageId(long albumImageId) { this.albumImageId = albumImageId; }
+    public void setAlbumImageId(Long albumImageId) { this.albumImageId = albumImageId; }
 
-    public MultipartFile getAlbumImage() {
-        return albumImage;
-    }
+    public Long getArtistId() { return artistId; }
 
-    public void setAlbumImage(MultipartFile albumImage) {
-        this.albumImage = albumImage;
-    }
-
-    public long getArtistId() { return artistId; }
-
-    public void setArtistId(long artistId) { this.artistId = artistId; }
+    public void setArtistId(Long artistId) { this.artistId = artistId; }
 
     public List<ModSongForm> getSongs() {
         return songs;
