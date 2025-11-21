@@ -15,6 +15,8 @@ import type { RootState } from '../index';
 export interface ReviewState {
   // Reviews by ID (normalized state)
   reviews: Record<number, Review>;
+  // Ordered reviews id list
+  orderedReviewsIds: number[];
   // Current review being viewed
   currentReview: Review | null;
   // Related data for current review
@@ -41,6 +43,7 @@ export interface ReviewState {
 
 const initialState: ReviewState = {
   reviews: {},
+  orderedReviewsIds: [],
   currentReview: null,
   reviewComments: [],
   reviewLikes: [],
@@ -299,7 +302,8 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.reviews = action.payload.items.map((review) => review.data as Review);
+        action.payload.items.forEach((review) => { state.reviews[review.data.id] = review.data as Review;});
+        state.orderedReviewsIds = action.payload.items.map((review) => review.data.id);
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
@@ -502,6 +506,7 @@ const reviewSlice = createSlice({
 export const { clearError, clearCurrentReview, addReview, removeReview } = reviewSlice.actions;
 
 export const selectReviews = (state: RootState) => state.reviews.reviews;
+export const selectOrderedReviews = (state: RootState) => state.reviews.orderedReviewsIds.map((id) => state.reviews.reviews[id]);
 export const selectReviewById = (reviewId: number) => (state: RootState) =>
   state.reviews.reviews[reviewId] || null;
 export const selectCurrentReview = (state: RootState) => state.reviews.currentReview;

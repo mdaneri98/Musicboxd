@@ -15,6 +15,8 @@ import type { RootState } from '../index';
 export interface AlbumState {
   // Albums by ID (normalized state)
   albums: Album[];
+  // Ordered albums id list
+  orderedAlbumsIds: number[];
   // Current album being viewed
   currentAlbum: Album | null;
   // Related data for current album
@@ -41,6 +43,7 @@ export interface AlbumState {
 
 const initialState: AlbumState = {
   albums: [],
+  orderedAlbumsIds: [],
   currentAlbum: null,
   albumSongs: [],
   albumReviews: [],
@@ -221,7 +224,10 @@ const albumSlice = createSlice({
       })
       .addCase(fetchAlbumsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.albums = action.payload.items.map((album) => album.data as Album);
+        action.payload.items.forEach((album) => {
+          state.albums[album.data.id] = album.data as Album;
+        });
+        state.orderedAlbumsIds = action.payload.items.map((album) => album.data.id);
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
@@ -343,6 +349,7 @@ const albumSlice = createSlice({
 export const { clearError, clearCurrentAlbum, addAlbum, removeAlbum } = albumSlice.actions;
 
 export const selectAlbums = (state: RootState) => state.albums.albums;
+export const selectOrderedAlbums = (state: RootState) => state.albums.orderedAlbumsIds.map((id) => state.albums.albums[id]);
 export const selectAlbumById = (albumId: number) => (state: RootState) =>
   state.albums.albums.find((album) => album.id === albumId) || null;
 export const selectCurrentAlbum = (state: RootState) => state.albums.currentAlbum;

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistPagination, selectAlbumPagination, selectSongPagination, selectArtists, selectAlbums, selectSongs } from '@/store/slices';
+import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistPagination, selectAlbumPagination, selectSongPagination, selectOrderedArtists, selectOrderedAlbums, selectOrderedSongs } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { Artist, Album, Song, FilterTypeEnum, ReviewItemTypeEnum } from '@/types';
 
@@ -12,9 +12,9 @@ const ViewAllMusicPage = () => {
   const dispatch = useAppDispatch();
   const { tab: queryTab, filter: queryFilter, page: queryPage } = router.query;
   
-  const artists = useAppSelector(selectArtists);
-  const albums = useAppSelector(selectAlbums);
-  const songs = useAppSelector(selectSongs);
+  const artists = useAppSelector(selectOrderedArtists);
+  const albums = useAppSelector(selectOrderedAlbums);
+  const songs = useAppSelector(selectOrderedSongs);
 
   const artistPagination = useAppSelector(selectArtistPagination);
   const albumPagination = useAppSelector(selectAlbumPagination);

@@ -15,6 +15,8 @@ import type { RootState } from '../index';
 export interface ArtistState {
   // Artists by ID (normalized state)
   artists: Artist[];
+  // Ordered artists id list
+  orderedArtistsIds: number[];
   // Current artist being viewed
   currentArtist: Artist | null;
   // Related data for current artist
@@ -43,6 +45,7 @@ export interface ArtistState {
 
 const initialState: ArtistState = {
   artists: [],
+  orderedArtistsIds: [],
   currentArtist: null,
   artistAlbums: [],
   artistSongs: [],
@@ -270,6 +273,9 @@ const artistSlice = createSlice({
      */
     addArtist: (state, action: PayloadAction<Artist>) => {
       state.artists.push(action.payload);
+      if (!state.orderedArtistsIds.includes(action.payload.id)) {
+        state.orderedArtistsIds.push(action.payload.id);
+      }
     },
 
     /**
@@ -277,7 +283,8 @@ const artistSlice = createSlice({
      */
     removeArtist: (state, action: PayloadAction<number>) => {
       state.artists = state.artists.filter((artist) => artist.id !== action.payload);
-    },
+      state.orderedArtistsIds = state.orderedArtistsIds.filter((id) => id !== action.payload);
+      },
   },
   extraReducers: (builder) => {
     // Fetch Artists
@@ -289,7 +296,10 @@ const artistSlice = createSlice({
       .addCase(fetchArtistsAsync.fulfilled, (state, action) => {
         state.loading = false;
         // Add artists to normalized state
-        state.artists = action.payload.items.map((artist) => artist.data as Artist);
+        action.payload.items.forEach((artist) => {
+          state.artists[artist.data.id] = artist.data as Artist;
+        });
+        state.orderedArtistsIds = action.payload.items.map((artist) => artist.data.id);
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
@@ -446,6 +456,7 @@ export const { clearError, clearCurrentArtist, addArtist, removeArtist } = artis
 // ============================================================================
 
 export const selectArtists = (state: RootState) => state.artists.artists;
+export const selectOrderedArtists = (state: RootState) => state.artists.orderedArtistsIds.map((id) => state.artists.artists[id]);
 export const selectArtistById = (artistId: number) => (state: RootState) =>
   state.artists.artists.find((artist) => artist.id === artistId) || null;
 export const selectCurrentArtist = (state: RootState) => state.artists.currentArtist;

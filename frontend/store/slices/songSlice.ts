@@ -16,7 +16,9 @@ import { EditSongFormData } from '@/types/forms';
 export interface SongState {
   // Songs by ID (normalized state)
   songs: Song[];
-  // Current song being viewed
+  // Ordered songs id list
+  orderedSongsIds: number[];
+    // Current song being viewed
   currentSong: Song | null;
   // Related data for current song
   songReviews: Review[];
@@ -40,6 +42,7 @@ export interface SongState {
 
 const initialState: SongState = {
   songs: [],
+  orderedSongsIds: [],
   currentSong: null,
   songReviews: [],
   pagination: {
@@ -193,9 +196,13 @@ const songSlice = createSlice({
     },
     addSong: (state, action: PayloadAction<Song>) => {
       state.songs.push(action.payload);
+      if (!state.orderedSongsIds.includes(action.payload.id)) {
+        state.orderedSongsIds.push(action.payload.id);
+      }
     },
     removeSong: (state, action: PayloadAction<number>) => {
       state.songs = state.songs.filter((song) => song.id !== action.payload);
+      state.orderedSongsIds = state.orderedSongsIds.filter((id) => id !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -206,7 +213,10 @@ const songSlice = createSlice({
       })
       .addCase(fetchSongsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.songs = action.payload.items.map((song) => song.data as Song);
+        action.payload.items.forEach((song) => {
+          state.songs[song.data.id] = song.data as Song;
+        });
+        state.orderedSongsIds = action.payload.items.map((song) => song.data.id);
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
@@ -319,6 +329,7 @@ const songSlice = createSlice({
 export const { clearError, clearCurrentSong, addSong, removeSong } = songSlice.actions;
 
 export const selectSongs = (state: RootState) => state.songs.songs;
+export const selectOrderedSongs = (state: RootState) => state.songs.orderedSongsIds.map((id) => state.songs.songs[id]);
 export const selectSongById = (songId: number) => (state: RootState) =>
   state.songs.songs.find((song) => song.id === songId) || null;
 export const selectCurrentSong = (state: RootState) => state.songs.currentSong;

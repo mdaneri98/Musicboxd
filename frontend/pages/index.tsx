@@ -9,14 +9,14 @@ import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, fetchReviewsAsync, selectReviews, selectLoadingReviews, selectReviewPagination } from '@/store/slices';
+import { selectIsAuthenticated, fetchReviewsAsync, selectOrderedReviews, selectLoadingReviews, selectReviewPagination } from '@/store/slices';
 import { FilterTypeEnum, HomeTabEnum  } from '@/types';
 
 const HomePage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const reviews = useAppSelector(selectReviews);
+  const reviews = useAppSelector(selectOrderedReviews);
   const loadingReviews = useAppSelector(selectLoadingReviews);
   const pagination = useAppSelector(selectReviewPagination);
   const [activeTab, setActiveTab] = useState<HomeTabEnum>(HomeTabEnum.FOR_YOU);
