@@ -28,7 +28,9 @@ public class ArtistDTO {
 
     private Long imageId;
 
-    private boolean isReviewedByLoggedUser;
+    private Boolean isReviewed;
+
+    private Boolean isFavorite;
 
     public ArtistDTO() {}
 
@@ -104,11 +106,25 @@ public class ArtistDTO {
         this.imageId = imageId;
     }
 
-    public boolean isReviewedByLoggedUser() {
-        return isReviewedByLoggedUser;
+    public Boolean isReviewed() {
+        if (isReviewed == null) {
+            return false;
+        }
+        return isReviewed;
     }
 
-    public void setReviewedByLoggedUser(boolean reviewedByLoggedUser) {
-        isReviewedByLoggedUser = reviewedByLoggedUser;
+    public void setIsReviewed(Boolean isReviewed) {
+        this.isReviewed = isReviewed;
+    }
+
+    public Boolean isFavorite() {
+        if (isFavorite == null) {
+            return false;
+        }
+        return isFavorite;
+    }
+
+    public void setIsFavorite(Boolean isFavorite) {
+        this.isFavorite = isFavorite;
     }
 }

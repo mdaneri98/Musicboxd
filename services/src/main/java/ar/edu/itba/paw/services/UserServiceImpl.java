@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserDTO findUserById(Long id, Long loggedUserId) {
         UserDTO userDTO = userDao.findById(id).map(userMapper::toDTO).orElseThrow(() -> new UserNotFoundException(id));
-        userDTO.setFollowedByLoggedUser(isFollowing(loggedUserId, id));
+        if (loggedUserId != null) userDTO.setFollowed(isFollowing(loggedUserId, id));
         return userDTO;
     }
 

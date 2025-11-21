@@ -21,7 +21,7 @@ const ArtistCard = ({ artist }: ArtistCardProps) => {
 
   const handleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (artist.is_favorite) {
+    if (artist.favorite) {
       await dispatch(removeArtistFavoriteAsync(artist.id));
     } else {
       await dispatch(addArtistFavoriteAsync(artist.id));
@@ -53,10 +53,10 @@ const ArtistCard = ({ artist }: ArtistCardProps) => {
       </Link>
       <button
         onClick={handleFavorite}
-        className={`favorite-btn ${artist.is_favorite ? 'active' : ''}`}
-        title={artist.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+        className={`favorite-btn ${artist.favorite ? 'active' : ''}`}
+        title={artist.favorite ? 'Remove from favorites' : 'Add to favorites'}
       >
-        <i className={`fa-${artist.is_favorite ? 'solid' : 'regular'} fa-heart`}></i>
+        <i className={`fa-${artist.favorite ? 'solid' : 'regular'} fa-heart`}></i>
       </button>
     </div>
   );

@@ -67,7 +67,7 @@ const UserProfilePage = () => {
     dispatch(fetchFavoriteAlbumsAsync(userIdNum));
     dispatch(fetchFavoriteSongsAsync(userIdNum));
     dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: reviewsPagination.page, size: reviewsPagination.size }))
-    setIsFollowing(user?.is_followed_by_logged_user ?? false);
+    setIsFollowing(user?.followed ?? false);
   }, [userId, dispatch]);
 
 

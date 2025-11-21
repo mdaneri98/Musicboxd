@@ -21,7 +21,7 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
 
   const handleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
-      if (album.is_favorite) {
+      if (album.favorite) {
       await dispatch(removeAlbumFavoriteAsync(album.id));
     } else {
       await dispatch(addAlbumFavoriteAsync(album.id));
@@ -43,7 +43,7 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
           <p className="music-card-subtitle">{album.artist_name}</p>
           {album.release_date && (
             <p className="music-card-date">
-              {new Date(album.release_date).getFullYear()}
+              {album.formatted_release_date}
             </p>
           )}
           {album.avg_rating !== 0 && (
@@ -56,10 +56,10 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
       </Link>
       <button
         onClick={handleFavorite}
-        className={`favorite-btn ${album.is_favorite ? 'active' : ''}`}
-        title={album.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+        className={`favorite-btn ${album.favorite ? 'active' : ''}`}
+        title={album.favorite ? 'Remove from favorites' : 'Add to favorites'}
       >
-        <i className={`fa-${album.is_favorite ? 'solid' : 'regular'} fa-heart`}></i>
+        <i className={`fa-${album.favorite ? 'solid' : 'regular'} fa-heart`}></i>
       </button>
     </div>
   );

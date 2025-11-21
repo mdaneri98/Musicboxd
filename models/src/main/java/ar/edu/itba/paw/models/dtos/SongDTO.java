@@ -30,11 +30,15 @@ public class SongDTO {
 
     private LocalDateTime createdAt;
 
+    private String formattedReleaseDate;
+
     private LocalDateTime updatedAt;
 
     private Boolean isDeleted;
 
-    private Boolean reviewedByLoggedUser;
+    private Boolean isReviewed;
+
+    private Boolean isFavorite;
 
     public SongDTO() {}
 
@@ -145,14 +149,33 @@ public class SongDTO {
         this.isDeleted = isDeleted;
     }
 
-    public Boolean isReviewedByLoggedUser() {
-        if (reviewedByLoggedUser == null) {
+    public Boolean isReviewed() {
+        if (isReviewed == null) {
             return false;
         }
-        return reviewedByLoggedUser;
+        return isReviewed;
     }
 
-    public void setReviewedByLoggedUser(Boolean reviewedByLoggedUser) {
-        this.reviewedByLoggedUser = reviewedByLoggedUser;
+    public void setIsReviewed(Boolean isReviewed) {
+        this.isReviewed = isReviewed;
+    }
+
+    public Boolean isFavorite() {
+        if (isFavorite == null) {
+            return false;
+        }
+        return isFavorite;
+    }
+    
+    public void setIsFavorite(Boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
+    public String getFormattedReleaseDate() {
+        return formattedReleaseDate;
+    }
+
+    public void setFormattedReleaseDate(String formattedReleaseDate) {
+        this.formattedReleaseDate = formattedReleaseDate;
     }
 }

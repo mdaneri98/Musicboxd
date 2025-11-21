@@ -20,7 +20,7 @@ const SongCard = ({ song }: SongCardProps) => {
 
   const handleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (song.is_favorite) {
+    if (song.favorite) {
       await dispatch(removeSongFavoriteAsync(song.id));
     } else {
       await dispatch(addSongFavoriteAsync(song.id));
@@ -51,10 +51,10 @@ const SongCard = ({ song }: SongCardProps) => {
       </Link>
       <button
         onClick={handleFavorite}
-        className={`favorite-btn ${song.is_favorite ? 'active' : ''}`}
-        title={song.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+        className={`favorite-btn ${song.favorite ? 'active' : ''}`}
+        title={song.favorite ? 'Remove from favorites' : 'Add to favorites'}
       >
-        <i className={`fa-${song.is_favorite ? 'solid' : 'regular'} fa-heart`}></i>
+        <i className={`fa-${song.favorite ? 'solid' : 'regular'} fa-heart`}></i>
       </button>
     </div>
   );

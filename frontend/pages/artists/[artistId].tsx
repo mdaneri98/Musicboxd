@@ -22,7 +22,7 @@ import {
   clearCurrentArtist
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
-import type { Review, HALResource } from '@/types';
+import type { Review } from '@/types';
 
 const ArtistDetailPage = () => {
   const router = useRouter();
@@ -43,9 +43,7 @@ const ArtistDetailPage = () => {
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [userRating, setUserRating] = useState<number | undefined>();
-  const [isReviewed, setIsReviewed] = useState(false);
-  
-  const isFavorite = artist?.is_favorite || false;
+
 
   // Clear artist data when component unmounts or id changes
   useEffect(() => {
@@ -62,6 +60,12 @@ const ArtistDetailPage = () => {
     dispatch(fetchArtistByIdAsync(artistIdNum));
     dispatch(fetchArtistAlbumsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
     dispatch(fetchArtistSongsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
+    if(artist?.reviewed && isAuthenticated && currentUser) {
+      const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
+      if (userReview) {
+        setUserRating(userReview.rating);
+      }
+    }
   }, [artistId, dispatch]);
 
   // Fetch reviews with pagination
@@ -73,15 +77,6 @@ const ArtistDetailPage = () => {
       .unwrap()
       .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
-        
-        // Check if current user has reviewed this artist
-        if (isAuthenticated && currentUser) {
-          const userReview = reviewsData.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
-          if (userReview) {
-            setIsReviewed(true);
-            setUserRating(userReview.data.rating || 0);
-          }
-        }
       })
       .catch((err) => {
         console.error('Failed to fetch reviews:', err);
@@ -98,7 +93,7 @@ const ArtistDetailPage = () => {
 
     try {
       setFavoriteLoading(true);
-      if (isFavorite) {
+      if (artist.favorite) {
         await dispatch(removeArtistFavoriteAsync(artist.id)).unwrap();
       } else {
         await dispatch(addArtistFavoriteAsync(artist.id)).unwrap();
@@ -141,10 +136,10 @@ const ArtistDetailPage = () => {
           artist={artist}
           currentUser={currentUser}
           isAuthenticated={isAuthenticated}
-          isFavorite={isFavorite}
+          isFavorite={artist.favorite || false}
           favoriteLoading={favoriteLoading}
           userRating={userRating}
-          isReviewed={isReviewed}
+          isReviewed={artist.reviewed || false}
           onFavoriteToggle={handleFavoriteToggle}
         />
 

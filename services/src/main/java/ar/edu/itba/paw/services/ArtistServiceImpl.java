@@ -43,7 +43,10 @@ public class ArtistServiceImpl implements ArtistService {
     public ArtistDTO findById(Long id, Long loggedUserId) {
         Artist artist = artistDao.findById(id).orElseThrow(() -> new ArtistNotFoundException(id));
         ArtistDTO artistDTO = artistMapper.toDTO(artist);
-        if (loggedUserId != null) artistDTO.setReviewedByLoggedUser(hasUserReviewed(loggedUserId, artist.getId()));
+        if (loggedUserId != null) {
+            artistDTO.setIsReviewed(hasUserReviewed(loggedUserId, artist.getId()));
+            artistDTO.setIsFavorite(userService.isArtistFavorite(loggedUserId, artist.getId()));
+        }
         return artistDTO;
     }
 

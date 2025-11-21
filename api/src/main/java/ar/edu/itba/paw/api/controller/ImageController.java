@@ -44,7 +44,6 @@ public class ImageController extends BaseController {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("hasRole('MODERATOR')")
     public Response uploadImage(@Valid @BeanParam final UploadImageForm uploadImageForm) {
         final Image image = imageService.create(uploadImageForm.getBytes());
         final ImageResource imageResource = imageResourceMapper.toResource(image, getBaseUrl());

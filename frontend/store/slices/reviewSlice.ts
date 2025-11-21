@@ -399,10 +399,12 @@ const reviewSlice = createSlice({
         // Update like count in current review
         if (state.currentReview?.id === action.meta.arg) {
           state.currentReview.likes += 1;
+          state.currentReview.liked = true;
         }
         // Update in normalized state
         if (state.reviews[action.meta.arg]) {
           state.reviews[action.meta.arg].likes += 1;
+          state.reviews[action.meta.arg].liked = true;
         }
       })
       .addCase(likeReviewAsync.rejected, (state, action) => {
@@ -415,10 +417,12 @@ const reviewSlice = createSlice({
         // Update like count in current review
         if (state.currentReview?.id === action.meta.arg) {
           state.currentReview.likes -= 1;
+          state.currentReview.liked = false;
         }
         // Update in normalized state
         if (state.reviews[action.meta.arg]) {
           state.reviews[action.meta.arg].likes -= 1;
+          state.reviews[action.meta.arg].liked = false;
         }
       })
       .addCase(unlikeReviewAsync.rejected, (state, action) => {
@@ -450,6 +454,9 @@ const reviewSlice = createSlice({
         state.loading = false;
         state.reviewComments.push(action.payload.data as Comment);
         state.reviews[action.payload.data.review_id].comment_amount += 1;
+        if (state.currentReview?.id === action.payload.data.review_id) {
+          state.currentReview.comment_amount += 1;
+        }
       })
       .addCase(postCommentAsync.rejected, (state, action) => {
         state.loading = false;

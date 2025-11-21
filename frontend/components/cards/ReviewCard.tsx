@@ -26,7 +26,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (review.is_liked) {
+    if (review.liked) {
       await dispatch(unlikeReviewAsync(review.id));
     } else {
       await dispatch(likeReviewAsync(review.id));
@@ -145,8 +145,8 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             <Link href={`/reviews/${review.id}?page=likes`}>
               <span className="action-count">{review.likes}</span>
             </Link>
-            <button onClick={handleLike} className={`action-link ${review.is_liked ? 'active' : ''}`}>
-              <i className={`fa-${review.is_liked ? 'solid' : 'regular'} fa-heart`}></i>
+            <button onClick={handleLike} className={`action-link ${review.liked ? 'active' : ''}`}>
+              <i className={`fa-${review.liked ? 'solid' : 'regular'} fa-heart`}></i>
             </button>
           </div>
 

@@ -24,14 +24,12 @@ public class ReviewMapper {
         dto.setRating(review.getRating());
         dto.setCreatedAt(review.getCreatedAt());
         dto.setLikes(review.getLikes());
-        dto.setIsLikedByLoggedUser(review.isLiked());
         dto.setIsBlocked(review.isBlocked());
         dto.setCommentAmount(review.getCommentAmount());
         dto.setItemType(review.getItemType());
         dto.setItemId(review.getItemId());
         dto.setItemName(review.getItemName());
         dto.setItemImageId(review.getItemImage().getId());
-        dto.setTimeAgo(review.getTimeAgo());
         return dto;
     }
 

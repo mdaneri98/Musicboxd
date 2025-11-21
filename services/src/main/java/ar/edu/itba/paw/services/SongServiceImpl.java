@@ -43,9 +43,12 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public SongDTO findById(Long id, Long loggedUserId) {
         Song song = songDao.findById(id).orElseThrow(() -> new SongNotFoundException(id));
-        song.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(song.getAlbum().getReleaseDate()));
         SongDTO songDTO = songMapper.toDTO(song);
-        if (loggedUserId != null) songDTO.setReviewedByLoggedUser(hasUserReviewed(loggedUserId, song.getId()));
+        songDTO.setFormattedReleaseDate(TimeUtils.formatDate(song.getAlbum().getReleaseDate()));
+        if (loggedUserId != null) {
+            songDTO.setIsReviewed(hasUserReviewed(loggedUserId, song.getId()));
+            songDTO.setIsFavorite(userService.isSongFavorite(loggedUserId, song.getId()));
+        }
         return songDTO;
     }
 
@@ -53,8 +56,8 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public List<SongDTO> findAll() {
         List<Song> songs = songDao.findAll();
-        songs.forEach(s -> s.getAlbum().setFormattedReleaseDate(TimeUtils.formatDate(s.getAlbum().getReleaseDate())));
-        return songMapper.toDTOList(songs);
+        List<SongDTO> songsDTO = songMapper.toDTOList(songs);
+        return songsDTO;
     }
 
     @Override

@@ -153,11 +153,7 @@ const AlbumReviewPage = () => {
             <div className="review-preview-info">
               <h2 className="review-preview-title">{album.title}</h2>
               {album.release_date && (
-<<<<<<< HEAD:frontend/pages/albums/[id]/reviews.tsx
-                  <p className="review-preview-subtitle">{album.release_date.toString()}</p>
-=======
-                  <p className="review-preview-subtitle">{new Date(album.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
->>>>>>> 1eec8ecc86241f8a906cfd3d0cd3ebbe658a87bd:frontend/pages/albums/[albumId]/reviews.tsx
+                  <p className="review-preview-subtitle">{album.formatted_release_date}</p>
               )}
             </div>
           </Link>

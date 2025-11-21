@@ -29,15 +29,6 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
   const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
   const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
 
-  const formatDate = (date?: Date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
   return (
     <>
       {/* Album Header */}
@@ -65,7 +56,7 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
               <div className="album-info">
                 {album.genre && <span className="album-genre">{album.genre}</span>}
                 {album.genre && album.release_date && <span className="info-separator">&bull;</span>}
-                {album.release_date && <span className="album-date">{formatDate(album.release_date)}</span>}
+                {album.release_date && <span className="album-date">{album.formatted_release_date}</span>}
               </div>
             </div>
           </div>

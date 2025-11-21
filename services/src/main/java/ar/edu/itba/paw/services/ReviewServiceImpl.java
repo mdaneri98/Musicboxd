@@ -101,9 +101,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public ReviewDTO findById(Long id, Long loggedUserId) {
         Review review = reviewDao.findById(id).orElseThrow(() -> new ReviewNotFoundException(id));
-        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        if (loggedUserId != null) review.setLiked(isLiked(loggedUserId, review.getId()));
-        return reviewMapper.toDTO(review);
+        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
+        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
+        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
+        return reviewDTO;
     }
 
     @Override
@@ -122,9 +123,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public List<ReviewDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
         List<Review> reviews = reviewDao.findPaginated(filterType, page, pageSize);
-        setIsLiked(reviews, loggedUserId);
-        setTimeAgo(reviews);
-        return reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        List<ReviewDTO> reviewsDTO = reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        if (loggedUserId != null) setIsLiked(reviewsDTO, loggedUserId);
+        setTimeAgo(reviewsDTO);
+        return reviewsDTO;
     }
 
     @Override 
@@ -233,54 +235,60 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public ReviewDTO findArtistReviewById(Long id, Long loggedUserId) {
         ArtistReview review = reviewDao.findArtistReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
-        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return reviewMapper.toDTO(review);
+        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
+        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(reviewDTO.getCreatedAt()));
+        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
+        return reviewDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReviewDTO findAlbumReviewById(Long id, Long loggedUserId) {
         AlbumReview review = reviewDao.findAlbumReviewById(id).get();
-        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return reviewMapper.toDTO(review);
+        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
+        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
+        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
+        return reviewDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReviewDTO findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId) {
         ArtistReview review = reviewDao.findArtistReviewByUserId(userId, artistId).orElseThrow(() -> new ReviewNotFoundException(userId, artistId, "Artist"));
-        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return reviewMapper.toDTO(review);
+        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
+        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
+        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
+        return reviewDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReviewDTO findAlbumReviewByUserId(Long userId, Long albumId, Long loggedUserId) {
         AlbumReview review = reviewDao.findAlbumReviewByUserId(userId, albumId).orElseThrow(() -> new ReviewNotFoundException(userId, albumId, "Album"));
-        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return reviewMapper.toDTO(review);
+        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
+        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
+        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
+        return reviewDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReviewDTO findSongReviewByUserId(Long userId, Long songId, Long loggedUserId) {
         SongReview review = reviewDao.findSongReviewByUserId(userId, songId).orElseThrow(() -> new ReviewNotFoundException(userId, songId, "Song"));
-        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return reviewMapper.toDTO(review);
+        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
+        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
+        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
+        return reviewDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReviewDTO findSongReviewById(Long id, Long loggedUserId) {
         SongReview review = reviewDao.findSongReviewById(id).get();
-        review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        review.setLiked(isLiked(loggedUserId, review.getId()));
-        return reviewMapper.toDTO(review);
+        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
+        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
+        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
+        return reviewDTO;
     }
 
     @Override
@@ -320,27 +328,30 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public List<ReviewDTO> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId) {
         List<ArtistReview> reviews = reviewDao.findArtistReviewsPaginated(artistId, page, pageSize);
-        setIsLiked(reviews, loggedUserId);
-        setTimeAgo(reviews);
-        return reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        List<ReviewDTO> reviewsDTO = reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        if (loggedUserId != null) setIsLiked(reviewsDTO, loggedUserId);
+        setTimeAgo(reviewsDTO);
+        return reviewsDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId) {
         List<AlbumReview> reviews = reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize);
-        setIsLiked(reviews, loggedUserId);
-        setTimeAgo(reviews);
-        return reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        List<ReviewDTO> reviewsDTO = reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        if (loggedUserId != null) setIsLiked(reviewsDTO, loggedUserId);
+        setTimeAgo(reviewsDTO);
+        return reviewsDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId) {
         List<SongReview> reviews = reviewDao.findSongReviewsPaginated(songId, page, pageSize);
-        setIsLiked(reviews, loggedUserId);
-        setTimeAgo(reviews);
-        return reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        List<ReviewDTO> reviewsDTO = reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        if (loggedUserId != null) setIsLiked(reviewsDTO, loggedUserId);
+        setTimeAgo(reviewsDTO);
+        return reviewsDTO;
     }
 
     @Override
@@ -365,27 +376,30 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public List<ReviewDTO> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId) {
         List<Review> list = reviewDao.findReviewsByUserPaginated(userId, page, pageSize);
-        setIsLiked(list, loggedUserId);
-        setTimeAgo(list);
-        return list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        List<ReviewDTO> listDTO = list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        if (loggedUserId != null) setIsLiked(listDTO, loggedUserId);
+        setTimeAgo(listDTO);
+        return listDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId) {
         List<Review> list = reviewDao.getPopularReviewsPaginated(page, pageSize);
-        setIsLiked(list, loggedUserId);
-        setTimeAgo(list);
-        return list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        List<ReviewDTO> listDTO = list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        if (loggedUserId != null) setIsLiked(listDTO, loggedUserId);
+        setTimeAgo(listDTO);
+        return listDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId) {
         List<Review> list = reviewDao.getReviewsFromFollowedUsersPaginated(loggedUserId, page, pageSize);
-        setIsLiked(list, loggedUserId);
-        setTimeAgo(list);
-        return list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        List<ReviewDTO> listDTO = list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+        if (loggedUserId != null) setIsLiked(listDTO, loggedUserId);
+        setTimeAgo(listDTO);
+        return listDTO;
     }
 
     @Override
@@ -446,18 +460,18 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.countReviewsFromFollowedUsers(loggedUserId);
     }
 
-    private <T extends Review> void setTimeAgo(List<T> reviews) {
-        for (T review : reviews) {
-            review.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
+    private void setTimeAgo(List<ReviewDTO> reviewsDTO) {
+        for (ReviewDTO reviewDTO : reviewsDTO) {
+            reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(reviewDTO.getCreatedAt()));
         }
     }
 
-    private <T extends Review> void setIsLiked(List<T> reviews, long userId) {
-        for (T review : reviews) {
+    private void setIsLiked(List<ReviewDTO> reviewsDTO, long userId) {
+        for (ReviewDTO reviewDTO : reviewsDTO) {
             if (userId < 1)
-                review.setLiked(false);
+                reviewDTO.setIsLiked(false);
             else
-                review.setLiked(isLiked(userId, review.getId()));
+                reviewDTO.setIsLiked(isLiked(userId, reviewDTO.getId()));
         }
     }
 }

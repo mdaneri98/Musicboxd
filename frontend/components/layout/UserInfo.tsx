@@ -56,6 +56,8 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthen
           </div>
         </div>
       </div>
+      {isAuthenticated ? (
+        <>
       {isOwnProfile ? (
           <Link href="/profile/edit">
             <button className="btn btn-primary">
@@ -68,7 +70,14 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthen
           </button>
       )
       }
+      </>
+      ) :
+      (
+        <Link href="/login" className="btn btn-primary">
+          Login to Follow
+        </Link>
 
+      )}
     </section>
   );
 };

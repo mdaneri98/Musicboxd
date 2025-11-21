@@ -22,8 +22,7 @@ import {
   clearCurrentReview
 } from '@/store/slices';
 import type { Comment, CommentFormData } from '@/types';
-
-type TabType = 'comments' | 'likes';
+import { ReviewTab } from '@/types/enums';
 
 const ReviewDetailPage = () => {
   const router = useRouter();
@@ -39,17 +38,17 @@ const ReviewDetailPage = () => {
   const loadingComments = useAppSelector(selectLoadingComments);
   const loadingLikes = useAppSelector(selectLoadingLikes);
   
-  const [activeTab, setActiveTab] = useState<TabType>('comments');
+  const [activeTab, setActiveTab] = useState<ReviewTab>(ReviewTab.COMMENTS);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  const loading = loadingReview || (activeTab === 'comments' ? loadingComments : loadingLikes);
+  const loading = loadingReview || (activeTab === ReviewTab.COMMENTS ? loadingComments : loadingLikes);
 
   useEffect(() => {
     if (queryTab) {
-      setActiveTab(queryTab as TabType);
+      setActiveTab(queryTab as ReviewTab);
     }
     if (queryPage) {
       setPage(parseInt(queryPage as string));
@@ -74,14 +73,14 @@ const ReviewDetailPage = () => {
 
     const reviewIdNum = parseInt(reviewId as string);
 
-    if (activeTab === 'comments') {
+    if (activeTab === ReviewTab.COMMENTS) {
       dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 }))
         .unwrap()
         .then((commentsData) => {
           setHasMore(commentsData.items.length === 20);
         })
         .catch((err) => console.error('Failed to fetch comments:', err));
-    } else if (activeTab === 'likes') {
+    } else if (activeTab === ReviewTab.LIKES) {
       dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 }))
         .unwrap()
         .then((likesData) => {
@@ -89,18 +88,26 @@ const ReviewDetailPage = () => {
         })
         .catch((err) => console.error('Failed to fetch likes:', err));
     }
-  }, [reviewId, review, activeTab, page, dispatch]);
+  }, [reviewId, activeTab, page, dispatch]);
 
-  const handleTabChange = useCallback((tab: TabType) => {
+  const handleTabChange = useCallback((tab: ReviewTab) => {
     setActiveTab(tab);
     setPage(1);
-    router.push(`/reviews/${reviewId}?tab=${tab}&pageNum=1`, undefined, { shallow: true });
-  }, [reviewId, router]);
+    if(tab === ReviewTab.COMMENTS) {
+      dispatch(fetchReviewCommentsAsync({ reviewId: parseInt(reviewId as string), page: 1, size: 20 }));
+    } else if(tab === ReviewTab.LIKES) {
+      dispatch(fetchReviewLikesAsync({ reviewId: parseInt(reviewId as string), page: 1, size: 20 }));
+    }
+  }, [reviewId, dispatch]);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
-    router.push(`/reviews/${reviewId}?tab=${activeTab}&pageNum=${newPage}`, undefined, { shallow: true });
-  }, [reviewId, activeTab, router]);
+    if(activeTab === ReviewTab.COMMENTS) {
+      dispatch(fetchReviewCommentsAsync({ reviewId: parseInt(reviewId as string), page: newPage, size: 20 }));
+    } else if(activeTab === ReviewTab.LIKES) {
+      dispatch(fetchReviewLikesAsync({ reviewId: parseInt(reviewId as string), page: newPage, size: 20 }));
+    }
+  }, [reviewId, dispatch]);
 
   const handleCommentSubmit = async (data: CommentFormData) => {
     if (!review) return;
@@ -161,15 +168,15 @@ const ReviewDetailPage = () => {
         <div className="section-header-home">
           <div className="tabs">
             <span
-              className={`tab ${activeTab === 'comments' ? 'active' : ''}`}
-              onClick={() => handleTabChange('comments')}
+              className={`tab ${activeTab === ReviewTab.COMMENTS ? 'active' : ''}`}
+              onClick={() => handleTabChange(ReviewTab.COMMENTS)}
               style={{ cursor: 'pointer' }}
             >
               Comments
             </span>
             <span
-              className={`tab ${activeTab === 'likes' ? 'active' : ''}`}
-              onClick={() => handleTabChange('likes')}
+              className={`tab ${activeTab === ReviewTab.LIKES ? 'active' : ''}`}
+              onClick={() => handleTabChange(ReviewTab.LIKES)}
               style={{ cursor: 'pointer' }}
             >
               Likes
@@ -177,7 +184,7 @@ const ReviewDetailPage = () => {
           </div>
         </div>
 
-        {activeTab === 'likes' ? (
+        {activeTab === ReviewTab.LIKES ? (
           <>
             {likedUsers.length === 0 ? (
               <p className="no-results">No likes yet</p>

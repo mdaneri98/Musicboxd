@@ -27,12 +27,12 @@ const FollowersPage = () => {
   const loadingProfile = useAppSelector(selectLoadingProfile);
   const loadingFollowers = useAppSelector(selectLoadingFollowers);
   const loading = loadingProfile || loadingFollowers;
-  const [isOwnProfile, setIsOwnProfile] = useState(loggedUser?.id === parseInt(userId as string));
-  const [isFollowing, setIsFollowing] = useState(user?.is_followed_by_logged_user ?? false);
+  const [isFollowing, setIsFollowing] = useState(user?.followed ?? false);
   const [followLoading, setFollowLoading] = useState(false);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const isOwnProfile = loggedUser?.id === parseInt(userId as string);
 
   useEffect(() => {
     return () => {
@@ -45,7 +45,7 @@ const FollowersPage = () => {
     
     const userIdNum = parseInt(userId as string);
     dispatch(fetchUserByIdAsync(userIdNum));
-    setIsFollowing(user?.is_followed_by_logged_user ?? false);
+    setIsFollowing(user?.followed ?? false);
     dispatch(fetchFollowersAsync({ userId: userIdNum, page, size: 20 }))
       .unwrap()
       .then((followersData) => {

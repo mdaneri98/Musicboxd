@@ -24,9 +24,6 @@ public class Album {
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
-    @Transient
-    private String formattedReleaseDate;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -241,13 +238,5 @@ public class Album {
 
     public void setSongs(List<Song> songs) {
         this.songs = songs;
-    }
-
-    public String getFormattedReleaseDate() {
-        return formattedReleaseDate;
-    }
-
-    public void setFormattedReleaseDate(String formattedReleaseDate) {
-        this.formattedReleaseDate = formattedReleaseDate;
     }
 }

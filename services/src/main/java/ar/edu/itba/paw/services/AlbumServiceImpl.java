@@ -42,41 +42,48 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional(readOnly = true)
     public AlbumDTO findById(Long id, Long loggedUserId) {
         Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
-        album.setFormattedReleaseDate(TimeUtils.formatDate(album.getReleaseDate()));
         AlbumDTO albumDTO = albumMapper.toDTO(album);
-        if (loggedUserId != null) albumDTO.setReviewedByLoggedUser(hasUserReviewed(loggedUserId, album.getId()));
+        albumDTO.setFormattedReleaseDate(TimeUtils.formatDate(albumDTO.getReleaseDate()));
+        if (loggedUserId != null) {
+            albumDTO.setIsReviewed(hasUserReviewed(loggedUserId, album.getId()));
+            albumDTO.setIsFavorite(userService.isAlbumFavorite(loggedUserId, album.getId()));
+        }
         return albumDTO;
     }
 
     @Transactional(readOnly = true)
     public List<AlbumDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         List<Album> albums = albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
-        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
-        return albumMapper.toDTOList(albums);
+        List<AlbumDTO> albumsDTO = albumMapper.toDTOList(albums);
+        albumsDTO.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albumsDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<AlbumDTO> findByArtistId(Long id) {
         List<Album> albums = albumDao.findByArtistId(id);
-        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
-        return albumMapper.toDTOList(albums);
+        List<AlbumDTO> albumsDTO = albumMapper.toDTOList(albums);
+        albumsDTO.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albumsDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<AlbumDTO> findAll() {
         List<Album> albums = albumDao.findAll();
-        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
-        return albumMapper.toDTOList(albums);
+        List<AlbumDTO> albumsDTO = albumMapper.toDTOList(albums);
+        albumsDTO.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albumsDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<AlbumDTO> findByTitleContaining(String sub, Integer page, Integer size) {
         List<Album> albums = albumDao.findByTitleContaining(sub, page, size);
-        albums.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
-        return albumMapper.toDTOList(albums);
+        List<AlbumDTO> albumsDTO = albumMapper.toDTOList(albums);
+        albumsDTO.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
+        return albumsDTO;
     }
 
     @Override

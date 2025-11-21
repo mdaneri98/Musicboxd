@@ -38,17 +38,11 @@ public abstract class Review {
     @Column(nullable = false)
     private Integer likes;
 
-    @Transient
-    private Boolean isLiked;
-
     @Column(name = "isblocked")
     private Boolean isBlocked;
 
     @Column(name = "comment_amount")
     private Integer commentAmount;
-
-    @Transient
-    private String timeAgo;
 
     @OneToMany(mappedBy = "review", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Comment> comments;
@@ -115,9 +109,6 @@ public abstract class Review {
         this.comments = comments;
     }
 
-    public Boolean getLiked() {
-        return isLiked;
-    }
     public Boolean isBlocked() {
         return isBlocked;
     }
@@ -132,14 +123,6 @@ public abstract class Review {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Boolean isLiked() {
-        return isLiked;
-    }
-
-    public void setLiked(Boolean liked) {
-        isLiked = liked;
     }
 
     public User getUser() {
@@ -199,13 +182,5 @@ public abstract class Review {
 
     public void setLikes(Integer likes) {
         this.likes = likes;
-    }
-
-    public String getTimeAgo() {
-        return timeAgo;
-    }
-
-    public void setTimeAgo(String timeAgo) {
-        this.timeAgo = timeAgo;
     }
 }

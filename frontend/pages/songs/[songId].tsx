@@ -38,9 +38,6 @@ const SongDetailPage = () => {
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [userRating, setUserRating] = useState<number | undefined>();
-  const [isReviewed, setIsReviewed] = useState(false);
-  
-  const isFavorite = song?.is_favorite || false;
 
   useEffect(() => {
     return () => {
@@ -64,6 +61,13 @@ const SongDetailPage = () => {
           .unwrap()
           .then((artistData) => setArtist(artistData.data))
           .catch((err) => console.error('Failed to fetch artist:', err));
+
+          if(songData.data.reviewed && isAuthenticated && currentUser) {
+            const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
+            if (userReview) {
+              setUserRating(userReview.rating);
+            }
+          }
       })
       .catch((err) => console.error('Failed to fetch song:', err));
   }, [songId, dispatch]);
@@ -76,14 +80,6 @@ const SongDetailPage = () => {
       .unwrap()
       .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
-        
-        if (isAuthenticated && currentUser) {
-          const userReview = reviewsData.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
-          if (userReview) {
-            setIsReviewed(true);
-            setUserRating(userReview.data.rating || 0);
-          }
-        }
       })
       .catch((err) => console.error('Failed to fetch reviews:', err));
   }, [songId, reviewsPage, isAuthenticated, currentUser, dispatch]);
@@ -98,7 +94,7 @@ const SongDetailPage = () => {
 
     try {
       setFavoriteLoading(true);
-      if (isFavorite) {
+      if (song.favorite) {
         await dispatch(removeSongFavoriteAsync(song.id)).unwrap();
       } else {
         await dispatch(addSongFavoriteAsync(song.id)).unwrap();
@@ -148,10 +144,10 @@ const SongDetailPage = () => {
           artist={artist}
           currentUser={currentUser}
           isAuthenticated={isAuthenticated}
-          isFavorite={isFavorite}
+          isFavorite={song.favorite || false}
           favoriteLoading={favoriteLoading}
           userRating={userRating}
-          isReviewed={isReviewed}
+          isReviewed={song.reviewed || false}
           onFavoriteToggle={handleFavoriteToggle}
         />
 
@@ -171,11 +167,7 @@ const SongDetailPage = () => {
             {album?.release_date && (
               <div className="song-info-item">
                 <span className="info-label">Release Date:</span>
-<<<<<<< HEAD:frontend/pages/songs/[id].tsx
-                <span className="info-value">{album.release_date.toString()}</span>
-=======
-                <span className="info-value">{new Date(album.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
->>>>>>> 1eec8ecc86241f8a906cfd3d0cd3ebbe658a87bd:frontend/pages/songs/[songId].tsx
+                <span className="info-value">{album.formatted_release_date}</span>
               </div>
             )}
           </div>

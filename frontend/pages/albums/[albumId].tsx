@@ -20,7 +20,7 @@ import {
   selectAlbumError,
   clearCurrentAlbum
 } from '@/store/slices';
-import type { Review, HALResource, Artist } from '@/types';
+import type { Artist, Review } from '@/types';
 
 const AlbumDetailPage = () => {
   const router = useRouter();
@@ -40,11 +40,8 @@ const AlbumDetailPage = () => {
   const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const isFavorite = album?.favorite || false;
   const [userRating, setUserRating] = useState<number | undefined>();
-  const [isReviewed, setIsReviewed] = useState(false);
-  
-  const isFavorite = album?.is_favorite || false;
-
   // Limpiar al desmontar
   useEffect(() => {
     return () => {
@@ -69,19 +66,20 @@ const AlbumDetailPage = () => {
           .catch((err) => {
             console.error('Failed to fetch artist:', err);
           });
+          if(albumData.data.reviewed && isAuthenticated && currentUser) {
+            const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
+            if (userReview) {
+              setUserRating(userReview.rating);
+            }
+          }
       })
       .catch((err) => {
         console.error('Failed to fetch album:', err);
       });
     
     // Fetch songs
-<<<<<<< HEAD:frontend/pages/albums/[id].tsx
-    dispatch(fetchAlbumSongsAsync({ albumId, page: 1, size: 100 }));
-  }, [id, dispatch]);
-=======
     dispatch(fetchAlbumSongsAsync({ albumId: albumIdNum, page: 0, size: 100 }));
   }, [albumId, dispatch]);
->>>>>>> 1eec8ecc86241f8a906cfd3d0cd3ebbe658a87bd:frontend/pages/albums/[albumId].tsx
 
   // Fetch reviews
   useEffect(() => {
@@ -92,15 +90,6 @@ const AlbumDetailPage = () => {
       .unwrap()
       .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
-        
-        // Check if current user has reviewed this album
-        if (isAuthenticated && currentUser) {
-          const userReview = reviewsData.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
-          if (userReview) {
-            setIsReviewed(true);
-            setUserRating(userReview.data.rating || 0);
-          }
-        }
       })
       .catch((err) => {
         console.error('Failed to fetch reviews:', err);
@@ -154,7 +143,6 @@ const AlbumDetailPage = () => {
   return (
     <Layout title={`Musicboxd - ${album.title}`}>
       <div className="content-wrapper">
-<<<<<<< HEAD:frontend/pages/albums/[id].tsx
         <AlbumInfo
           album={album}
           artist={artist}
@@ -163,76 +151,9 @@ const AlbumDetailPage = () => {
           isFavorite={isFavorite}
           favoriteLoading={favoriteLoading}
           userRating={userRating}
-          isReviewed={isReviewed}
+          isReviewed={album.reviewed || false}
           onFavoriteToggle={handleFavoriteToggle}
         />
-=======
-        {/* Album Header */}
-        <section className="entity-header">
-          <div className="entity-main-info">
-            <img src={albumImgUrl} alt={album.title} className="entity-image album-cover" />
-            <div className="entity-details">
-              <div className="entity-type">
-                Album
-                {currentUser && currentUser.moderator && (
-                  <Link href={`/mod/albums/${album.id}/edit`} className="edit-link">
-                    <i className="fas fa-pencil-alt"></i>
-                  </Link>
-                )}
-              </div>
-              <h1 className="entity-title">{album.title}</h1>
-              
-              <div className="album-metadata">
-                {artist && (
-                  <Link href={`/artists/${artist.id}`} className="artist-link">
-                    <img src={artistImgUrl} alt={artist.name} className="artist-thumbnail" />
-                    <span className="artist-name">{artist.name}</span>
-                  </Link>
-                )}
-                <div className="album-info">
-                  {album.genre && <span className="album-genre">{album.genre}</span>}
-                  {album.genre && album.release_date && <span className="info-separator">&bull;</span>}
-                  {album.release_date && <span className="album-date">{formatDate(album.release_date)}</span>}
-                </div>
-              </div>
-            </div>  
-          </div>
-
-          {/* Rating Card */}
-          <div className="rating-card-container">
-            <RatingCard
-              totalRatings={album.rating_count || 0}
-              averageRating={album.avg_rating || 0}
-              userRating={userRating}
-              reviewed={isReviewed}
-              entityType="albums"
-              entityId={album.id}
-              entityLabel="album"
-            />
-          </div>
-        </section>
-
-        {/* Action Buttons */}
-        <section className="entity-actions">
-          {!isAuthenticated ? (
-            <Link href="/login" className="btn btn-primary">
-              Login to Add Favorite
-            </Link>
-          ) : (
-            <button
-              onClick={handleFavoriteToggle}
-              disabled={favoriteLoading}
-              className={`btn ${isFavorite ? 'btn-secondary' : 'btn-primary'}`}
-            >
-              {favoriteLoading
-                ? 'Loading...'
-                : isFavorite
-                ? 'Remove from Favorites'
-                : 'Add to Favorites'}
-            </button>
-          )}
-        </section>
->>>>>>> 1eec8ecc86241f8a906cfd3d0cd3ebbe658a87bd:frontend/pages/albums/[albumId].tsx
 
         {/* Songs Section */}
         {songs.length > 0 && (
