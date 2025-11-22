@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistLoading, selectAlbumLoading, selectSongLoading } from '@/store/slices';
-import { imageRepository } from '@/repositories';
 import { Artist, Album, Song, FilterTypeEnum, MusicTabEnum } from '@/types';
+import ArtistCard from '@/components/cards/ArtistCard';
+import AlbumCard from '@/components/cards/AlbumCard';
+import SongCard from '@/components/cards/SongCard';
 
 
 const MusicDiscoveryPage = () => {
@@ -108,24 +110,7 @@ const MusicDiscoveryPage = () => {
                   <div className="carousel-container">
                     <div className="carousel">
                       {topRatedArtists.map((artist) => (
-                        <div key={artist.id} className="music-item artist-item">
-                          <Link href={`/artists/${artist.id}`} className="music-item-link">
-                            <div className="music-item-image-container">
-                              <img
-                                src={artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png'}
-                                alt={artist.name}
-                                className="music-item-image"
-                              />
-                              {artist.avg_rating !== 0 && (
-                                <div className="rating-badge">
-                                  <span className="rating">{artist.avg_rating.toFixed(1)}</span>
-                                  <span className="star">&#9733;</span>
-                                </div>
-                              )}
-                            </div>
-                            <p className="music-item-title">{artist.name}</p>
-                          </Link>
-                        </div>
+                        <ArtistCard key={artist.id} artist={artist} />
                       ))}
                     </div>
                   </div>
@@ -143,24 +128,7 @@ const MusicDiscoveryPage = () => {
                   <div className="carousel-container">
                     <div className="carousel">
                       {popularArtists.map((artist) => (
-                        <div key={artist.id} className="music-item artist-item">
-                          <Link href={`/artists/${artist.id}`} className="music-item-link">
-                            <div className="music-item-image-container">
-                              <img
-                                src={artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png'}
-                                alt={artist.name}
-                                className="music-item-image"
-                              />
-                              {artist.avg_rating !== 0 && (
-                                <div className="rating-badge">
-                                  <span className="rating">{artist.avg_rating.toFixed(1)}</span>
-                                  <span className="star">&#9733;</span>
-                                </div>
-                              )}
-                            </div>
-                            <p className="music-item-title">{artist.name}</p>
-                          </Link>
-                        </div>
+                        <ArtistCard key={artist.id} artist={artist} />
                       ))}
                     </div>
                   </div>
@@ -202,24 +170,7 @@ const MusicDiscoveryPage = () => {
                   <div className="carousel-container">
                     <div className="carousel">
                       {topRatedAlbums.map((album) => (
-                        <div key={album.id} className="music-item album-item">
-                          <Link href={`/albums/${album.id}`} className="music-item-link">
-                            <div className="music-item-image-container">
-                              <img
-                                src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
-                                alt={album.title}
-                                className="music-item-image"
-                              />
-                              {album.avg_rating !== 0 && (
-                                <div className="rating-badge">
-                                  <span className="rating">{album.avg_rating.toFixed(1)}</span>
-                                  <span className="star">&#9733;</span>
-                                </div>
-                              )}
-                            </div>
-                            <p className="music-item-title">{album.title}</p>
-                          </Link>
-                        </div>
+                        <AlbumCard key={album.id} album={album} />
                       ))}
                     </div>
                   </div>
@@ -237,24 +188,7 @@ const MusicDiscoveryPage = () => {
                   <div className="carousel-container">
                     <div className="carousel">
                       {popularAlbums.map((album) => (
-                        <div key={album.id} className="music-item album-item">
-                          <Link href={`/albums/${album.id}`} className="music-item-link">
-                            <div className="music-item-image-container">
-                              <img
-                                src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
-                                alt={album.title}
-                                className="music-item-image"
-                              />
-                                {album.avg_rating !== 0 && (
-                                <div className="rating-badge">
-                                  <span className="rating">{album.avg_rating.toFixed(1)}</span>
-                                  <span className="star">&#9733;</span>
-                                </div>
-                              )}
-                            </div>
-                            <p className="music-item-title">{album.title}</p>
-                          </Link>
-                        </div>
+                        <AlbumCard key={album.id} album={album} />
                       ))}
                     </div>
                   </div>
@@ -295,18 +229,7 @@ const MusicDiscoveryPage = () => {
                   </h2>
                   <ul className="song-list">
                     {topRatedSongs.map((song, index) => (
-                      <li key={song.id}>
-                        <Link href={`/songs/${song.id}`} className="song-item">
-                          <span className="song-number">{index + 1}</span>
-                          <span className="song-title">{song.title}</span>
-                          {song.avg_rating !== 0 && (
-                            <div className="rating-badge">
-                              <span className="rating">{song.avg_rating.toFixed(1)}</span>
-                              <span className="star">&#9733;</span>
-                            </div>
-                          )}
-                        </Link>
-                      </li>
+                      <SongCard key={song.id} song={song} index={index} />
                     ))}
                   </ul>
                 </div>
@@ -322,18 +245,7 @@ const MusicDiscoveryPage = () => {
                   </h2>
                   <ul className="song-list">
                     {popularSongs.map((song, index) => (
-                      <li key={song.id}>
-                        <Link href={`/songs/${song.id}`} className="song-item">
-                          <span className="song-number">{index + 1}</span>
-                          <span className="song-title">{song.title}</span>
-                            {song.avg_rating !== 0 && (
-                            <div className="rating-badge">
-                              <span className="rating">{song.avg_rating.toFixed(1)}</span>
-                              <span className="star">&#9733;</span>
-                            </div>
-                          )}
-                        </Link>
-                      </li>
+                      <SongCard key={song.id} song={song} index={index} />
                     ))}
                   </ul>
                 </div>

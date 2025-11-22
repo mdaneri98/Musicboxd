@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { Layout, UserInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -26,6 +25,7 @@ import {
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { ProfileTabEnum } from '@/types';
+import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
 
 const UserProfilePage = () => {
   const router = useRouter();
@@ -157,24 +157,7 @@ const UserProfilePage = () => {
               <div className="carousel-container">
                 <div className="carousel">
                   {Object.values(favoriteArtists).map((artist) => (
-                    <div key={artist.id} className="music-item artist-item">
-                      <Link href={`/artists/${artist.id}`} className="music-item-link">
-                        <div className="music-item-image-container">
-                          <img
-                            src={artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png'}
-                            alt={artist.name}
-                            className="music-item-image"
-                          />
-                          {artist.avg_rating !== undefined && (
-                            <div className="rating-badge">
-                              <span className="rating">{artist.avg_rating.toFixed(1)}</span>
-                              <span className="star">&#9733;</span>
-                            </div>
-                          )}
-                        </div>
-                        <p className="music-item-title">{artist.name}</p>
-                      </Link>
-                    </div>
+                    <ArtistCard key={artist.id} artist={artist} />
                   ))}
                 </div>
               </div>
@@ -190,24 +173,7 @@ const UserProfilePage = () => {
               <div className="carousel-container">
                 <div className="carousel">
                   {Object.values(favoriteAlbums).map((album) => (
-                    <div key={album.id} className="music-item album-item">
-                      <Link href={`/albums/${album.id}`} className="music-item-link">
-                        <div className="music-item-image-container">
-                          <img
-                            src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
-                            alt={album.title}
-                            className="music-item-image"
-                          />
-                          {album.avg_rating !== undefined && (
-                            <div className="rating-badge">
-                              <span className="rating">{album.avg_rating.toFixed(1)}</span>
-                              <span className="star">&#9733;</span>
-                            </div>
-                          )}
-                        </div>
-                        <p className="music-item-title">{album.title}</p>
-                      </Link>
-                    </div>
+                    <AlbumCard key={album.id} album={album} />
                   ))}
                 </div>
               </div>
@@ -222,18 +188,7 @@ const UserProfilePage = () => {
             ) : (
               <ul className="song-list">
                 {Object.values(favoriteSongs).map((song, index) => (
-                  <li key={song.id}>
-                    <Link href={`/songs/${song.id}`} className="song-item">
-                      <span className="song-number">{index + 1}</span>
-                      <span className="song-title">{song.title}</span>
-                      {song.avg_rating !== 0 && (
-                        <div className="rating-badge">
-                          <span className="rating">{song.avg_rating.toFixed(1)}</span>
-                          <span className="star">&#9733;</span>
-                        </div>
-                      )}
-                    </Link>
-                  </li>
+                  <SongCard key={song.id} song={song} index={index} />
                 ))}
               </ul>
             )}

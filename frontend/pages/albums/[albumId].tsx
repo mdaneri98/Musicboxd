@@ -21,6 +21,7 @@ import {
   clearCurrentAlbum
 } from '@/store/slices';
 import type { Artist, Review } from '@/types';
+import { SongCard } from '@/components/cards';
 
 const AlbumDetailPage = () => {
   const router = useRouter();
@@ -161,18 +162,7 @@ const AlbumDetailPage = () => {
             <h2>Songs</h2>
             <ul className="song-list">
               {songs.map((song, index) => (
-                <li key={song.id}>
-                  <Link href={`/songs/${song.id}`} className="song-item">
-                    <span className="song-number">{index + 1}</span>
-                    <span className="song-title">{song.title}</span>
-                    {song.avg_rating && (
-                      <div className="rating-badge">
-                        <span className="rating">{song.avg_rating.toFixed(1)}</span>
-                        <span className="star">&#9733;</span>
-                      </div>
-                    )}
-                  </Link>
-                </li>
+                <SongCard key={song.id} song={song} index={index} />
               ))}
             </ul>
           </section>

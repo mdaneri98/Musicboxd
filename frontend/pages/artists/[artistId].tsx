@@ -23,6 +23,7 @@ import {
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import type { Review } from '@/types';
+import { AlbumCard, SongCard } from '@/components/cards';
 
 const ArtistDetailPage = () => {
   const router = useRouter();
@@ -150,24 +151,7 @@ const ArtistDetailPage = () => {
             <div className="carousel-container">
               <div className="carousel">
                 {albums.map((album) => (
-                  <div key={album.id} className="music-item">
-                    <Link href={`/albums/${album.id}`} className="music-item-link">
-                      <div className="music-item-image-container">
-                        <img
-                          src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
-                          alt={album.title}
-                          className="music-item-image"
-                        />
-                        {album.avg_rating && (
-                          <div className="rating-badge">
-                            <span className="rating">{album.avg_rating.toFixed(1)}</span>
-                            <span className="star">&#9733;</span>
-                          </div>
-                        )}
-                      </div>
-                      <p className="music-item-title">{album.title}</p>
-                    </Link>
-                  </div>
+                  <AlbumCard key={album.id} album={album} />
                 ))}
               </div>
             </div>
@@ -180,18 +164,7 @@ const ArtistDetailPage = () => {
             <h2>Popular Songs</h2>
             <ul className="song-list">
               {songs.map((song, index) => (
-                <li key={song.id}>
-                  <Link href={`/songs/${song.id}`} className="song-item">
-                    <span className="song-number">{index + 1}</span>
-                    <span className="song-title">{song.title}</span>
-                    {song.avg_rating && (
-                      <div className="rating-badge">
-                        <span className="rating">{song.avg_rating.toFixed(1)}</span>
-                        <span className="star">&#9733;</span>
-                      </div>
-                    )}
-                  </Link>
-                </li>
+                <SongCard key={song.id} song={song} index={index} />
               ))}
             </ul>
           </section>

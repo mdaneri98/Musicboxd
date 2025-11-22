@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistPagination, selectAlbumPagination, selectSongPagination, selectOrderedArtists, selectOrderedAlbums, selectOrderedSongs } from '@/store/slices';
-import { imageRepository } from '@/repositories';
 import { Artist, Album, Song, FilterTypeEnum, ReviewItemTypeEnum } from '@/types';
+import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
 
 const ViewAllMusicPage = () => {
   const router = useRouter();
@@ -149,24 +148,7 @@ const ViewAllMusicPage = () => {
               {activeTab === ReviewItemTypeEnum.ARTIST && (
                 <div className="music-grid">
                   {Object.values(artists).map((artist: Artist) => (
-                    <div key={artist.id} className="music-item artist-item">
-                      <Link href={`/artists/${artist.id}`} className="music-item-link">
-                        <div className="music-item-image-container">
-                          <img
-                            src={artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png'}
-                            alt={artist.name}
-                            className="music-item-image"
-                          />
-                          {artist.avg_rating !== 0 && (
-                            <div className="rating-badge">
-                              <span className="rating">{artist.avg_rating.toFixed(1)}</span>
-                              <span className="star">&#9733;</span>
-                            </div>
-                          )}
-                        </div>
-                        <p className="music-item-title">{artist.name}</p>
-                      </Link>
-                    </div>
+                    <ArtistCard key={artist.id} artist={artist} />
                   ))}
                 </div>
               )}
@@ -174,42 +156,15 @@ const ViewAllMusicPage = () => {
                 {activeTab === ReviewItemTypeEnum.ALBUM && (
                 <div className="music-grid">
                   {Object.values(albums).map((album: Album) => (
-                    <div key={album.id} className="music-item">
-                      <Link href={`/albums/${album.id}`} className="music-item-link">
-                        <div className="music-item-image-container">
-                          <img
-                            src={album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png'}
-                            alt={album.title}
-                            className="music-item-image"
-                          />
-                          {album.avg_rating !== 0 && (
-                            <div className="rating-badge">
-                              <span className="rating">{album.avg_rating.toFixed(1)}</span>
-                              <span className="star">&#9733;</span>
-                            </div>
-                          )}
-                        </div>
-                        <p className="music-item-title">{album.title}</p>
-                      </Link>
-                    </div>
+                    <AlbumCard key={album.id} album={album} />
                   ))}
                 </div>
               )}
 
               {activeTab === ReviewItemTypeEnum.SONG && (
                 <ul className="song-list">
-                  {Object.values(songs).map((song: Song) => (
-                    <li key={song.id}>
-                      <Link href={`/songs/${song.id}`} className="song-item">
-                        <span className="song-title">{song.title}</span>
-                          {song.avg_rating !== 0 && (
-                          <div className="rating-badge">
-                            <span className="rating">{song.avg_rating.toFixed(1)}</span>
-                            <span className="star">&#9733;</span>
-                          </div>
-                        )}
-                      </Link>
-                    </li>
+                  {Object.values(songs).map((song: Song, index: number) => (
+                    <SongCard key={song.id} song={song} index={index} />
                   ))}
                 </ul>
               )}
