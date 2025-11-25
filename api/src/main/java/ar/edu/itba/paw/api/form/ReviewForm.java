@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.api.form;
 
 import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class ReviewForm {
@@ -11,6 +13,10 @@ public class ReviewForm {
     private String description;
     @Range(min = 0, max = 5, message = "{validation.review.rating.range}")
     private Integer rating;
+    @NotNull
+    private Integer itemId;
+    @NotNull
+    private String itemType;
 
     public ReviewForm() {}
 
@@ -43,6 +49,21 @@ public class ReviewForm {
 
     public void setRating(Integer rating) {
         this.rating = rating;
+    }
+
+    public Integer getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Integer itemId) {
+        this.itemId = itemId;
+    }
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
     }
 
 }

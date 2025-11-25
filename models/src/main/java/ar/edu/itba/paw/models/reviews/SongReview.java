@@ -46,8 +46,8 @@ public class SongReview extends Review {
     }
 
     @Override
-    public String getItemType() {
-        return "Song";
+    public ReviewType getItemType() {
+        return ReviewType.SONG;
     }
 
     public Song getSong() {

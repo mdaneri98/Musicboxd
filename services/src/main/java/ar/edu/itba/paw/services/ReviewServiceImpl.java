@@ -134,10 +134,10 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDTO create(ReviewDTO review) {
         LOGGER.info("Creating new review: {}", review);
         switch (review.getItemType()) {
-            case "Artist" : return createArtistReview(review);
-            case "Album" : return createAlbumReview(review);
-            case "Song" : return createSongReview(review);
-            default : throw new UnkownReviewTypeException(review.getItemType());
+            case ARTIST : return createArtistReview(review);
+            case ALBUM : return createAlbumReview(review);
+            case SONG : return createSongReview(review);
+            default : throw new UnkownReviewTypeException(review.getItemType().toString());
         }
     }
 
@@ -206,10 +206,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     private Boolean updateRatingForItem(ReviewDTO review) {
         switch (review.getItemType()) {
-            case "Artist" : return artistService.updateRating(review.getItemId());
-            case "Album" : return albumService.updateRating(review.getItemId());
-            case "Song" : return songService.updateRating(review.getItemId());
-            default : throw new UnkownReviewTypeException(review.getItemType());
+            case ARTIST : return artistService.updateRating(review.getItemId());
+            case ALBUM : return albumService.updateRating(review.getItemId());
+            case SONG : return songService.updateRating(review.getItemId());
+            default : throw new UnkownReviewTypeException(review.getItemType().toString());
         }
     }
 
@@ -416,7 +416,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewDao.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
         User user = review.getUser();
         try {
-            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.getTitle(), review.getItemName(), review.getItemType());
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.getTitle(), review.getItemName(), review.getItemType().toString());
             LOGGER.info("Acknowledgement email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
@@ -436,7 +436,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewDao.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
         User user = review.getUser();
         try {
-            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.getTitle(), review.getItemName(), review.getItemType());
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.getTitle(), review.getItemName(), review.getItemType().toString());
             LOGGER.info("Acknowledgement email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);

@@ -159,8 +159,7 @@ public class AlbumController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ReviewForm reviewForm) {
         ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
-        reviewDTO.setItemId(id);
-        reviewDTO.setItemType(ControllerUtils.ITEM_TYPE_ALBUM);
+        reviewDTO.setUserId(SecurityContextUtils.getCurrentUserId());
         ReviewDTO responseDTO = reviewService.create(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);

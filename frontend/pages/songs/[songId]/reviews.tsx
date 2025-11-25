@@ -20,6 +20,7 @@ import {
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import type { Album, ReviewFormData, HALResource, Review } from '@/types';
+import { ReviewItemType } from '@/types/enums';
 
 const SongReviewPage = () => {
   const router = useRouter();
@@ -106,7 +107,9 @@ const SongReviewPage = () => {
           reviewData: {
             title: data.title,
             description: data.description,
-            rating: data.rating
+            rating: data.rating,
+            item_id: song.id,
+            item_type: ReviewItemType.SONG,
           }
         })).unwrap();
       }

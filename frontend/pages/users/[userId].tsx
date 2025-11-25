@@ -23,7 +23,6 @@ import {
   selectLoadingReviews,
   selectLoadingFavorites
 } from '@/store/slices';
-import { imageRepository } from '@/repositories';
 import { ProfileTabEnum } from '@/types';
 import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
 

@@ -58,7 +58,11 @@ public abstract class Review {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications;
 
-
+    // Métodos abstractos para el item relacionado
+    public abstract String getItemName();
+    public abstract Long getItemId();
+    public abstract Image getItemImage();
+    public abstract ReviewType getItemType();
 
 
     public Review() {
@@ -87,11 +91,6 @@ public abstract class Review {
         this.isBlocked = isBlocked;
         this.commentAmount = commentAmount;
     }
-
-    public abstract String getItemName();
-    public abstract Long getItemId();
-    public abstract Image getItemImage();
-    public abstract String getItemType();
 
     public Integer getCommentAmount() {
         return commentAmount;

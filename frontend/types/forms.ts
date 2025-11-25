@@ -64,9 +64,9 @@ export interface EditProfileFormData {
 export interface ReviewFormData {
   title: string;
   description: string;
-  rating: number; // 1-5, step 0.5
-  itemId: number;
-  itemType: ReviewItemType;
+  rating: number; // 1-5, step 1
+  item_id: number;
+  item_type: ReviewItemType;
 }
 
 /**

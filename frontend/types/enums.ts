@@ -38,9 +38,9 @@ export enum FilterType {
  * Review item type enum
  */
 export enum ReviewItemType {
-  ARTIST = 'Artist',
-  ALBUM = 'Album',
-  SONG = 'Song',
+  ARTIST = 'ARTIST',
+  ALBUM = 'ALBUM',
+  SONG = 'SONG',
 }
 
 

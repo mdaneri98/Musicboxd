@@ -21,6 +21,7 @@ import ar.edu.itba.paw.api.mapper.resource.AlbumResourceMapper;
 import ar.edu.itba.paw.api.models.resources.AlbumResource;
 import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.models.reviews.ReviewType;
 import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.api.form.ReviewForm;
@@ -173,8 +174,7 @@ public class ArtistController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ReviewForm reviewForm) {
         ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
-        reviewDTO.setItemId(id);
-        reviewDTO.setItemType(ControllerUtils.ITEM_TYPE_ARTIST);
+        reviewDTO.setUserId(SecurityContextUtils.getCurrentUserId());
         ReviewDTO responseDTO = reviewService.createArtistReview(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);

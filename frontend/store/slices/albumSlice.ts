@@ -156,11 +156,11 @@ export const fetchAlbumReviewsAsync = createAsyncThunk<
 
 export const createAlbumReviewAsync = createAsyncThunk<
   HALResource<Review>,
-  { albumId: number; reviewData: Omit<ReviewFormData, 'itemId' | 'itemType'> },
+  { albumId: number; reviewData: ReviewFormData },
   { rejectValue: string }
 >('albums/createAlbumReview', async ({ albumId, reviewData }, { rejectWithValue }) => {
   try {
-    const response = await albumRepository.createAlbumReview(albumId, reviewData as any);
+    const response = await albumRepository.createAlbumReview(albumId, reviewData);
     return response as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create album review');

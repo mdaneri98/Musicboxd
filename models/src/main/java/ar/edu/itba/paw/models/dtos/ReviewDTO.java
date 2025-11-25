@@ -4,16 +4,16 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import ar.edu.itba.paw.models.reviews.ReviewType;
 import java.time.LocalDateTime;
 
 public class ReviewDTO {
 
     private Long id;
 
-    @NotNull(message = "{validation.review.userId.notnull}")
-    private Long userId;
-
     private String username;
+
+    private Long userId;
 
     private Long userImageId;
 
@@ -44,12 +44,12 @@ public class ReviewDTO {
 
     // Campos polimórficos para el item relacionado
     @NotNull(message = "{validation.review.itemType.notnull}")
-    private String itemType; 
+    private ReviewType itemType; 
     @NotNull(message = "{validation.review.itemId.notnull}")
     private Long itemId;
-    @NotNull(message = "{validation.review.itemName.notnull}")
+
     private String itemName;
-    @NotNull(message = "{validation.review.itemImageId.notnull}")
+
     private Long itemImageId;
 
     public ReviewDTO() {}
@@ -145,11 +145,11 @@ public class ReviewDTO {
         this.commentAmount = commentAmount;
     }
 
-    public String getItemType() {
+    public ReviewType getItemType() {
         return itemType;
     }
 
-    public void setItemType(String itemType) {
+    public void setItemType(ReviewType itemType) {
         this.itemType = itemType;
     }
 

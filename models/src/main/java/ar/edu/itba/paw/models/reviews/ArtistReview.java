@@ -46,8 +46,8 @@ public class ArtistReview extends Review {
     }
 
     @Override
-    public String getItemType() {
-        return "Artist";
+    public ReviewType getItemType() {
+        return ReviewType.ARTIST;
     }
 
     public Artist getArtist() {

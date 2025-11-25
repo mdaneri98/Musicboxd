@@ -19,6 +19,7 @@ import {
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
+import { ReviewItemType } from '@/types/enums';
 
 const ArtistReviewPage = () => {
   const router = useRouter();
@@ -103,7 +104,9 @@ const ArtistReviewPage = () => {
           reviewData: {
             title: data.title,
             description: data.description,
-            rating: data.rating
+            rating: data.rating,
+            item_id: artist.id,
+            item_type: ReviewItemType.ARTIST,
           }
         })).unwrap();
       }
