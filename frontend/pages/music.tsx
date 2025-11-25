@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistLoading, selectAlbumLoading, selectSongLoading } from '@/store/slices';
-import { Artist, Album, Song, FilterTypeEnum, MusicTabEnum } from '@/types';
+import { Artist, Album, Song, FilterTypeEnum, MusicTabEnum, ReviewItemTypeEnum } from '@/types';
 import ArtistCard from '@/components/cards/ArtistCard';
 import AlbumCard from '@/components/cards/AlbumCard';
 import SongCard from '@/components/cards/SongCard';
@@ -103,7 +103,7 @@ const MusicDiscoveryPage = () => {
                 <div id="topRatedArtistTab" className="tab-content">
                   <h2>
                     Top Rated Artists
-                    <Link href="/music/view-all?tab=Artist" className="view-all-link">
+                    <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.ARTIST}`} className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -121,7 +121,7 @@ const MusicDiscoveryPage = () => {
                 <div id="popularArtistTab" className="tab-content">
                   <h2>
                     Most Popular Artists
-                    <Link href="/music/view-all?tab=Artist" className="view-all-link">
+                    <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.ARTIST}`} className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -163,7 +163,7 @@ const MusicDiscoveryPage = () => {
                 <div id="topRatedAlbumTab" className="tab-content">
                   <h2>
                     Top Rated Albums
-                    <Link href="/music/view-all?tab=Album" className="view-all-link">
+                    <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.ALBUM}`} className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -181,7 +181,7 @@ const MusicDiscoveryPage = () => {
                 <div id="popularAlbumTab" className="tab-content">
                   <h2>
                     Most Popular Albums
-                    <Link href="/music/view-all?tab=Album" className="view-all-link">
+                    <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.ALBUM}`} className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -223,7 +223,7 @@ const MusicDiscoveryPage = () => {
                 <div id="topRatedSongTab" className="tab-content">
                   <h2>
                     Top Rated Songs
-                    <Link href="/music/view-all?tab=Song" className="view-all-link">
+                    <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.SONG}`} className="view-all-link">
                       View All
                     </Link>
                   </h2>
@@ -239,7 +239,7 @@ const MusicDiscoveryPage = () => {
                 <div id="popularSongTab" className="tab-content">
                   <h2>
                     Most Popular Songs
-                    <Link href="/music/view-all?tab=Song" className="view-all-link">
+                    <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.SONG}`} className="view-all-link">
                       View All
                     </Link>
                   </h2>

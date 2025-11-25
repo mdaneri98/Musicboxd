@@ -6,13 +6,12 @@ import { selectIsAuthenticated, selectCurrentUser, fetchAlbumsAsync } from '@/st
 import { Artist, Album, HALResource } from '@/types';
 import { fetchArtistsAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
-
-type TabType = 'artists' | 'albums' | 'songs';
+import { ReviewItemType } from '@/types/enums';
 
 type SearchResultItem = {
   id: number;
   name: string;
-  type: 'artist' | 'album';
+  type: ReviewItemType;
   imgId?: number;
   imageUrl?: string;
 };
@@ -23,7 +22,7 @@ export default function ModeratorDashboardPage() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const [activeTab, setActiveTab] = useState<TabType>('artists');
+  const [activeTab, setActiveTab] = useState<ReviewItemType>(ReviewItemType.ARTIST);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null);
@@ -68,14 +67,14 @@ export default function ModeratorDashboardPage() {
       try {
         setError(null);
 
-        if (activeTab === 'albums') {
+        if (activeTab === ReviewItemType.ALBUM) {
           // Search for artists (to select artist for album)
           const artistsData = await dispatch(fetchArtistsAsync({ page: 1, size: 10, search: query })).unwrap();
           const artists = artistsData.items.map((item: HALResource<Artist>) => item.data);
           const results: SearchResultItem[] = artists.map((artist: Artist) => ({
             id: artist.id,
             name: artist.name,
-            type: 'artist' as const,
+            type: ReviewItemType.ARTIST,
             imgId: artist.image_id,
             imageUrl: artist.image_id ? imageRepository.getImageUrl(artist.image_id) : undefined,
           })) as SearchResultItem[];
@@ -104,14 +103,14 @@ export default function ModeratorDashboardPage() {
           if (results.length === 0) {
             setError('No se encontraron resultados');
           }
-        } else if (activeTab === 'songs') {
+        } else if (activeTab === ReviewItemType.SONG) {
           // Search for albums (to select album for song)
           const albumsData = await dispatch(fetchAlbumsAsync({ page: 1, size: 10, search: query })).unwrap();
           const albums = albumsData.items.map((item: HALResource<Album>) => item.data);
           const results: SearchResultItem[] = albums.map((album: Album) => ({
             id: album.id,
             name: album.title,
-            type: 'album' as const,
+            type: ReviewItemType.ALBUM,
             imgId: album.image_id,
             imageUrl: album.image_id ? imageRepository.getImageUrl(album.image_id) : undefined,
           })) as SearchResultItem[];
@@ -160,7 +159,7 @@ export default function ModeratorDashboardPage() {
   };
 
   // Handle tab change
-  const handleTabChange = (tab: TabType) => {
+  const handleTabChange = (tab: ReviewItemType) => {
     setActiveTab(tab);
     setSearchQuery('');
     setSearchResults([]);
@@ -205,16 +204,16 @@ export default function ModeratorDashboardPage() {
   // Handle redirect to add page
   const handleRedirect = () => {
     switch (activeTab) {
-      case 'artists':
+      case ReviewItemType.ARTIST:
         router.push('/moderator/add-artist');
         break;
-      case 'albums':
-        if (selectedItem && selectedItem.type === 'artist') {
+      case ReviewItemType.ALBUM:
+        if (selectedItem && selectedItem.type === ReviewItemType.ARTIST) {
           router.push(`/moderator/add-album?artistId=${selectedItem.id}`);
         }
         break;
-      case 'songs':
-        if (selectedItem && selectedItem.type === 'album') {
+      case ReviewItemType.SONG:
+        if (selectedItem && selectedItem.type === ReviewItemType.ALBUM) {
           router.push(`/moderator/add-song?albumId=${selectedItem.id}`);
         }
         break;
@@ -225,11 +224,11 @@ export default function ModeratorDashboardPage() {
     return null; // Will redirect in useEffect
   }
 
-  const showSearchWrapper = activeTab !== 'artists';
+  const showSearchWrapper = activeTab !== ReviewItemType.ARTIST;
   const buttonText =
-    activeTab === 'artists' ? 'Add Artist' : activeTab === 'albums' ? 'Add Album' : 'Add Song';
+    activeTab === ReviewItemType.ARTIST ? 'Add Artist' : activeTab === ReviewItemType.ALBUM ? 'Add Album' : 'Add Song';
   const searchPlaceholder =
-    activeTab === 'albums' ? 'Search for artist...' : 'Search for album...';
+    activeTab === ReviewItemType.ALBUM ? 'Search for artist...' : 'Search for album...';
 
   return (
     <Layout title="Moderator Dashboard - Musicboxd">
@@ -239,20 +238,20 @@ export default function ModeratorDashboardPage() {
         {/* Tabs */}
         <div className="tabs">
           <span
-            className={`tab ${activeTab === 'artists' ? 'active' : ''}`}
-            onClick={() => handleTabChange('artists')}
+            className={`tab ${activeTab === ReviewItemType.ARTIST ? 'active' : ''}`}
+            onClick={() => handleTabChange(ReviewItemType.ARTIST)}
           >
             Artist
           </span>
           <span
-            className={`tab ${activeTab === 'albums' ? 'active' : ''}`}
-            onClick={() => handleTabChange('albums')}
+              className={`tab ${activeTab === ReviewItemType.ALBUM ? 'active' : ''}`}
+            onClick={() => handleTabChange(ReviewItemType.ALBUM)}
           >
             Album
           </span>
           <span
-            className={`tab ${activeTab === 'songs' ? 'active' : ''}`}
-            onClick={() => handleTabChange('songs')}
+            className={`tab ${activeTab === ReviewItemType.SONG ? 'active' : ''}`}
+            onClick={() => handleTabChange(ReviewItemType.SONG)}
           >
             Song
           </span>
@@ -316,7 +315,7 @@ export default function ModeratorDashboardPage() {
           <button
             onClick={handleRedirect}
             className="btn btn-primary"
-            disabled={activeTab !== 'artists' && !selectedItem}
+            disabled={activeTab !== ReviewItemType.ARTIST && !selectedItem}
           >
             {buttonText}
           </button>

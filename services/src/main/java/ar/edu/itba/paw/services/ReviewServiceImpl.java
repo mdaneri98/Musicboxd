@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 import ar.edu.itba.paw.services.mappers.UserMapper;
 import ar.edu.itba.paw.services.mappers.ReviewMapper;
-
+import ar.edu.itba.paw.models.reviews.ReviewType;
 import javax.mail.MessagingException;
 import java.util.List;
 
@@ -147,7 +147,7 @@ public class ReviewServiceImpl implements ReviewService {
         ArtistReview entity = new ArtistReview();
         entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException(review.getUserId())));
         entity.setArtist(artistDao.findById(review.getItemId()).orElseThrow(() -> new ArtistNotFoundException(review.getItemId())));
-        if (artistService.hasUserReviewed(review.getUserId(), review.getItemId())) throw new UserAlreadyReviewedException(review.getUserId(), review.getItemId(), "Artist");
+        if (artistService.hasUserReviewed(review.getUserId(), review.getItemId())) throw new UserAlreadyReviewedException(review.getUserId(), review.getItemId(), ReviewType.ARTIST.toString());
         MergeUtils.mergeReviewFields(entity, review);
         Review createdReview = reviewDao.create(entity);
         userService.updateUserReviewAmount(createdReview.getUser().getId());
@@ -254,7 +254,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public ReviewDTO findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId) {
-        ArtistReview review = reviewDao.findArtistReviewByUserId(userId, artistId).orElseThrow(() -> new ReviewNotFoundException(userId, artistId, "Artist"));
+        ArtistReview review = reviewDao.findArtistReviewByUserId(userId, artistId).orElseThrow(() -> new ReviewNotFoundException(userId, artistId, ReviewType.ARTIST.toString()));
         ReviewDTO reviewDTO = reviewMapper.toDTO(review);
         reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
         if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));

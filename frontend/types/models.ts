@@ -1,3 +1,4 @@
+import { NotificationType, ReviewItemType } from "./enums";
 
 /**
  * Domain Models
@@ -85,11 +86,6 @@ export interface Song {
 // ============================================================================
 // Review Model
 // ============================================================================
-export enum ReviewItemType {
-  ARTIST = 'Artist',
-  ALBUM = 'Album',
-  SONG = 'Song',
-}
 
 export interface Review {
   id: number;
@@ -129,7 +125,6 @@ export interface Comment {
 // ============================================================================
 // Notification Model
 // ============================================================================
-export type NotificationType = 'FOLLOW' | 'LIKE' | 'COMMENT' | 'REVIEW';
 
 export interface Notification {
   id: number;

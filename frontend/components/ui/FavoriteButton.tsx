@@ -8,6 +8,7 @@ import {
   addSongFavoriteAsync,
   removeSongFavoriteAsync,
 } from '@/store/slices';
+import { ReviewItemType } from '@/types/enums';
 
 /**
  * Favorite Button Component
@@ -18,7 +19,7 @@ import {
 
 interface FavoriteButtonProps {
   itemId: number;
-  itemType: 'artist' | 'album' | 'song';
+  itemType: ReviewItemType;
   isFavorite: boolean;
   onFavoriteChange?: (isFavorite: boolean) => void;
   variant?: 'icon' | 'button';
@@ -49,26 +50,26 @@ export function FavoriteButton({
       if (isFavorite) {
         // Remove from favorites
         switch (itemType) {
-          case 'artist':
+          case ReviewItemType.ARTIST:
             await dispatch(removeArtistFavoriteAsync(itemId)).unwrap();
             break;
-          case 'album':
+          case ReviewItemType.ALBUM:
             await dispatch(removeAlbumFavoriteAsync(itemId)).unwrap();
             break;
-          case 'song':
+          case ReviewItemType.SONG:
             await dispatch(removeSongFavoriteAsync(itemId)).unwrap();
             break;
         }
       } else {
         // Add to favorites
         switch (itemType) {
-          case 'artist':
+          case ReviewItemType.ARTIST:
             await dispatch(addArtistFavoriteAsync(itemId)).unwrap();
             break;
-          case 'album':
+          case ReviewItemType.ALBUM:
             await dispatch(addAlbumFavoriteAsync(itemId)).unwrap();
             break;
-          case 'song':
+          case ReviewItemType.SONG:
             await dispatch(addSongFavoriteAsync(itemId)).unwrap();
             break;
         }

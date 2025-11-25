@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.utils;
 
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
-
+import ar.edu.itba.paw.models.reviews.ReviewType;
 /**
  * Utility class for controller methods
  */
@@ -27,9 +27,9 @@ public final class ControllerUtils {
     public static final String POPULAR_FILTER_STRING = "POPULAR";
 
     // Item types
-    public static final String ITEM_TYPE_SONG = "Song";
-    public static final String ITEM_TYPE_ALBUM = "Album";
-    public static final String ITEM_TYPE_ARTIST = "Artist";
+    public static final String ITEM_TYPE_SONG = ReviewType.SONG.toString();
+    public static final String ITEM_TYPE_ALBUM = ReviewType.ALBUM.toString();
+    public static final String ITEM_TYPE_ARTIST = ReviewType.ARTIST.toString();
     public static final String ITEM_TYPE_REVIEW = "Review";
     public static final String ITEM_TYPE_COMMENT = "Comment";
     public static final String ITEM_TYPE_IMAGE = "Image";

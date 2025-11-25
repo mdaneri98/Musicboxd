@@ -52,10 +52,10 @@ export enum ReviewItemType {
  * Notification type enum
  */
 export enum NotificationType {
-  FOLLOW = 'follow',
-  LIKE = 'like',
-  COMMENT = 'comment',
-  REVIEW = 'review',
+  FOLLOW = 'FOLLOW',
+  LIKE = 'LIKE',
+  COMMENT = 'COMMENT',
+  REVIEW = 'REVIEW',
 }
 
 // ============================================================================
@@ -72,6 +72,7 @@ export enum SearchType {
   ALBUMS = 'albums',
   SONGS = 'songs',
 }
+
 
 // ============================================================================
 // Theme Types
