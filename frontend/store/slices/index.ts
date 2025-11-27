@@ -182,16 +182,11 @@ export {
   selectLoadingReview,
   selectLoadingComments,
   selectLoadingLikes,
-} from './reviewSlice';
-
-// Comment Slice
-export {
   fetchCommentsAsync,
   fetchCommentByIdAsync,
   createCommentAsync,
   updateCommentAsync,
   deleteCommentAsync,
-  clearError as clearCommentError,
   clearCurrentComment,
   addComment,
   removeComment,
@@ -202,7 +197,7 @@ export {
   selectCommentLoading,
   selectCommentError,
   selectLoadingComment,
-} from './commentSlice';
+} from './reviewSlice';
 
 // Notification Slice
 export {

@@ -10,7 +10,6 @@ import artistReducer from './slices/artistSlice';
 import albumReducer from './slices/albumSlice';
 import songReducer from './slices/songSlice';
 import reviewReducer from './slices/reviewSlice';
-import commentReducer from './slices/commentSlice';
 import notificationReducer from './slices/notificationSlice';
 // import searchReducer from './slices/searchSlice';
 import uiReducer from './slices/uiSlice';
@@ -43,7 +42,6 @@ export const store = configureStore({
     albums: albumReducer,
     songs: songReducer,
     reviews: reviewReducer,
-    comments: commentReducer,
     notifications: notificationReducer,
     // search: searchReducer,
     ui: uiReducer,

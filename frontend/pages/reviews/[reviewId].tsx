@@ -93,20 +93,11 @@ const ReviewDetailPage = () => {
   const handleTabChange = useCallback((tab: ReviewTab) => {
     setActiveTab(tab);
     setPage(1);
-    if(tab === ReviewTab.COMMENTS) {
-      dispatch(fetchReviewCommentsAsync({ reviewId: parseInt(reviewId as string), page: 1, size: 20 }));
-    } else if(tab === ReviewTab.LIKES) {
-      dispatch(fetchReviewLikesAsync({ reviewId: parseInt(reviewId as string), page: 1, size: 20 }));
-    }
-  }, [reviewId, dispatch]);
+    setHasMore(true);
+  }, []);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
-    if(activeTab === ReviewTab.COMMENTS) {
-      dispatch(fetchReviewCommentsAsync({ reviewId: parseInt(reviewId as string), page: newPage, size: 20 }));
-    } else if(activeTab === ReviewTab.LIKES) {
-      dispatch(fetchReviewLikesAsync({ reviewId: parseInt(reviewId as string), page: newPage, size: 20 }));
-    }
   }, [reviewId, dispatch]);
 
   const handleCommentSubmit = async (data: CommentFormData) => {
@@ -116,10 +107,6 @@ const ReviewDetailPage = () => {
       console.log('Creating comment:', data);
       setSubmitLoading(true);
       await dispatch(postCommentAsync(data)).unwrap();
-
-      // Refresh comments
-      const reviewIdNum = parseInt(reviewId as string);
-      await dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 }));
     } catch (error) {
       console.error('Failed to create comment:', error);
     } finally {
@@ -132,11 +119,6 @@ const ReviewDetailPage = () => {
 
     try {
       await dispatch(deleteCommentAsync(commentToDelete)).unwrap();
-
-      // Refresh comments
-      const reviewIdNum = parseInt(reviewId as string);
-      await dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 }));
-      
       setCommentToDelete(null);
     } catch (error) {
       console.error('Failed to delete comment:', error);
