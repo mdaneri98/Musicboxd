@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.exception.mapper;
 
-import ar.edu.itba.paw.models.dtos.ErrorResponseDTO;
+import ar.edu.itba.paw.api.dto.ErrorResponseDTO;
 import ar.edu.itba.paw.api.exception.ErrorResponseBuilder;
 import ar.edu.itba.paw.exception.not_found.EntityNotFoundException;
 import org.slf4j.Logger;

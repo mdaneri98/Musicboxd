@@ -16,6 +16,7 @@ public class NotificationDTO {
     private LocalDateTime createdAt;
     private Boolean isRead;
     private String message;
+    private String timeAgo;
 
     public NotificationDTO() {}
 
@@ -108,6 +109,14 @@ public class NotificationDTO {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getTimeAgo() {
+        return timeAgo;
+    }
+
+    public void setTimeAgo(String timeAgo) {
+        this.timeAgo = timeAgo;
     }
 }
 

@@ -1,7 +1,5 @@
 package ar.edu.itba.paw.api.utils;
 
-import ar.edu.itba.paw.models.dtos.UserDTO;
-import ar.edu.itba.paw.services.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

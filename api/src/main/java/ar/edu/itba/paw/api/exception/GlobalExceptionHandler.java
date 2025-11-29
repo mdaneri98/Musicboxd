@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.exception;
 
-import ar.edu.itba.paw.models.dtos.ErrorResponseDTO;
+import ar.edu.itba.paw.api.dto.ErrorResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

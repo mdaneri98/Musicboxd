@@ -128,9 +128,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (notificationInput.getMessage() != null) {
             notification.setMessage(notificationInput.getMessage());
         }
-        if (notificationInput.isRead() != null) {
-            notification.setRead(notificationInput.isRead());
-        }
+        notification.setRead(notificationInput.isRead());
         
         return notificationDao.update(notification);
     }

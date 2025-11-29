@@ -1,24 +1,24 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.dtos.LoginRequestDTO;
-import ar.edu.itba.paw.models.dtos.LoginResponseDTO;
-import ar.edu.itba.paw.models.dtos.UserDTO;
+import ar.edu.itba.paw.models.AuthResult;
+import ar.edu.itba.paw.models.User;
 
 public interface AuthService {
     
     /**
      * Authenticate user and generate tokens
-     * @param loginRequest the login credentials
-     * @return login response with access token, refresh token and user info
+     * @param username the username
+     * @param password the password
+     * @return AuthResult with access token, refresh token and user info
      */
-    LoginResponseDTO login(LoginRequestDTO loginRequest);
+    AuthResult login(String username, String password);
     
     /**
      * Refresh access token using refresh token
      * @param refreshToken the refresh token
-     * @return new access token and refresh token
+     * @return new AuthResult with access token and refresh token
      */
-    LoginResponseDTO refresh(String refreshToken);
+    AuthResult refresh(String refreshToken);
     
     /**
      * Logout user by revoking refresh token
@@ -37,7 +37,7 @@ public interface AuthService {
     /**
      * Get current user info from access token
      * @param accessToken the access token
-     * @return user info
+     * @return user model
      */
-    UserDTO getCurrentUser(String accessToken);
+    User getCurrentUser(String accessToken);
 }

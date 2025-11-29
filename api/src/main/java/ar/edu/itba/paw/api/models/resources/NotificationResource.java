@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.models.resources;
 
-import ar.edu.itba.paw.models.dtos.NotificationDTO;
+import ar.edu.itba.paw.api.dto.NotificationDTO;
 
 public class NotificationResource extends Resource<NotificationDTO> {
 

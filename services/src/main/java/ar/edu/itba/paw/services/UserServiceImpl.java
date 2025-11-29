@@ -1,21 +1,13 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.dtos.ArtistDTO;
-import ar.edu.itba.paw.models.dtos.AlbumDTO;
-import ar.edu.itba.paw.models.dtos.SongDTO;
-import ar.edu.itba.paw.models.dtos.CreateUserDTO;
-import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.persistence.UserVerificationDao;
 import ar.edu.itba.paw.exception.conflict.UserAlreadyExistsException;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
 import ar.edu.itba.paw.exception.email.VerificationEmailException;
 import ar.edu.itba.paw.exception.conflict.FavoriteLimitException;
-import ar.edu.itba.paw.services.mappers.UserMapper;
-import ar.edu.itba.paw.services.mappers.ArtistMapper;
-import ar.edu.itba.paw.services.mappers.AlbumMapper;
-import ar.edu.itba.paw.services.mappers.SongMapper;
+import ar.edu.itba.paw.services.utils.MergeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -27,8 +19,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -37,23 +27,16 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final UserVerificationDao userVerificationDao;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
-    private final ArtistMapper artistMapper;
-    private final AlbumMapper albumMapper;
-    private final SongMapper songMapper;
 
     private final EmailService emailService;
     private final NotificationService notificationService;
     private final ImageService imageService;
 
-    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, UserMapper userMapper, ArtistMapper artistMapper, AlbumMapper albumMapper, SongMapper songMapper, EmailService emailService, NotificationService notificationService, ImageService imageService) {
+    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, 
+                          EmailService emailService, NotificationService notificationService, ImageService imageService) {
         this.userDao = userDao;
         this.userVerificationDao = userVerificationDao;
         this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
-        this.artistMapper = artistMapper;
-        this.albumMapper = albumMapper;
-        this.songMapper = songMapper;
         this.emailService = emailService;
         this.notificationService = notificationService;
         this.imageService = imageService;
@@ -61,10 +44,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO findUserById(Long id, Long loggedUserId) {
-        UserDTO userDTO = userDao.findById(id).map(userMapper::toDTO).orElseThrow(() -> new UserNotFoundException(id));
-        if (loggedUserId != null) userDTO.setFollowed(isFollowing(loggedUserId, id));
-        return userDTO;
+    public User findUserById(Long id, Long loggedUserId) {
+        User user = userDao.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        // Note: isFollowed will be computed in the controller/mapper layer
+        return user;
     }
 
     @Override
@@ -75,17 +58,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO findByEmail(String email) {
+    public User findByEmail(String email) {
         return userDao.findByEmail(email)
-                .map(userMapper::toDTO)
                 .orElseThrow(() -> new UserNotFoundException(email, "email"));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO findByUsername(String username) {
+    public User findByUsername(String username) {
         return userDao.findByUsername(username)
-                .map(userMapper::toDTO)
                 .orElseThrow(() -> new UserNotFoundException(username, "username"));
     }
 
@@ -109,50 +90,50 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize) {
-        return userMapper.toDTOList(userDao.findByUsernameContaining(sub, pageNumber, pageSize));
+    public List<User> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize) {
+        return userDao.findByUsernameContaining(sub, pageNumber, pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> findAll() {
-        return userMapper.toDTOList(userDao.findAll());
+    public List<User> findAll() {
+        return userDao.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
-        return userMapper.toDTOList(userDao.findPaginated(filterType, page, pageSize));
+    public List<User> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
+        return userDao.findPaginated(filterType, page, pageSize);
     }
 
     @Override
     @Transactional
-    public UserDTO create(CreateUserDTO createUserDTO) {
-        LOGGER.info("Creating new user with username: {} and email: {}", createUserDTO.getUsername(), createUserDTO.getEmail());
-        String hashedPassword = passwordEncoder.encode(createUserDTO.getPassword());
+    public User create(String username, String email, String password) {
+        LOGGER.info("Creating new user with username: {} and email: {}", username, email);
+        String hashedPassword = passwordEncoder.encode(password);
 
-        if (usernameExists(createUserDTO.getUsername())) throw new UserAlreadyExistsException(createUserDTO.getUsername(), "username");
-        if (emailExists(createUserDTO.getEmail())) throw new UserAlreadyExistsException(createUserDTO.getEmail(), "email");
+        if (usernameExists(username)) throw new UserAlreadyExistsException(username, "username");
+        if (emailExists(email)) throw new UserAlreadyExistsException(email, "email");
 
-        User createdUser = userDao.create(createUserDTO.getUsername(), createUserDTO.getEmail(), hashedPassword, imageService.findById(imageService.getDefaultProfileImgId())).orElseThrow(() -> new RuntimeException("Failed to create user"));
+        User createdUser = userDao.create(username, email, hashedPassword, imageService.findById(imageService.getDefaultProfileImgId())).orElseThrow(() -> new RuntimeException("Failed to create user"));
         createdUser.setPreferredLanguage(LocaleContextHolder.getLocale().getLanguage());
         this.createVerification(VerificationType.VERIFY_EMAIL, createdUser);
         LOGGER.info("Successfully created new user with ID: {}", createdUser.getId());
-        return userMapper.toDTO(createdUser);
+        return createdUser;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getFollowers(Long userId, Integer pageNumber, Integer pageSize) {
+    public List<User> getFollowers(Long userId, Integer pageNumber, Integer pageSize) {
         if (userId == null || userDao.findById(userId).isEmpty()) throw new UserNotFoundException(userId);  
-        return userMapper.toDTOList(userDao.getFollowers(userId, pageNumber, pageSize));
+        return userDao.getFollowers(userId, pageNumber, pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getFollowings(Long userId, Integer pageNumber, Integer pageSize) {
+    public List<User> getFollowings(Long userId, Integer pageNumber, Integer pageSize) {
         if (userId == null || userDao.findById(userId).isEmpty()) throw new UserNotFoundException(userId);  
-        return userMapper.toDTOList(userDao.getFollowings(userId, pageNumber, pageSize));
+        return userDao.getFollowings(userId, pageNumber, pageSize);
     }
 
     @Override
@@ -238,18 +219,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUser(UserDTO userDTO) {
-        LOGGER.info("Updating user with ID: {}", userDTO.getId());
-        User existingUser = userDao.findById(userDTO.getId()).orElseThrow(() -> new UserNotFoundException(userDTO.getId()));
+    public User updateUser(User userUpdate) {
+        LOGGER.info("Updating user with ID: {}", userUpdate.getId());
+        User existingUser = userDao.findById(userUpdate.getId()).orElseThrow(() -> new UserNotFoundException(userUpdate.getId()));
         
-        if (userDTO.getImageId() != null) 
-            existingUser.setImage(imageService.findById(userDTO.getImageId()));
+        if (userUpdate.getImageId() != null) 
+            existingUser.setImage(imageService.findById(userUpdate.getImageId()));
 
-        MergeUtils.mergeUserFields(existingUser, userDTO);
+        MergeUtils.mergeUserFields(existingUser, userUpdate);
         User updatedUser = saveUser(existingUser);
-        LOGGER.info("User with ID {} updated successfully", userDTO.getId());
+        LOGGER.info("User with ID {} updated successfully", userUpdate.getId());
         
-        return userMapper.toDTO(updatedUser);
+        return updatedUser;
     }
 
     @Override
@@ -278,8 +259,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArtistDTO> getFavoriteArtists(Long userId) {
-        return userDao.getFavoriteArtists(userId).stream().map(artistMapper::toDTO).collect(Collectors.toList());
+    public List<Artist> getFavoriteArtists(Long userId) {
+        return userDao.getFavoriteArtists(userId);
     }
 
     @Override
@@ -311,8 +292,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AlbumDTO> getFavoriteAlbums(Long userId) {
-        return userDao.getFavoriteAlbums(userId).stream().map(albumMapper::toDTO).collect(Collectors.toList());
+    public List<Album> getFavoriteAlbums(Long userId) {
+        return userDao.getFavoriteAlbums(userId);
     }
 
     @Override
@@ -344,8 +325,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> getFavoriteSongs(Long userId) {
-        return userDao.getFavoriteSongs(userId).stream().map(songMapper::toDTO).collect(Collectors.toList());
+    public List<Song> getFavoriteSongs(Long userId) {
+        return userDao.getFavoriteSongs(userId);
     }
 
     @Override
@@ -377,7 +358,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize) {
+    public List<User> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize) {
         LOGGER.info("Getting recommended users for user with ID: {}", userId);
         if (userId == null || userDao.findById(userId).isEmpty()) {
             LOGGER.warn("Invalid user ID: {}", userId);
@@ -386,7 +367,7 @@ public class UserServiceImpl implements UserService {
         
         List<User> recommendedUsers = userDao.getRecommendedUsers(userId, pageNumber, pageSize);
         LOGGER.info("Found {} recommended users for user with ID: {}", recommendedUsers.size(), userId);
-        return userMapper.toDTOList(recommendedUsers);
+        return recommendedUsers;
     }
 
     private User saveUser(User user) {

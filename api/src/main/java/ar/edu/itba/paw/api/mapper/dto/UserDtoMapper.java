@@ -33,11 +33,11 @@ public class UserDtoMapper {
         dto.setVerified(user.isVerified());
         dto.setModerator(user.isModerator());
         dto.setPreferredLanguage(user.getPreferredLanguage());
-        dto.setPreferredTheme(user.getPreferredTheme());
-        dto.setHasFollowNotificationsEnabled(user.hasFollowNotificationsEnabled());
-        dto.setHasLikeNotificationsEnabled(user.hasLikeNotificationsEnabled());
-        dto.setHasCommentsNotificationsEnabled(user.hasCommentsNotificationsEnabled());
-        dto.setHasReviewsNotificationsEnabled(user.hasReviewsNotificationsEnabled());
+        dto.setPreferredTheme(user.getTheme());
+        dto.setHasFollowNotificationsEnabled(user.getFollowNotificationsEnabled());
+        dto.setHasLikeNotificationsEnabled(user.getLikeNotificationsEnabled());
+        dto.setHasCommentsNotificationsEnabled(user.getCommentNotificationsEnabled());
+        dto.setHasReviewsNotificationsEnabled(user.getReviewNotificationsEnabled());
 
         return dto;
     }
@@ -71,20 +71,21 @@ public class UserDtoMapper {
         user.setEmail(dto.getEmail());
         user.setName(dto.getName());
         user.setBio(dto.getBio());
-        user.setImageId(dto.getImageId());
+        // Note: Image needs to be set separately using ImageService if full conversion is needed
+        // user.setImage(...) - requires Image object, not just ID
         user.setFollowersAmount(dto.getFollowersAmount());
         user.setFollowingAmount(dto.getFollowingAmount());
         user.setReviewAmount(dto.getReviewAmount());
         user.setCreatedAt(dto.getCreatedAt());
         user.setUpdatedAt(dto.getUpdatedAt());
-        user.setVerified(dto.getVerified());
+        user.setVerified(dto.getVerified() != null ? dto.getVerified() : false);
         user.setModerator(dto.getModerator());
         user.setPreferredLanguage(dto.getPreferredLanguage());
-        user.setPreferredTheme(dto.getPreferredTheme());
-        user.setHasFollowNotificationsEnabled(dto.getHasFollowNotificationsEnabled());
-        user.setHasLikeNotificationsEnabled(dto.getHasLikeNotificationsEnabled());
-        user.setHasCommentsNotificationsEnabled(dto.getHasCommentsNotificationsEnabled());
-        user.setHasReviewsNotificationsEnabled(dto.getHasReviewsNotificationsEnabled());
+        user.setTheme(dto.getPreferredTheme());
+        user.setFollowNotificationsEnabled(dto.getHasFollowNotificationsEnabled());
+        user.setLikeNotificationsEnabled(dto.getHasLikeNotificationsEnabled());
+        user.setCommentNotificationsEnabled(dto.getHasCommentsNotificationsEnabled());
+        user.setReviewNotificationsEnabled(dto.getHasReviewsNotificationsEnabled());
 
         return user;
     }
@@ -99,4 +100,3 @@ public class UserDtoMapper {
                 .collect(Collectors.toList());
     }
 }
-

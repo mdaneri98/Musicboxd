@@ -1,8 +1,14 @@
 package ar.edu.itba.paw.api.controller;
 
+import ar.edu.itba.paw.api.dto.CommentDTO;
 import ar.edu.itba.paw.api.dto.ReviewDTO;
 import ar.edu.itba.paw.api.dto.UserDTO;
+import ar.edu.itba.paw.api.form.CommentForm;
+import ar.edu.itba.paw.api.form.ReviewForm;
+import ar.edu.itba.paw.api.mapper.dto.CommentDtoMapper;
+import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ReviewDtoMapper;
+import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.UserDtoMapper;
 import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.CommentResourceMapper;
@@ -13,18 +19,14 @@ import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
-import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.api.utils.ControllerUtils;
+import ar.edu.itba.paw.api.utils.SecurityContextUtils;
+import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.dtos.CommentDTO;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
-import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.api.form.ReviewForm;
-import ar.edu.itba.paw.api.form.CommentForm;
-import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
-import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -69,6 +71,9 @@ public class ReviewController extends BaseController {
 
     @Autowired
     private UserDtoMapper userDtoMapper;
+
+    @Autowired
+    private CommentDtoMapper commentDtoMapper;
 
     @GET
     public Response getAllReviews(
@@ -168,7 +173,8 @@ public class ReviewController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
         
-        List<CommentDTO> commentDTOs = commentService.findByReviewId(id, size, page);
+        List<Comment> comments = commentService.findByReviewId(id, size, page);
+        List<CommentDTO> commentDTOs = commentDtoMapper.toDTOList(comments);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Integer totalCount = commentService.countByReviewId(id).intValue();
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
@@ -180,11 +186,11 @@ public class ReviewController extends BaseController {
     @POST
     @Path(ApiUriConstants.REVIEW_COMMENTS)
     public Response createReviewComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid CommentForm commentForm) {
-        CommentDTO commentDTO = commentFormMapper.toDTO(commentForm);
-        commentDTO.setReviewId(id);
-        commentDTO.setUserId(SecurityContextUtils.getCurrentUserId());
-        CommentDTO responseDTO = commentService.create(commentDTO);
-        CommentResource commentResource = commentResourceMapper.toResource(responseDTO, getBaseUrl());
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Comment comment = commentFormMapper.toModel(commentForm, loggedUserId, id);
+        Comment createdComment = commentService.create(comment);
+        CommentDTO commentDTO = commentDtoMapper.toDTO(createdComment);
+        CommentResource commentResource = commentResourceMapper.toResource(commentDTO, getBaseUrl());
         return buildCreatedResponse(commentResource);
     }
 
@@ -224,7 +230,7 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
     public Response updateBlockReviewStatus(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, Boolean isBlocked) {
-        if (isBlocked) reviewService.block(reviewId);
+        if (isBlocked != null && isBlocked) reviewService.block(reviewId);
         else reviewService.unblock(reviewId);
         return buildNoContentResponse();
     }

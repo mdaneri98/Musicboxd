@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.exception.mapper;
 
 import ar.edu.itba.paw.api.exception.ErrorResponseBuilder;
-import ar.edu.itba.paw.models.dtos.ErrorResponseDTO;
+import ar.edu.itba.paw.api.dto.ErrorResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

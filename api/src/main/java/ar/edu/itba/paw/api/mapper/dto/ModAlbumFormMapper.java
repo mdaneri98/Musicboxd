@@ -4,7 +4,7 @@ import ar.edu.itba.paw.api.form.ModAlbumForm;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.api.dto.AlbumDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

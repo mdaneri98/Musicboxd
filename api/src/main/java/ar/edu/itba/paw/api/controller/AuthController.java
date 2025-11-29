@@ -1,17 +1,20 @@
 package ar.edu.itba.paw.api.controller;
 
+import ar.edu.itba.paw.api.dto.CreateUserDTO;
+import ar.edu.itba.paw.api.dto.LoginRequestDTO;
+import ar.edu.itba.paw.api.dto.LoginResponseDTO;
+import ar.edu.itba.paw.api.dto.UserDTO;
+import ar.edu.itba.paw.api.form.UserForm;
+import ar.edu.itba.paw.api.mapper.dto.UserDtoMapper;
+import ar.edu.itba.paw.api.mapper.dto.UserFormMapper;
 import ar.edu.itba.paw.api.mapper.resource.UserResourceMapper;
 import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.JwtUtils;
-import ar.edu.itba.paw.models.dtos.CreateUserDTO;
-import ar.edu.itba.paw.models.dtos.LoginRequestDTO;
-import ar.edu.itba.paw.models.dtos.LoginResponseDTO;
-import ar.edu.itba.paw.models.dtos.UserDTO;
+import ar.edu.itba.paw.models.AuthResult;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.AuthService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.api.form.UserForm;
-import ar.edu.itba.paw.api.mapper.dto.UserFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,10 +41,15 @@ public class AuthController extends BaseController {
     @Autowired
     private UserFormMapper userFormMapper;
 
+    @Autowired
+    private UserDtoMapper userDtoMapper;
+
     @POST
     @Path(ApiUriConstants.LOGIN)
     public Response login(@Valid LoginRequestDTO loginRequest) {
-        LoginResponseDTO loginResponse = authService.login(loginRequest);
+        AuthResult authResult = authService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        UserDTO userDTO = userDtoMapper.toDTO(authResult.getUser());
+        LoginResponseDTO loginResponse = new LoginResponseDTO(authResult.getAccessToken(), authResult.getRefreshToken(), userDTO);
         return Response.ok(loginResponse).build();
     }
 
@@ -49,7 +57,8 @@ public class AuthController extends BaseController {
     @Path(ApiUriConstants.REGISTER)
     public Response register(@Valid UserForm userForm) {
         CreateUserDTO createUserDTO = userFormMapper.toDTO(userForm);
-        UserDTO userDTO = userService.create(createUserDTO);
+        User user = userService.create(createUserDTO.getUsername(), createUserDTO.getEmail(), createUserDTO.getPassword());
+        UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
         
         return Response.status(Response.Status.CREATED).entity(userResource).build();
@@ -59,7 +68,9 @@ public class AuthController extends BaseController {
     @Path(ApiUriConstants.REFRESH)
     public Response refresh(@Context HttpServletRequest request) {
         String refreshToken = JwtUtils.extractTokenFromRequest(request);
-        LoginResponseDTO refreshResponse = authService.refresh(refreshToken);
+        AuthResult authResult = authService.refresh(refreshToken);
+        UserDTO userDTO = userDtoMapper.toDTO(authResult.getUser());
+        LoginResponseDTO refreshResponse = new LoginResponseDTO(authResult.getAccessToken(), authResult.getRefreshToken(), userDTO);
         
         return Response.ok(refreshResponse).build();
     }
@@ -77,7 +88,8 @@ public class AuthController extends BaseController {
     @Path(ApiUriConstants.ME)
     public Response getCurrentUser(@Context HttpServletRequest request) {
         String accessToken = JwtUtils.extractTokenFromRequest(request);
-        UserDTO userDTO = authService.getCurrentUser(accessToken);
+        User user = authService.getCurrentUser(accessToken);
+        UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
         
         return Response.ok(userResource).build();

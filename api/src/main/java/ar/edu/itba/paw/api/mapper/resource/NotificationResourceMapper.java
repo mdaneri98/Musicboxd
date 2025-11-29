@@ -2,7 +2,7 @@ package ar.edu.itba.paw.api.mapper.resource;
 
 import ar.edu.itba.paw.api.models.resources.NotificationResource;
 import ar.edu.itba.paw.api.models.links.managers.NotificationLinkManager;
-import ar.edu.itba.paw.models.dtos.NotificationDTO;
+import ar.edu.itba.paw.api.dto.NotificationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

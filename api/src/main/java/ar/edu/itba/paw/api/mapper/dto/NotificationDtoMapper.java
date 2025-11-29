@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.dto.NotificationDTO;
+import ar.edu.itba.paw.api.utils.DateFormatter;
 import ar.edu.itba.paw.models.Notification;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ public class NotificationDtoMapper {
 
         NotificationDTO dto = new NotificationDTO();
         dto.setId(notification.getId());
-        dto.setType(notification.getType().name());
+        dto.setType(notification.getType() != null ? notification.getType().name() : null);
         dto.setRecipientUserId(notification.getRecipientUser() != null ? notification.getRecipientUser().getId() : null);
         dto.setRecipientUsername(notification.getRecipientUser() != null ? notification.getRecipientUser().getUsername() : null);
         dto.setTriggerUserId(notification.getTriggerUser() != null ? notification.getTriggerUser().getId() : null);
@@ -30,6 +31,7 @@ public class NotificationDtoMapper {
         dto.setCreatedAt(notification.getCreatedAt());
         dto.setIsRead(notification.isRead());
         dto.setMessage(notification.getMessage());
+        dto.setTimeAgo(DateFormatter.formatTimeAgo(notification.getCreatedAt()));
 
         return dto;
     }
@@ -43,5 +45,21 @@ public class NotificationDtoMapper {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
-}
 
+    public Notification toModel(NotificationDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Notification notification = new Notification();
+        notification.setId(dto.getId());
+        if (dto.getType() != null) {
+            notification.setType(Notification.NotificationType.valueOf(dto.getType()));
+        }
+        notification.setCreatedAt(dto.getCreatedAt());
+        notification.setRead(dto.getIsRead() != null ? dto.getIsRead() : false);
+        notification.setMessage(dto.getMessage());
+
+        return notification;
+    }
+}

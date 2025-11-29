@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
+import ar.edu.itba.paw.api.dto.CreateUserDTO;
 import ar.edu.itba.paw.api.form.UserForm;
-import ar.edu.itba.paw.models.dtos.CreateUserDTO;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,4 +23,3 @@ public class UserFormMapper {
         return dto;
     }
 }
-

@@ -1,13 +1,15 @@
 package ar.edu.itba.paw.api.controller;
 
+import ar.edu.itba.paw.api.dto.NotificationDTO;
+import ar.edu.itba.paw.api.mapper.dto.NotificationDtoMapper;
 import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.NotificationResourceMapper;
-import ar.edu.itba.paw.api.utils.ControllerUtils;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.NotificationResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
-import ar.edu.itba.paw.models.dtos.NotificationDTO;
+import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,12 +33,16 @@ public class NotificationController extends BaseController {
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
 
+    @Autowired
+    private NotificationDtoMapper notificationDtoMapper;
+
     @GET
     public Response getNotifications(
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        List<NotificationDTO> notificationDTOs = notificationService.getUserNotifications(loggedUserId, page, size);
+        List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size);
+        List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications);
         List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
         Integer totalCount = notificationService.countByUserId(loggedUserId).intValue();
         
@@ -48,7 +54,9 @@ public class NotificationController extends BaseController {
 
     @POST
     public Response createNotification(@Valid NotificationDTO notificationDTO) {
-        NotificationDTO responseDTO = notificationService.create(notificationDTO);
+        Notification notification = notificationDtoMapper.toModel(notificationDTO);
+        Notification createdNotification = notificationService.create(notification);
+        NotificationDTO responseDTO = notificationDtoMapper.toDTO(createdNotification);
         NotificationResource notificationResource = notificationResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildCreatedResponse(notificationResource);
     }
@@ -57,7 +65,8 @@ public class NotificationController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        NotificationDTO notificationDTO = notificationService.findById(id, SecurityContextUtils.getCurrentUserId());
+        Notification notification = notificationService.findById(id, SecurityContextUtils.getCurrentUserId());
+        NotificationDTO notificationDTO = notificationDtoMapper.toDTO(notification);
         NotificationResource notificationResource = notificationResourceMapper.toResource(notificationDTO, getBaseUrl());
         return buildResponse(notificationResource);
     }
@@ -66,7 +75,9 @@ public class NotificationController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response updateNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid NotificationDTO notificationDTO) {
         notificationDTO.setId(id);
-        NotificationDTO responseDTO = notificationService.update(notificationDTO);
+        Notification notification = notificationDtoMapper.toModel(notificationDTO);
+        Notification updatedNotification = notificationService.update(notification);
+        NotificationDTO responseDTO = notificationDtoMapper.toDTO(updatedNotification);
         NotificationResource notificationResource = notificationResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(notificationResource);
     }
@@ -81,9 +92,10 @@ public class NotificationController extends BaseController {
     @PATCH
     @Path(ApiUriConstants.ID)
     public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, Boolean isRead) {
-        if (isRead) notificationService.markAsRead(id);
+        if (isRead != null && isRead) notificationService.markAsRead(id);
         else return buildNoContentResponse();
-        NotificationDTO notificationDTO = notificationService.findById(id, SecurityContextUtils.getCurrentUserId());
+        Notification notification = notificationService.findById(id, SecurityContextUtils.getCurrentUserId());
+        NotificationDTO notificationDTO = notificationDtoMapper.toDTO(notification);
         NotificationResource notificationResource = notificationResourceMapper.toResource(notificationDTO, getBaseUrl());
         return buildResponse(notificationResource);
     }
@@ -91,7 +103,7 @@ public class NotificationController extends BaseController {
     @PATCH
     public Response markAllAsRead(Boolean markAllAsRead) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        if (markAllAsRead) notificationService.markAllAsRead(loggedUserId);
+        if (markAllAsRead != null && markAllAsRead) notificationService.markAllAsRead(loggedUserId);
         return buildNoContentResponse();
     }
 
@@ -105,4 +117,3 @@ public class NotificationController extends BaseController {
                 .build();
     }
 }
-

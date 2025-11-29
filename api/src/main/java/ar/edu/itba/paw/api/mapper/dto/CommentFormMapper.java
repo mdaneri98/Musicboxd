@@ -4,6 +4,7 @@ import ar.edu.itba.paw.api.form.CommentForm;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.models.reviews.ReviewType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,22 +22,7 @@ public class CommentFormMapper {
         comment.setContent(form.getContent());
         
         if (form.getReviewId() != null) {
-            Review review = new Review() {
-                @Override
-                public Long getItemId() {
-                    return null;
-                }
-                @Override
-                public String getItemName() {
-                    return null;
-                }
-                @Override
-                public ar.edu.itba.paw.models.Image getItemImage() {
-                    return null;
-                }
-            };
-            review.setId(form.getReviewId());
-            comment.setReview(review);
+            comment.setReview(createReviewStub(form.getReviewId()));
         }
         
         if (form.getUserId() != null) {
@@ -57,24 +43,36 @@ public class CommentFormMapper {
                 comment.setUser(user);
             }
             if (reviewId != null) {
-                Review review = new Review() {
-                    @Override
-                    public Long getItemId() {
-                        return null;
-                    }
-                    @Override
-                    public String getItemName() {
-                        return null;
-                    }
-                    @Override
-                    public ar.edu.itba.paw.models.Image getItemImage() {
-                        return null;
-                    }
-                };
-                review.setId(reviewId);
-                comment.setReview(review);
+                comment.setReview(createReviewStub(reviewId));
             }
         }
         return comment;
+    }
+
+    /**
+     * Creates a Review stub with only the ID set.
+     * This is used when we only need to reference a Review by ID.
+     */
+    private Review createReviewStub(Long reviewId) {
+        Review review = new Review() {
+            @Override
+            public Long getItemId() {
+                return null;
+            }
+            @Override
+            public String getItemName() {
+                return null;
+            }
+            @Override
+            public ar.edu.itba.paw.models.Image getItemImage() {
+                return null;
+            }
+            @Override
+            public ReviewType getItemType() {
+                return null;
+            }
+        };
+        review.setId(reviewId);
+        return review;
     }
 }

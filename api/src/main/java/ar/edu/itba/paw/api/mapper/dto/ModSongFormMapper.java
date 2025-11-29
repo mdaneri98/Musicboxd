@@ -3,7 +3,7 @@ package ar.edu.itba.paw.api.mapper.dto;
 import ar.edu.itba.paw.api.form.ModSongForm;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.api.dto.SongDTO;
 import org.springframework.stereotype.Component;
 
 /**

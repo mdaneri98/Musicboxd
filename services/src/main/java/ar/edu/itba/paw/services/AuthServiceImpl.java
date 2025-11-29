@@ -1,14 +1,11 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.AuthResult;
 import ar.edu.itba.paw.models.RefreshToken;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.dtos.LoginRequestDTO;
-import ar.edu.itba.paw.models.dtos.LoginResponseDTO;
-import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.persistence.RefreshTokenDao;
 import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
-import ar.edu.itba.paw.services.mappers.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,37 +27,34 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final RefreshTokenDao refreshTokenDao;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
 
     public AuthServiceImpl(UserService userService, UserDao userDao, JwtService jwtService, 
-                          RefreshTokenDao refreshTokenDao, PasswordEncoder passwordEncoder,
-                          UserMapper userMapper) {
+                          RefreshTokenDao refreshTokenDao, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.userDao = userDao;
         this.jwtService = jwtService;
         this.refreshTokenDao = refreshTokenDao;
         this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
     }
 
     @Override
     @Transactional
-    public LoginResponseDTO login(LoginRequestDTO loginRequest) {
-        LOGGER.info("Attempting login for username: {}", loginRequest.getUsername());
+    public AuthResult login(String username, String password) {
+        LOGGER.info("Attempting login for username: {}", username);
         
         try {
             // Find user by username
-            Optional<User> userOpt = userDao.findByUsername(loginRequest.getUsername());
+            Optional<User> userOpt = userDao.findByUsername(username);
             if (userOpt.isEmpty()) {
-                LOGGER.warn("User not found: {}", loginRequest.getUsername());
+                LOGGER.warn("User not found: {}", username);
                 throw new RuntimeException("Invalid credentials");
             }
             
             User user = userOpt.get();
             
             // Verify password
-            if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                LOGGER.warn("Invalid password for username: {}", loginRequest.getUsername());
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                LOGGER.warn("Invalid password for username: {}", username);
                 throw new RuntimeException("Invalid credentials");
             }
             
@@ -78,18 +72,17 @@ public class AuthServiceImpl implements AuthService {
             
             LOGGER.info("Successful login for user: {}", user.getUsername());
             
-            UserDTO userDTO = userMapper.toDTO(user);
-            return new LoginResponseDTO(accessToken, refreshToken, userDTO);
+            return new AuthResult(accessToken, refreshToken, user);
             
         } catch (UserNotFoundException e) {
-            LOGGER.warn("User not found: {}", loginRequest.getUsername());
+            LOGGER.warn("User not found: {}", username);
             throw new RuntimeException("Invalid credentials");
         }
     }
 
     @Override
     @Transactional
-    public LoginResponseDTO refresh(String refreshToken) {
+    public AuthResult refresh(String refreshToken) {
         LOGGER.info("Attempting token refresh");
         
         // Validate refresh token
@@ -134,8 +127,7 @@ public class AuthServiceImpl implements AuthService {
         
         LOGGER.info("Token refresh successful for user: {}", username);
         
-        UserDTO userDTO = userMapper.toDTO(user);
-        return new LoginResponseDTO(newAccessToken, newRefreshToken, userDTO);
+        return new AuthResult(newAccessToken, newRefreshToken, user);
     }
 
     @Override
@@ -181,7 +173,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO getCurrentUser(String accessToken) {
+    public User getCurrentUser(String accessToken) {
         try {
             if (!jwtService.validateAccessToken(accessToken)) {
                 throw new RuntimeException("Invalid access token");
