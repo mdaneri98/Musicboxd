@@ -27,7 +27,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <div
         className="modal-overlay"
         onClick={onCancel}
-        style={{ display: 'block' }}
+        style={{
+          display: 'block',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        }}
       />
       <div className="confirmation-modal" style={{ display: 'block' }}>
         <div className="modal-content">
