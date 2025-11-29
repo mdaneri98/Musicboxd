@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.models.resources;
 
-import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.api.dto.AlbumDTO;
 
 /**
  * HATEOAS resource wrapper for Album entities
@@ -18,4 +18,3 @@ public class AlbumResource extends Resource<AlbumDTO> {
         return item;
     }
 }
-

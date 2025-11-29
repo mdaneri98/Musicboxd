@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.models.resources;
 
-import ar.edu.itba.paw.models.dtos.UserDTO;
+import ar.edu.itba.paw.api.dto.UserDTO;
 
 /**
  * HATEOAS resource wrapper for User entities
@@ -17,5 +17,4 @@ public class UserResource extends Resource<UserDTO> {
     public UserDTO getData() {
         return item;
     }
-
 }

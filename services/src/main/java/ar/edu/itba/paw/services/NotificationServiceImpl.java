@@ -3,29 +3,23 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.dtos.NotificationDTO;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.NotificationDao;
-import ar.edu.itba.paw.services.mappers.NotificationMapper;
 import ar.edu.itba.paw.services.utils.TimeUtils;
-import ar.edu.itba.paw.services.utils.MergeUtils;
 import ar.edu.itba.paw.exception.not_found.NotificationNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
-
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationDao notificationDao;
-    private final NotificationMapper notificationMapper;
 
     @Autowired
-    public NotificationServiceImpl(NotificationDao notificationDao, NotificationMapper notificationMapper){
+    public NotificationServiceImpl(NotificationDao notificationDao){
         this.notificationDao = notificationDao;
-        this.notificationMapper = notificationMapper;
     }
 
     @Transactional 
@@ -97,50 +91,48 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional(readOnly = true)
     @Override
-    public NotificationDTO findById(Long id, Long loggedUserId) {
-        Notification notification = notificationDao.findById(id)
-                .orElseThrow(() -> new NotificationNotFoundException(id));
-        NotificationDTO notificationDTO = notificationMapper.toDTO(notification);
-        notificationDTO.setIsRead(notification.isRead());
-        return notificationDTO;
+    public Notification findById(Long id, Long loggedUserId) {
+        return notificationDao.findById(id).orElseThrow(() -> new NotificationNotFoundException(id));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<NotificationDTO> findAll() {
-        List<Notification> notifications = notificationDao.findAll();
-        return notificationMapper.toDTOList(notifications);
+    public List<Notification> findAll() {
+        return notificationDao.findAll();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<NotificationDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
-        List<Notification> notifications = notificationDao.findPaginated(filterType, page, pageSize);
-        return notificationMapper.toDTOList(notifications);
+    public List<Notification> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
+        return notificationDao.findPaginated(filterType, page, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<NotificationDTO> findBySubstring(String substring, Integer page, Integer pageSize) {
-        List<Notification> notifications = notificationDao.findBySubstring(substring, page, pageSize);
-        return notificationMapper.toDTOList(notifications);
+    public List<Notification> findBySubstring(String substring, Integer page, Integer pageSize) {
+        return notificationDao.findBySubstring(substring, page, pageSize);
     }
 
     @Transactional
     @Override
-    public NotificationDTO create(NotificationDTO notificationDTO) {
-        Notification notification = notificationMapper.toEntity(notificationDTO);
-        Notification savedNotification = notificationDao.create(notification);
-        return notificationMapper.toDTO(savedNotification);
+    public Notification create(Notification notificationInput) {
+        return notificationDao.create(notificationInput);
     }
 
     @Transactional
     @Override
-    public NotificationDTO update(NotificationDTO notificationDTO) {
-        Notification notification = notificationDao.findById(notificationDTO.getId()).orElseThrow(() -> new NotificationNotFoundException(notificationDTO.getId()));
-        MergeUtils.mergeNotificationFields(notification, notificationDTO);
-        Notification updatedNotification = notificationDao.update(notification);
-        return notificationMapper.toDTO(updatedNotification);
+    public Notification update(Notification notificationInput) {
+        Notification notification = notificationDao.findById(notificationInput.getId())
+                .orElseThrow(() -> new NotificationNotFoundException(notificationInput.getId()));
+        
+        if (notificationInput.getMessage() != null) {
+            notification.setMessage(notificationInput.getMessage());
+        }
+        if (notificationInput.isRead() != null) {
+            notification.setRead(notificationInput.isRead());
+        }
+        
+        return notificationDao.update(notification);
     }
 
     @Transactional
@@ -164,10 +156,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<NotificationDTO> getUserNotifications(Long userId, Integer page, Integer pageSize) {
-         List<Notification> notifications = notificationDao.getNotificationsForUser(userId, page, pageSize);
-         notifications.forEach(n -> n.setTimeAgo(TimeUtils.formatTimeAgo(n.getCreatedAt())));
-         return notificationMapper.toDTOList(notifications);
+    public List<Notification> getUserNotifications(Long userId, Integer page, Integer pageSize) {
+        List<Notification> notifications = notificationDao.getNotificationsForUser(userId, page, pageSize);
+        notifications.forEach(n -> n.setTimeAgo(TimeUtils.formatTimeAgo(n.getCreatedAt())));
+        return notifications;
     }
 
     @Transactional
@@ -189,4 +181,4 @@ public class NotificationServiceImpl implements NotificationService {
     public Integer getUnreadCount(Long userId) {
         return notificationDao.getUnreadCount(userId);
     }
-} 
+}

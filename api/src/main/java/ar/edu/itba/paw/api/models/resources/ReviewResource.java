@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.models.resources;
 
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.api.dto.ReviewDTO;
 
 /**
  * HATEOAS resource wrapper for Review DTOs

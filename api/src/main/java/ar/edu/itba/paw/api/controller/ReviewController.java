@@ -1,5 +1,9 @@
 package ar.edu.itba.paw.api.controller;
 
+import ar.edu.itba.paw.api.dto.ReviewDTO;
+import ar.edu.itba.paw.api.dto.UserDTO;
+import ar.edu.itba.paw.api.mapper.dto.ReviewDtoMapper;
+import ar.edu.itba.paw.api.mapper.dto.UserDtoMapper;
 import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.CommentResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
@@ -10,9 +14,10 @@ import ar.edu.itba.paw.api.models.resources.ReviewResource;
 import ar.edu.itba.paw.api.models.resources.UserResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
+import ar.edu.itba.paw.api.utils.ControllerUtils;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.dtos.CommentDTO;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import ar.edu.itba.paw.models.dtos.UserDTO;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.models.FilterType;
@@ -21,7 +26,6 @@ import ar.edu.itba.paw.api.form.CommentForm;
 import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import ar.edu.itba.paw.api.utils.ControllerUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
@@ -29,6 +33,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path(ApiUriConstants.REVIEWS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -59,6 +64,12 @@ public class ReviewController extends BaseController {
     @Autowired
     private CommentFormMapper commentFormMapper;
 
+    @Autowired
+    private ReviewDtoMapper reviewDtoMapper;
+
+    @Autowired
+    private UserDtoMapper userDtoMapper;
+
     @GET
     public Response getAllReviews(
             @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
@@ -66,12 +77,12 @@ public class ReviewController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<ReviewDTO> reviewDTOs;
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         if (search != null && !search.isEmpty()) return getReviewBySubstring(search, page, size);
         if (filter == FilterType.FOLLOWING) return getReviewsFromFollowedUsersPaginated(page, size, loggedUserId);
-        reviewDTOs = reviewService.findPaginated(filter, page, size, loggedUserId);
-
+        
+        List<Review> reviews = reviewService.findPaginated(filter, page, size, loggedUserId);
+        List<ReviewDTO> reviewDTOs = toReviewDTOList(reviews, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Integer totalCount = reviewService.countAll().intValue();
         
@@ -82,7 +93,8 @@ public class ReviewController extends BaseController {
     }
 
     private Response getReviewsFromFollowedUsersPaginated(Integer page, Integer size, Long loggedUserId) {
-        List<ReviewDTO> reviewDTOs = reviewService.getReviewsFromFollowedUsersPaginated(page, size, loggedUserId);
+        List<Review> reviews = reviewService.getReviewsFromFollowedUsersPaginated(page, size, loggedUserId);
+        List<ReviewDTO> reviewDTOs = toReviewDTOList(reviews, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Integer totalCount = reviewService.countReviewsFromFollowedUsers(loggedUserId).intValue();
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
@@ -91,7 +103,9 @@ public class ReviewController extends BaseController {
     }
 
     private Response getReviewBySubstring(String substring, Integer page, Integer size) {
-        List<ReviewDTO> reviewDTOs = reviewService.findBySubstring(substring, page, size);
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        List<Review> reviews = reviewService.findBySubstring(substring, page, size);
+        List<ReviewDTO> reviewDTOs = toReviewDTOList(reviews, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Integer totalCount = reviewService.countAll().intValue();
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
@@ -101,20 +115,24 @@ public class ReviewController extends BaseController {
 
     @POST
     public Response createReview(@Valid ReviewForm reviewForm) {
-        ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
-        reviewDTO.setUserId(SecurityContextUtils.getCurrentUserId());
-        reviewDTO.setIsLiked(true);
-        reviewDTO.setLikes(0);
-        reviewDTO.setIsBlocked(false);
-        ReviewDTO responseDTO = reviewService.create(reviewDTO);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, reviewForm.getItemId().longValue());
+        reviewInput.setLikes(0);
+        reviewInput.setBlocked(false);
+        Review review = reviewService.create(reviewInput);
+        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, true);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
 
     @GET
     @Path(ApiUriConstants.ID)
     public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewService.findById(id, SecurityContextUtils.getCurrentUserId()), getBaseUrl());
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Review review = reviewService.findById(id, loggedUserId);
+        Boolean isLiked = loggedUserId != null ? reviewService.isLiked(loggedUserId, id) : false;
+        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, isLiked);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
 
@@ -129,10 +147,17 @@ public class ReviewController extends BaseController {
     @PUT
     @Path(ApiUriConstants.ID)
     public Response updateReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ReviewForm reviewForm) {
-        ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
-        reviewDTO.setId(id);
-        ReviewDTO responseDTO = reviewService.update(reviewDTO);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Review review = reviewService.findById(id, loggedUserId);
+        
+        // Update fields from form
+        if (reviewForm.getTitle() != null) review.setTitle(reviewForm.getTitle());
+        if (reviewForm.getDescription() != null) review.setDescription(reviewForm.getDescription());
+        if (reviewForm.getRating() != null) review.setRating(reviewForm.getRating());
+        
+        Review updatedReview = reviewService.update(review);
+        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(updatedReview);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
 
@@ -168,10 +193,11 @@ public class ReviewController extends BaseController {
     public Response getReviewLikes(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, 
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {  
-        ReviewDTO reviewDTO = reviewService.findById(reviewId, SecurityContextUtils.getCurrentUserId());
-        List<UserDTO> userDTOs = reviewService.likedBy(reviewId, page, size);
+        Review review = reviewService.findById(reviewId, SecurityContextUtils.getCurrentUserId());
+        List<User> users = reviewService.likedBy(reviewId, page, size);
+        List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
-        Integer totalCount = reviewDTO.getLikes();
+        Integer totalCount = review.getLikes();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE + ApiUriConstants.REVIEW_LIKES, ControllerUtils.likesCollectionLinks, reviewId);
         
@@ -180,9 +206,8 @@ public class ReviewController extends BaseController {
 
     @POST
     @Path(ApiUriConstants.REVIEW_LIKES)
-        public Response likeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
+    public Response likeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        
         reviewService.createLike(loggedUserId, reviewId);
         return buildCreatedResponse(null);
     }
@@ -191,11 +216,9 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.REVIEW_LIKES)
     public Response unlikeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        
         reviewService.removeLike(loggedUserId, reviewId);
         return buildNoContentResponse();
     }
-
 
     @PATCH
     @Path(ApiUriConstants.ID)
@@ -203,7 +226,18 @@ public class ReviewController extends BaseController {
     public Response updateBlockReviewStatus(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, Boolean isBlocked) {
         if (isBlocked) reviewService.block(reviewId);
         else reviewService.unblock(reviewId);
-        
         return buildNoContentResponse();
+    }
+
+    private List<ReviewDTO> toReviewDTOList(List<Review> reviews, Long loggedUserId) {
+        return reviews.stream()
+                .map(review -> {
+                    ReviewDTO dto = reviewDtoMapper.toDTO(review);
+                    if (loggedUserId != null && dto != null) {
+                        dto.setIsLiked(reviewService.isLiked(loggedUserId, review.getId()));
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }

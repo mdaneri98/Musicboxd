@@ -1,0 +1,78 @@
+package ar.edu.itba.paw.api.mapper.dto;
+
+import ar.edu.itba.paw.api.dto.ReviewDTO;
+import ar.edu.itba.paw.api.utils.DateFormatter;
+import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.services.ReviewService;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Mapper to convert between Review model and ReviewDTO
+ */
+@Component
+public class ReviewDtoMapper {
+
+    public ReviewDTO toDTO(Review review) {
+        if (review == null) {
+            return null;
+        }
+
+        ReviewDTO dto = new ReviewDTO();
+        dto.setId(review.getId());
+        dto.setUserId(review.getUser() != null ? review.getUser().getId() : null);
+        dto.setUserImageId(review.getUser() != null ? review.getUser().getImageId() : null);
+        dto.setUsername(review.getUser() != null ? review.getUser().getUsername() : null);
+        dto.setTitle(review.getTitle());
+        dto.setDescription(review.getDescription());
+        dto.setRating(review.getRating());
+        dto.setCreatedAt(review.getCreatedAt());
+        dto.setLikes(review.getLikes());
+        dto.setIsBlocked(review.isBlocked());
+        dto.setCommentAmount(review.getCommentAmount());
+        dto.setItemType(review.getItemType());
+        dto.setItemId(review.getItemId());
+        dto.setItemName(review.getItemName());
+        dto.setItemImageId(review.getItemImage() != null ? review.getItemImage().getId() : null);
+        dto.setTimeAgo(DateFormatter.formatTimeAgo(review.getCreatedAt()));
+        
+        return dto;
+    }
+
+    public ReviewDTO toDTO(Review review, Boolean isLiked) {
+        ReviewDTO dto = toDTO(review);
+        if (dto != null) {
+            dto.setIsLiked(isLiked);
+        }
+        return dto;
+    }
+
+    public List<ReviewDTO> toDTOList(List<Review> reviews) {
+        if (reviews == null) {
+            return null;
+        }
+
+        return reviews.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ReviewDTO> toDTOList(List<Review> reviews, Long loggedUserId, ReviewService reviewService) {
+        if (reviews == null) {
+            return null;
+        }
+
+        return reviews.stream()
+                .map(review -> {
+                    ReviewDTO dto = toDTO(review);
+                    if (loggedUserId != null && dto != null) {
+                        dto.setIsLiked(reviewService.isLiked(loggedUserId, review.getId()));
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+}
+

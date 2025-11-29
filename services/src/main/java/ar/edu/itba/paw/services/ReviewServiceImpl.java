@@ -5,8 +5,7 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.models.dtos.UserDTO;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
+import ar.edu.itba.paw.models.reviews.ReviewType;
 import ar.edu.itba.paw.persistence.*;
 import ar.edu.itba.paw.exception.email.AcknowledgementEmailException;
 import ar.edu.itba.paw.exception.conflict.UserAlreadyReviewedException;
@@ -20,17 +19,13 @@ import ar.edu.itba.paw.exception.conflict.LikeAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ar.edu.itba.paw.services.utils.TimeUtils;
-import ar.edu.itba.paw.services.utils.MergeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.stream.Collectors;
-import ar.edu.itba.paw.services.mappers.UserMapper;
-import ar.edu.itba.paw.services.mappers.ReviewMapper;
-import ar.edu.itba.paw.models.reviews.ReviewType;
-import javax.mail.MessagingException;
-import java.util.List;
 
+import javax.mail.MessagingException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -48,11 +43,9 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserService userService;
     private final EmailService emailService;
     private final NotificationService notificationService;
-    private final UserMapper userMapper;   
-    private final ReviewMapper reviewMapper;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, ArtistDao artistDao, AlbumDao albumDao, SongDao songDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService, UserMapper userMapper, ReviewMapper reviewMapper) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, ArtistDao artistDao, AlbumDao albumDao, SongDao songDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService) {
         this.reviewDao = reviewDao;
         this.userDao = userDao;
         this.artistDao = artistDao;
@@ -64,100 +57,106 @@ public class ReviewServiceImpl implements ReviewService {
         this.userService = userService;
         this.emailService = emailService;
         this.notificationService = notificationService;
-        this.userMapper = userMapper;
-        this.reviewMapper = reviewMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findBySubstring(String substring, Integer page, Integer size) {
-        return reviewMapper.toDTOList(reviewDao.findBySubstring(substring, page, size));
+    public List<Review> findBySubstring(String substring, Integer page, Integer size) {
+        return reviewDao.findBySubstring(substring, page, size);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReviewDTO findById(Long id, Long loggedUserId) {
-        Review review = reviewDao.findById(id).orElseThrow(() -> new ReviewNotFoundException(id));
-        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
-        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
-        return reviewDTO;
+    public Review findById(Long id, Long loggedUserId) {
+        return reviewDao.findById(id).orElseThrow(() -> new ReviewNotFoundException(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findAll() {
-        return reviewDao.findAll().stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+    public List<Review> findAll() {
+        return reviewDao.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
+    public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         return findPaginated(filterType, page, pageSize, null);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
-        List<Review> reviews = reviewDao.findPaginated(filterType, page, pageSize);
-        List<ReviewDTO> reviewsDTO = reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
-        if (loggedUserId != null) setIsLiked(reviewsDTO, loggedUserId);
-        setTimeAgo(reviewsDTO);
-        return reviewsDTO;
+    public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
+        return reviewDao.findPaginated(filterType, page, pageSize);
     }
 
     @Override
     @Transactional
-    public ReviewDTO create(ReviewDTO review) {
-        LOGGER.info("Creating new review: {}", review);
-        ReviewDTO createdReview = switch (review.getItemType()) {
-            case ARTIST -> createArtistReview(review);
-            case ALBUM -> createAlbumReview(review);
-            case SONG -> createSongReview(review);
-            default -> throw new UnkownReviewTypeException(review.getItemType().toString());
+    public Review create(Review reviewInput) {
+        LOGGER.info("Creating new review: {}", reviewInput);
+        Review createdReview = switch (reviewInput.getItemType()) {
+            case ARTIST -> createArtistReview(reviewInput);
+            case ALBUM -> createAlbumReview(reviewInput);
+            case SONG -> createSongReview(reviewInput);
+            default -> throw new UnkownReviewTypeException(reviewInput.getItemType().toString());
         };
-        updateUserReviewAmount(createdReview.getUserId());
+        updateUserReviewAmount(createdReview.getUser().getId());
         updateRatingForItem(createdReview);
         return createdReview;
     }
 
     @Override
-    public ReviewDTO createArtistReview(ReviewDTO review) {
+    public Review createArtistReview(Review reviewInput) {
         ArtistReview entity = new ArtistReview();
-        entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException(review.getUserId())));
-        entity.setArtist(artistDao.findById(review.getItemId()).orElseThrow(() -> new ArtistNotFoundException(review.getItemId())));
-        if (artistService.hasUserReviewed(review.getUserId(), review.getItemId())) throw new UserAlreadyReviewedException(review.getUserId(), review.getItemId(), ReviewType.ARTIST.toString());
-        MergeUtils.mergeReviewFields(entity, review);
+        entity.setUser(userDao.findById(reviewInput.getUser().getId()).orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
+        entity.setArtist(artistDao.findById(reviewInput.getItemId()).orElseThrow(() -> new ArtistNotFoundException(reviewInput.getItemId())));
+        if (artistService.hasUserReviewed(reviewInput.getUser().getId(), reviewInput.getItemId())) {
+            throw new UserAlreadyReviewedException(reviewInput.getUser().getId(), reviewInput.getItemId(), ReviewType.ARTIST.toString());
+        }
+        mergeReviewFields(entity, reviewInput);
         Review createdReview = reviewDao.create(entity);
         notificationService.notifyNewReview(createdReview);
         LOGGER.info("Review created successfully with ID: {}", createdReview.getId());
-        return reviewMapper.toDTO(createdReview);
+        return createdReview;
     }
 
     @Override
-    public ReviewDTO createAlbumReview(ReviewDTO review) {
+    public Review createAlbumReview(Review reviewInput) {
         AlbumReview entity = new AlbumReview();
-        entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException(review.getUserId())));
-        entity.setAlbum(albumDao.findById(review.getItemId()).orElseThrow(() -> new AlbumNotFoundException(review.getItemId())));
-        if (albumService.hasUserReviewed(review.getUserId(), review.getItemId())) throw new UserAlreadyReviewedException(review.getUserId(), review.getItemId(), "Album");
-        MergeUtils.mergeReviewFields(entity, review);
+        entity.setUser(userDao.findById(reviewInput.getUser().getId()).orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
+        entity.setAlbum(albumDao.findById(reviewInput.getItemId()).orElseThrow(() -> new AlbumNotFoundException(reviewInput.getItemId())));
+        if (albumService.hasUserReviewed(reviewInput.getUser().getId(), reviewInput.getItemId())) {
+            throw new UserAlreadyReviewedException(reviewInput.getUser().getId(), reviewInput.getItemId(), "Album");
+        }
+        mergeReviewFields(entity, reviewInput);
         Review createdReview = reviewDao.create(entity);
         notificationService.notifyNewReview(createdReview);
         LOGGER.info("Review created successfully with ID: {}", createdReview.getId());
-        return reviewMapper.toDTO(createdReview);
+        return createdReview;
     }
 
     @Override
-    public ReviewDTO createSongReview(ReviewDTO review) {
+    public Review createSongReview(Review reviewInput) {
         SongReview entity = new SongReview();
-        entity.setUser(userDao.findById(review.getUserId()).orElseThrow(() -> new UserNotFoundException(review.getUserId())));
-        entity.setSong(songDao.findById(review.getItemId()).orElseThrow(() -> new SongNotFoundException(review.getItemId())));
-        if (songService.hasUserReviewed(review.getUserId(), review.getItemId())) throw new UserAlreadyReviewedException(review.getUserId(), review.getItemId(), "Song");
-        MergeUtils.mergeReviewFields(entity, review);
+        entity.setUser(userDao.findById(reviewInput.getUser().getId()).orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
+        entity.setSong(songDao.findById(reviewInput.getItemId()).orElseThrow(() -> new SongNotFoundException(reviewInput.getItemId())));
+        if (songService.hasUserReviewed(reviewInput.getUser().getId(), reviewInput.getItemId())) {
+            throw new UserAlreadyReviewedException(reviewInput.getUser().getId(), reviewInput.getItemId(), "Song");
+        }
+        mergeReviewFields(entity, reviewInput);
         Review createdReview = reviewDao.create(entity);
         notificationService.notifyNewReview(createdReview);
         LOGGER.info("Review created successfully with ID: {}", createdReview.getId());
-        return reviewMapper.toDTO(createdReview);
+        return createdReview;
+    }
+
+    private void mergeReviewFields(Review target, Review source) {
+        if (source.getTitle() != null) target.setTitle(source.getTitle());
+        if (source.getDescription() != null) target.setDescription(source.getDescription());
+        if (source.getRating() != null) target.setRating(source.getRating());
+        target.setCreatedAt(LocalDateTime.now());
+        if (source.getLikes() != null) target.setLikes(source.getLikes());
+        if (source.isBlocked() != null) target.setBlocked(source.isBlocked());
+        if (source.getCommentAmount() != null) target.setCommentAmount(source.getCommentAmount());
     }
 
     private void updateUserReviewAmount(Long userId) {
@@ -168,8 +167,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     private void updateArtistRating(Long artistId) {
         LOGGER.info("Updating rating for artist ID: {}", artistId);
-        List<ReviewDTO> reviews = artistService.findReviewsByArtistId(artistId);
-        double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
+        List<Review> reviews = new ArrayList<>(artistService.findReviewsByArtistId(artistId));
+        double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         Integer ratingAmount = reviews.size();
         artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
@@ -178,8 +177,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     private void updateAlbumRating(Long albumId) {
         LOGGER.info("Updating rating for album ID: {}", albumId);
-        List<ReviewDTO> reviews = albumService.findReviewsByAlbumId(albumId);
-        Double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
+        List<Review> reviews = new ArrayList<>(albumService.findReviewsByAlbumId(albumId));
+        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         Integer ratingAmount = reviews.size();
         albumDao.updateRating(albumId, roundedAvgRating, ratingAmount);
@@ -188,8 +187,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     private void updateSongRating(Long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
-        List<ReviewDTO> reviews = songService.findReviewsBySongId(songId);
-        Double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
+        List<Review> reviews = new ArrayList<>(songService.findReviewsBySongId(songId));
+        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         Integer ratingAmount = reviews.size();
         songDao.updateRating(songId, roundedAvgRating, ratingAmount);
@@ -198,20 +197,19 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public ReviewDTO update(ReviewDTO review) {
-        LOGGER.info("Updating review with ID: {}", review.getId());
-        Review reviewEntity = reviewDao.findById(review.getId()).orElseThrow(() -> new ReviewNotFoundException(review.getId()));
-        MergeUtils.mergeReviewFields(reviewEntity, review);
+    public Review update(Review reviewInput) {
+        LOGGER.info("Updating review with ID: {}", reviewInput.getId());
+        Review reviewEntity = reviewDao.findById(reviewInput.getId()).orElseThrow(() -> new ReviewNotFoundException(reviewInput.getId()));
+        mergeReviewFields(reviewEntity, reviewInput);
         Review updatedReview = reviewDao.update(reviewEntity);
         notificationService.notifyNewReview(updatedReview);
-        ReviewDTO updatedReviewDTO = reviewMapper.toDTO(updatedReview);
-        updateRatingForItem(updatedReviewDTO);
+        updateRatingForItem(updatedReview);
         LOGGER.info("Review updated successfully");
-        return updatedReviewDTO;
+        return updatedReview;
     }
 
     @Transactional
-    public void updateRatingForItem(ReviewDTO review) {
+    public void updateRatingForItem(Review review) {
         switch (review.getItemType()) {
             case ARTIST : updateArtistRating(review.getItemId()); break;
             case ALBUM : updateAlbumRating(review.getItemId()); break;
@@ -226,7 +224,7 @@ public class ReviewServiceImpl implements ReviewService {
         LOGGER.info("Attempting to delete review with ID: {}", id);
         Review review = reviewDao.findById(id).orElseThrow(() -> new ReviewNotFoundException(id));
         Boolean res = reviewDao.delete(id);
-        updateRatingForItem(reviewMapper.toDTO(review));
+        updateRatingForItem(review);
         updateUserReviewAmount(review.getUser().getId());
         if (res) LOGGER.info("Review with ID: {} deleted successfully", id);
         else LOGGER.warn("Failed to delete review with ID: {}", id);
@@ -234,68 +232,44 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<UserDTO> likedBy(Long reviewId, Integer pageNum, Integer pageSize) {
-        return reviewDao.likedBy(reviewId, pageNum, pageSize).stream().map(userMapper::toDTO).collect(Collectors.toList());
+    public List<User> likedBy(Long reviewId, Integer pageNum, Integer pageSize) {
+        return reviewDao.likedBy(reviewId, pageNum, pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReviewDTO findArtistReviewById(Long id, Long loggedUserId) {
-        ArtistReview review = reviewDao.findArtistReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
-        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
-        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(reviewDTO.getCreatedAt()));
-        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
-        return reviewDTO;
+    public Review findArtistReviewById(Long id, Long loggedUserId) {
+        return reviewDao.findArtistReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReviewDTO findAlbumReviewById(Long id, Long loggedUserId) {
-        AlbumReview review = reviewDao.findAlbumReviewById(id).get();
-        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
-        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
-        return reviewDTO;
+    public Review findAlbumReviewById(Long id, Long loggedUserId) {
+        return reviewDao.findAlbumReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReviewDTO findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId) {
-        ArtistReview review = reviewDao.findArtistReviewByUserId(userId, artistId).orElseThrow(() -> new ReviewNotFoundException(userId, artistId, ReviewType.ARTIST.toString()));
-        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
-        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
-        return reviewDTO;
+    public Review findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId) {
+        return reviewDao.findArtistReviewByUserId(userId, artistId).orElseThrow(() -> new ReviewNotFoundException(userId, artistId, ReviewType.ARTIST.toString()));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReviewDTO findAlbumReviewByUserId(Long userId, Long albumId, Long loggedUserId) {
-        AlbumReview review = reviewDao.findAlbumReviewByUserId(userId, albumId).orElseThrow(() -> new ReviewNotFoundException(userId, albumId, "Album"));
-        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
-        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
-        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        return reviewDTO;
+    public Review findAlbumReviewByUserId(Long userId, Long albumId, Long loggedUserId) {
+        return reviewDao.findAlbumReviewByUserId(userId, albumId).orElseThrow(() -> new ReviewNotFoundException(userId, albumId, "Album"));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReviewDTO findSongReviewByUserId(Long userId, Long songId, Long loggedUserId) {
-        SongReview review = reviewDao.findSongReviewByUserId(userId, songId).orElseThrow(() -> new ReviewNotFoundException(userId, songId, "Song"));
-        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
-        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
-        return reviewDTO;
+    public Review findSongReviewByUserId(Long userId, Long songId, Long loggedUserId) {
+        return reviewDao.findSongReviewByUserId(userId, songId).orElseThrow(() -> new ReviewNotFoundException(userId, songId, "Song"));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReviewDTO findSongReviewById(Long id, Long loggedUserId) {
-        SongReview review = reviewDao.findSongReviewById(id).get();
-        ReviewDTO reviewDTO = reviewMapper.toDTO(review);
-        reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(review.getCreatedAt()));
-        if (loggedUserId != null) reviewDTO.setIsLiked(isLiked(loggedUserId, review.getId()));
-        return reviewDTO;
+    public Review findSongReviewById(Long id, Long loggedUserId) {
+        return reviewDao.findSongReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
     }
 
     @Override
@@ -333,32 +307,20 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId) {
-        List<ArtistReview> reviews = reviewDao.findArtistReviewsPaginated(artistId, page, pageSize);
-        List<ReviewDTO> reviewsDTO = reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
-        if (loggedUserId != null) setIsLiked(reviewsDTO, loggedUserId);
-        setTimeAgo(reviewsDTO);
-        return reviewsDTO;
+    public List<Review> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId) {
+        return new ArrayList<>(reviewDao.findArtistReviewsPaginated(artistId, page, pageSize));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId) {
-        List<AlbumReview> reviews = reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize);
-        List<ReviewDTO> reviewsDTO = reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
-        if (loggedUserId != null) setIsLiked(reviewsDTO, loggedUserId);
-        setTimeAgo(reviewsDTO);
-        return reviewsDTO;
+    public List<Review> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId) {
+        return new ArrayList<>(reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId) {
-        List<SongReview> reviews = reviewDao.findSongReviewsPaginated(songId, page, pageSize);
-        List<ReviewDTO> reviewsDTO = reviews.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
-        if (loggedUserId != null) setIsLiked(reviewsDTO, loggedUserId);
-        setTimeAgo(reviewsDTO);
-        return reviewsDTO;
+    public List<Review> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId) {
+        return new ArrayList<>(reviewDao.findSongReviewsPaginated(songId, page, pageSize));
     }
 
     @Override
@@ -381,32 +343,20 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId) {
-        List<Review> list = reviewDao.findReviewsByUserPaginated(userId, page, pageSize);
-        List<ReviewDTO> listDTO = list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
-        if (loggedUserId != null) setIsLiked(listDTO, loggedUserId);
-        setTimeAgo(listDTO);
-        return listDTO;
+    public List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId) {
+        return reviewDao.findReviewsByUserPaginated(userId, page, pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId) {
-        List<Review> list = reviewDao.getPopularReviewsPaginated(page, pageSize);
-        List<ReviewDTO> listDTO = list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
-        if (loggedUserId != null) setIsLiked(listDTO, loggedUserId);
-        setTimeAgo(listDTO);
-        return listDTO;
+    public List<Review> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId) {
+        return reviewDao.getPopularReviewsPaginated(page, pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId) {
-        List<Review> list = reviewDao.getReviewsFromFollowedUsersPaginated(loggedUserId, page, pageSize);
-        List<ReviewDTO> listDTO = list.stream().map(reviewMapper::toDTO).collect(Collectors.toList());
-        if (loggedUserId != null) setIsLiked(listDTO, loggedUserId);
-        setTimeAgo(listDTO);
-        return listDTO;
+    public List<Review> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId) {
+        return reviewDao.getReviewsFromFollowedUsersPaginated(loggedUserId, page, pageSize);
     }
 
     @Override
@@ -465,20 +415,5 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public Long countReviewsFromFollowedUsers(Long loggedUserId) {
         return reviewDao.countReviewsFromFollowedUsers(loggedUserId);
-    }
-
-    private void setTimeAgo(List<ReviewDTO> reviewsDTO) {
-        for (ReviewDTO reviewDTO : reviewsDTO) {
-            reviewDTO.setTimeAgo(TimeUtils.formatTimeAgo(reviewDTO.getCreatedAt()));
-        }
-    }
-
-    private void setIsLiked(List<ReviewDTO> reviewsDTO, long userId) {
-        for (ReviewDTO reviewDTO : reviewsDTO) {
-            if (userId < 1)
-                reviewDTO.setIsLiked(false);
-            else
-                reviewDTO.setIsLiked(isLiked(userId, reviewDTO.getId()));
-        }
     }
 }

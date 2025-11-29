@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.api.mapper.resource;
 
+import ar.edu.itba.paw.api.dto.SongDTO;
 import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.api.models.links.managers.SongLinkManager;
-import ar.edu.itba.paw.models.dtos.SongDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,4 +29,3 @@ public class SongResourceMapper implements ResourceMapper<SongDTO, SongResource>
                 .collect(Collectors.toList());
     }
 }
-

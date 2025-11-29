@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.api.models.links.managers;
 
+import ar.edu.itba.paw.api.dto.ArtistDTO;
 import ar.edu.itba.paw.api.models.resources.Resource;
-import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;
@@ -30,4 +30,3 @@ public class ArtistLinkManager {
         resource.addLink(uriBuilder.buildArtistFavoriteUri(baseUrl, artistId), ControllerUtils.RELATION_FAVORITE, "Artist favorite", ControllerUtils.METHOD_DELETE);
     }
 }
-

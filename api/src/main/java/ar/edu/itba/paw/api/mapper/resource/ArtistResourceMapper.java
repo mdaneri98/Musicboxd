@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.api.mapper.resource;
 
+import ar.edu.itba.paw.api.dto.ArtistDTO;
 import ar.edu.itba.paw.api.models.resources.ArtistResource;
 import ar.edu.itba.paw.api.models.links.managers.ArtistLinkManager;
-import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,4 +29,3 @@ public class ArtistResourceMapper implements ResourceMapper<ArtistDTO, ArtistRes
                 .collect(Collectors.toList());
     }
 }
-

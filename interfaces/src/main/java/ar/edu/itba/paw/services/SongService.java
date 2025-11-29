@@ -2,23 +2,24 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.reviews.Review;
+
 import java.util.List;
 
-public interface SongService extends CrudService<SongDTO> {
+public interface SongService extends CrudService<Song> {
 
-    List<SongDTO> findByArtistId(Long id, FilterType filterType, Integer pageNum, Integer pageSize);
+    List<Song> findByArtistId(Long id, FilterType filterType, Integer pageNum, Integer pageSize);
 
-    List<SongDTO> findByAlbumId(Long id);
+    List<Song> findByAlbumId(Long id);
 
-    List<SongDTO> findByTitleContaining(String sub, Integer pageSize, Integer pageNum);
+    List<Song> findByTitleContaining(String sub, Integer pageSize, Integer pageNum);
 
-    List<ReviewDTO> findReviewsBySongId(Long songId);
+    List<Review> findReviewsBySongId(Long songId);
 
-    Boolean createAll(List<SongDTO> songsDTO, Album album);
+    Boolean createAll(List<Song> songs, Album album);
 
-    Boolean updateAll(List<SongDTO> songsDTO, Album album);
+    Boolean updateAll(List<Song> songs, Album album);
 
     Boolean hasUserReviewed(Long userId, Long songId);
 

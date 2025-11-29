@@ -1,10 +1,10 @@
 package ar.edu.itba.paw.api.models.links.managers;
 
+import ar.edu.itba.paw.api.dto.AlbumDTO;
 import ar.edu.itba.paw.api.models.resources.Resource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.HATEOASUtils;
 import ar.edu.itba.paw.api.utils.UriBuilder;
-import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import ar.edu.itba.paw.api.utils.ControllerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,4 +30,3 @@ public class AlbumLinkManager {
         resource.addLink(uriBuilder.buildAlbumFavoriteUri(baseUrl, albumId), ControllerUtils.RELATION_FAVORITE, "Album favorite", ControllerUtils.METHOD_DELETE);
     }
 }
-

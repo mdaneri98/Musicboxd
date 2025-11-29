@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.api.mapper.resource;
 
+import ar.edu.itba.paw.api.dto.CommentDTO;
 import ar.edu.itba.paw.api.models.resources.CommentResource;
 import ar.edu.itba.paw.api.models.links.managers.CommentLinkManager;
-import ar.edu.itba.paw.models.dtos.CommentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,4 +29,3 @@ public class CommentResourceMapper implements ResourceMapper<CommentDTO, Comment
                 .collect(Collectors.toList());
     }
 }
-

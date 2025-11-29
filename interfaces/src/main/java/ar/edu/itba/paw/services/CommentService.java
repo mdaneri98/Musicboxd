@@ -1,14 +1,15 @@
 package ar.edu.itba.paw.services;
 
-import java.util.List;
-import ar.edu.itba.paw.models.dtos.CommentDTO;
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.FilterType;
 
-public interface CommentService extends CrudService<CommentDTO> {
-    List<CommentDTO> findByReviewId(Long reviewId, Integer pageNum, Integer pageSize);
+import java.util.List;
+
+public interface CommentService extends CrudService<Comment> {
+    List<Comment> findByReviewId(Long reviewId, Integer pageNum, Integer pageSize);
     void updateReviewCommentAmount(Long reviewId);
     Long countByReviewId(Long reviewId);
-    List<CommentDTO> findPaginated(FilterType filter, Integer page, Integer pageSize);
+    List<Comment> findPaginated(FilterType filter, Integer page, Integer pageSize);
     Long countAll();
-    List<CommentDTO> findBySubstring(String substring, Integer page, Integer size);
+    List<Comment> findBySubstring(String substring, Integer page, Integer size);
 }

@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.models.resources;
 
-import ar.edu.itba.paw.models.dtos.CommentDTO;
+import ar.edu.itba.paw.api.dto.CommentDTO;
 
 /**
  * HATEOAS resource wrapper for Comment entities
@@ -18,4 +18,3 @@ public class CommentResource extends Resource<CommentDTO> {
         return item;
     }
 }
-

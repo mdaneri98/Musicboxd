@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.models.resources;
 
-import ar.edu.itba.paw.models.dtos.ArtistDTO;
+import ar.edu.itba.paw.api.dto.ArtistDTO;
 
 /**
  * HATEOAS resource wrapper for Artist entities
@@ -18,4 +18,3 @@ public class ArtistResource extends Resource<ArtistDTO> {
         return item;
     }
 }
-

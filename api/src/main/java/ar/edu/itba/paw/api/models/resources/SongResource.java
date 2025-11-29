@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.api.models.resources;
 
-import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.api.dto.SongDTO;
 
 /**
  * HATEOAS resource wrapper for Song entities
@@ -18,4 +18,3 @@ public class SongResource extends Resource<SongDTO> {
         return item;
     }
 }
-

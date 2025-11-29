@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.form.ModAlbumForm;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.dtos.AlbumDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 /**
- * Mapper to convert ModAlbumForm to AlbumDTO
+ * Mapper to convert ModAlbumForm to Album model
  */
 @Component
 public class ModAlbumFormMapper {
@@ -16,6 +19,40 @@ public class ModAlbumFormMapper {
     @Autowired
     private ModSongFormMapper songFormMapper;
 
+    public Album toModel(ModAlbumForm form) {
+        if (form == null) {
+            return null;
+        }
+        
+        Album album = new Album();
+        album.setId(form.getId());
+        album.setTitle(form.getTitle());
+        album.setGenre(form.getGenre());
+        album.setReleaseDate(form.getReleaseDate());
+        
+        if (form.getAlbumImageId() != null) {
+            album.setImage(new Image(form.getAlbumImageId(), null));
+        }
+        
+        if (form.getArtistId() != null) {
+            album.setArtist(new Artist(form.getArtistId()));
+        }
+        
+        // Map nested songs if present
+        if (form.getSongs() != null && !form.getSongs().isEmpty()) {
+            album.setSongs(form.getSongs().stream()
+                    .filter(s -> !s.isDeleted())
+                    .map(songFormMapper::toModel)
+                    .collect(Collectors.toList()));
+        }
+        
+        return album;
+    }
+
+    /**
+     * @deprecated Use toModel() instead. This method will be removed after ArtistService refactoring.
+     */
+    @Deprecated
     public AlbumDTO toDTO(ModAlbumForm form) {
         if (form == null) {
             return null;
@@ -40,4 +77,3 @@ public class ModAlbumFormMapper {
         return dto;
     }
 }
-

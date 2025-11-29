@@ -4,23 +4,18 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.persistence.SongDao;
-import ar.edu.itba.paw.services.utils.TimeUtils;
+import ar.edu.itba.paw.persistence.AlbumDao;
+import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
+import ar.edu.itba.paw.exception.not_found.SongNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
-import ar.edu.itba.paw.services.mappers.SongMapper;
-import ar.edu.itba.paw.persistence.AlbumDao;
-import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
-import ar.edu.itba.paw.exception.not_found.SongNotFoundException;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import ar.edu.itba.paw.services.mappers.ReviewMapper;
-import java.util.stream.Collectors;
-import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service 
 public class SongServiceImpl implements SongService {
@@ -28,64 +23,47 @@ public class SongServiceImpl implements SongService {
     private final SongDao songDao;
     private final AlbumDao albumDao;
     private final UserService userService;
-    private final SongMapper songMapper;
-    private final ReviewMapper reviewMapper;
 
-    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService, SongMapper songMapper, ReviewMapper reviewMapper) {
+    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService) {
         this.songDao = songDao;
         this.albumDao = albumDao;
         this.userService = userService;
-        this.songMapper = songMapper;
-        this.reviewMapper = reviewMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SongDTO findById(Long id, Long loggedUserId) {
-        Song song = songDao.findById(id).orElseThrow(() -> new SongNotFoundException(id));
-        SongDTO songDTO = songMapper.toDTO(song);
-        songDTO.setFormattedReleaseDate(TimeUtils.formatDate(song.getAlbum().getReleaseDate()));
-        if (loggedUserId != null) {
-            songDTO.setIsReviewed(hasUserReviewed(loggedUserId, song.getId()));
-            songDTO.setIsFavorite(userService.isSongFavorite(loggedUserId, song.getId()));
-        }
-        return songDTO;
+    public Song findById(Long id, Long loggedUserId) {
+        return songDao.findById(id).orElseThrow(() -> new SongNotFoundException(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findAll() {
-        List<Song> songs = songDao.findAll();
-        List<SongDTO> songsDTO = songMapper.toDTOList(songs);
-        return songsDTO;
+    public List<Song> findAll() {
+        return songDao.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findByTitleContaining(String sub, Integer pageSize, Integer pageNum) {
-        List<Song> songs = songDao.findByTitleContaining(sub, pageSize, pageNum);
-        return songMapper.toDTOList(songs);
+    public List<Song> findByTitleContaining(String sub, Integer pageSize, Integer pageNum) {
+        return songDao.findByTitleContaining(sub, pageSize, pageNum);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
-        List<Song> songs = songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
-        return songMapper.toDTOList(songs);
+    public List<Song> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
+        return songDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findByArtistId(Long id, FilterType filterType, Integer pageNum, Integer pageSize) {
-        List<Song> songs = songDao.findByArtistId(id, filterType, pageSize, (pageNum - 1) * pageSize);
-        return songMapper.toDTOList(songs);
+    public List<Song> findByArtistId(Long id, FilterType filterType, Integer pageNum, Integer pageSize) {
+        return songDao.findByArtistId(id, filterType, pageSize, (pageNum - 1) * pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SongDTO> findByAlbumId(Long id) {
-        List<Song> songs = songDao.findByAlbumId(id);
-        return songMapper.toDTOList(songs);
+    public List<Song> findByAlbumId(Long id) {
+        return songDao.findByAlbumId(id);
     }
 
     @Override
@@ -95,7 +73,7 @@ public class SongServiceImpl implements SongService {
         List<Long> userIds = new ArrayList<>();
         songDao.findReviewsBySongId(id).forEach(review -> userIds.add(review.getUser().getId()));
         songDao.deleteReviewsFromSong(id);
-        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
+        userIds.forEach(userService::updateUserReviewAmount);
         boolean result = songDao.delete(id);
         if (result) LOGGER.info("Song deleted successfully");
         else LOGGER.warn("Failed to delete song with ID: {}", id);
@@ -104,30 +82,47 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findReviewsBySongId(Long songId) {
-        return songDao.findReviewsBySongId(songId).stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+    public List<Review> findReviewsBySongId(Long songId) {
+        return new ArrayList<>(songDao.findReviewsBySongId(songId));
     }
 
     @Override
     @Transactional
-    public SongDTO create(SongDTO songDTO) {
-        LOGGER.info("Creating new song from DTO: {}", songDTO.getTitle());
-        Album album = albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException(songDTO.getAlbumId()));
-        Song song = new Song(songDTO.getTitle(), songDTO.getDuration(), songDTO.getTrackNumber(), album);
+    public Song create(Song songInput) {
+        LOGGER.info("Creating new song: {}", songInput.getTitle());
+        
+        Album inputAlbum = songInput.getAlbum();
+        Album album = null;
+        if (inputAlbum != null && inputAlbum.getId() != null) {
+            album = albumDao.findById(inputAlbum.getId()).orElseThrow(() -> new AlbumNotFoundException(inputAlbum.getId()));
+        }
+        
+        Song song = new Song(songInput.getTitle(), songInput.getDuration(), songInput.getTrackNumber(), album);
         songDao.create(song);
-        songDao.saveSongArtist(song, new Artist(songDTO.getArtistId()));
+        
+        // Handle artist association
+        if (songInput.getArtists() != null && !songInput.getArtists().isEmpty()) {
+            songDao.saveSongArtist(song, songInput.getArtists().get(0));
+        } else if (album != null && album.getArtist() != null) {
+            songDao.saveSongArtist(song, album.getArtist());
+        }
+        
         LOGGER.info("Song created successfully with ID: {}", song.getId());
-        return songMapper.toDTO(song);
+        return song;
     }
 
     @Override
     @Transactional
-    public Boolean createAll(List<SongDTO> songsDTO, Album album) {
+    public Boolean createAll(List<Song> songs, Album album) {
         LOGGER.info("Creating multiple songs for album: {}", album.getId());
-        for (SongDTO songDTO : songsDTO) {
-            songDTO.setAlbumId(album.getId());
-            songDTO.setArtistId(album.getArtist().getId());
-            if (!songDTO.isDeleted()) create(songDTO);
+        for (Song song : songs) {
+            song.setAlbum(album);
+            if (song.getArtists() == null || song.getArtists().isEmpty()) {
+                List<Artist> artists = new ArrayList<>();
+                artists.add(album.getArtist());
+                song.setArtists(artists);
+            }
+            create(song);
         }
         LOGGER.info("All songs created successfully for album: {}", album.getId());
         return true;
@@ -135,34 +130,48 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional
-    public SongDTO update(SongDTO songDTO) {
-        LOGGER.info("Updating song with ID: {}", songDTO.getId());
-        Song song = songDao.findById(songDTO.getId()).orElseThrow(() -> new SongNotFoundException(songDTO.getId()));
-        song.setAlbum(albumDao.findById(songDTO.getAlbumId()).orElseThrow(() -> new AlbumNotFoundException(songDTO.getAlbumId())));
-        MergeUtils.mergeSongFields(song, songDTO);
+    public Song update(Song songInput) {
+        LOGGER.info("Updating song with ID: {}", songInput.getId());
+        Song song = songDao.findById(songInput.getId()).orElseThrow(() -> new SongNotFoundException(songInput.getId()));
+        
+        if (songInput.getAlbum() != null && songInput.getAlbum().getId() != null) {
+            song.setAlbum(albumDao.findById(songInput.getAlbum().getId())
+                    .orElseThrow(() -> new AlbumNotFoundException(songInput.getAlbum().getId())));
+        }
+        
+        // Merge fields
+        if (songInput.getTitle() != null) song.setTitle(songInput.getTitle());
+        if (songInput.getDuration() != null) song.setDuration(songInput.getDuration());
+        if (songInput.getTrackNumber() != null) song.setTrackNumber(songInput.getTrackNumber());
+        
         song = songDao.update(song);
         LOGGER.info("Song updated successfully");
-        return songMapper.toDTO(song);
+        return song;
     }
 
     @Override
     @Transactional
-    public Boolean updateAll(List<SongDTO> songsDTO, Album album) {
+    public Boolean updateAll(List<Song> songs, Album album) {
         LOGGER.info("Updating multiple songs for album: {}", album.getTitle());
-        for (SongDTO songDTO : songsDTO) {
-            songDTO.setAlbumId(album.getId());
-            songDTO.setArtistId(album.getArtist().getId());
-            if (songDTO.getId() != 0 && songDTO.getId() != null) {
-                if (songDTO.isDeleted()) delete(songDTO.getId());
-                else update(songDTO);
-            } else if (!songDTO.isDeleted()) create(songDTO);
+        for (Song song : songs) {
+            song.setAlbum(album);
+            if (song.getArtists() == null || song.getArtists().isEmpty()) {
+                List<Artist> artists = new ArrayList<>();
+                artists.add(album.getArtist());
+                song.setArtists(artists);
+            }
+            if (song.getId() != null && song.getId() != 0) {
+                update(song);
+            } else {
+                create(song);
+            }
         }
         LOGGER.info("All songs updated successfully for album: {}", album.getTitle());
         return true;
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Boolean hasUserReviewed(Long userId, Long songId) {
         return songDao.hasUserReviewed(userId, songId);
     }
@@ -178,8 +187,8 @@ public class SongServiceImpl implements SongService {
     public Boolean updateRating(Long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
         
-        List<ReviewDTO> reviews = findReviewsBySongId(songId);
-        Double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
+        List<Review> reviews = findReviewsBySongId(songId);
+        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();
         Boolean updated = songDao.updateRating(songId, roundedAvgRating, ratingAmount);

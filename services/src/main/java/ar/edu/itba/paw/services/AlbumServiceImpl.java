@@ -1,21 +1,17 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.services.utils.TimeUtils;
-import ar.edu.itba.paw.models.dtos.AlbumDTO;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
-import ar.edu.itba.paw.services.mappers.AlbumMapper;
-import java.util.stream.Collectors;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import ar.edu.itba.paw.services.mappers.ReviewMapper;
-import ar.edu.itba.paw.services.utils.MergeUtils;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -26,70 +22,48 @@ public class AlbumServiceImpl implements AlbumService {
     private final ImageService imageService;
     private final SongService songService;
     private final UserService userService;
-    private final AlbumMapper albumMapper;
-    private final ReviewMapper reviewMapper;
 
-    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UserService userService, AlbumMapper albumMapper, ReviewMapper reviewMapper) {
+    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UserService userService) {
         this.albumDao = albumDao;
         this.imageService = imageService;
         this.songService = songService;
         this.userService = userService;
-        this.albumMapper = albumMapper;
-        this.reviewMapper = reviewMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AlbumDTO findById(Long id, Long loggedUserId) {
-        Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
-        AlbumDTO albumDTO = albumMapper.toDTO(album);
-        albumDTO.setFormattedReleaseDate(TimeUtils.formatDate(albumDTO.getReleaseDate()));
-        if (loggedUserId != null) {
-            albumDTO.setIsReviewed(hasUserReviewed(loggedUserId, album.getId()));
-            albumDTO.setIsFavorite(userService.isAlbumFavorite(loggedUserId, album.getId()));
-        }
-        return albumDTO;
-    }
-
-    @Transactional(readOnly = true)
-    public List<AlbumDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
-        List<Album> albums = albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
-        List<AlbumDTO> albumsDTO = albumMapper.toDTOList(albums);
-        albumsDTO.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
-        return albumsDTO;
+    public Album findById(Long id, Long loggedUserId) {
+        return albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<AlbumDTO> findByArtistId(Long id) {
-        List<Album> albums = albumDao.findByArtistId(id);
-        List<AlbumDTO> albumsDTO = albumMapper.toDTOList(albums);
-        albumsDTO.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
-        return albumsDTO;
+    public List<Album> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
+        return albumDao.findPaginated(filterType, pageSize, (page - 1) * pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<AlbumDTO> findAll() {
-        List<Album> albums = albumDao.findAll();
-        List<AlbumDTO> albumsDTO = albumMapper.toDTOList(albums);
-        albumsDTO.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
-        return albumsDTO;
+    public List<Album> findByArtistId(Long id) {
+        return albumDao.findByArtistId(id);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<AlbumDTO> findByTitleContaining(String sub, Integer page, Integer size) {
-        List<Album> albums = albumDao.findByTitleContaining(sub, page, size);
-        List<AlbumDTO> albumsDTO = albumMapper.toDTOList(albums);
-        albumsDTO.forEach(a -> a.setFormattedReleaseDate(TimeUtils.formatDate(a.getReleaseDate())));
-        return albumsDTO;
+    public List<Album> findAll() {
+        return albumDao.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReviewDTO> findReviewsByAlbumId(Long albumId) {
-        return albumDao.findReviewsByAlbumId(albumId).stream().map(reviewMapper::toDTO).collect(Collectors.toList());
+    public List<Album> findByTitleContaining(String sub, Integer page, Integer size) {
+        return albumDao.findByTitleContaining(sub, page, size);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Review> findReviewsByAlbumId(Long albumId) {
+        return new ArrayList<>(albumDao.findReviewsByAlbumId(albumId));
     }
 
     @Override
@@ -99,7 +73,7 @@ public class AlbumServiceImpl implements AlbumService {
         List<Long> userIds = new ArrayList<>();
         albumDao.findReviewsByAlbumId(id).forEach(review -> userIds.add(review.getUser().getId()));
         albumDao.deleteReviewsFromAlbum(id);
-        userIds.forEach(userId -> userService.updateUserReviewAmount(userId));
+        userIds.forEach(userService::updateUserReviewAmount);
         album.getSongs().forEach(song -> songService.delete(song.getId()));
         Boolean deleted = albumDao.delete(album.getId());
         imageService.delete(album.getImage().getId());
@@ -110,31 +84,36 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional
-    public AlbumDTO create(AlbumDTO albumDTO) {
-        LOGGER.info("Creating new album from DTO: {} for artist ID: {}", albumDTO.getTitle(), albumDTO.getArtistId());
+    public Album create(Album albumInput) {
+        LOGGER.info("Creating new album: {} for artist ID: {}", albumInput.getTitle(), 
+                albumInput.getArtist() != null ? albumInput.getArtist().getId() : null);
         
         Image image;
-        if (albumDTO.getImageId() == null) image = imageService.findById(imageService.getDefaultImgId());
-        else image = imageService.findById(albumDTO.getImageId());
+        if (albumInput.getImage() == null || albumInput.getImage().getId() == null) {
+            image = imageService.findById(imageService.getDefaultImgId());
+        } else {
+            image = imageService.findById(albumInput.getImage().getId());
+        }
 
-        Album album = new Album(albumDTO.getTitle(), image, albumDTO.getGenre(), new Artist(albumDTO.getArtistId()), albumDTO.getReleaseDate());
+        Album album = new Album(albumInput.getTitle(), image, albumInput.getGenre(), 
+                albumInput.getArtist(), albumInput.getReleaseDate());
         album = albumDao.create(album);
         LOGGER.info("Album created successfully with ID: {}", album.getId());
 
-        if (albumDTO.getSongs() != null) {
+        if (albumInput.getSongs() != null && !albumInput.getSongs().isEmpty()) {
             LOGGER.info("Creating songs for album: {} (ID: {})", album.getTitle(), album.getId());
-            songService.createAll(albumDTO.getSongs(), album);
+            songService.createAll(albumInput.getSongs(), album);
         }
-        return albumMapper.toDTO(album);
+        return album;
     }
 
     @Override
     @Transactional
-    public Boolean createAll(List<AlbumDTO> albumsDTO, Artist artist) {
+    public Boolean createAll(List<Album> albums, Artist artist) {
         LOGGER.info("Creating multiple albums for artist ID: {}", artist.getId());
-        for (AlbumDTO albumDTO : albumsDTO) {
-            albumDTO.setArtistId(artist.getId());
-            if (!albumDTO.isDeleted()) create(albumDTO);
+        for (Album album : albums) {
+            album.setArtist(artist);
+            create(album);
         }
         LOGGER.info("All albums created successfully for artist ID: {}", artist.getId());
         return true;
@@ -142,31 +121,40 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional
-    public AlbumDTO update(AlbumDTO albumDTO) {
-        LOGGER.info("Updating album with ID: {}", albumDTO.getId());
-        Album album = albumDao.findById(albumDTO.getId()).orElseThrow(() -> new AlbumNotFoundException(albumDTO.getId()));
-        if (albumDTO.getImageId() != null) album.setImage(imageService.findById(albumDTO.getImageId()));
-        MergeUtils.mergeAlbumFields(album, albumDTO);
+    public Album update(Album albumInput) {
+        LOGGER.info("Updating album with ID: {}", albumInput.getId());
+        Album album = albumDao.findById(albumInput.getId()).orElseThrow(() -> new AlbumNotFoundException(albumInput.getId()));
+        
+        if (albumInput.getImage() != null && albumInput.getImage().getId() != null) {
+            album.setImage(imageService.findById(albumInput.getImage().getId()));
+        }
+        
+        // Merge fields
+        if (albumInput.getTitle() != null) album.setTitle(albumInput.getTitle());
+        if (albumInput.getGenre() != null) album.setGenre(albumInput.getGenre());
+        if (albumInput.getReleaseDate() != null) album.setReleaseDate(albumInput.getReleaseDate());
+        
         album = albumDao.update(album);
         LOGGER.info("Album updated successfully");
 
-        if (albumDTO.getSongs() != null) {
+        if (albumInput.getSongs() != null && !albumInput.getSongs().isEmpty()) {
             LOGGER.info("Updating songs for album: {} (ID: {})", album.getTitle(), album.getId());
-            songService.updateAll(albumDTO.getSongs(), album);
+            songService.updateAll(albumInput.getSongs(), album);
         }
-        return albumMapper.toDTO(album);
+        return album;
     }
 
     @Override
     @Transactional
-    public Boolean updateAll(List<AlbumDTO> albumsDTO, Artist artist) {
+    public Boolean updateAll(List<Album> albums, Artist artist) {
         LOGGER.info("Updating multiple albums for artist ID: {}", artist.getId());
-        for (AlbumDTO albumDTO : albumsDTO) {
-            albumDTO.setArtistId(artist.getId());
-            if (albumDTO.getId() != 0 && albumDTO.getId() != null) {
-                if (albumDTO.isDeleted()) delete(albumDTO.getId());
-                else update(albumDTO);
-            } else if (!albumDTO.isDeleted()) create(albumDTO);
+        for (Album album : albums) {
+            album.setArtist(artist);
+            if (album.getId() != null && album.getId() != 0) {
+                update(album);
+            } else {
+                create(album);
+            }
         }
         LOGGER.info("All albums updated successfully for artist ID: {}", artist.getId());
         return true;
@@ -189,8 +177,8 @@ public class AlbumServiceImpl implements AlbumService {
     public Boolean updateRating(Long albumId) {
         LOGGER.info("Updating rating for album ID: {}", albumId);
 
-        List<ReviewDTO> reviews = findReviewsByAlbumId(albumId);
-        Double avgRating = reviews.stream().mapToInt(ReviewDTO::getRating).average().orElse(0.0);
+        List<Review> reviews = findReviewsByAlbumId(albumId);
+        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         int ratingAmount = reviews.size();
         Boolean updated = albumDao.updateRating(albumId, roundedAvgRating, ratingAmount);
@@ -200,5 +188,4 @@ public class AlbumServiceImpl implements AlbumService {
         
         return updated;
     }
-
 }

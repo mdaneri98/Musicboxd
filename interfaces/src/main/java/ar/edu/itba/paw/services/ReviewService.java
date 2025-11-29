@@ -1,38 +1,37 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.dtos.UserDTO;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import java.util.List;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
 
+import java.util.List;
 
-public interface ReviewService extends CrudService<ReviewDTO> {
+public interface ReviewService extends CrudService<Review> {
 
-    List<ReviewDTO> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId);
 
-    ReviewDTO findArtistReviewById(Long id, Long loggedUserId);
-    ReviewDTO findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId);
+    Review findArtistReviewById(Long id, Long loggedUserId);
+    Review findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId);
 
-    ReviewDTO findAlbumReviewById(Long id, Long loggedUserId);
-    ReviewDTO findAlbumReviewByUserId(Long userId, Long albumId, Long loggedUserId);
+    Review findAlbumReviewById(Long id, Long loggedUserId);
+    Review findAlbumReviewByUserId(Long userId, Long albumId, Long loggedUserId);
 
-    ReviewDTO findSongReviewById(Long id, Long loggedUserId);
-    ReviewDTO findSongReviewByUserId(Long userId, Long songId, Long loggedUserId);
+    Review findSongReviewById(Long id, Long loggedUserId);
+    Review findSongReviewByUserId(Long userId, Long songId, Long loggedUserId);
 
-
-    List<UserDTO> likedBy(Long reviewId, Integer pageNum, Integer pageSize);
+    List<User> likedBy(Long reviewId, Integer pageNum, Integer pageSize);
     Void createLike(Long userId, Long reviewId);
     Void removeLike(Long userId, Long reviewId);
     Boolean isLiked(Long userId, Long reviewId);
 
-    List<ReviewDTO> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId);
-    List<ReviewDTO> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId);
     
-    List<ReviewDTO> findBySubstring(String substring, Integer page, Integer size);
-    List<ReviewDTO> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);
-    List<ReviewDTO> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId);
-    List<ReviewDTO> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId);
-    List<ReviewDTO> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> findBySubstring(String substring, Integer page, Integer size);
+    List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId);
 
     Boolean isArtistReview(Long reviewId);
     Boolean isAlbumReview(Long reviewId);
@@ -41,12 +40,11 @@ public interface ReviewService extends CrudService<ReviewDTO> {
     Void block(Long reviewId);
     Void unblock(Long reviewId);
     
-    ReviewDTO createArtistReview(ReviewDTO review);
-    ReviewDTO createAlbumReview(ReviewDTO review);
-    ReviewDTO createSongReview(ReviewDTO review);
+    Review createArtistReview(Review review);
+    Review createAlbumReview(Review review);
+    Review createSongReview(Review review);
     
     Long countReviewsByUser(Long userId);
     Long countAll();
     Long countReviewsFromFollowedUsers(Long loggedUserId);
-
 }

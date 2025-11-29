@@ -1,5 +1,10 @@
 package ar.edu.itba.paw.api.controller;
 
+import ar.edu.itba.paw.api.dto.AlbumDTO;
+import ar.edu.itba.paw.api.dto.ReviewDTO;
+import ar.edu.itba.paw.api.dto.SongDTO;
+import ar.edu.itba.paw.api.mapper.dto.AlbumDtoMapper;
+import ar.edu.itba.paw.api.mapper.dto.SongDtoMapper;
 import ar.edu.itba.paw.api.mapper.resource.AlbumResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.ReviewResourceMapper;
@@ -11,9 +16,9 @@ import ar.edu.itba.paw.api.models.resources.SongResource;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.api.utils.ControllerUtils;
-import ar.edu.itba.paw.models.dtos.AlbumDTO;
-import ar.edu.itba.paw.models.dtos.ReviewDTO;
-import ar.edu.itba.paw.models.dtos.SongDTO;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
@@ -24,6 +29,7 @@ import ar.edu.itba.paw.api.form.ReviewForm;
 import ar.edu.itba.paw.api.form.ModSongForm;
 import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
+import ar.edu.itba.paw.api.mapper.dto.ReviewDtoMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModSongFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -72,6 +78,15 @@ public class AlbumController extends BaseController {
     @Autowired
     private ModSongFormMapper modSongFormMapper;
 
+    @Autowired
+    private AlbumDtoMapper albumDtoMapper;
+
+    @Autowired
+    private SongDtoMapper songDtoMapper;
+
+    @Autowired
+    private ReviewDtoMapper reviewDtoMapper;
+
 
     @GET
     public Response getAllAlbums(
@@ -82,7 +97,8 @@ public class AlbumController extends BaseController {
 
         if (search != null && !search.isEmpty()) return getAlbumBySubstring(search, page, size);
 
-        List<AlbumDTO> albumDTOs = albumService.findPaginated(filter, page, size);
+        List<Album> albums = albumService.findPaginated(filter, page, size);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
         Integer totalCount = albumService.countAll().intValue();
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
@@ -91,8 +107,9 @@ public class AlbumController extends BaseController {
     }
 
     private Response getAlbumBySubstring(String substring, Integer page, Integer size) {
-        List<AlbumDTO> albums = albumService.findByTitleContaining(substring, page, size);
-        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albums, getBaseUrl());
+        List<Album> albums = albumService.findByTitleContaining(substring, page, size);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums);
+        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
         Integer totalCount = albumService.countAll().intValue();
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
                 albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, ControllerUtils.albumsCollectionLinks);
@@ -102,16 +119,23 @@ public class AlbumController extends BaseController {
     @POST
     @PreAuthorize("hasRole('MODERATOR')")
     public Response createAlbum(@Valid ModAlbumForm modAlbumForm) {
-        AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
-        AlbumDTO responseDTO = albumService.create(albumDTO);
-        AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());
+        Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
+        Album album = albumService.create(albumInput);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
+        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
         return buildCreatedResponse(albumResource);
     }
 
     @GET
     @Path(ApiUriConstants.ID)
     public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        AlbumDTO albumDTO = albumService.findById(id, SecurityContextUtils.getCurrentUserId());
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Album album = albumService.findById(id, loggedUserId);
+        
+        Boolean isReviewed = loggedUserId != null ? albumService.hasUserReviewed(loggedUserId, id) : false;
+        Boolean isFavorite = loggedUserId != null ? userService.isAlbumFavorite(loggedUserId, id) : false;
+        
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, isReviewed, isFavorite);
         AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
         return buildResponse(albumResource);
     }
@@ -120,10 +144,11 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
     public Response updateAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModAlbumForm modAlbumForm) {
-        AlbumDTO albumDTO = modAlbumFormMapper.toDTO(modAlbumForm);
-        albumDTO.setId(id);
-        AlbumDTO responseDTO = albumService.update(albumDTO);
-        AlbumResource albumResource = albumResourceMapper.toResource(responseDTO, getBaseUrl());
+        Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
+        albumInput.setId(id);
+        Album album = albumService.update(albumInput);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
+        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
         return buildResponse(albumResource);
     }
 
@@ -144,8 +169,9 @@ public class AlbumController extends BaseController {
 
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         
-        List<ReviewDTO> reviews = reviewService.findAlbumReviewsPaginated(id, page, size, loggedUserId);
-        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviews, getBaseUrl());
+        List<Review> reviews = reviewService.findAlbumReviewsPaginated(id, page, size, loggedUserId);
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, loggedUserId, reviewService);
+        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
@@ -158,24 +184,25 @@ public class AlbumController extends BaseController {
     public Response createAlbumReview(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ReviewForm reviewForm) {
-        ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
-        reviewDTO.setUserId(SecurityContextUtils.getCurrentUserId());
-        reviewDTO.setIsLiked(true);
-        reviewDTO.setLikes(0);
-        reviewDTO.setIsBlocked(false);
-        ReviewDTO responseDTO = reviewService.create(reviewDTO);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, id);
+        reviewInput.setLikes(0);
+        reviewInput.setBlocked(false);
+        Review review = reviewService.create(reviewInput);
+        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, true);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
 
     @GET
     @Path(ApiUriConstants.ALBUM_SONGS)
-        public Response getAlbumSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
-        List<SongDTO> songDTOs = songService.findByAlbumId(id);
+    public Response getAlbumSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
+        List<Song> songs = songService.findByAlbumId(id);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                    songResources, songService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_SONGS, ControllerUtils.albumSongsCollectionLinks, id);
+                songResources, songService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_SONGS, ControllerUtils.albumSongsCollectionLinks, id);
         
         return buildResponse(collection);
     }
@@ -186,18 +213,22 @@ public class AlbumController extends BaseController {
     public Response createAlbumSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
-        SongDTO songDTO = modSongFormMapper.toDTO(modSongForm);
-        songDTO.setAlbumId(id);
-        SongDTO responseDTO = songService.create(songDTO);
-        SongResource songResource = songResourceMapper.toResource(responseDTO, getBaseUrl());
+        Song songInput = modSongFormMapper.toModel(modSongForm);
+        songInput.setAlbum(new Album(id));
+        Song song = songService.create(songInput);
+        SongDTO songDTO = songDtoMapper.toDTO(song);
+        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
         return buildResponse(songResource);
     }
 
     @POST
     @Path(ApiUriConstants.ALBUM_FAVORITE)
     public Response addAlbumFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        userService.addFavoriteAlbum(SecurityContextUtils.getCurrentUserId(), id);
-        return buildCreatedResponse(albumResourceMapper.toResource(albumService.findById(id, SecurityContextUtils.getCurrentUserId()), getBaseUrl()));
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        userService.addFavoriteAlbum(loggedUserId, id);
+        Album album = albumService.findById(id, loggedUserId);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, false, true);
+        return buildCreatedResponse(albumResourceMapper.toResource(albumDTO, getBaseUrl()));
     }
 
     @DELETE
@@ -207,4 +238,3 @@ public class AlbumController extends BaseController {
         return buildNoContentResponse();
     }
 }
-
