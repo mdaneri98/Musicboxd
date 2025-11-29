@@ -113,13 +113,13 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public Boolean updateRating(Long artistId, Double newRating, Integer newRatingAmount) {
-        String jpql = "UPDATE Artist a SET a.avgRating = :avgRating, a.ratingCount = :ratingCount WHERE a.id = :id";
-        int updatedCount = entityManager.createQuery(jpql)
-                .setParameter("avgRating", newRating)
-                .setParameter("ratingCount", newRatingAmount)
-                .setParameter("id", artistId)
-                .executeUpdate();
-        return updatedCount == 1;
+        Artist artist = entityManager.find(Artist.class, artistId);
+        if (artist != null) {
+            artist.setAvgRating(newRating);
+            artist.setRatingCount(newRatingAmount);
+            return true;
+        }
+        return false;
     }
 
     @Override

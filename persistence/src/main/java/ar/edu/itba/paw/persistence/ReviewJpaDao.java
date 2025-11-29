@@ -31,6 +31,7 @@ public class ReviewJpaDao implements ReviewDao {
     @Override
     public Review create(Review entity) {
         em.persist(entity);
+        em.flush();
         return entity;
     }
 
