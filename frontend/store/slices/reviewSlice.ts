@@ -556,9 +556,7 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewCommentsAsync.fulfilled, (state, action) => {
         state.loadingComments = false;
-        // Store comment IDs in reviewComments array
         state.reviewComments = action.payload.items.map((comment) => comment.data.id);
-        // Store full comments in normalized state
         action.payload.items.forEach((comment) => {
           state.comments[comment.data.id] = comment.data as Comment;
         });
@@ -747,7 +745,8 @@ export const selectLoadingComments = (state: RootState) => state.reviews.loading
 export const selectLoadingLikes = (state: RootState) => state.reviews.loadingLikes;
 
 // Comment Selectors
-export const selectComments = (state: RootState) => state.reviews.comments;
+export const selectComments = (state: RootState) => 
+  state.reviews.reviewComments.map(id => state.reviews.comments[id]).filter(Boolean);
 export const selectCommentById = (commentId: number) => (state: RootState) =>
   state.reviews.comments[commentId] || null;
 export const selectCurrentComment = (state: RootState) => state.reviews.currentComment;

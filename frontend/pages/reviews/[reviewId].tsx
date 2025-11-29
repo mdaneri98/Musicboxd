@@ -88,7 +88,7 @@ const ReviewDetailPage = () => {
         })
         .catch((err) => console.error('Failed to fetch likes:', err));
     }
-  }, [reviewId, activeTab, page, dispatch]);
+  }, [reviewId, review, activeTab, page, dispatch]);
 
   const handleTabChange = useCallback((tab: ReviewTab) => {
     setActiveTab(tab);
