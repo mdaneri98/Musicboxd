@@ -150,6 +150,9 @@ public class SongController extends BaseController {
             @Valid ReviewForm reviewForm) {
         ReviewDTO reviewDTO = reviewFormMapper.toDTO(reviewForm);
         reviewDTO.setUserId(SecurityContextUtils.getCurrentUserId());
+        reviewDTO.setIsLiked(true);
+        reviewDTO.setLikes(0);
+        reviewDTO.setIsBlocked(false);
         ReviewDTO responseDTO = reviewService.create(reviewDTO);
         ReviewResource reviewResource = reviewResourceMapper.toResource(responseDTO, getBaseUrl());
         return buildResponse(reviewResource);
