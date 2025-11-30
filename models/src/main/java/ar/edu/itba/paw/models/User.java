@@ -189,6 +189,10 @@ public class User {
         this.likedReviews = new ArrayList<>();
     }
 
+    public User(Long id){
+        this.id = id;
+    }
+
     public User(Long id, String username, String email, String password, String name, String bio, boolean verified, Image image, Boolean moderator, Integer followersAmount, Integer followingAmount, Integer reviewAmount) {
         this.id = id;
         this.username = username;

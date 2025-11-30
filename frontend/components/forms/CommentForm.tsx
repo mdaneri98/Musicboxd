@@ -54,7 +54,7 @@ const CommentForm = ({
           <p className="form-error">{errors.content.message}</p>
         )}
       </div>
-      <input type="hidden" value={reviewId} {...register("reviewId")} />
+      <input type="hidden" value={reviewId} {...register("review_id")} />
 
       <div className="form-actions">
         {onCancel && (

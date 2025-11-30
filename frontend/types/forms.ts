@@ -74,7 +74,7 @@ export interface ReviewFormData {
  */
 export interface CommentFormData {
   content: string;
-  reviewId: number;
+  review_id: number;
 }
 
 // ============================================================================

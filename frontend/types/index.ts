@@ -10,11 +10,8 @@ export type {
   Album,
   Song,
   Review,
-  ReviewItemType,
   Comment,
   Notification,
-  NotificationType,
-  Image,
 } from './models';
 
 // API Types

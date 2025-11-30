@@ -34,16 +34,13 @@ public class CommentFormMapper {
         return comment;
     }
 
-    public Comment toModel(CommentForm form, Long userId, Long reviewId) {
+    public Comment toModel(CommentForm form, Long userId) {
         Comment comment = toModel(form);
         if (comment != null) {
             if (userId != null) {
                 User user = new User();
                 user.setId(userId);
                 comment.setUser(user);
-            }
-            if (reviewId != null) {
-                comment.setReview(createReviewStub(reviewId));
             }
         }
         return comment;

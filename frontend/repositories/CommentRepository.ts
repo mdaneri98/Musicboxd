@@ -111,7 +111,7 @@ class CommentRepository {
    * @param commentData Updated comment data
    * @returns Updated comment
    */
-    async updateComment(id: number, commentData: CommentFormData): Promise<HALResource<Comment>> {
+  async updateComment(id: number, commentData: CommentFormData): Promise<HALResource<Comment>> {
     try {
       const response: HALResource<Comment> = await apiClient.putResource<Comment>(
         COMMENT_ENDPOINTS.COMMENT_BY_ID(id),

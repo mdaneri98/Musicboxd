@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { Layout, ArtistInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -21,7 +20,6 @@ import {
   selectArtistError,
   clearCurrentArtist
 } from '@/store/slices';
-import { imageRepository } from '@/repositories';
 import type { Review } from '@/types';
 import { AlbumCard, SongCard } from '@/components/cards';
 

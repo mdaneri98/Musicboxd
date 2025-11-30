@@ -13,6 +13,7 @@ import ar.edu.itba.paw.api.utils.ControllerUtils;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,8 +77,7 @@ public class CommentController extends BaseController {
     @POST
     public Response createComment(@Valid CommentForm commentForm) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Comment comment = commentFormMapper.toModel(commentForm);
-        comment.getUser().setId(loggedUserId);
+        Comment comment = commentFormMapper.toModel(commentForm, loggedUserId);
         Comment createdComment = commentService.create(comment);
         CommentDTO commentDTO = commentDtoMapper.toDTO(createdComment);
         CommentResource commentResource = commentResourceMapper.toResource(commentDTO, getBaseUrl());

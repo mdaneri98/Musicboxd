@@ -18,7 +18,7 @@ import {
   selectSongError,
   clearCurrentSong
 } from '@/store/slices';
-import type { Album, Artist, Review, HALResource } from '@/types';
+import type { Album, Artist, Review } from '@/types';
 
 const SongDetailPage = () => {
   const router = useRouter();

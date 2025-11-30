@@ -100,9 +100,9 @@ export const reviewSchema = Yup.object().shape({
 export const commentSchema = Yup.object().shape({
   content: Yup.string()
     .required('Comment is required')
-    .min(1, 'Comment must be at least 1 character')
+    .min(2, 'Comment must be at least 2 characters')
     .max(500, 'Comment must be at most 500 characters'),
-  reviewId: Yup.number().required(),
+  review_id: Yup.number().required(),
 });
 
 // ============================================================================

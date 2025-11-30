@@ -4,7 +4,7 @@
  */
 
 import Link from 'next/link';
-import { Notification } from '@/types';
+import type { Notification } from '@/types';
 import { useAppDispatch } from '@/store/hooks';
 import { markAsReadAsync, deleteNotificationAsync } from '@/store/slices';
 

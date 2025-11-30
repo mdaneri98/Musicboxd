@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { reviewRepository, commentRepository } from '@/repositories';
+import { commentRepository, reviewRepository } from '@/repositories';
 import { Review, User, Comment, Collection, HALResource, ReviewFormData, CommentFormData } from '@/types';
 import type { RootState } from '../index';
 
@@ -13,22 +13,27 @@ import type { RootState } from '../index';
 // ============================================================================
 
 export interface ReviewState {
-  // Review specific state
+  // Reviews by ID (normalized state)
   reviews: Record<number, Review>;
+  // Ordered reviews id list
   orderedReviewsIds: number[];
+  // Current review being viewed
   currentReview: Review | null;
+  // Related data for current review
+  reviewComments: Comment[];
   reviewLikes: User[];
-  reviewPagination: {
+  // Pagination info
+  pagination: {
     page: number;
     size: number;
     totalCount: number;
   };
-
-  // Comment specific state
-  comments: Record<number, Comment>;
-  reviewComments: number[];
-  currentComment: Comment | null;
-  commentPagination: {
+  commentsPagination: {
+    page: number;
+    size: number;
+    totalCount: number;
+  };
+  likesPagination: {
     page: number;
     size: number;
     totalCount: number;
@@ -38,7 +43,6 @@ export interface ReviewState {
   loadingReview: boolean;
   loadingComments: boolean;
   loadingLikes: boolean;
-  loadingComment: boolean;
   // Error state
   error: string | null;
 }
@@ -53,14 +57,17 @@ const initialState: ReviewState = {
   currentReview: null,
   reviewComments: [],
   reviewLikes: [],
-  reviewPagination: {
+  pagination: {
     page: 1,
     size: 20,
     totalCount: 0,
   },
-  comments: {},
-  currentComment: null,
-  commentPagination: {
+  commentsPagination: {
+    page: 1,
+    size: 20,
+    totalCount: 0,
+  },
+  likesPagination: {
     page: 1,
     size: 20,
     totalCount: 0,
@@ -69,7 +76,6 @@ const initialState: ReviewState = {
   loadingReview: false,
   loadingComments: false,
   loadingLikes: false,
-  loadingComment: false,
   error: null,
 };
 
@@ -113,7 +119,7 @@ export const fetchReviewByIdAsync = createAsyncThunk<
  * Create new review
  */
 export const createReviewAsync = createAsyncThunk<
-    HALResource<Review> ,
+  HALResource<Review>,
   ReviewFormData,
   { rejectValue: string }
 >('reviews/createReview', async (reviewData, { rejectWithValue }) => {
@@ -230,7 +236,7 @@ export const postCommentAsync = createAsyncThunk<
   { rejectValue: string }
 >('reviews/postComment', async (commentData, { rejectWithValue }) => {
   try {
-    const response = await reviewRepository.postComment(commentData);
+    const response = await commentRepository.createComment(commentData);
     return response as HALResource<Comment>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to post comment');
@@ -238,80 +244,16 @@ export const postCommentAsync = createAsyncThunk<
 });
 
 /**
- * Fetch paginated comments list
- */
-export const fetchCommentsAsync = createAsyncThunk<
-  Collection<HALResource<Comment>>,
-  { page?: number; size?: number; search?: string; filter?: string },
-  { rejectValue: string }
->('reviews/fetchComments', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
-  try {
-    const response = await commentRepository.getComments(page, size, search, filter);
-    return response as Collection<HALResource<Comment>>;
-  } catch (error: any) {
-    return rejectWithValue(error.message || 'Failed to fetch comments');
-  }
-});
-
-/**
- * Fetch comment by ID
- */
-export const fetchCommentByIdAsync = createAsyncThunk<
-  HALResource<Comment>,
-  number,
-  { rejectValue: string }
->('reviews/fetchCommentById', async (commentId, { rejectWithValue }) => {
-  try {
-    const comment = await commentRepository.getCommentById(commentId);
-    return comment as HALResource<Comment>;
-  } catch (error: any) {
-    return rejectWithValue(error.message || 'Failed to fetch comment');
-  }
-});
-
-/**
- * Create new comment
- */
-export const createCommentAsync = createAsyncThunk<
-  HALResource<Comment>,
-  CommentFormData,
-  { rejectValue: string }
->('reviews/createComment', async (commentData, { rejectWithValue }) => {
-  try {
-    const comment = await commentRepository.createComment(commentData);
-    return comment as HALResource<Comment>;
-  } catch (error: any) {
-    return rejectWithValue(error.message || 'Failed to create comment');
-  }
-});
-
-/**
- * Update comment
- */
-export const updateCommentAsync = createAsyncThunk<
-  HALResource<Comment>,
-  { id: number; commentData: CommentFormData },
-  { rejectValue: string }
->('reviews/updateComment', async ({ id, commentData }, { rejectWithValue }) => {
-  try {
-    const comment = await commentRepository.updateComment(id, commentData);
-    return comment as HALResource<Comment>;
-  } catch (error: any) {
-    return rejectWithValue(error.message || 'Failed to update comment');
-  }
-});
-
-/**
- * Delete comment
+ * Delete a comment
  */
 export const deleteCommentAsync = createAsyncThunk<
-  void,
+  number,
   number,
   { rejectValue: string }
 >('reviews/deleteComment', async (commentId, { rejectWithValue }) => {
   try {
     await commentRepository.deleteComment(commentId);
-    return;
+    return commentId;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to delete comment');
   }
@@ -386,27 +328,6 @@ const reviewSlice = createSlice({
     removeReview: (state, action: PayloadAction<number>) => {
       delete state.reviews[action.payload];
     },
-
-    /**
-     * Clear current comment
-     */
-    clearCurrentComment: (state) => {
-      state.currentComment = null;
-    },
-
-    /**
-     * Add comment to normalized state
-     */
-    addComment: (state, action: PayloadAction<Comment>) => {
-      state.comments[action.payload.id] = action.payload;
-    },
-
-    /**
-     * Remove comment from normalized state
-     */
-    removeComment: (state, action: PayloadAction<number>) => {
-      delete state.comments[action.payload];
-    },
   },
   extraReducers: (builder) => {
     // Fetch Reviews
@@ -417,9 +338,9 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        action.payload.items.forEach((review) => { state.reviews[review.data.id] = review.data as Review;});
+        action.payload.items.forEach((review) => { state.reviews[review.data.id] = review.data as Review; });
         state.orderedReviewsIds = action.payload.items.map((review) => review.data.id);
-        state.reviewPagination = {
+        state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
@@ -506,6 +427,11 @@ const reviewSlice = createSlice({
       .addCase(fetchReviewLikesAsync.fulfilled, (state, action) => {
         state.loadingLikes = false;
         state.reviewLikes = action.payload.items.map((like) => like.data as User);
+        state.likesPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+        };
       })
       .addCase(fetchReviewLikesAsync.rejected, (state, action) => {
         state.loadingLikes = false;
@@ -556,10 +482,12 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewCommentsAsync.fulfilled, (state, action) => {
         state.loadingComments = false;
-        state.reviewComments = action.payload.items.map((comment) => comment.data.id);
-        action.payload.items.forEach((comment) => {
-          state.comments[comment.data.id] = comment.data as Comment;
-        });
+        state.reviewComments = action.payload.items.map((comment) => comment.data as Comment);
+        state.commentsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+        };
       })
       .addCase(fetchReviewCommentsAsync.rejected, (state, action) => {
         state.loadingComments = false;
@@ -574,92 +502,18 @@ const reviewSlice = createSlice({
       })
       .addCase(postCommentAsync.fulfilled, (state, action) => {
         state.loading = false;
-        // Add comment to normalized state
-        state.comments[action.payload.data.id] = action.payload.data as Comment;
-        // Add comment ID to reviewComments array
-        state.reviewComments.push(action.payload.data.id);
-        // Update comment count
-        if (state.reviews[action.payload.data.review_id]) {
-          state.reviews[action.payload.data.review_id].comment_amount += 1;
+        state.reviewComments.unshift(action.payload.data as Comment);
+        const reviewId = action.payload.data.review_id;
+        if (state.reviews[reviewId]) {
+          state.reviews[reviewId].comment_amount += 1;
         }
-        if (state.currentReview?.id === action.payload.data.review_id) {
+        if (state.currentReview?.id === reviewId) {
           state.currentReview.comment_amount += 1;
         }
       })
       .addCase(postCommentAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to post comment';
-      });
-
-    // Fetch Comments
-    builder
-      .addCase(fetchCommentsAsync.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchCommentsAsync.fulfilled, (state, action) => {
-        state.loading = false;
-        action.payload.items.forEach((comment) => {
-          state.comments[comment.data.id] = comment.data as Comment;
-        });
-        state.commentPagination = {
-          page: action.payload.currentPage,
-          size: action.payload.pageSize,
-          totalCount: action.payload.totalCount,
-        };
-      })
-      .addCase(fetchCommentsAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to fetch comments';
-      });
-
-    // Fetch Comment By ID
-    builder
-      .addCase(fetchCommentByIdAsync.pending, (state) => {
-        state.loadingComment = true;
-        state.error = null;
-      })
-      .addCase(fetchCommentByIdAsync.fulfilled, (state, action) => {
-        state.loadingComment = false;
-        state.currentComment = action.payload.data as Comment;
-        state.comments[action.payload.data.id] = action.payload.data as Comment;
-      })
-      .addCase(fetchCommentByIdAsync.rejected, (state, action) => {
-        state.loadingComment = false;
-        state.error = action.payload || 'Failed to fetch comment';
-      });
-
-    // Create Comment
-    builder
-      .addCase(createCommentAsync.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createCommentAsync.fulfilled, (state, action) => {
-        state.loading = false;
-        state.comments[action.payload.data.id] = action.payload.data as Comment;
-      })
-      .addCase(createCommentAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to create comment';
-      });
-
-    // Update Comment
-    builder
-      .addCase(updateCommentAsync.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateCommentAsync.fulfilled, (state, action) => {
-        state.loading = false;
-        state.comments[action.payload.data.id] = action.payload.data as Comment;
-        if (state.currentComment?.id === action.payload.data?.id) {
-          state.currentComment = action.payload.data as Comment;
-        }
-      })
-      .addCase(updateCommentAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to update comment';
       });
 
     // Delete Comment
@@ -670,12 +524,16 @@ const reviewSlice = createSlice({
       })
       .addCase(deleteCommentAsync.fulfilled, (state, action) => {
         state.loading = false;
-        const commentId = action.meta.arg;
-        delete state.comments[commentId];
-        // Remove from reviewComments array
-        state.reviewComments = state.reviewComments.filter(id => id !== commentId);
-        if (state.currentComment?.id === commentId) {
-          state.currentComment = null;
+        const deletedComment = state.reviewComments.find((comment) => comment.id === action.meta.arg);
+        state.reviewComments = state.reviewComments.filter((comment) => comment.id !== action.meta.arg);
+        if (deletedComment) {
+          const reviewId = deletedComment.review_id;
+          if (state.reviews[reviewId]) {
+            state.reviews[reviewId].comment_amount -= 1;
+          }
+          if (state.currentReview?.id === reviewId) {
+            state.currentReview.comment_amount -= 1;
+          }
         }
       })
       .addCase(deleteCommentAsync.rejected, (state, action) => {
@@ -719,41 +577,24 @@ const reviewSlice = createSlice({
 // Actions & Selectors
 // ============================================================================
 
-export const { 
-  clearError, 
-  clearCurrentReview, 
-  addReview, 
-  removeReview,
-  clearCurrentComment,
-  addComment,
-  removeComment
-} = reviewSlice.actions;
+export const { clearError, clearCurrentReview, addReview, removeReview } = reviewSlice.actions;
 
 export const selectReviews = (state: RootState) => state.reviews.reviews;
 export const selectOrderedReviews = (state: RootState) => state.reviews.orderedReviewsIds.map((id) => state.reviews.reviews[id]);
-export const selectReviewById = (reviewId: number) => (state: RootState) =>
-  state.reviews.reviews[reviewId] || null;
+export const selectReviewById = (reviewId: number) => (state: RootState) => {
+  return state.reviews.reviews[reviewId] || null;
+}
 export const selectCurrentReview = (state: RootState) => state.reviews.currentReview;
-export const selectReviewComments = (state: RootState) => 
-  state.reviews.reviewComments.map(id => state.reviews.comments[id]).filter(Boolean);
+export const selectReviewComments = (state: RootState) => state.reviews.reviewComments;
 export const selectReviewLikes = (state: RootState) => state.reviews.reviewLikes;
-export const selectReviewPagination = (state: RootState) => state.reviews.reviewPagination;
+export const selectReviewPagination = (state: RootState) => state.reviews.pagination;
 export const selectReviewLoading = (state: RootState) => state.reviews.loading;
 export const selectReviewError = (state: RootState) => state.reviews.error;
 export const selectLoadingReview = (state: RootState) => state.reviews.loadingReview;
 export const selectLoadingComments = (state: RootState) => state.reviews.loadingComments;
 export const selectLoadingLikes = (state: RootState) => state.reviews.loadingLikes;
-
-// Comment Selectors
-export const selectComments = (state: RootState) => 
-  state.reviews.reviewComments.map(id => state.reviews.comments[id]).filter(Boolean);
-export const selectCommentById = (commentId: number) => (state: RootState) =>
-  state.reviews.comments[commentId] || null;
-export const selectCurrentComment = (state: RootState) => state.reviews.currentComment;
-export const selectCommentPagination = (state: RootState) => state.reviews.commentPagination;
-export const selectCommentLoading = (state: RootState) => state.reviews.loading;
-export const selectCommentError = (state: RootState) => state.reviews.error;
-export const selectLoadingComment = (state: RootState) => state.reviews.loadingComment;
+export const selectCommentsPagination = (state: RootState) => state.reviews.commentsPagination;
+export const selectLikesPagination = (state: RootState) => state.reviews.likesPagination;
 
 export default reviewSlice.reducer;
 

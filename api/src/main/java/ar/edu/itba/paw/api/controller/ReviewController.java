@@ -183,17 +183,6 @@ public class ReviewController extends BaseController {
         return buildResponse(collection);
     }
 
-    @POST
-    @Path(ApiUriConstants.REVIEW_COMMENTS)
-    public Response createReviewComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid CommentForm commentForm) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Comment comment = commentFormMapper.toModel(commentForm, loggedUserId, id);
-        Comment createdComment = commentService.create(comment);
-        CommentDTO commentDTO = commentDtoMapper.toDTO(createdComment);
-        CommentResource commentResource = commentResourceMapper.toResource(commentDTO, getBaseUrl());
-        return buildCreatedResponse(commentResource);
-    }
-
     @GET
     @Path(ApiUriConstants.REVIEW_LIKES)
     public Response getReviewLikes(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, 

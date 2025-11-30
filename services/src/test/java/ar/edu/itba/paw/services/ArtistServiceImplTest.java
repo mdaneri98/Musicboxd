@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.dtos.ArtistDTO;
 import ar.edu.itba.paw.persistence.ArtistDao;
 import org.junit.Before;
 import org.junit.Test;

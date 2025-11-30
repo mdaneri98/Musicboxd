@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.dtos.UserDTO;
 import ar.edu.itba.paw.persistence.config.TestConfig;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Test;

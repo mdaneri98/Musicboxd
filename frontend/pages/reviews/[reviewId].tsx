@@ -5,8 +5,8 @@ import { ReviewCard, UserCard } from '@/components/cards';
 import { CommentForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { 
-  selectIsAuthenticated, 
+import {
+  selectIsAuthenticated,
   selectCurrentUser,
   fetchReviewByIdAsync,
   fetchReviewCommentsAsync,
@@ -19,7 +19,10 @@ import {
   selectLoadingReview,
   selectLoadingComments,
   selectLoadingLikes,
-  clearCurrentReview
+  selectCommentsPagination,
+  selectLikesPagination,
+  clearCurrentReview,
+  selectReviewById
 } from '@/store/slices';
 import type { Comment, CommentFormData } from '@/types';
 import { ReviewTab } from '@/types/enums';
@@ -31,13 +34,15 @@ const ReviewDetailPage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const review = useAppSelector(selectCurrentReview);
+  const review = useAppSelector(selectReviewById(parseInt(reviewId as string)));
   const comments = useAppSelector(selectReviewComments);
   const likedUsers = useAppSelector(selectReviewLikes);
   const loadingReview = useAppSelector(selectLoadingReview);
   const loadingComments = useAppSelector(selectLoadingComments);
   const loadingLikes = useAppSelector(selectLoadingLikes);
-  
+  const commentsPagination = useAppSelector(selectCommentsPagination);
+  const likesPagination = useAppSelector(selectLikesPagination);
+
   const [activeTab, setActiveTab] = useState<ReviewTab>(ReviewTab.COMMENTS);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -63,48 +68,44 @@ const ReviewDetailPage = () => {
 
   useEffect(() => {
     if (!reviewId) return;
-    
     const reviewIdNum = parseInt(reviewId as string);
+
     dispatch(fetchReviewByIdAsync(reviewIdNum));
+    dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
+    dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
+    if (activeTab === ReviewTab.COMMENTS) {
+      setHasMore(commentsPagination.page * commentsPagination.size < commentsPagination.totalCount);
+    } else if (activeTab === ReviewTab.LIKES) {
+      setHasMore(likesPagination.page * likesPagination.size < likesPagination.totalCount);
+    }
   }, [reviewId, dispatch]);
 
   useEffect(() => {
     if (!reviewId || !review) return;
-
     const reviewIdNum = parseInt(reviewId as string);
-
     if (activeTab === ReviewTab.COMMENTS) {
-      dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 }))
-        .unwrap()
-        .then((commentsData) => {
-          setHasMore(commentsData.items.length === 20);
-        })
-        .catch((err) => console.error('Failed to fetch comments:', err));
+      dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
+      setHasMore(commentsPagination.page * commentsPagination.size < commentsPagination.totalCount);
     } else if (activeTab === ReviewTab.LIKES) {
-      dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 }))
-        .unwrap()
-        .then((likesData) => {
-          setHasMore(likesData.items.length === 20);
-        })
-        .catch((err) => console.error('Failed to fetch likes:', err));
+      dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
+      setHasMore(likesPagination.page * likesPagination.size < likesPagination.totalCount);
     }
-  }, [reviewId, review, activeTab, page, dispatch]);
+  }, [reviewId, page, dispatch]);
+
 
   const handleTabChange = useCallback((tab: ReviewTab) => {
     setActiveTab(tab);
     setPage(1);
-    setHasMore(true);
   }, []);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
-  }, [reviewId, dispatch]);
+  }, []);
 
   const handleCommentSubmit = async (data: CommentFormData) => {
     if (!review) return;
 
     try {
-      console.log('Creating comment:', data);
       setSubmitLoading(true);
       await dispatch(postCommentAsync(data)).unwrap();
     } catch (error) {
