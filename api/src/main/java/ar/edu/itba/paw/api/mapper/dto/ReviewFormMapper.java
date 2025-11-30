@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.form.ReviewForm;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.*;
 import org.springframework.stereotype.Component;
@@ -47,17 +50,17 @@ public class ReviewFormMapper {
         switch (type) {
             case ARTIST -> {
                 if (review instanceof ArtistReview ar) {
-                    ar.setArtist(new ar.edu.itba.paw.models.Artist(itemId));
+                    ar.setArtist(new Artist(itemId));
                 }
             }
             case ALBUM -> {
                 if (review instanceof AlbumReview alr) {
-                    alr.setAlbum(new ar.edu.itba.paw.models.Album(itemId));
+                    alr.setAlbum(new Album(itemId));
                 }
             }
             case SONG -> {
                 if (review instanceof SongReview sr) {
-                    sr.setSong(new ar.edu.itba.paw.models.Song(itemId));
+                    sr.setSong(new Song(itemId));
                 }
             }
         }
