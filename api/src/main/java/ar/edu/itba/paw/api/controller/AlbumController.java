@@ -179,6 +179,7 @@ public class AlbumController extends BaseController {
         return buildResponse(collection);
     }
 
+    /*
     @POST
     @Path(ApiUriConstants.ALBUM_REVIEWS)
     public Response createAlbumReview(
@@ -193,6 +194,7 @@ public class AlbumController extends BaseController {
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
+     */
 
     @GET
     @Path(ApiUriConstants.ALBUM_SONGS)

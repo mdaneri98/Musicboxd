@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { albumRepository } from '@/repositories';
+import { albumRepository, reviewRepository } from '@/repositories';
 import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 
@@ -156,12 +156,12 @@ export const fetchAlbumReviewsAsync = createAsyncThunk<
 
 export const createAlbumReviewAsync = createAsyncThunk<
   HALResource<Review>,
-  { albumId: number; reviewData: ReviewFormData },
+  ReviewFormData,
   { rejectValue: string }
->('albums/createAlbumReview', async ({ albumId, reviewData }, { rejectWithValue }) => {
+>('albums/createAlbumReview', async (reviewData, { rejectWithValue }) => {
   try {
-    const response = await albumRepository.createAlbumReview(albumId, reviewData);
-    return response as HALResource<Review>;
+    const reviewResponse = await reviewRepository.createReview(reviewData);
+    return reviewResponse as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create album review');
   }

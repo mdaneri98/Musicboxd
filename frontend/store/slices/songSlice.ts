@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { songRepository } from '@/repositories';
+import { songRepository, reviewRepository } from '@/repositories';
 import { Song, Review, Collection, HALResource, CreateSongFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 import { EditSongFormData } from '@/types/forms';
@@ -140,14 +140,12 @@ export const fetchSongReviewsAsync = createAsyncThunk<
 
 export const createSongReviewAsync = createAsyncThunk<
   HALResource<Review>,
-  { songId: number; reviewData: Omit<ReviewFormData, 'itemId' | 'itemType'> },
+  ReviewFormData,
   { rejectValue: string }
->('songs/createSongReview', async ({ songId, reviewData }, { rejectWithValue }) => {
+>('songs/createSongReview', async (reviewData, { rejectWithValue }) => {
   try {
-    const response = await songRepository.createSongReview(songId, reviewData as any);
-    // El repositorio retorna Review, pero necesitamos HALResource<Review>
-    // Lo envolvemos con la estructura HAL
-    return { data: response, _links: {} } as HALResource<Review>;
+    const reviewResponse = await reviewRepository.createReview(reviewData);
+    return reviewResponse as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create song review');
   }

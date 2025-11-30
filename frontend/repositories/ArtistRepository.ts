@@ -13,7 +13,6 @@ import {
   Collection,
   HALResource,
   FilterParams,
-  ReviewFormData,
   CreateAlbumFormData,
   EditArtistFormData,
   CreateArtistFormData,
@@ -182,30 +181,6 @@ class ArtistRepository {
       return response as Collection<HALResource<Review>>;
     } catch (error) {
       console.error(`Get artist ${id} reviews error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create a review for an artist
-   * @param artistId Artist ID
-   * @param reviewData Review data
-   * @returns Created review
-   */
-  async createArtistReview(artistId: number, reviewData: ReviewFormData): Promise<HALResource<Review>> {
-    try {
-      const response: HALResource<Review> = await apiClient.postResource<Review>(
-        ARTIST_ENDPOINTS.ARTIST_REVIEWS(artistId),
-        reviewData
-      );
-
-      if (!response) {
-        throw new Error('Invalid create review response: missing data');
-      }
-
-      return response as HALResource<Review>;
-    } catch (error) {
-      console.error(`Create artist ${artistId} review error:`, error);
       throw error;
     }
   }

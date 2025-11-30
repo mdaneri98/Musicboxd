@@ -196,7 +196,7 @@ public class ArtistController extends BaseController {
         return buildResponse(collection);
     }
 
-
+    /*
     @POST
     @Path(ApiUriConstants.ARTIST_REVIEWS)
     public Response createArtistReview(
@@ -211,6 +211,7 @@ public class ArtistController extends BaseController {
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
+     */
 
     @GET
     @Path(ApiUriConstants.ARTIST_ALBUMS)

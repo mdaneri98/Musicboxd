@@ -162,6 +162,7 @@ public class SongController extends BaseController {
         return buildResponse(collection);
     }
 
+    /*
     @POST
     @Path(ApiUriConstants.SONG_REVIEWS)
     public Response createSongReview(
@@ -176,6 +177,7 @@ public class SongController extends BaseController {
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         return buildResponse(reviewResource);
     }
+    */
 
     @POST
     @Path(ApiUriConstants.SONG_FAVORITE)

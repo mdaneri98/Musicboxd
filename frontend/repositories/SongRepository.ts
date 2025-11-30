@@ -12,8 +12,7 @@ import {
   HALResource,
   FilterParams,
   EditSongFormData,
-  CreateSongFormData,
-  ReviewFormData,
+  CreateSongFormData
 } from '@/types';
 
 // ============================================================================
@@ -176,31 +175,6 @@ class SongRepository {
       return response as Collection<HALResource<Review>>;
     } catch (error) {
       console.error(`Get song ${id} reviews error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create a review for a song
-   * @param songId Song ID
-   * @param reviewData Review data
-   * @returns Created review
-   */
-  async createSongReview(songId: number, reviewData: ReviewFormData): Promise<Review> {
-    try {
-      const response: HALResource<Review> = await apiClient.postResource<Review>(
-        SONG_ENDPOINTS.SONG_REVIEWS(songId),
-        reviewData
-      );
-
-      const review = response.data;
-      if (!review) {
-        throw new Error('Invalid create review response: missing data');
-      }
-
-      return review;
-    } catch (error) {
-      console.error(`Create song ${songId} review error:`, error);
       throw error;
     }
   }

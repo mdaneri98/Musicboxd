@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { artistRepository } from '@/repositories';
+import { artistRepository, reviewRepository } from '@/repositories';
 import { Artist, Album, Song, Review, Collection, HALResource, EditArtistFormData, CreateArtistFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 
@@ -195,17 +195,14 @@ export const fetchArtistReviewsAsync = createAsyncThunk<
   }
 });
 
-/**
- * Create artist review
- */
 export const createArtistReviewAsync = createAsyncThunk<
   HALResource<Review>,
-  { artistId: number; reviewData: Omit<ReviewFormData, 'itemId' | 'itemType'> },
+  ReviewFormData,
   { rejectValue: string }
->('artists/createArtistReview', async ({ artistId, reviewData }, { rejectWithValue }) => {
+>('artists/createArtistReview', async (reviewData, { rejectWithValue }) => {
   try {
-    const response = await artistRepository.createArtistReview(artistId, reviewData as any);
-    return response as HALResource<Review>;
+    const review = await reviewRepository.createReview(reviewData);
+    return review as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to create artist review');
   }

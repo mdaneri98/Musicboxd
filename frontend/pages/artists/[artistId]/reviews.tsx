@@ -95,19 +95,14 @@ const ArtistReviewPage = () => {
       setSubmitLoading(true);
 
       if (isEditMode && existingReview) {
-        // Update existing review
         await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       } else {
-        // Create new review
         await dispatch(createArtistReviewAsync({ 
-          artistId: artist.id, 
-          reviewData: {
-            title: data.title,
-            description: data.description,
-            rating: data.rating,
-            item_id: artist.id,
-            item_type: ReviewItemType.ARTIST,
-          }
+          title: data.title,
+          description: data.description,
+          rating: data.rating,
+          item_id: artist.id,
+          item_type: ReviewItemType.ARTIST
         })).unwrap();
       }
       

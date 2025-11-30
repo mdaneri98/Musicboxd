@@ -102,15 +102,12 @@ const SongReviewPage = () => {
       if (isEditMode && existingReview) {
         await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       } else {
-        await dispatch(createSongReviewAsync({ 
-          songId: song.id, 
-          reviewData: {
-            title: data.title,
-            description: data.description,
-            rating: data.rating,
-            item_id: song.id,
-            item_type: ReviewItemType.SONG,
-          }
+        await dispatch(createSongReviewAsync({
+          title: data.title,
+          description: data.description,
+          rating: data.rating,
+          item_id: song.id,
+          item_type: ReviewItemType.SONG,
         })).unwrap();
       }
 

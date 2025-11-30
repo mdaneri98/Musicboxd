@@ -14,7 +14,6 @@ import {
   FilterParams,
   CreateAlbumFormData,
   EditAlbumFormData,
-  ReviewFormData,
   CreateSongFormData,
 } from '@/types';
 
@@ -179,30 +178,6 @@ class AlbumRepository {
       return response as Collection<HALResource<Review>>;
     } catch (error) {
       console.error(`Get album ${id} reviews error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create a review for an album
-   * @param albumId Album ID
-   * @param reviewData Review data
-   * @returns Created review
-   */
-  async createAlbumReview(albumId: number, reviewData: ReviewFormData): Promise<HALResource<Review>> {
-    try {
-      const response: HALResource<Review> = await apiClient.postResource<Review>(
-        ALBUM_ENDPOINTS.ALBUM_REVIEWS(albumId),
-        reviewData
-      );
-
-      if (!response) {
-        throw new Error('Invalid create review response: missing data');
-      }
-
-      return response as HALResource<Review>;
-    } catch (error) {
-      console.error(`Create album ${albumId} review error:`, error);
       throw error;
     }
   }
