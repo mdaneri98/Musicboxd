@@ -129,7 +129,7 @@ export interface EditAlbumFormData {
 export interface CreateSongFormData {
   title: string;
   album_id: number;
-  duration: number; // seconds
+  duration: string; // MM:SS
   track_number?: number;
   song_image_id?: number;
 }

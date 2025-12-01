@@ -30,10 +30,8 @@ import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.api.form.ReviewForm;
 import ar.edu.itba.paw.api.form.ModAlbumForm;
 import ar.edu.itba.paw.api.form.ModArtistForm;
-import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ReviewDtoMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModArtistFormMapper;
@@ -80,9 +78,6 @@ public class ArtistController extends BaseController {
 
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
-
-    @Autowired
-    private ReviewFormMapper reviewFormMapper;
 
     @Autowired
     private ModAlbumFormMapper modAlbumFormMapper;
@@ -146,7 +141,7 @@ public class ArtistController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Artist artist = artistService.findById(id, loggedUserId);
+        Artist artist = artistService.findById(id);
         
         Boolean isReviewed = loggedUserId != null ? artistService.hasUserReviewed(loggedUserId, id) : false;
         Boolean isFavorite = loggedUserId != null ? userService.isArtistFavorite(loggedUserId, id) : false;
@@ -160,10 +155,10 @@ public class ArtistController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
     public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModArtistForm modArtistForm) {
-        Artist artistInput = modArtistFormMapper.toModel(modArtistForm);
-        artistInput.setId(id);
-        Artist artist = artistService.update(artistInput);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
+        Artist oldArtist = artistService.findById(id);
+        Artist artistToUpdate = modArtistFormMapper.mergeModel(oldArtist, modArtistForm);
+        Artist updatedArtist = artistService.update(artistToUpdate);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(updatedArtist);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
         return buildResponse(artistResource);
     }
@@ -195,23 +190,6 @@ public class ArtistController extends BaseController {
         
         return buildResponse(collection);
     }
-
-    /*
-    @POST
-    @Path(ApiUriConstants.ARTIST_REVIEWS)
-    public Response createArtistReview(
-            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
-            @Valid ReviewForm reviewForm) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, id);
-        reviewInput.setLikes(0);
-        reviewInput.setBlocked(false);
-        Review review = reviewService.create(reviewInput);
-        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, true);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
-        return buildResponse(reviewResource);
-    }
-     */
 
     @GET
     @Path(ApiUriConstants.ARTIST_ALBUMS)
@@ -265,8 +243,10 @@ public class ArtistController extends BaseController {
     public Response addArtistFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         userService.addFavoriteArtist(loggedUserId, id);
-        Artist artist = artistService.findById(id, loggedUserId);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist, false, true);
+        Artist artist = artistService.findById(id);
+        Boolean isReviewed = loggedUserId != null ? artistService.hasUserReviewed(loggedUserId, id) : false;
+        Boolean isFavorite = loggedUserId != null ? userService.isArtistFavorite(loggedUserId, id) : false;
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist, isReviewed, isFavorite);
         return buildCreatedResponse(artistResourceMapper.toResource(artistDTO, getBaseUrl()));
     }
 

@@ -32,7 +32,7 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public Song findById(Long id, Long loggedUserId) {
+    public Song findById(Long id) {
         return songDao.findById(id).orElseThrow(() -> new SongNotFoundException(id));
     }
 

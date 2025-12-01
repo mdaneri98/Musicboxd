@@ -29,6 +29,12 @@ public class ModSongFormMapper {
         return song;
     }
 
+    public Song toModel(ModSongForm form, Long albumId) {
+        Song song = toModel(form);
+        song.setAlbum(new Album(albumId));
+        return song;
+    }
+
     /**
      * @deprecated Use toModel() instead. This method will be removed after SongService refactoring.
      */
@@ -47,5 +53,16 @@ public class ModSongFormMapper {
         dto.setIsDeleted(form.isDeleted());
         
         return dto;
+    }
+
+    public Song mergeModel(Song song, ModSongForm form) {
+        if (form == null) {
+            return song;
+        }
+        
+        song.setTitle(form.getTitle());
+        song.setDuration(form.getDuration());
+        song.setTrackNumber(form.getTrackNumber());
+        return song;
     }
 }

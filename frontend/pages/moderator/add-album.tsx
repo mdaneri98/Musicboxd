@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser, fetchArtistByIdAsync, createAlbumAsync } from '@/store/slices';
 import { CreateAlbumFormData } from '@/types/forms';
 import { imageRepository } from '@/repositories';
+import { albumSchema } from '@/utils/validationSchemas';
 
 export default function AddAlbumPage() {
   const router = useRouter();
@@ -13,15 +16,22 @@ export default function AddAlbumPage() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    setValue,
+  } = useForm<CreateAlbumFormData>({
+    resolver: yupResolver(albumSchema) as any,
+  });
+
   const [artistId, setArtistId] = useState<number | null>(null);
   const [artistName, setArtistName] = useState<string>('');
-  const [title, setTitle] = useState('');
-  const [genre, setGenre] = useState('');
-  const [releaseDate, setReleaseDate] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ title?: string; genre?: string; releaseDate?: string; artist?: string }>({});
+  const [artistError, setArtistError] = useState<string>('');
 
   // Redirect if not authenticated or not moderator
   useEffect(() => {
@@ -41,13 +51,14 @@ export default function AddAlbumPage() {
         .then((artist) => {
           setArtistId(id);
           setArtistName(artist.data.name);
+          setValue('artist_id', id);
         })
         .catch((error) => {
           console.error('Failed to fetch artist:', error);
-          setErrors({ artist: 'Failed to load artist information' });
+          setArtistError('Failed to load artist information');
         });
     }
-  }, [artistIdParam, dispatch]);
+  }, [artistIdParam, dispatch, setValue]);
 
   // Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,27 +74,9 @@ export default function AddAlbumPage() {
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    // Basic validation
-    const newErrors: { title?: string; genre?: string; releaseDate?: string; artist?: string } = {};
+  const onSubmit = async (data: CreateAlbumFormData) => {
     if (!artistId) {
-      newErrors.artist = 'Artist is required';
-    }
-    if (!title.trim()) {
-      newErrors.title = 'Title is required';
-    }
-    if (!genre.trim()) {
-      newErrors.genre = 'Genre is required';
-    }
-    if (!releaseDate) {
-      newErrors.releaseDate = 'Release date is required';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+      setArtistError('Artist is required');
       return;
     }
 
@@ -97,16 +90,17 @@ export default function AddAlbumPage() {
           albumImageId = await imageRepository.uploadImage(imageFile);
         } catch (error) {
           console.error('Failed to upload image:', error);
-          setErrors({ title: 'Failed to upload image. Please try again.' });
+          setError('title', { type: 'manual', message: 'Failed to upload image. Please try again.' });
+          setLoading(false);
           return;
         }
       }
 
       const albumData: CreateAlbumFormData = {
-        title: title.trim(),
-        genre: genre.trim(),
-        release_date: releaseDate,
-        artist_id: artistId!,
+        title: data.title.trim(),
+        genre: data.genre?.trim(),
+        release_date: data.release_date,
+        artist_id: artistId,
         album_image_id: albumImageId,
       };
 
@@ -114,7 +108,7 @@ export default function AddAlbumPage() {
       router.push(`/albums/${newAlbum.data?.id}`);
     } catch (error) {
       console.error('Failed to create album:', error);
-      setErrors({ title: 'Failed to create album. Please try again.' });
+      setError('title', { type: 'manual', message: 'Failed to create album. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -135,9 +129,9 @@ export default function AddAlbumPage() {
           </p>
         )}
 
-        {errors.artist && <div className="error" style={{ color: 'red', marginBottom: '1rem' }}>{errors.artist}</div>}
+        {artistError && <div className="error" style={{ color: 'red', marginBottom: '1rem' }}>{artistError}</div>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mod-form">
             {/* Image Preview */}
             <img
@@ -160,13 +154,11 @@ export default function AddAlbumPage() {
               <div>
                 <label className="mod-label">
                   Title:
-                  {errors.title && <span className="error" style={{ color: 'red' }}> {errors.title}</span>}
+                  {errors.title && <span className="error" style={{ color: 'red' }}> {errors.title.message}</span>}
                   <input
                     type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    {...register('title')}
                     className="mod-input"
-                    required
                   />
                 </label>
               </div>
@@ -175,13 +167,11 @@ export default function AddAlbumPage() {
               <div>
                 <label className="mod-label">
                   Genre:
-                  {errors.genre && <span className="error" style={{ color: 'red' }}> {errors.genre}</span>}
+                  {errors.genre && <span className="error" style={{ color: 'red' }}> {errors.genre.message}</span>}
                   <input
                     type="text"
-                    value={genre}
-                    onChange={(e) => setGenre(e.target.value)}
+                    {...register('genre')}
                     className="mod-input"
-                    required
                   />
                 </label>
               </div>
@@ -190,13 +180,11 @@ export default function AddAlbumPage() {
               <div>
                 <label className="mod-label">
                   Release Date:
-                  {errors.releaseDate && <span className="error" style={{ color: 'red' }}> {errors.releaseDate}</span>}
+                  {errors.release_date && <span className="error" style={{ color: 'red' }}> {errors.release_date.message}</span>}
                   <input
                     type="date"
-                    value={releaseDate}
-                    onChange={(e) => setReleaseDate(e.target.value)}
+                    {...register('release_date')}
                     className="mod-input"
-                    required
                   />
                 </label>
               </div>

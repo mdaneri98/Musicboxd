@@ -40,4 +40,23 @@ public class ModArtistFormMapper {
         
         return artist;
     }
+
+    public Artist mergeModel(Artist artist, ModArtistForm form) {
+        if (form == null) {
+            return artist;
+        }
+        
+        artist.setName(form.getName());
+        artist.setBio(form.getBio());
+        if (form.getArtistImgId() != null) {
+            artist.setImage(new Image(form.getArtistImgId(), null));
+        }
+        if (form.getAlbums() != null && !form.getAlbums().isEmpty()) {
+            artist.setAlbums(form.getAlbums().stream()
+                    .filter(a -> !a.isDeleted())
+                    .map(albumFormMapper::toModel)
+                    .collect(Collectors.toList()));
+        }
+        return artist;
+    }
 }

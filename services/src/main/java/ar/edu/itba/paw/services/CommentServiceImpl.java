@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment findById(Long id, Long loggedUserId) {
+    public Comment findById(Long id) {
         Comment comment = commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
         comment.setTimeAgo(TimeUtils.formatTimeAgo(comment.getCreatedAt()));
         return comment;

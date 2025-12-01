@@ -32,7 +32,7 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     @Transactional(readOnly = true)
-    public Artist findById(Long id, Long loggedUserId) {
+    public Artist findById(Long id) {
         return artistDao.findById(id).orElseThrow(() -> new ArtistNotFoundException(id));
     }
 

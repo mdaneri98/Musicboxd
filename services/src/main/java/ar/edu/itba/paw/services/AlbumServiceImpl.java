@@ -32,7 +32,7 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional(readOnly = true)
-    public Album findById(Long id, Long loggedUserId) {
+    public Album findById(Long id) {
         return albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
     }
 

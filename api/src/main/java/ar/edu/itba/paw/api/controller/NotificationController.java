@@ -65,7 +65,7 @@ public class NotificationController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        Notification notification = notificationService.findById(id, SecurityContextUtils.getCurrentUserId());
+        Notification notification = notificationService.findById(id);
         NotificationDTO notificationDTO = notificationDtoMapper.toDTO(notification);
         NotificationResource notificationResource = notificationResourceMapper.toResource(notificationDTO, getBaseUrl());
         return buildResponse(notificationResource);
@@ -94,7 +94,7 @@ public class NotificationController extends BaseController {
     public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, Boolean isRead) {
         if (isRead != null && isRead) notificationService.markAsRead(id);
         else return buildNoContentResponse();
-        Notification notification = notificationService.findById(id, SecurityContextUtils.getCurrentUserId());
+        Notification notification = notificationService.findById(id);
         NotificationDTO notificationDTO = notificationDtoMapper.toDTO(notification);
         NotificationResource notificationResource = notificationResourceMapper.toResource(notificationDTO, getBaseUrl());
         return buildResponse(notificationResource);

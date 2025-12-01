@@ -67,7 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public Review findById(Long id, Long loggedUserId) {
+    public Review findById(Long id) {
         return reviewDao.findById(id).orElseThrow(() -> new ReviewNotFoundException(id));
     }
 

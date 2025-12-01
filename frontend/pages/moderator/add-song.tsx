@@ -1,10 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser, fetchAlbumByIdAsync, selectCurrentAlbum, createSongAsync } from '@/store/slices';
 import { Album } from '@/types/models';
 import { CreateSongFormData } from '@/types/forms';
+import { songSchema } from '@/utils/validationSchemas';
+
+// Form data type for validation (duration as string MM:SS)
+interface SongFormData {
+  title: string;
+  duration: string;
+  trackNumber?: number;
+  albumId: number;
+}
 
 export default function AddSongPage() {
   const router = useRouter();
@@ -14,11 +25,19 @@ export default function AddSongPage() {
 
   const album = useAppSelector(selectCurrentAlbum) as Album;
   const dispatch = useAppDispatch();
-  const [title, setTitle] = useState('');
-  const [duration, setDuration] = useState('');
-  const [trackNumber, setTrackNumber] = useState('');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    setValue,
+  } = useForm<SongFormData>({
+    resolver: yupResolver(songSchema) as any,
+  });
+
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ title?: string; duration?: string; trackNumber?: string; album?: string }>({});
+  const [albumError, setAlbumError] = useState<string>('');
 
   // Redirect if not authenticated or not moderator
   useEffect(() => {
@@ -36,51 +55,22 @@ export default function AddSongPage() {
         try {
           const id = parseInt(albumIdParam as string);
           await dispatch(fetchAlbumByIdAsync(id)).unwrap();
+          setValue('albumId', id);
         } catch (error) {
           console.error('Failed to fetch album:', error);
-          setErrors({ album: 'Failed to load album information' });
+          setAlbumError('Failed to load album information');
         }
       }
     };
 
     fetchAlbum();
-  }, [albumIdParam]);
+  }, [albumIdParam, dispatch, setValue]);
 
-  // Parse duration string (MM:SS) to seconds
-  const parseDurationToSeconds = (durationStr: string): number => {
-    const parts = durationStr.split(':');
-    if (parts.length === 2) {
-      const minutes = parseInt(parts[0], 10);
-      const seconds = parseInt(parts[1], 10);
-      return minutes * 60 + seconds;
-    }
-    return 0;
-  };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    // Basic validation
-    const newErrors: { title?: string; duration?: string; trackNumber?: string; album?: string } = {};
+  const onSubmit = async (data: SongFormData) => {
     if (!album) {
-      newErrors.album = 'Album is required';
-    }
-    if (!title.trim()) {
-      newErrors.title = 'Title is required';
-    }
-    if (!duration.trim()) {
-      newErrors.duration = 'Duration is required';
-    } else if (!/^\d+:\d{2}$/.test(duration)) {
-      newErrors.duration = 'Duration must be in format MM:SS';
-    }
-    if (trackNumber && isNaN(parseInt(trackNumber))) {
-      newErrors.trackNumber = 'Track number must be a number';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+      setAlbumError('Album is required');
       return;
     }
 
@@ -88,9 +78,9 @@ export default function AddSongPage() {
       setLoading(true);
 
       const songData: CreateSongFormData = {
-        title: title.trim(),
-        duration: parseDurationToSeconds(duration),
-        track_number: trackNumber ? parseInt(trackNumber) : undefined,
+        title: data.title.trim(),
+        duration: data.duration,
+        track_number: data.trackNumber,
         album_id: album.id,
       };
 
@@ -98,7 +88,7 @@ export default function AddSongPage() {
       router.push(`/songs/${newSong.data?.id}`);
     } catch (error) {
       console.error('Failed to create song:', error);
-      setErrors({ title: 'Failed to create song. Please try again.' });
+      setError('title', { type: 'manual', message: 'Failed to create song. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -113,28 +103,26 @@ export default function AddSongPage() {
       <div className="mod-form-container">
         <h1 className="mod-form-title">Add Song</h1>
 
-        {album.title && (
+        {album?.title && (
           <p className="mod-form-subtitle">
             for album: <strong>{album.title}</strong>
           </p>
         )}
 
-        {errors.album && <div className="error" style={{ color: 'red', marginBottom: '1rem' }}>{errors.album}</div>}
+        {albumError && <div className="error" style={{ color: 'red', marginBottom: '1rem' }}>{albumError}</div>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mod-form">
             <div className="mod-entity-details">
               {/* Title */}
               <div>
                 <label className="mod-label">
                   Title:
-                  {errors.title && <span className="error" style={{ color: 'red' }}> {errors.title}</span>}
+                  {errors.title && <span className="error" style={{ color: 'red' }}> {errors.title.message}</span>}
                   <input
                     type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    {...register('title')}
                     className="mod-input"
-                    required
                   />
                 </label>
               </div>
@@ -143,14 +131,12 @@ export default function AddSongPage() {
               <div>
                 <label className="mod-label">
                   Duration (MM:SS):
-                  {errors.duration && <span className="error" style={{ color: 'red' }}> {errors.duration}</span>}
+                  {errors.duration && <span className="error" style={{ color: 'red' }}> {errors.duration.message}</span>}
                   <input
                     type="text"
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
+                    {...register('duration')}
                     className="mod-input"
                     placeholder="3:45"
-                    required
                   />
                 </label>
               </div>
@@ -159,11 +145,10 @@ export default function AddSongPage() {
               <div>
                 <label className="mod-label">
                   Track Number (optional):
-                  {errors.trackNumber && <span className="error" style={{ color: 'red' }}> {errors.trackNumber}</span>}
+                  {errors.trackNumber && <span className="error" style={{ color: 'red' }}> {errors.trackNumber.message}</span>}
                   <input
                     type="number"
-                    value={trackNumber}
-                    onChange={(e) => setTrackNumber(e.target.value)}
+                    {...register('trackNumber')}
                     className="mod-input"
                     min="1"
                   />
@@ -184,7 +169,7 @@ export default function AddSongPage() {
             </button>
 
             {/* Submit Button */}
-            <button type="submit" className="btn btn-primary" disabled={loading || !album.id}>
+            <button type="submit" className="btn btn-primary" disabled={loading || !album?.id}>
               {loading ? 'Creating...' : 'Create Song'}
             </button>
           </div>

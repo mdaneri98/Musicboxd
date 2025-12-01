@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser, createArtistAsync } from '@/store/slices';
 import { CreateArtistFormData } from '@/types/forms';
 import { imageRepository } from '@/repositories';
+import { artistSchema } from '@/utils/validationSchemas';
 
 export default function AddArtistPage() {
   const router = useRouter();
@@ -12,12 +15,18 @@ export default function AddArtistPage() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const [name, setName] = useState('');
-  const [bio, setBio] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<CreateArtistFormData>({
+    resolver: yupResolver(artistSchema) as any,
+  });
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; bio?: string; image?: string }>({});
 
   // Redirect if not authenticated or not moderator
   useEffect(() => {
@@ -42,24 +51,7 @@ export default function AddArtistPage() {
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    // Basic validation
-    const newErrors: { name?: string; bio?: string; image?: string } = {};
-    if (!name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-    if (!bio.trim()) {
-      newErrors.bio = 'Bio is required';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+  const onSubmit = async (data: CreateArtistFormData) => {
     try {
       setLoading(true);
 
@@ -70,14 +62,15 @@ export default function AddArtistPage() {
           artistImgId = await imageRepository.uploadImage(imageFile);
         } catch (error) {
           console.error('Failed to upload image:', error);
-          setErrors({ image: 'Failed to upload image. Please try again.' });
+          setError('name', { type: 'manual', message: 'Failed to upload image. Please try again.' });
+          setLoading(false);
           return;
         }
       }
 
       const artistData: CreateArtistFormData = {
-        name: name.trim(),
-        bio: bio.trim(),
+        name: data.name.trim(),
+        bio: data.bio?.trim(),
         artist_img_id: artistImgId,
       };
 
@@ -85,7 +78,7 @@ export default function AddArtistPage() {
       router.push(`/artists/${newArtist.data?.id}`);
     } catch (error) {
       console.error('Failed to create artist:', error);
-      setErrors({ name: 'Failed to create artist. Please try again.' });
+      setError('name', { type: 'manual', message: 'Failed to create artist. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -100,7 +93,7 @@ export default function AddArtistPage() {
       <div className="mod-form-container">
         <h1 className="mod-form-title">Add Artist</h1>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mod-form">
             {/* Image Preview */}
             <img
@@ -123,13 +116,11 @@ export default function AddArtistPage() {
               <div>
                 <label className="mod-label">
                   Name:
-                  {errors.name && <span className="error" style={{ color: 'red' }}> {errors.name}</span>}
+                  {errors.name && <span className="error" style={{ color: 'red' }}> {errors.name.message}</span>}
                   <input
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    {...register('name')}
                     className="mod-input"
-                    required
                   />
                 </label>
               </div>
@@ -138,13 +129,11 @@ export default function AddArtistPage() {
               <div>
                 <label className="mod-label">
                   Bio:
-                  {errors.bio && <span className="error" style={{ color: 'red' }}> {errors.bio}</span>}
+                  {errors.bio && <span className="error" style={{ color: 'red' }}> {errors.bio.message}</span>}
                   <textarea
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
+                    {...register('bio')}
                     rows={5}
                     className="mod-input"
-                    required
                   />
                 </label>
               </div>

@@ -64,9 +64,6 @@ public class ReviewController extends BaseController {
     private ReviewFormMapper reviewFormMapper;
 
     @Autowired
-    private CommentFormMapper commentFormMapper;
-
-    @Autowired
     private ReviewDtoMapper reviewDtoMapper;
 
     @Autowired
@@ -134,7 +131,7 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Review review = reviewService.findById(id, loggedUserId);
+        Review review = reviewService.findById(id);
         Boolean isLiked = loggedUserId != null ? reviewService.isLiked(loggedUserId, id) : false;
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, isLiked);
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
@@ -152,15 +149,9 @@ public class ReviewController extends BaseController {
     @PUT
     @Path(ApiUriConstants.ID)
     public Response updateReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ReviewForm reviewForm) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Review review = reviewService.findById(id, loggedUserId);
-        
-        // Update fields from form
-        if (reviewForm.getTitle() != null) review.setTitle(reviewForm.getTitle());
-        if (reviewForm.getDescription() != null) review.setDescription(reviewForm.getDescription());
-        if (reviewForm.getRating() != null) review.setRating(reviewForm.getRating());
-        
-        Review updatedReview = reviewService.update(review);
+        Review oldReview = reviewService.findById(id);
+        Review reviewToUpdate = reviewFormMapper.mergeModel(oldReview, reviewForm);
+        Review updatedReview = reviewService.update(reviewToUpdate);
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(updatedReview);
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         return buildResponse(reviewResource);

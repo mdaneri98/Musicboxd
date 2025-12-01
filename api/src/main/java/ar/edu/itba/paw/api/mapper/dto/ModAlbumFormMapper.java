@@ -76,4 +76,27 @@ public class ModAlbumFormMapper {
         
         return dto;
     }
+
+    public Album mergeModel(Album album, ModAlbumForm form) {
+        if (form == null) {
+            return album;
+        }
+        
+        album.setTitle(form.getTitle());
+        album.setGenre(form.getGenre());
+        album.setReleaseDate(form.getReleaseDate());
+        if (form.getAlbumImageId() != null) {
+            album.setImage(new Image(form.getAlbumImageId(), null));
+        }
+        if (form.getArtistId() != null) {
+            album.setArtist(new Artist(form.getArtistId()));
+        }
+        if (form.getSongs() != null && !form.getSongs().isEmpty()) {
+            album.setSongs(form.getSongs().stream()
+                .filter(s -> !s.isDeleted())
+                .map(songFormMapper::toModel)
+                .collect(Collectors.toList()));
+        }
+        return album;
+    }
 }

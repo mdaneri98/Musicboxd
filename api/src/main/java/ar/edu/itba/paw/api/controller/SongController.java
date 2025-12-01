@@ -20,8 +20,6 @@ import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
-import ar.edu.itba.paw.api.form.ReviewForm;
 import ar.edu.itba.paw.api.form.ModSongForm;
 import ar.edu.itba.paw.api.mapper.dto.ModSongFormMapper;
 import javax.validation.Valid;
@@ -47,9 +45,6 @@ public class SongController extends BaseController {
 
     @Autowired
     private ReviewResourceMapper reviewResourceMapper;
-
-    @Autowired
-    private ReviewFormMapper reviewFormMapper;
 
     @Autowired
     private CollectionResourceMapper collectionResourceMapper;
@@ -110,11 +105,9 @@ public class SongController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Song song = songService.findById(id, loggedUserId);
-        
+        Song song = songService.findById(id);
         Boolean isReviewed = loggedUserId != null ? songService.hasUserReviewed(loggedUserId, id) : false;
         Boolean isFavorite = loggedUserId != null ? userService.isSongFavorite(loggedUserId, id) : false;
-        
         SongDTO songDTO = songDtoMapper.toDTO(song, isReviewed, isFavorite);
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
         return buildResponse(songResource);
@@ -126,10 +119,10 @@ public class SongController extends BaseController {
     public Response updateSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
-        Song songInput = modSongFormMapper.toModel(modSongForm);
-        songInput.setId(id);
-        Song song = songService.update(songInput);
-        SongDTO songDTO = songDtoMapper.toDTO(song);
+        Song oldSong = songService.findById(id);
+        Song songToUpdate = modSongFormMapper.mergeModel(oldSong, modSongForm);
+        Song updatedSong = songService.update(songToUpdate);
+        SongDTO songDTO = songDtoMapper.toDTO(updatedSong);
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
         return buildResponse(songResource);
     }
@@ -162,31 +155,17 @@ public class SongController extends BaseController {
         return buildResponse(collection);
     }
 
-    /*
-    @POST
-    @Path(ApiUriConstants.SONG_REVIEWS)
-    public Response createSongReview(
-            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
-            @Valid ReviewForm reviewForm) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, id);
-        reviewInput.setLikes(0);
-        reviewInput.setBlocked(false);
-        Review review = reviewService.create(reviewInput);
-        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, true);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
-        return buildResponse(reviewResource);
-    }
-    */
-
     @POST
     @Path(ApiUriConstants.SONG_FAVORITE)
     public Response addSongFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         userService.addFavoriteSong(loggedUserId, id);
-        Song song = songService.findById(id, loggedUserId);
-        SongDTO songDTO = songDtoMapper.toDTO(song, false, true);
-        return buildCreatedResponse(songResourceMapper.toResource(songDTO, getBaseUrl()));
+        Song song = songService.findById(id);
+        Boolean isReviewed = loggedUserId != null ? songService.hasUserReviewed(loggedUserId, id) : false;
+        Boolean isFavorite = loggedUserId != null ? userService.isSongFavorite(loggedUserId, id) : false;
+        SongDTO songDTO = songDtoMapper.toDTO(song, isReviewed, isFavorite);
+        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
+        return buildCreatedResponse(songResource);
     }
 
     @DELETE

@@ -65,4 +65,15 @@ public class ReviewFormMapper {
             }
         }
     }
+
+    public Review mergeModel(Review review, ReviewForm form) {
+        if (form == null) {
+            return review;
+        }
+        
+        review.setTitle(form.getTitle());
+        review.setDescription(form.getDescription());
+        review.setRating(form.getRating());
+        return review;
+    }
 }

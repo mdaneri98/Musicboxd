@@ -5,7 +5,7 @@ import ar.edu.itba.paw.models.FilterType;
 import java.util.List;
 
 public interface CrudService<T> {
-    T findById(Long id, Long loggedUserId);
+    T findById(Long id);
 
     List<T> findAll();
 

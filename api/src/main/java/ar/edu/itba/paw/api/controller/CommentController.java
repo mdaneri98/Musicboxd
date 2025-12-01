@@ -87,7 +87,7 @@ public class CommentController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        Comment comment = commentService.findById(id, SecurityContextUtils.getCurrentUserId());
+        Comment comment = commentService.findById(id);
         CommentDTO commentDTO = commentDtoMapper.toDTO(comment);
         CommentResource commentResource = commentResourceMapper.toResource(commentDTO, getBaseUrl());
         return buildResponse(commentResource);

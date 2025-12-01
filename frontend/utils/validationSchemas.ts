@@ -115,8 +115,9 @@ export const artistSchema = Yup.object().shape({
     .min(1, 'Artist name must be at least 1 character')
     .max(100, 'Artist name must be at most 100 characters'),
   bio: Yup.string()
+    .optional()
     .max(2000, 'Bio must be at most 2000 characters'),
-  image: Yup.mixed().nullable(),
+  artist_img_id: Yup.number().optional().nullable(),
 });
 
 export const albumSchema = Yup.object().shape({
@@ -124,15 +125,17 @@ export const albumSchema = Yup.object().shape({
     .required('Album title is required')
     .min(1, 'Album title must be at least 1 character')
     .max(100, 'Album title must be at most 100 characters'),
-  artistId: Yup.number()
+  artist_id: Yup.number()
     .required('Artist is required')
     .positive('Please select an artist'),
-  releaseDate: Yup.date()
+  release_date: Yup.date()
+    .optional()
     .nullable()
     .max(new Date(), 'Release date cannot be in the future'),
   genre: Yup.string()
+    .optional()
     .max(50, 'Genre must be at most 50 characters'),
-  image: Yup.mixed().nullable(),
+  album_image_id: Yup.number().optional().nullable(),
 });
 
 export const songSchema = Yup.object().shape({
@@ -140,17 +143,17 @@ export const songSchema = Yup.object().shape({
     .required('Song title is required')
     .min(1, 'Song title must be at least 1 character')
     .max(100, 'Song title must be at most 100 characters'),
-  albumId: Yup.number()
+  album_id: Yup.number()
     .required('Album is required')
     .positive('Please select an album'),
-  duration: Yup.number()
-    .nullable()
-    .positive('Duration must be positive')
-    .max(7200, 'Duration must be at most 2 hours (7200 seconds)'),
+  duration: Yup.string()
+    .required('Duration is required')
+    .matches(/^\d+:\d{2}$/, 'Duration must be in format MM:SS'),
   trackNumber: Yup.number()
     .nullable()
     .positive('Track number must be positive')
     .max(999, 'Track number must be at most 999'),
+  song_image_id: Yup.number().optional().nullable(),
 });
 
 // ============================================================================
