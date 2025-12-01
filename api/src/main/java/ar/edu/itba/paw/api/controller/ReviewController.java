@@ -142,8 +142,7 @@ public class ReviewController extends BaseController {
         Review oldReview = reviewService.findById(id);
         Review reviewToUpdate = reviewFormMapper.mergeModel(oldReview, reviewForm);
         Review updatedReview = reviewService.update(reviewToUpdate);
-        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(updatedReview);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDtoMapper.toDTO(updatedReview), getBaseUrl());
         return buildResponse(reviewResource);
     }
 

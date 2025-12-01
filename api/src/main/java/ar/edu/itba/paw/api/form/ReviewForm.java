@@ -52,15 +52,8 @@ public class ReviewForm {
         return itemId;
     }
 
-    public void setItemId(Integer itemId) {
-        this.itemId = itemId;
-    }
     public String getItemType() {
         return itemType;
-    }
-
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
     }
 
 }
