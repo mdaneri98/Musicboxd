@@ -72,7 +72,7 @@ public class User {
     @OneToMany(mappedBy = "triggerUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Notification> triggeredNotifications;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "follower",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -80,7 +80,7 @@ public class User {
     )
     private List<User> following;
 
-    @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "following", fetch = FetchType.LAZY)
     private List<User> followers;
 
     @ManyToMany
