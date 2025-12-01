@@ -1,7 +1,6 @@
 /**
  * ReviewCard Component
  * Displays review information with rating, likes, and comments
- * Migrated from: components/review_card.jsp
  */
 
 import Link from 'next/link';

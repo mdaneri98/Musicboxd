@@ -12,15 +12,18 @@ public class ReviewForm {
     private String description;
     @Range(min = 0, max = 5, message = "{validation.review.rating.range}")
     private Integer rating;
+
+    private Boolean isBlocked;
     private Integer itemId;
     private String itemType;
 
     public ReviewForm() {}
 
-    public ReviewForm(String title, String description, Integer rating) {
+    public ReviewForm(String title, String description, Integer rating, Boolean isBlocked) {
         this.title = title;
         this.description = description;
         this.rating = rating;
+        this.isBlocked = isBlocked;
         if (rating == null) this.rating = 0;
     }
 
@@ -56,4 +59,11 @@ public class ReviewForm {
         return itemType;
     }
 
+    public Boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(Boolean blocked) {
+        isBlocked = blocked;
+    }
 }

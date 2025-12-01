@@ -62,11 +62,12 @@ export interface EditProfileFormData {
  * Review form data
  */
 export interface ReviewFormData {
-  title: string;
-  description: string;
-  rating: number; // 1-5, step 1
-  item_id: number;
-  item_type: ReviewItemType;
+  title?: string;
+  description?: string;
+  rating?: number;
+  item_id?: number;
+  item_type?: ReviewItemType;
+  blocked?: boolean;
 }
 
 /**

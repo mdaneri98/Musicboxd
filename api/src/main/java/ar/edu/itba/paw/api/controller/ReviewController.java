@@ -195,15 +195,6 @@ public class ReviewController extends BaseController {
         return buildNoContentResponse();
     }
 
-    @PATCH
-    @Path(ApiUriConstants.ID)
-    @PreAuthorize("hasRole('MODERATOR')")
-    public Response updateBlockReviewStatus(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, Boolean isBlocked) {
-        if (isBlocked != null && isBlocked) reviewService.block(reviewId);
-        else reviewService.unblock(reviewId);
-        return buildNoContentResponse();
-    }
-
     private List<ReviewDTO> toReviewDTOList(List<Review> reviews, Long loggedUserId) {
         if (reviews.isEmpty()) return Collections.emptyList();
         if (loggedUserId == null) return reviews.stream().map(reviewDtoMapper::toDTO).collect(Collectors.toList());
