@@ -3,7 +3,7 @@
  * Redux slice for song state management
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { songRepository, reviewRepository } from '@/repositories';
 import { Song, Review, Collection, HALResource, CreateSongFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
@@ -15,7 +15,7 @@ import { EditSongFormData } from '@/types/forms';
 
 export interface SongState {
   // Songs by ID (normalized state)
-  songs: Song[];
+  songs: Record<number, Song>;
   // Ordered songs id list
   orderedSongsIds: number[];
     // Current song being viewed
@@ -193,13 +193,13 @@ const songSlice = createSlice({
       state.songReviews = [];
     },
     addSong: (state, action: PayloadAction<Song>) => {
-      state.songs.push(action.payload);
+      state.songs[action.payload.id] = action.payload;
       if (!state.orderedSongsIds.includes(action.payload.id)) {
         state.orderedSongsIds.push(action.payload.id);
       }
     },
     removeSong: (state, action: PayloadAction<number>) => {
-      state.songs = state.songs.filter((song) => song.id !== action.payload);
+      delete state.songs[action.payload];
       state.orderedSongsIds = state.orderedSongsIds.filter((id) => id !== action.payload);
     },
   },
@@ -212,7 +212,9 @@ const songSlice = createSlice({
       .addCase(fetchSongsAsync.fulfilled, (state, action) => {
         state.loading = false;
         action.payload.items.forEach((song) => {
-          state.songs[song.data.id] = song.data as Song;
+          if (!state.songs[song.data.id]) {
+            state.songs[song.data.id] = song.data as Song;
+          }
         });
         state.orderedSongsIds = action.payload.items.map((song) => song.data.id);
         state.pagination = {
@@ -234,8 +236,8 @@ const songSlice = createSlice({
       .addCase(fetchSongByIdAsync.fulfilled, (state, action) => {
         state.loadingSong = false;
         state.currentSong = action.payload.data as Song;
-        if (!state.songs.some((song) => song.id === action.payload.data.id)) { //
-          state.songs.push(action.payload.data as Song);
+        if (!state.songs[action.payload.data.id]) {
+          state.songs[action.payload.data.id] = action.payload.data as Song;
         }
       })
       .addCase(fetchSongByIdAsync.rejected, (state, action) => {
@@ -250,8 +252,8 @@ const songSlice = createSlice({
       })
       .addCase(createSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        if (!state.songs.some((song) => song.id === action.payload.data.id)) { //
-          state.songs.push(action.payload.data as Song);
+        if (!state.songs[action.payload.data.id]) {
+          state.songs[action.payload.data.id] = action.payload.data as Song;
         }
       })
       .addCase(createSongAsync.rejected, (state, action) => {
@@ -266,8 +268,8 @@ const songSlice = createSlice({
       })
       .addCase(updateSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        if (!state.songs.some((song) => song.id === action.payload.data.id)) { //
-          state.songs.push(action.payload.data as Song);
+        if (!state.songs[action.payload.data.id]) {
+          state.songs[action.payload.data.id] = action.payload.data as Song;
         }
         if (state.currentSong?.id === action.payload.data.id) {
           state.currentSong = action.payload.data as Song;
@@ -285,7 +287,7 @@ const songSlice = createSlice({
       })
       .addCase(deleteSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.songs = state.songs.filter((song) => song.id !== action.meta.arg);
+        delete state.songs[action.meta.arg];
         if (state.currentSong?.id === action.meta.arg) {
           state.currentSong = null;
         }
@@ -327,9 +329,12 @@ const songSlice = createSlice({
 export const { clearError, clearCurrentSong, addSong, removeSong } = songSlice.actions;
 
 export const selectSongs = (state: RootState) => state.songs.songs;
-export const selectOrderedSongs = (state: RootState) => state.songs.orderedSongsIds.map((id) => state.songs.songs[id]);
-export const selectSongById = (songId: number) => (state: RootState) =>
-  state.songs.songs.find((song) => song.id === songId) || null;
+export const selectSongIds = (state: RootState) => state.songs.orderedSongsIds;
+export const selectOrderedSongs = createSelector(
+  [selectSongs, selectSongIds],
+  (songs, ids) => ids.map((id) => songs[id]).filter(Boolean)
+);
+export const selectSongById = (songId: number) => (state: RootState) => state.songs.songs[songId] || null;
 export const selectCurrentSong = (state: RootState) => state.songs.currentSong;
 export const selectSongReviews = (state: RootState) => state.songs.songReviews;
 export const selectSongPagination = (state: RootState) => state.songs.pagination;

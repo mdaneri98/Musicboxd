@@ -3,7 +3,7 @@
  * Redux slice for album state management
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { albumRepository, reviewRepository } from '@/repositories';
 import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
@@ -14,7 +14,7 @@ import type { RootState } from '../index';
 
 export interface AlbumState {
   // Albums by ID (normalized state)
-  albums: Album[];
+  albums: Record<number, Album>;
   // Ordered albums id list
   orderedAlbumsIds: number[];
   // Current album being viewed
@@ -210,10 +210,10 @@ const albumSlice = createSlice({
       state.albumReviews = [];
     },
     addAlbum: (state, action: PayloadAction<Album>) => {
-      state.albums.push(action.payload);
+      state.albums[action.payload.id] = action.payload;
     },
     removeAlbum: (state, action: PayloadAction<number>) => {
-      state.albums = state.albums.filter((album) => album.id !== action.payload);
+      delete state.albums[action.payload];
     },
   },
   extraReducers: (builder) => {
@@ -225,7 +225,9 @@ const albumSlice = createSlice({
       .addCase(fetchAlbumsAsync.fulfilled, (state, action) => {
         state.loading = false;
         action.payload.items.forEach((album) => {
-          state.albums[album.data.id] = album.data as Album;
+          if (!state.albums[album.data.id]) {
+            state.albums[album.data.id] = album.data as Album;
+          }
         });
         state.orderedAlbumsIds = action.payload.items.map((album) => album.data.id);
         state.pagination = {
@@ -247,7 +249,9 @@ const albumSlice = createSlice({
       .addCase(fetchAlbumByIdAsync.fulfilled, (state, action) => {
         state.loadingAlbum = false;
         state.currentAlbum = action.payload.data as Album;
-        state.albums[action.payload.data.id] = action.payload.data as Album;
+        if (!state.albums[action.payload.data.id]) {
+          state.albums[action.payload.data.id] = action.payload.data as Album;
+        }
       })
       .addCase(fetchAlbumByIdAsync.rejected, (state, action) => {
         state.loadingAlbum = false;
@@ -261,7 +265,9 @@ const albumSlice = createSlice({
       })
       .addCase(createAlbumAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.albums[action.payload.data.id] = action.payload.data as Album;
+        if (!state.albums[action.payload.data.id]) {
+          state.albums[action.payload.data.id] = action.payload.data as Album;
+        }
       })
       .addCase(createAlbumAsync.rejected, (state, action) => {
         state.loading = false;
@@ -275,7 +281,9 @@ const albumSlice = createSlice({
       })
       .addCase(updateAlbumAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.albums[action.payload.data.id] = action.payload.data as Album;
+        if (!state.albums[action.payload.data.id]) {
+          state.albums[action.payload.data.id] = action.payload.data as Album;
+        }
         if (state.currentAlbum?.id === action.payload.data?.id) {
           state.currentAlbum = action.payload.data as Album;
         }
@@ -349,9 +357,13 @@ const albumSlice = createSlice({
 export const { clearError, clearCurrentAlbum, addAlbum, removeAlbum } = albumSlice.actions;
 
 export const selectAlbums = (state: RootState) => state.albums.albums;
-export const selectOrderedAlbums = (state: RootState) => state.albums.orderedAlbumsIds.map((id) => state.albums.albums[id]);
+export const selectAlbumIds = (state: RootState) => state.albums.orderedAlbumsIds;
+export const selectOrderedAlbums = createSelector(
+  [selectAlbums, selectAlbumIds],
+  (albums, ids) => ids.map((id) => albums[id]).filter(Boolean)
+);
 export const selectAlbumById = (albumId: number) => (state: RootState) =>
-  state.albums.albums.find((album) => album.id === albumId) || null;
+  state.albums.albums[albumId] || null;
 export const selectCurrentAlbum = (state: RootState) => state.albums.currentAlbum;
 export const selectAlbumSongs = (state: RootState) => state.albums.albumSongs;
 export const selectAlbumReviews = (state: RootState) => state.albums.albumReviews;

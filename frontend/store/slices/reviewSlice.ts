@@ -3,7 +3,7 @@
  * Redux slice for review state management
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { commentRepository, reviewRepository } from '@/repositories';
 import { Review, User, Comment, Collection, HALResource, ReviewFormData, CommentFormData } from '@/types';
 import type { RootState } from '../index';
@@ -580,7 +580,11 @@ const reviewSlice = createSlice({
 export const { clearError, clearCurrentReview, addReview, removeReview } = reviewSlice.actions;
 
 export const selectReviews = (state: RootState) => state.reviews.reviews;
-export const selectOrderedReviews = (state: RootState) => state.reviews.orderedReviewsIds.map((id) => state.reviews.reviews[id]);
+export const selectReviewIds = (state: RootState) => state.reviews.orderedReviewsIds;
+export const selectOrderedReviews = createSelector(
+  [selectReviews, selectReviewIds],
+  (reviews, ids) => ids.map((id) => reviews[id]).filter(Boolean)
+);
 export const selectReviewById = (reviewId: number) => (state: RootState) => {
   return state.reviews.reviews[reviewId] || null;
 }

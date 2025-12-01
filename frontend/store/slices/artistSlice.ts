@@ -3,7 +3,7 @@
  * Redux slice for artist state management
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { artistRepository, reviewRepository } from '@/repositories';
 import { Artist, Album, Song, Review, Collection, HALResource, EditArtistFormData, CreateArtistFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
@@ -14,7 +14,7 @@ import type { RootState } from '../index';
 
 export interface ArtistState {
   // Artists by ID (normalized state)
-  artists: Artist[];
+  artists: Record<number, Artist>;
   // Ordered artists id list
   orderedArtistsIds: number[];
   // Current artist being viewed
@@ -269,7 +269,7 @@ const artistSlice = createSlice({
      * Add artist to normalized state
      */
     addArtist: (state, action: PayloadAction<Artist>) => {
-      state.artists.push(action.payload);
+      state.artists[action.payload.id] = action.payload;
       if (!state.orderedArtistsIds.includes(action.payload.id)) {
         state.orderedArtistsIds.push(action.payload.id);
       }
@@ -279,7 +279,7 @@ const artistSlice = createSlice({
      * Remove artist from normalized state
      */
     removeArtist: (state, action: PayloadAction<number>) => {
-      state.artists = state.artists.filter((artist) => artist.id !== action.payload);
+      delete state.artists[action.payload];
       state.orderedArtistsIds = state.orderedArtistsIds.filter((id) => id !== action.payload);
       },
   },
@@ -317,8 +317,8 @@ const artistSlice = createSlice({
       .addCase(fetchArtistByIdAsync.fulfilled, (state, action) => {
         state.loadingArtist = false;
         state.currentArtist = action.payload.data as Artist;
-        if (!state.artists.some((artist) => artist.id === action.payload.data.id)) { //
-          state.artists.push(action.payload.data as Artist);
+        if (!state.artists[action.payload.data.id]) {
+          state.artists[action.payload.data.id] = action.payload.data as Artist;
         }
       })
       .addCase(fetchArtistByIdAsync.rejected, (state, action) => {
@@ -453,9 +453,13 @@ export const { clearError, clearCurrentArtist, addArtist, removeArtist } = artis
 // ============================================================================
 
 export const selectArtists = (state: RootState) => state.artists.artists;
-export const selectOrderedArtists = (state: RootState) => state.artists.orderedArtistsIds.map((id) => state.artists.artists[id]);
+export const selectArtistIds = (state: RootState) => state.artists.orderedArtistsIds;
+export const selectOrderedArtists = createSelector(
+  [selectArtists, selectArtistIds],
+  (artists, ids) => ids.map((id) => artists[id]).filter(Boolean)
+);
 export const selectArtistById = (artistId: number) => (state: RootState) =>
-  state.artists.artists.find((artist) => artist.id === artistId) || null;
+  state.artists.artists[artistId] || null;
 export const selectCurrentArtist = (state: RootState) => state.artists.currentArtist;
 export const selectArtistAlbums = (state: RootState) => state.artists.artistAlbums;
 export const selectArtistSongs = (state: RootState) => state.artists.artistSongs;

@@ -69,8 +69,7 @@ const ReviewDetailPage = () => {
   useEffect(() => {
     if (!reviewId) return;
     const reviewIdNum = parseInt(reviewId as string);
-
-    dispatch(fetchReviewByIdAsync(reviewIdNum));
+    if (!review) dispatch(fetchReviewByIdAsync(reviewIdNum));
     dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
     dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
     if (activeTab === ReviewTab.COMMENTS) {
@@ -91,6 +90,15 @@ const ReviewDetailPage = () => {
       setHasMore(likesPagination.page * likesPagination.size < likesPagination.totalCount);
     }
   }, [reviewId, page, dispatch]);
+
+  useEffect(() => {
+    if (!reviewId || !review) return;
+    const reviewIdNum = parseInt(reviewId as string);
+    if (activeTab === ReviewTab.LIKES) {
+      dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
+      setHasMore(likesPagination.page * likesPagination.size < likesPagination.totalCount);
+    }
+  }, [review?.likes]);
 
 
   const handleTabChange = useCallback((tab: ReviewTab) => {
