@@ -104,7 +104,7 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        List<Artist> artists = new ArrayList<>();
+        List<Artist> artists;
         if (search != null && !search.isEmpty()) artists = artistService.findByNameContaining(search, page, size);
         else artists = artistService.findPaginated(filter, page, size);
         List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists);

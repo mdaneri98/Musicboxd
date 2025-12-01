@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
+import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { 
   selectIsAuthenticated, 
@@ -10,16 +11,16 @@ import {
   fetchSongByIdAsync, 
   fetchAlbumByIdAsync, 
   fetchSongReviewsAsync, 
-  createSongReviewAsync, 
+  updateReviewAsync, 
+  deleteReviewAsync,
   selectCurrentSong,
   selectLoadingSong,
   clearCurrentSong
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import type { Album, ReviewFormData, HALResource, Review } from '@/types';
-import { ReviewItemType } from '@/types/enums';
 
-const SongReviewPage = () => {
+const EditSongReviewPage = () => {
   const router = useRouter();
   const { songId } = router.query;
   const dispatch = useAppDispatch();
@@ -29,8 +30,10 @@ const SongReviewPage = () => {
   const song = useAppSelector(selectCurrentSong);
   const loadingSong = useAppSelector(selectLoadingSong);
   const [album, setAlbum] = useState<Album | null>(null);
+  const [existingReview, setExistingReview] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -65,10 +68,13 @@ const SongReviewPage = () => {
           const reviews = await dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 100 })).unwrap();
           const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
           
-          if (userReview) {
-            router.push(`/songs/${songId}/edit-review`);
+          if (!userReview) {
+            // No review to edit, redirect to create
+            router.push(`/songs/${songId}/reviews`);
             return;
           }
+          
+          setExistingReview(userReview.data);
         }
       } catch (error) {
         console.error('Failed to fetch song:', error);
@@ -81,22 +87,27 @@ const SongReviewPage = () => {
   }, [songId, isAuthenticated, currentUser, router, dispatch]);
 
   const handleSubmit = async (data: ReviewFormData) => {
-    if (!song) return;
+    if (!song || !existingReview) return;
 
     try {
       setSubmitLoading(true);
-      await dispatch(createSongReviewAsync({
-        title: data.title,
-        description: data.description,
-        rating: data.rating,
-        item_id: song.id,
-        item_type: ReviewItemType.SONG,
-      })).unwrap();
+      await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       router.push(`/songs/${song.id}`);
     } catch (error) {
-      console.error('Failed to submit review:', error);
+      console.error('Failed to update review:', error);
     } finally {
       setSubmitLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!existingReview) return;
+
+    try {
+      await dispatch(deleteReviewAsync(existingReview.id)).unwrap();
+      router.push(`/songs/${songId}`);
+    } catch (error) {
+      console.error('Failed to delete review:', error);
     }
   };
 
@@ -117,9 +128,9 @@ const SongReviewPage = () => {
   const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
 
   return (
-    <Layout title={`Musicboxd - Review ${song.title}`}>
+    <Layout title={`Musicboxd - Edit Review for ${song.title}`}>
       <div className="content-wrapper">
-        <h1 className="page-title">Make a Review</h1>
+        <h1 className="page-title">Edit Your Review</h1>
 
         {/* Song Preview */}
         <div className="review-preview">
@@ -138,11 +149,39 @@ const SongReviewPage = () => {
             onSubmit={handleSubmit}
             onCancel={() => router.push(`/songs/${song.id}`)}
             isLoading={submitLoading}
+            defaultValues={existingReview ? {
+              title: existingReview.title,
+              description: existingReview.description,
+              rating: existingReview.rating,
+            } : undefined}
           />
+
+          {existingReview && (
+            <div className="delete-review-container">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(true)}
+                className="btn btn-danger"
+              >
+                Delete Review
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        message="Are you sure you want to delete this review?"
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+        confirmText="Yes"
+        cancelText="No"
+      />
     </Layout>
   );
 };
 
-export default SongReviewPage;
+export default EditSongReviewPage;
+
