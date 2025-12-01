@@ -79,13 +79,14 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
-        return findPaginated(filterType, page, pageSize, null);
+    public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
+        if (filterType == FilterType.FOLLOWING) return getReviewsFromFollowedUsersPaginated(page, pageSize, loggedUserId);
+        return findPaginated(filterType, page, pageSize);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
+    public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         return reviewDao.findPaginated(filterType, page, pageSize);
     }
 
@@ -307,6 +308,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Long> getLikedReviewIds(Long userId, List<Long> reviewIds) {
+        return reviewDao.getLikedReviewIds(userId, reviewIds);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Review> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId) {
         return new ArrayList<>(reviewDao.findArtistReviewsPaginated(artistId, page, pageSize));
     }
@@ -345,12 +352,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId) {
         return reviewDao.findReviewsByUserPaginated(userId, page, pageSize);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Review> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId) {
-        return reviewDao.getPopularReviewsPaginated(page, pageSize);
     }
 
     @Override

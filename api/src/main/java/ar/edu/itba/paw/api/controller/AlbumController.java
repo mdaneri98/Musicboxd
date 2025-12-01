@@ -37,6 +37,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.ArrayList;
 
 @Path(ApiUriConstants.ALBUMS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -90,19 +91,9 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        if (search != null && !search.isEmpty()) return getAlbumBySubstring(search, page, size);
-
-        List<Album> albums = albumService.findPaginated(filter, page, size);
-        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums);
-        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
-        Integer totalCount = albumService.countAll().intValue();
-        CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, ControllerUtils.albumsCollectionLinks);
-        return buildResponse(collection);
-    }
-
-    private Response getAlbumBySubstring(String substring, Integer page, Integer size) {
-        List<Album> albums = albumService.findByTitleContaining(substring, page, size);
+        List<Album> albums = new ArrayList<>();
+        if (search != null && !search.isEmpty()) albums = albumService.findByTitleContaining(search, page, size);
+        else albums = albumService.findPaginated(filter, page, size);
         List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
         Integer totalCount = albumService.countAll().intValue();

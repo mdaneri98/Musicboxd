@@ -32,7 +32,10 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path(ApiUriConstants.REVIEWS_BASE)
@@ -79,7 +82,6 @@ public class ReviewController extends BaseController {
 
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         if (search != null && !search.isEmpty()) return getReviewBySubstring(search, page, size);
-        if (filter == FilterType.FOLLOWING) return getReviewsFromFollowedUsersPaginated(page, size, loggedUserId);
         
         List<Review> reviews = reviewService.findPaginated(filter, page, size, loggedUserId);
         List<ReviewDTO> reviewDTOs = toReviewDTOList(reviews, loggedUserId);
@@ -89,16 +91,6 @@ public class ReviewController extends BaseController {
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         
-        return buildResponse(collection);
-    }
-
-    private Response getReviewsFromFollowedUsersPaginated(Integer page, Integer size, Long loggedUserId) {
-        List<Review> reviews = reviewService.getReviewsFromFollowedUsersPaginated(page, size, loggedUserId);
-        List<ReviewDTO> reviewDTOs = toReviewDTOList(reviews, loggedUserId);
-        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
-        Integer totalCount = reviewService.countReviewsFromFollowedUsers(loggedUserId).intValue();
-        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         return buildResponse(collection);
     }
 
@@ -214,14 +206,19 @@ public class ReviewController extends BaseController {
     }
 
     private List<ReviewDTO> toReviewDTOList(List<Review> reviews, Long loggedUserId) {
+        if (reviews.isEmpty()) return Collections.emptyList();
+        if (loggedUserId == null) return reviews.stream().map(reviewDtoMapper::toDTO).collect(Collectors.toList());
+        
+        List<Long> reviewIds = reviews.stream()
+                .map(Review::getId)
+                .collect(Collectors.toList());
+        Set<Long> likedReviewIds = new HashSet<>(reviewService.getLikedReviewIds(loggedUserId, reviewIds));
+        
         return reviews.stream()
                 .map(review -> {
                     ReviewDTO dto = reviewDtoMapper.toDTO(review);
-                    if (loggedUserId != null && dto != null) {
-                        dto.setIsLiked(reviewService.isLiked(loggedUserId, review.getId()));
-                    }
+                    if (dto != null) dto.setIsLiked(likedReviewIds.contains(dto.getId()));
                     return dto;
-                })
-                .collect(Collectors.toList());
+                }).collect(Collectors.toList());
     }
 }

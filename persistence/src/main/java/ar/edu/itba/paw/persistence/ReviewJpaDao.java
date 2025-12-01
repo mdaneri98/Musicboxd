@@ -212,6 +212,22 @@ public class ReviewJpaDao implements ReviewDao {
     }
 
     @Override
+    public List<Long> getLikedReviewIds(Long userId, List<Long> reviewIds) {
+        if (reviewIds == null || reviewIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        TypedQuery<Long> query = em.createQuery(
+                "SELECT r.id FROM Review r JOIN r.likedBy u WHERE u.id = :userId AND r.id IN :reviewIds",
+                Long.class
+        );
+        query.setParameter("userId", userId);
+        query.setParameter("reviewIds", reviewIds);
+        
+        return query.getResultList();
+    }
+
+    @Override
     public List<ArtistReview> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
@@ -309,37 +325,6 @@ public class ReviewJpaDao implements ReviewDao {
         
         return query.getResultList();
     }
-
-     @Override
-     public List<Review> getPopularReviewsPaginated(Integer page, Integer pageSize) {
-         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
-         Query nativeQuery = em.createNativeQuery(
-                 "SELECT r.id FROM review r " +
-                 "WHERE r.isblocked = false " +
-                 "ORDER BY r.likes DESC, r.created_at DESC"
-         );
-         nativeQuery.setFirstResult((page - 1) * pageSize);
-         nativeQuery.setMaxResults(pageSize);
-         
-         @SuppressWarnings("unchecked")
-         List<Object> rawResults = nativeQuery.getResultList();
-         List<Long> reviewIds = rawResults.stream()
-                 .map(n -> ((Number)n).longValue())
-                 .collect(Collectors.toList());
-         
-         if (reviewIds.isEmpty()) {
-             return Collections.emptyList();
-         }
-         
-         // Query 2: JPQL para obtener entidades completas
-         final TypedQuery<Review> query = em.createQuery(
-                 "FROM Review r WHERE r.id IN :ids ORDER BY r.likes DESC, r.createdAt DESC",
-                 Review.class
-         );
-         query.setParameter("ids", reviewIds);
-         
-         return query.getResultList();
-     }
 
     @Override
     public List<Review> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize) {

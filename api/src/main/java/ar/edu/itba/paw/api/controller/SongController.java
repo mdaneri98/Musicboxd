@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.ArrayList;
 
 @Path(ApiUriConstants.SONGS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -68,9 +69,9 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        if (search != null && !search.isEmpty()) return getSongBySubstring(search, page, size);
-
-        List<Song> songs = songService.findPaginated(filter, page, size);
+        List<Song> songs = new ArrayList<>();
+        if (search != null && !search.isEmpty()) songs = songService.findByTitleContaining(search, page, size);
+        else songs = songService.findPaginated(filter, page, size);
         List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         Integer totalCount = songService.countAll().intValue();
@@ -78,16 +79,6 @@ public class SongController extends BaseController {
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                 songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, ControllerUtils.songsCollectionLinks);
         
-        return buildResponse(collection);
-    }
-
-    private Response getSongBySubstring(String substring, Integer page, Integer size) {
-        List<Song> songs = songService.findByTitleContaining(substring, page, size);
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs);
-        List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
-        Integer totalCount = songService.countAll().intValue();
-        CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, ControllerUtils.songsCollectionLinks);
         return buildResponse(collection);
     }
 

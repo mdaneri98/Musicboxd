@@ -22,6 +22,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.ArrayList;
 
 @Path(ApiUriConstants.COMMENTS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -49,22 +50,9 @@ public class CommentController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        
-        if (search != null && !search.isEmpty()) return getCommentBySubstring(search, page, size);
-        
-        List<Comment> comments = commentService.findPaginated(filter, page, size);
-        List<CommentDTO> commentDTOs = commentDtoMapper.toDTOList(comments);
-        List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
-        Integer totalCount = commentService.countAll().intValue();
-        
-        CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks);
-        
-        return buildResponse(collection);
-    }
-
-    private Response getCommentBySubstring(String substring, Integer page, Integer size) {
-        List<Comment> comments = commentService.findBySubstring(substring, page, size);
+        List<Comment> comments = new ArrayList<>();
+        if (search != null && !search.isEmpty()) comments = commentService.findBySubstring(search, page, size);
+        else comments = commentService.findPaginated(filter, page, size);
         List<CommentDTO> commentDTOs = commentDtoMapper.toDTOList(comments);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         Integer totalCount = commentService.countAll().intValue();

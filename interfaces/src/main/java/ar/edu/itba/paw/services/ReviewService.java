@@ -3,12 +3,10 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
-
 import java.util.List;
 
 public interface ReviewService extends CrudService<Review> {
 
-    List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId);
 
     Review findArtistReviewById(Long id, Long loggedUserId);
     Review findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId);
@@ -23,9 +21,10 @@ public interface ReviewService extends CrudService<Review> {
     Void createLike(Long userId, Long reviewId);
     Void removeLike(Long userId, Long reviewId);
     Boolean isLiked(Long userId, Long reviewId);
+    List<Long> getLikedReviewIds(Long userId, List<Long> reviewIds);
 
-    List<Review> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId);
-    List<Review> getPopularReviewsPaginated(Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId);   
     
     List<Review> findBySubstring(String substring, Integer page, Integer size);
     List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);

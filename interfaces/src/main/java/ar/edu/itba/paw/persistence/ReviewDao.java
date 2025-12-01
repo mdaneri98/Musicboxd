@@ -35,13 +35,13 @@ public interface ReviewDao extends CrudDao<Review> {
     Void deleteLike(Long userId, Long reviewId);
     Void updateLikeCount(Long reviewId);
     Boolean isLiked(Long userId, Long reviewId);
+    List<Long> getLikedReviewIds(Long userId, List<Long> reviewIds);
 
     // Métodos de paginación
     List<ArtistReview> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize);
     List<AlbumReview> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize);
     List<SongReview> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize);
 
-    List<Review> getPopularReviewsPaginated(Integer page, Integer pageSize);
     List<Review> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize);
     List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize);
 

@@ -8,7 +8,7 @@ public interface UserService {
     User findUserById(Long id, Long loggedUserId);
     Long countUsers();
     List<User> findAll();
-    List<User> findPaginated(FilterType filterType, Integer pageNumber, Integer pageSize);
+    List<User> findPaginated(FilterType filterType, Integer pageNumber, Integer pageSize, Long loggedUserId);
     List<User> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize);
 
     User create(String username, String email, String password);

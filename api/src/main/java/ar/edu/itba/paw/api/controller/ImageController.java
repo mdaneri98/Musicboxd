@@ -32,11 +32,9 @@ public class ImageController extends BaseController {
     public Response getImage(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Image image = imageService.findById(id);
         byte[] array = image.getBytes();
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-type", "image/jpeg");
         headers.set("Content-Disposition", String.format("inline; filename=\"image_%d.jpg\"", id));
-
         return Response.status(Response.Status.OK).entity(array).header(getBaseUrl(), headers).build();
     }
 
@@ -46,10 +44,7 @@ public class ImageController extends BaseController {
     public Response uploadImage(@Valid @BeanParam final UploadImageForm uploadImageForm) {
         final Image image = imageService.create(uploadImageForm.getBytes());
         final ImageResource imageResource = imageResourceMapper.toResource(image, getBaseUrl());
-        
-        // Build URI for the created image
         final URI imageUri = URI.create(getBaseUrl() + ApiUriConstants.IMAGES_BASE + "/" + image.getId());
-        
         return Response.created(imageUri).entity(imageResource).build();
     }
 }

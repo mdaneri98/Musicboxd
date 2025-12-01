@@ -43,6 +43,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.ArrayList;
 
 @Path(ApiUriConstants.ARTISTS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -103,10 +104,9 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-
-        if (search != null && !search.isEmpty()) return getArtistBySubstring(search, page, size);
-
-        List<Artist> artists = artistService.findPaginated(filter, page, size);
+        List<Artist> artists = new ArrayList<>();
+        if (search != null && !search.isEmpty()) artists = artistService.findByNameContaining(search, page, size);
+        else artists = artistService.findPaginated(filter, page, size);
         List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists);
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
         Integer totalCount = artistService.countAll().intValue();
@@ -114,16 +114,6 @@ public class ArtistController extends BaseController {
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
                 artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, ControllerUtils.artistsCollectionLinks);
         
-        return buildResponse(collection);
-    }
-
-    private Response getArtistBySubstring(String substring, Integer page, Integer size) {
-        List<Artist> artists = artistService.findByNameContaining(substring, page, size);
-        List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists);
-        List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
-        Integer totalCount = artistService.countAll().intValue();
-        CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
-                artistResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, ControllerUtils.artistsCollectionLinks);
         return buildResponse(collection);
     }
 

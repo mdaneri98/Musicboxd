@@ -102,7 +102,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
+    public List<User> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
+        if (filterType == FilterType.RECOMMENDED) return getRecommendedUsers(loggedUserId, page, pageSize);
         return userDao.findPaginated(filterType, page, pageSize);
     }
 

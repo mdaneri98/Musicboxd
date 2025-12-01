@@ -45,6 +45,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path(ApiUriConstants.USERS_BASE)
@@ -104,24 +105,15 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        if (search != null && !search.isEmpty()) return getUserBySubstring(search, page, size);
-        if (filter == FilterType.RECOMMENDED) return getRecommendedUsers(page, size);
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        List<User> users = new ArrayList<>();
+        if (search != null && !search.isEmpty()) users = userService.findByUsernameContaining(search, page, size);
+        else users = userService.findPaginated(filter, page, size, loggedUserId);
         
-        List<User> users = userService.findPaginated(filter, page, size);
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, userService.countUsers().intValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
-        return buildResponse(collection);
-    }
-
-    private Response getUserBySubstring(String substring, Integer page, Integer size) {
-        List<User> users = userService.findByUsernameContaining(substring, page, size);
-        List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
-        List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
-        Integer totalCount = userService.countUsers().intValue();
-        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
         return buildResponse(collection);
     }
 
