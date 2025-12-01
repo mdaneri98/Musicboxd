@@ -13,7 +13,6 @@ import {
   fetchReviewLikesAsync,
   postCommentAsync,
   deleteCommentAsync,
-  selectCurrentReview,
   selectReviewComments,
   selectReviewLikes,
   selectLoadingReview,

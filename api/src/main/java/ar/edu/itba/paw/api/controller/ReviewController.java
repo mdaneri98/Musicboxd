@@ -3,10 +3,8 @@ package ar.edu.itba.paw.api.controller;
 import ar.edu.itba.paw.api.dto.CommentDTO;
 import ar.edu.itba.paw.api.dto.ReviewDTO;
 import ar.edu.itba.paw.api.dto.UserDTO;
-import ar.edu.itba.paw.api.form.CommentForm;
 import ar.edu.itba.paw.api.form.ReviewForm;
 import ar.edu.itba.paw.api.mapper.dto.CommentDtoMapper;
-import ar.edu.itba.paw.api.mapper.dto.CommentFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ReviewDtoMapper;
 import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.UserDtoMapper;
@@ -179,7 +177,7 @@ public class ReviewController extends BaseController {
     public Response getReviewLikes(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, 
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {  
-        Review review = reviewService.findById(reviewId, SecurityContextUtils.getCurrentUserId());
+        Review review = reviewService.findById(reviewId);
         List<User> users = reviewService.likedBy(reviewId, page, size);
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());

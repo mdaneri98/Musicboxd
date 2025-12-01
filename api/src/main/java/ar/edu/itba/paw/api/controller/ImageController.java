@@ -5,7 +5,6 @@ import ar.edu.itba.paw.api.mapper.resource.ImageResourceMapper;
 import ar.edu.itba.paw.api.models.resources.ImageResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;

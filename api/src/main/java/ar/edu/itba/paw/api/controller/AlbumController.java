@@ -25,10 +25,8 @@ import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.api.form.ModAlbumForm;
-import ar.edu.itba.paw.api.form.ReviewForm;
 import ar.edu.itba.paw.api.form.ModSongForm;
 import ar.edu.itba.paw.api.mapper.dto.ModAlbumFormMapper;
-import ar.edu.itba.paw.api.mapper.dto.ReviewFormMapper;
 import ar.edu.itba.paw.api.mapper.dto.ReviewDtoMapper;
 import ar.edu.itba.paw.api.mapper.dto.ModSongFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,9 +69,6 @@ public class AlbumController extends BaseController {
 
     @Autowired
     private ModAlbumFormMapper modAlbumFormMapper;
-
-    @Autowired
-    private ReviewFormMapper reviewFormMapper;
 
     @Autowired
     private ModSongFormMapper modSongFormMapper;
