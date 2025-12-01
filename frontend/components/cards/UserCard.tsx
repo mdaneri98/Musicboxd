@@ -26,8 +26,8 @@ const UserCard = ({ user }: UserCardProps) => {
           className="user-card-image"
         />
         <div className="user-card-info">
-          <h3 className="user-card-username">{user.username}</h3>
-          {user.bio && <p className="user-card-name">{user.bio}</p>}
+          <h3 className="user-card-username">@{user.username}</h3>
+          {user.name && <p className="user-card-name">{user.name}</p>}
         </div>
         {user.moderator && (
           <div className="user-card-badges">
@@ -40,8 +40,6 @@ const UserCard = ({ user }: UserCardProps) => {
           </div>
         )}
       </div>
-
-      {user.bio && <p className="user-card-bio">{user.bio}</p>}
 
       <div className="user-card-stats">
         <div className="user-card-stat">

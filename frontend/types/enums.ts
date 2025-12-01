@@ -11,6 +11,7 @@
  */
 export enum FilterType {
   FOLLOWING = 'FOLLOWING',
+  RECOMMENDED = 'RECOMMENDED',
   POPULAR = 'POPULAR',
   RECENT = 'RECENT',
   OLDEST = 'OLDEST',

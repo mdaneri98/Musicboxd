@@ -105,6 +105,7 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
         if (search != null && !search.isEmpty()) return getUserBySubstring(search, page, size);
+        if (filter == FilterType.RECOMMENDED) return getRecommendedUsers(page, size);
         
         List<User> users = userService.findPaginated(filter, page, size);
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
@@ -263,6 +264,15 @@ public class UserController extends BaseController {
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                     songResources, songs.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_SONGS, ControllerUtils.userFavoriteCollectionLinks, id);
+        return buildResponse(collection);
+    }
+
+    private Response getRecommendedUsers(Integer page, Integer size) {
+        List<User> users = userService.getRecommendedUsers(SecurityContextUtils.getCurrentUserId(), page, size);
+        List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
+        List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, users.size(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
         return buildResponse(collection);
     }
 

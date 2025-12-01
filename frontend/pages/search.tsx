@@ -5,7 +5,7 @@ import { UserCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, fetchUsersAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
-import { Artist, Album, Song, User, HALResource, SearchTypeEnum, SearchTabEnum } from '@/types';
+import { Artist, Album, Song, User, HALResource, SearchTypeEnum, SearchTabEnum, FilterTypeEnum } from '@/types';
 
 type SearchResultItem = {
   id: number;
@@ -43,7 +43,7 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchRecommendedUsers = async () => {
       try {
-        const usersData = await dispatch(fetchUsersAsync({ page: 1, size: 6 })).unwrap();
+        const usersData = await dispatch(fetchUsersAsync({ page: 1, size: 6, filter: FilterTypeEnum.RECOMMENDED })).unwrap();
         setRecommendedUsers(usersData.items.map((user: HALResource<User>) => user.data as User));
       } catch (error) {
         console.error('Failed to fetch recommended users:', error);
