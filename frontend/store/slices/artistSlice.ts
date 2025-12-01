@@ -7,6 +7,7 @@ import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@r
 import { artistRepository, reviewRepository } from '@/repositories';
 import { Artist, Album, Song, Review, Collection, HALResource, EditArtistFormData, CreateArtistFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
+import { blockReviewAsync, unblockReviewAsync } from './reviewSlice';
 
 // ============================================================================
 // State Interface
@@ -442,6 +443,22 @@ const artistSlice = createSlice({
       })
       .addCase(removeArtistFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to remove artist from favorites';
+      });
+
+    builder
+      .addCase(blockReviewAsync.fulfilled, (state, action) => {
+        const reviewData = action.payload.data as Review;
+        const index = state.artistReviews.findIndex((r) => r.id === reviewData.id);
+        if (index !== -1) {
+          state.artistReviews[index] = reviewData;
+        }
+      })
+      .addCase(unblockReviewAsync.fulfilled, (state, action) => {
+        const reviewData = action.payload.data as Review;
+        const index = state.artistReviews.findIndex((r) => r.id === reviewData.id);
+        if (index !== -1) {
+          state.artistReviews[index] = reviewData;
+        }
       });
   },
 });
