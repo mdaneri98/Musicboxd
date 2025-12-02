@@ -94,6 +94,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public Review create(Review reviewInput) {
         LOGGER.info("Creating new review: {}", reviewInput);
+        reviewInput.setLikes(0);
+        reviewInput.setBlocked(false);
         Review createdReview = switch (reviewInput.getItemType()) {
             case ARTIST -> createArtistReview(reviewInput);
             case ALBUM -> createAlbumReview(reviewInput);

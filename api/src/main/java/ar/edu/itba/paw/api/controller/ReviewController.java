@@ -98,8 +98,6 @@ public class ReviewController extends BaseController {
     public Response createReview(@Valid ReviewForm reviewForm) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, reviewForm.getItemId().longValue());
-        reviewInput.setLikes(0);
-        reviewInput.setBlocked(false);
         Review review = reviewService.create(reviewInput);
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, true);
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
