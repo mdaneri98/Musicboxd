@@ -75,7 +75,7 @@ const RatingCard = ({
           </Link>
         ) : (
           <Link
-            href={`/${entityType}/${entityId}/edit-review`}
+            href={`/${entityType}/${entityId}/reviews`}
             className="btn btn-secondary btn-block"
           >
             <i className="fas fa-edit"></i>

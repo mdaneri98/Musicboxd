@@ -89,17 +89,17 @@ const AlbumReviewPage = () => {
     
     try {
       setSubmitLoading(true);
-
+      const reviewData: ReviewFormData = {
+        title: data.title,
+        description: data.description,
+        rating: data.rating,
+        item_id: album.id,
+        item_type: ReviewItemType.ALBUM,
+      };
       if (isEditMode && existingReview) {
-        await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
+        await dispatch(updateReviewAsync({ id: existingReview.id, reviewData })).unwrap();
       } else {
-        await dispatch(createAlbumReviewAsync({ 
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-          item_id: album.id,
-          item_type: ReviewItemType.ALBUM,
-        })).unwrap();
+        await dispatch(createAlbumReviewAsync(reviewData)).unwrap();
       }
       
       router.push(`/albums/${album.id}`);

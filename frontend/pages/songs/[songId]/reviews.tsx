@@ -98,17 +98,17 @@ const SongReviewPage = () => {
 
     try {
       setSubmitLoading(true);
-
+      const reviewData: ReviewFormData = {
+        title: data.title,
+        description: data.description,
+        rating: data.rating,
+        item_id: song.id,
+        item_type: ReviewItemType.SONG,
+      };
       if (isEditMode && existingReview) {
-        await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
+        await dispatch(updateReviewAsync({ id: existingReview.id, reviewData })).unwrap();
       } else {
-        await dispatch(createSongReviewAsync({
-          title: data.title,
-          description: data.description,
-          rating: data.rating,
-          item_id: song.id,
-          item_type: ReviewItemType.SONG,
-        })).unwrap();
+        await dispatch(createSongReviewAsync(reviewData)).unwrap();
       }
 
       router.push(`/songs/${song.id}`);

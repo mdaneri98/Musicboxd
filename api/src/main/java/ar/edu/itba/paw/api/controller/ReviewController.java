@@ -27,7 +27,7 @@ import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-
+import java.util.ArrayList;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -81,9 +81,9 @@ public class ReviewController extends BaseController {
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        if (search != null && !search.isEmpty()) return getReviewBySubstring(search, page, size);
-        
-        List<Review> reviews = reviewService.findPaginated(filter, page, size, loggedUserId);
+        List<Review> reviews = new ArrayList<>();
+        if (search != null && !search.isEmpty()) reviews = reviewService.findBySubstring(search, page, size);
+        else reviews = reviewService.findPaginated(filter, page, size, loggedUserId);
         List<ReviewDTO> reviewDTOs = toReviewDTOList(reviews, loggedUserId);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Integer totalCount = reviewService.countAll().intValue();
@@ -91,17 +91,6 @@ public class ReviewController extends BaseController {
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         
-        return buildResponse(collection);
-    }
-
-    private Response getReviewBySubstring(String substring, Integer page, Integer size) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        List<Review> reviews = reviewService.findBySubstring(substring, page, size);
-        List<ReviewDTO> reviewDTOs = toReviewDTOList(reviews, loggedUserId);
-        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
-        Integer totalCount = reviewService.countAll().intValue();
-        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         return buildResponse(collection);
     }
 
