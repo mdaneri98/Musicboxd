@@ -13,6 +13,8 @@ public class NotificationDTO {
     private String triggerUsername;
     private Long triggerUserImageId;
     private Long reviewId;
+    private String reviewItemName;
+    private Long reviewItemImageId;
     private LocalDateTime createdAt;
     private Boolean isRead;
     private String message;
@@ -85,6 +87,22 @@ public class NotificationDTO {
 
     public void setReviewId(Long reviewId) {
         this.reviewId = reviewId;
+    }
+
+    public String getReviewItemName() {
+        return reviewItemName;
+    }
+
+    public void setReviewItemName(String reviewItemName) {
+        this.reviewItemName = reviewItemName;
+    }
+
+    public Long getReviewItemImageId() {
+        return reviewItemImageId;
+    }
+
+    public void setReviewItemImageId(Long reviewItemImageId) {
+        this.reviewItemImageId = reviewItemImageId;
     }
 
     public LocalDateTime getCreatedAt() {

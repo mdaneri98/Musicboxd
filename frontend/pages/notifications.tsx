@@ -98,20 +98,18 @@ export default function NotificationsPage() {
         )}
 
         {/* Pagination */}
-        {pagination.page > 1 && (
-          <div className="pagination">
-            {pagination.page > 1 && (
-              <button onClick={handlePreviousPage} className="btn btn-secondary">
-                Previous Page
-              </button>
-            )}
-            {pagination.totalCount > pagination.page * pagination.size && (
-              <button onClick={handleNextPage} className="btn btn-secondary">
-                Next Page
-              </button>
-            )}
-          </div>
-        )}
+        <div className="pagination">
+          {pagination.page > 1 && (
+            <button onClick={handlePreviousPage} className="btn btn-secondary">
+              Previous Page
+            </button>
+          )}
+          {pagination.totalCount > pagination.page * pagination.size && (
+            <button onClick={handleNextPage} className="btn btn-secondary">
+              Next Page
+            </button>
+          )}
+        </div>
       </div>
     </Layout>
   );

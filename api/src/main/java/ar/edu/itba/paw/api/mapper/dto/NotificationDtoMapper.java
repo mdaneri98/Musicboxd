@@ -28,6 +28,8 @@ public class NotificationDtoMapper {
         dto.setTriggerUsername(notification.getTriggerUser() != null ? notification.getTriggerUser().getUsername() : null);
         dto.setTriggerUserImageId(notification.getTriggerUser() != null ? notification.getTriggerUser().getImageId() : null);
         dto.setReviewId(notification.getReview() != null ? notification.getReview().getId() : null);
+        dto.setReviewItemName(notification.getReview() != null ? notification.getReview().getItemName() : null);
+        dto.setReviewItemImageId(notification.getReview() != null && notification.getReview().getItemImage() != null ? notification.getReview().getItemImage().getId() : null);
         dto.setCreatedAt(notification.getCreatedAt());
         dto.setIsRead(notification.isRead());
         dto.setMessage(notification.getMessage());

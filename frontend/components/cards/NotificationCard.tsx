@@ -6,7 +6,9 @@
 import Link from 'next/link';
 import type { Notification } from '@/types';
 import { useAppDispatch } from '@/store/hooks';
-import { markAsReadAsync, deleteNotificationAsync } from '@/store/slices';
+import { markAsReadAsync } from '@/store/slices';
+import { imageRepository } from '@/repositories';
+import { NotificationTypeEnum } from '@/types';
 
 interface NotificationCardProps {
   notification: Notification;
@@ -15,75 +17,71 @@ interface NotificationCardProps {
 const NotificationCard = ({ notification }: NotificationCardProps) => {
   const dispatch = useAppDispatch();
 
-  const handleMarkAsRead = async () => {
+  const handleMarkAsRead = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!notification.is_read) {
       await dispatch(markAsReadAsync(notification.id));
     }
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    await dispatch(deleteNotificationAsync(notification.id));
-  };
+  // Get user image URL
+  const triggerUserImageUrl = notification.trigger_user_image_id
+    ? imageRepository.getImageUrl(notification.trigger_user_image_id)
+    : '/default-avatar.png';
 
-  const getNotificationIcon = () => {
-    switch (notification.type) {
-      case 'FOLLOW':
-        return 'fa-user-plus';
-      case 'LIKE':
-        return 'fa-heart';
-      case 'COMMENT':
-        return 'fa-comment';
-      case 'REVIEW':
-        return 'fa-star';
-      default:
-        return 'fa-bell';
-    }
-  };
+  // Get review item image URL (for LIKE, COMMENT, NEW_REVIEW)
+  const reviewItemImageUrl = notification.review_item_image_id
+    ? imageRepository.getImageUrl(notification.review_item_image_id)
+    : null;
 
-  const getNotificationLink = () => {
-    if (notification.review_id) {
-      switch (notification.type) {
-        case 'FOLLOW':
-          return `/users/${notification.trigger_user_id}`;
-        case 'LIKE':
-        case 'COMMENT':
-        case 'REVIEW':
-          return `/reviews/${notification.review_id}`;
-        default:
-          return '/notifications';
-      }
-    }
-    return '/notifications';
-  };
+  const isReviewRelated = notification.type === NotificationTypeEnum.LIKE || notification.type === NotificationTypeEnum.COMMENT || notification.type === NotificationTypeEnum.NEW_REVIEW;
 
   return (
-    <Link
-      href={getNotificationLink()}
-      className={`notification-card ${notification.is_read ? 'read' : 'unread'}`}
-      onClick={handleMarkAsRead}
-    >
-      <div className="notification-icon">
-        <i className={`fas ${getNotificationIcon()}`}></i>
+    <div className={`notification-item ${notification.is_read ? 'read' : 'unread'}`}>
+      <div className="notification-content-wrapper">
+        <div className="user-info">
+          <Link href={`/users/${notification.trigger_user_id}`} className="user-details">
+            <img
+              src={triggerUserImageUrl}
+              alt={notification.trigger_username}
+              className="img-avatar"
+            />
+          </Link>
+
+          <div className="notification-content">
+            {isReviewRelated && notification.review_id ? (
+              <Link href={`/reviews/${notification.review_id}`} className="notification-review-link">
+                <div className="notification-text">
+                  <p>{notification.message}</p>
+                  <span className="notification-time">{notification.time_ago}</span>
+                </div>
+              </Link>
+            ) : (
+              <Link href={`/users/${notification.trigger_user_id}`}>
+                <p>{notification.message}</p>
+                <span className="notification-time">{notification.time_ago}</span>
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {isReviewRelated && reviewItemImageUrl && (
+          <Link href={`/reviews/${notification.review_id}`}>
+            <div className="notification-review-image">
+              <img src={reviewItemImageUrl} alt={notification.review_item_name || ''} />
+            </div>
+          </Link>
+        )}
       </div>
-      <div className="notification-content">
-        <p className="notification-message">{notification.message}</p>
-        <span className="notification-timestamp">
-          {notification.time_ago}
-        </span>
-      </div>
-      {!notification.is_read && <div className="notification-indicator"></div>}
-      <button
-        onClick={handleDelete}
-        className="notification-delete"
-        title="Delete notification"
-      >
-        <i className="fas fa-times"></i>
-      </button>
-    </Link>
+
+      {!notification.is_read && (
+        <button onClick={handleMarkAsRead} className="mark-read-btn">
+          Mark as read
+        </button>
+      )}
+    </div>
   );
 };
 
 export default NotificationCard;
-

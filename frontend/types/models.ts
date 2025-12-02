@@ -136,6 +136,8 @@ export interface Notification {
   trigger_username: string;
   trigger_user_image_id: number;
   review_id?: number;
+  review_item_name?: string;
+  review_item_image_id?: number;
   is_read: boolean;
   created_at: Date;
   time_ago: string;
