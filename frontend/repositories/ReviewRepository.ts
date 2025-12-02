@@ -27,8 +27,6 @@ const REVIEW_ENDPOINTS = {
   LIKE_REVIEW: (id: number) => `/reviews/${id}/likes`,
   UNLIKE_REVIEW: (id: number) => `/reviews/${id}/likes`,
   REVIEW_COMMENTS: (id: number) => `/reviews/${id}/comments`,
-  BLOCK_REVIEW: (id: number) => `/reviews/${id}/block`,
-  UNBLOCK_REVIEW: (id: number) => `/reviews/${id}/unblock`,
 };
 
 // ============================================================================
@@ -233,31 +231,6 @@ class ReviewRepository {
     }
   }
 
-  /**
-   * Block a review (moderator only)
-   * @param reviewId Review ID
-   */
-  async blockReview(reviewId: number): Promise<void> {
-    try {
-      await apiClient.postResource<Review>(REVIEW_ENDPOINTS.BLOCK_REVIEW(reviewId));
-    } catch (error) {
-      console.error(`Block review ${reviewId} error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Unblock a review (moderator only)
-   * @param reviewId Review ID
-   */
-  async unblockReview(reviewId: number): Promise<void> {
-    try {
-      await apiClient.postResource<Review>(REVIEW_ENDPOINTS.UNBLOCK_REVIEW(reviewId));
-    } catch (error) {
-      console.error(`Unblock review ${reviewId} error:`, error);
-      throw error;
-    }
-  }
 }
 
 // ============================================================================

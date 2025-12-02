@@ -13,7 +13,6 @@ export { Modal } from './Modal';
 // Interactive Buttons
 export { FollowButton } from './FollowButton';
 export { LikeButton } from './LikeButton';
-export { FavoriteButton } from './FavoriteButton';
 
 // Search & Filter
 export { SearchBar } from './SearchBar';

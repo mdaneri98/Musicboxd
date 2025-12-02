@@ -263,13 +263,13 @@ export const deleteCommentAsync = createAsyncThunk<
  * Block a review (moderator only)
  */
 export const blockReviewAsync = createAsyncThunk<
-  number,
+  HALResource<Review>,
   number,
   { rejectValue: string }
 >('reviews/blockReview', async (reviewId, { rejectWithValue }) => {
   try {
-    await reviewRepository.blockReview(reviewId);
-    return reviewId;
+    const review = await reviewRepository.updateReview(reviewId, { blocked: true });
+    return review as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to block review');
   }
@@ -279,13 +279,13 @@ export const blockReviewAsync = createAsyncThunk<
  * Unblock a review (moderator only)
  */
 export const unblockReviewAsync = createAsyncThunk<
-  number,
+  HALResource<Review>,
   number,
   { rejectValue: string }
 >('reviews/unblockReview', async (reviewId, { rejectWithValue }) => {
   try {
-    await reviewRepository.unblockReview(reviewId);
-    return reviewId;
+    const review = await reviewRepository.updateReview(reviewId, { blocked: false });
+    return review as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to unblock review');
   }
@@ -544,12 +544,10 @@ const reviewSlice = createSlice({
     // Block Review
     builder
       .addCase(blockReviewAsync.fulfilled, (state, action) => {
-        // Update blocked status
-        if (state.currentReview?.id === action.meta.arg) {
-          state.currentReview.is_blocked = true;
-        }
-        if (state.reviews[action.meta.arg]) {
-          state.reviews[action.meta.arg].is_blocked = true;
+        const reviewData = action.payload.data as Review;
+        state.reviews[reviewData.id] = reviewData;
+        if (state.currentReview?.id === reviewData.id) {
+          state.currentReview = reviewData;
         }
       })
       .addCase(blockReviewAsync.rejected, (state, action) => {
@@ -559,12 +557,10 @@ const reviewSlice = createSlice({
     // Unblock Review
     builder
       .addCase(unblockReviewAsync.fulfilled, (state, action) => {
-        // Update blocked status
-        if (state.currentReview?.id === action.payload) {
-          state.currentReview.is_blocked = false;
-        }
-        if (state.reviews[action.meta.arg]) {
-          state.reviews[action.meta.arg].is_blocked = false;
+        const reviewData = action.payload.data as Review;
+        state.reviews[reviewData.id] = reviewData;
+        if (state.currentReview?.id === reviewData.id) {
+          state.currentReview = reviewData;
         }
       })
       .addCase(unblockReviewAsync.rejected, (state, action) => {

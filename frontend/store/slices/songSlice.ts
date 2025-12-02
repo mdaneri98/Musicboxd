@@ -8,6 +8,7 @@ import { songRepository, reviewRepository } from '@/repositories';
 import { Song, Review, Collection, HALResource, CreateSongFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 import { EditSongFormData } from '@/types/forms';
+import { blockReviewAsync, unblockReviewAsync } from './reviewSlice';
 
 // ============================================================================
 // State Interface
@@ -318,6 +319,22 @@ const songSlice = createSlice({
       })
       .addCase(removeSongFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to remove song from favorites';
+      });
+
+    builder
+      .addCase(blockReviewAsync.fulfilled, (state, action) => {
+        const reviewData = action.payload.data as Review;
+        const index = state.songReviews.findIndex((r) => r.id === reviewData.id);
+        if (index !== -1) {
+          state.songReviews[index] = reviewData;
+        }
+      })
+      .addCase(unblockReviewAsync.fulfilled, (state, action) => {
+        const reviewData = action.payload.data as Review;
+        const index = state.songReviews.findIndex((r) => r.id === reviewData.id);
+        if (index !== -1) {
+          state.songReviews[index] = reviewData;
+        }
       });
   },
 });

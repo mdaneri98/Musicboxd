@@ -7,6 +7,7 @@ import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@r
 import { artistRepository, reviewRepository } from '@/repositories';
 import { Artist, Album, Song, Review, Collection, HALResource, EditArtistFormData, CreateArtistFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
+import { blockReviewAsync, unblockReviewAsync } from './reviewSlice';
 
 // ============================================================================
 // State Interface
@@ -427,17 +428,37 @@ const artistSlice = createSlice({
 
     // Add/Remove Favorite
     builder
-      .addCase(addArtistFavoriteAsync.fulfilled, () => {
-        // Success - UI will update based on user favorites list
+      .addCase(addArtistFavoriteAsync.fulfilled, (state, action) => {
+        const updatedArtist = action.payload.data as Artist;
+        state.currentArtist = updatedArtist;
+        state.artists[updatedArtist.id] = updatedArtist;
       })
       .addCase(addArtistFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to add artist to favorites';
       })
-      .addCase(removeArtistFavoriteAsync.fulfilled, () => {
-        // Success - UI will update based on user favorites list
+      .addCase(removeArtistFavoriteAsync.fulfilled, (state, action) => {
+        const updatedArtist = action.payload.data as Artist;
+        state.currentArtist = updatedArtist;
+        state.artists[updatedArtist.id] = updatedArtist;
       })
       .addCase(removeArtistFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to remove artist from favorites';
+      });
+
+    builder
+      .addCase(blockReviewAsync.fulfilled, (state, action) => {
+        const reviewData = action.payload.data as Review;
+        const index = state.artistReviews.findIndex((r) => r.id === reviewData.id);
+        if (index !== -1) {
+          state.artistReviews[index] = reviewData;
+        }
+      })
+      .addCase(unblockReviewAsync.fulfilled, (state, action) => {
+        const reviewData = action.payload.data as Review;
+        const index = state.artistReviews.findIndex((r) => r.id === reviewData.id);
+        if (index !== -1) {
+          state.artistReviews[index] = reviewData;
+        }
       });
   },
 });

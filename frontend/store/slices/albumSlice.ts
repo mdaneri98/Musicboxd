@@ -7,6 +7,7 @@ import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@r
 import { albumRepository, reviewRepository } from '@/repositories';
 import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
+import { blockReviewAsync, unblockReviewAsync } from './reviewSlice';
 
 // ============================================================================
 // State Interface
@@ -346,6 +347,22 @@ const albumSlice = createSlice({
       })
       .addCase(removeAlbumFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to remove album from favorites';
+      });
+
+    builder
+      .addCase(blockReviewAsync.fulfilled, (state, action) => {
+        const reviewData = action.payload.data as Review;
+        const index = state.albumReviews.findIndex((r) => r.id === reviewData.id);
+        if (index !== -1) {
+          state.albumReviews[index] = reviewData;
+        }
+      })
+      .addCase(unblockReviewAsync.fulfilled, (state, action) => {
+        const reviewData = action.payload.data as Review;
+        const index = state.albumReviews.findIndex((r) => r.id === reviewData.id);
+        if (index !== -1) {
+          state.albumReviews[index] = reviewData;
+        }
       });
   },
 });

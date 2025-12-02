@@ -131,8 +131,7 @@ public class ReviewController extends BaseController {
         Review oldReview = reviewService.findById(id);
         Review reviewToUpdate = reviewFormMapper.mergeModel(oldReview, reviewForm);
         Review updatedReview = reviewService.update(reviewToUpdate);
-        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(updatedReview);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDtoMapper.toDTO(updatedReview), getBaseUrl());
         return buildResponse(reviewResource);
     }
 
@@ -182,15 +181,6 @@ public class ReviewController extends BaseController {
     public Response unlikeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         reviewService.removeLike(loggedUserId, reviewId);
-        return buildNoContentResponse();
-    }
-
-    @PATCH
-    @Path(ApiUriConstants.ID)
-    @PreAuthorize("hasRole('MODERATOR')")
-    public Response updateBlockReviewStatus(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, Boolean isBlocked) {
-        if (isBlocked != null && isBlocked) reviewService.block(reviewId);
-        else reviewService.unblock(reviewId);
         return buildNoContentResponse();
     }
 

@@ -71,9 +71,18 @@ public class ReviewFormMapper {
             return review;
         }
         
-        review.setTitle(form.getTitle());
-        review.setDescription(form.getDescription());
-        review.setRating(form.getRating());
+        if (form.getTitle() != null) {
+            review.setTitle(form.getTitle());
+        }
+        if (form.getDescription() != null) {
+            review.setDescription(form.getDescription());
+        }
+        if (form.getRating() != null) {
+            review.setRating(form.getRating());
+        }
+        if (form.isBlocked() != null) {
+            review.setBlocked(form.isBlocked());
+        }
         return review;
     }
 }
