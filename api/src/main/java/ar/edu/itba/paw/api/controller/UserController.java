@@ -41,12 +41,14 @@ import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import javax.ws.rs.ForbiddenException;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Path(ApiUriConstants.USERS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -105,11 +107,11 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         List<User> users = new ArrayList<>();
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+
         if (search != null && !search.isEmpty()) users = userService.findByUsernameContaining(search, page, size);
         else users = userService.findPaginated(filter, page, size, loggedUserId);
-        
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
@@ -259,13 +261,16 @@ public class UserController extends BaseController {
         return buildResponse(collection);
     }
 
-    private Response getRecommendedUsers(Integer page, Integer size) {
-        List<User> users = userService.getRecommendedUsers(SecurityContextUtils.getCurrentUserId(), page, size);
-        List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
-        List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
-        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
-                userResources, users.size(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
-        return buildResponse(collection);
+    @PATCH  
+    @Path(ApiUriConstants.ID)
+    public Response updateUserConfig(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserDTO userDTO) {
+        if(!Objects.equals(SecurityContextUtils.getCurrentUserId(), userId))
+            throw new ForbiddenException("You are not allowed to update this user config");
+        User user = userService.findUserById(userId, SecurityContextUtils.getCurrentUserId());
+        UserDtoMapper.mergeConfigToModel(user, userDTO);
+        User userUpdated = userService.updateUser(user);
+        UserDTO updatedUserDTO = userDtoMapper.toDTO(userUpdated);
+        UserResource userResource = userResourceMapper.toResource(updatedUserDTO, getBaseUrl());
+        return buildResponse(userResource);
     }
-
 }

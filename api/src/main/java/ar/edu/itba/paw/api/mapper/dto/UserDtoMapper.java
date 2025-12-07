@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 /**
  * Mapper to convert between User model and UserDTO
@@ -98,5 +99,26 @@ public class UserDtoMapper {
         return dtos.stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
+    }
+
+    public static void mergeConfigToModel(User user, UserDTO dto) {
+        if (dto == null) {
+            return;
+        }
+
+        setFieldIfNotNull(user::setPreferredLanguage, dto.getPreferredLanguage());
+        setFieldIfNotNull(user::setTheme, dto.getPreferredTheme());
+        setFieldIfNotNull(user::setFollowNotificationsEnabled, dto.getHasFollowNotificationsEnabled());
+        setFieldIfNotNull(user::setLikeNotificationsEnabled, dto.getHasLikeNotificationsEnabled());
+        setFieldIfNotNull(user::setCommentNotificationsEnabled, dto.getHasCommentsNotificationsEnabled());
+        setFieldIfNotNull(user::setReviewNotificationsEnabled, dto.getHasReviewsNotificationsEnabled());
+        setFieldIfNotNull(user::setUpdatedAt, LocalDateTime.now());
+
+    }
+
+    private static <T> void setFieldIfNotNull(java.util.function.Consumer<T> setter, T value) {
+        if (value != null) {
+            setter.accept(value);
+        }
     }
 }
