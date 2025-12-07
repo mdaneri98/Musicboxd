@@ -56,7 +56,6 @@ export enum NotificationType {
   FOLLOW = 'FOLLOW',
   LIKE = 'LIKE',
   COMMENT = 'COMMENT',
-  REVIEW = 'REVIEW',
   NEW_REVIEW = 'NEW_REVIEW',
 }
 

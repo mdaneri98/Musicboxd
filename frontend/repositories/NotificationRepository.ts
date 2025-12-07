@@ -19,8 +19,6 @@ import {
 const NOTIFICATION_ENDPOINTS = {
   NOTIFICATIONS: '/notifications',
   NOTIFICATION_BY_ID: (id: number) => `/notifications/${id}`,
-  MARK_AS_READ: (id: number) => `/notifications/${id}/read`,
-  MARK_ALL_AS_READ: '/notifications/read-all',
   UNREAD_COUNT: '/notifications/unread-count',
 };
 
@@ -143,7 +141,7 @@ class NotificationRepository {
    */
   async markAsRead(id: number): Promise<void> {
     try {
-      await apiClient.postResource<Notification>(NOTIFICATION_ENDPOINTS.MARK_AS_READ(id));
+      await apiClient.patchResource<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATION_BY_ID(id), {is_read: true});
     } catch (error) {
       console.error(`Mark notification ${id} as read error:`, error);
       throw error;
@@ -155,7 +153,7 @@ class NotificationRepository {
    */
   async markAllAsRead(): Promise<void> {
     try {
-      await apiClient.patch<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATIONS, {markAllAsRead: true});
+      await apiClient.patchResource<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATIONS, {is_read: true});
     } catch (error) {
       console.error('Mark all notifications as read error:', error);
       throw error;
