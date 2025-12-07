@@ -16,6 +16,7 @@ import {
   FilterParams,
   PaginationParams,
   EditProfileFormData,
+  UserConfigFormData,
 } from '@/types';
 import { FilterType } from '@/types/enums';
 
@@ -333,6 +334,30 @@ class UserRepository {
       throw error;
     }
   }
+
+  /**
+   * Update user config
+   * @param userId User ID
+   * @param userData User config data
+   * @returns Updated user config
+   */
+  async updateUserConfig(userId: number, userData: UserConfigFormData): Promise<HALResource<User>> {
+    try {
+      const response: HALResource<User> = await apiClient.patchResource<User>(
+        USER_ENDPOINTS.USER_BY_ID(userId),
+        userData
+      );
+
+      if (!response) {
+        throw new Error('Invalid update user config response: missing data');
+      }
+
+      return response as HALResource<User>;
+    } catch (error) {
+      console.error(`Update user ${userId} config error:`, error);
+      throw error;
+    }
+  }
 }
 
 // ============================================================================
@@ -340,4 +365,3 @@ class UserRepository {
 // ============================================================================
 
 export const userRepository = new UserRepository();
-

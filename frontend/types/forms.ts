@@ -3,6 +3,7 @@
  * TypeScript interfaces for all form data (14 forms)
  */
 
+import { LanguageEnum, ThemeEnum } from '.';
 import { ReviewItemType, SearchType } from './enums';
 
 /**
@@ -54,6 +55,18 @@ export interface EditProfileFormData {
   profilePicture?: number;
 }
 
+
+/**
+ * User config form data
+ */
+export interface UserConfigFormData {
+  preferred_language?: LanguageEnum;
+  preferred_theme?: ThemeEnum;
+  has_follow_notifications_enabled?: boolean;
+  has_like_notifications_enabled?: boolean;
+  has_comments_notifications_enabled?: boolean;
+  has_reviews_notifications_enabled?: boolean;
+}
 // ============================================================================
 // Review Forms (2)
 // ============================================================================

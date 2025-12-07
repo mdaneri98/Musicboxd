@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { userRepository } from '@/repositories';
-import { User, Artist, Album, Song, Review, Collection, HALResource, EditProfileFormData } from '@/types';
+import { User, Artist, Album, Song, Review, Collection, HALResource, EditProfileFormData, UserConfigFormData } from '@/types';
 import type { RootState } from '../index';
 
 // ============================================================================
@@ -284,6 +284,21 @@ export const fetchUserReviewsAsync = createAsyncThunk<
   }
 });
 
+/**
+ * Update user config
+ */
+export const updateUserConfigAsync = createAsyncThunk<
+  HALResource<User>,
+  { userId: number; userData: UserConfigFormData },
+  { rejectValue: string }
+>('users/updateUserConfig', async ({ userId, userData }, { rejectWithValue }) => {
+  try {
+    const response = await userRepository.updateUserConfig(userId, userData);
+    return response as HALResource<User>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to update user config');
+  }
+});  
 // ============================================================================
 // Slice
 // ============================================================================

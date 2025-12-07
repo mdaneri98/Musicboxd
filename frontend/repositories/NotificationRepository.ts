@@ -164,22 +164,22 @@ class NotificationRepository {
    * Get count of unread notifications
    * @returns Unread count
    */
-  // async getUnreadCount(): Promise<number> {
-  //   try {
-  //     const response: { unread_count: number } = await apiClient.get<{ unread_count: number }>(
-  //       NOTIFICATION_ENDPOINTS.UNREAD_COUNT
-  //     );
+  async getUnreadCount(): Promise<number> {
+    try {
+      const response: { unread_count: number } = await apiClient.get<{ unread_count: number }>(
+        NOTIFICATION_ENDPOINTS.UNREAD_COUNT
+      );
 
-  //     if (!response) {
-  //       throw new Error('Invalid unread count response: missing data');
-  //     }
+      if (!response) {
+        throw new Error('Invalid unread count response: missing data');
+      }
 
-  //     return response.unread_count ?? 0;
-  //   } catch (error) {
-  //     console.error('Get unread count error:', error);
-  //     throw error;
-  //   }
-  // }
+      return response.unread_count ?? 0;
+    } catch (error) {
+      console.error('Get unread count error:', error);
+      throw error;
+    }
+  }
 }
 
 // ============================================================================

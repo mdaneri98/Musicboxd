@@ -3,7 +3,7 @@
  * Redux slice for notification state management
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { notificationRepository } from '@/repositories';
 import { Notification, Collection, HALResource } from '@/types';
 import type { RootState } from '../index';
@@ -73,18 +73,18 @@ export const fetchNotificationsAsync = createAsyncThunk<
 /**
  * Fetch unread notification count
  */
-// export const fetchUnreadCountAsync = createAsyncThunk<
-//   number,
-//   void,
-//   { rejectValue: string }
-// >('notifications/fetchUnreadCountAsync', async (_, { rejectWithValue }) => {
-//   try {
-//     const response = await notificationRepository.getUnreadCount();
-//     return response as number;
-//   } catch (error: any) {
-//     return rejectWithValue(error.message || 'Failed to fetch unread count');
-//   }
-// });
+export const fetchUnreadCountAsync = createAsyncThunk<
+  number,
+  void,
+  { rejectValue: string }
+>('notifications/fetchUnreadCountAsync', async (_, { rejectWithValue }) => {
+  try {
+    const response = await notificationRepository.getUnreadCount();
+    return response as number;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch unread count');
+  }
+});
 
 /**
  * Mark notification as read
@@ -202,25 +202,13 @@ const notificationSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchNotificationsAsync.fulfilled, (state, action) => {
-        state.loading = false;
-        
-        // Reset or append based on page number
-        if (action.payload.currentPage === 1) {
-          state.notifications = {};
-          state.notificationIds = [];
-        }
-        
+        state.loading = false;      
         action.payload.items.forEach((notification) => {
-          state.notifications[notification.data.id] = notification.data as Notification;
-          if (!state.notificationIds.includes(notification.data.id)) {
-            state.notificationIds.push(notification.data.id);
+          if (!state.notifications[notification.data.id]) { 
+            state.notifications[notification.data.id] = notification.data as Notification;
           }
         });
-        
-        // Calculate unread count from all loaded notifications
-        state.unreadCount = Object.values(state.notifications).filter(
-          (notification) => !notification.is_read
-        ).length;
+        state.notificationIds = action.payload.items.map((notification) => notification.data.id);
         
         state.pagination = {
           page: action.payload.currentPage,
@@ -233,20 +221,20 @@ const notificationSlice = createSlice({
         state.error = action.payload || 'Failed to fetch notifications';
       });
 
-    // // Fetch Unread Count
-    // builder
-    //   .addCase(fetchUnreadCountAsync.pending, (state) => {
-    //     state.loadingCount = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(fetchUnreadCountAsync.fulfilled, (state, action) => {
-    //     state.loadingCount = false;
-    //     state.unreadCount = action.payload;
-    //   })
-    //   .addCase(fetchUnreadCountAsync.rejected, (state, action) => {
-    //     state.loadingCount = false;
-    //     state.error = action.payload || 'Failed to fetch unread count';
-    //   });
+    // Fetch Unread Count
+    builder
+      .addCase(fetchUnreadCountAsync.pending, (state) => {
+        state.loadingCount = true;
+        state.error = null;
+      })
+      .addCase(fetchUnreadCountAsync.fulfilled, (state, action) => {
+        state.loadingCount = false;
+        state.unreadCount = action.payload;
+      })
+      .addCase(fetchUnreadCountAsync.rejected, (state, action) => {
+        state.loadingCount = false;
+        state.error = action.payload || 'Failed to fetch unread count';
+      });
 
     // Mark As Read
     builder
@@ -315,8 +303,10 @@ export const selectNotifications = (state: RootState) => state.notifications.not
 export const selectNotificationById = (notificationId: number) => (state: RootState) =>
   state.notifications.notifications[notificationId] || null;
 export const selectNotificationIds = (state: RootState) => state.notifications.notificationIds;
-export const selectNotificationList = (state: RootState) =>
-  state.notifications.notificationIds.map((id) => state.notifications.notifications[id]);
+export const selectOrderedNotifications = createSelector(
+  [selectNotifications, selectNotificationIds],
+  (notifications, ids) => ids.map((id) => notifications[id]).filter(Boolean)
+);
 export const selectUnreadNotifications = (state: RootState) =>
   state.notifications.notificationIds
     .map((id) => state.notifications.notifications[id])

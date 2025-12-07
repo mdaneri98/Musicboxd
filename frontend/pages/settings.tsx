@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, deleteUserAsync } from '@/store/slices';
+import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, deleteUserAsync, updateUserConfigAsync } from '@/store/slices';
 import { ConfirmationModal } from '@/components/ui';
 import { ThemeEnum, LanguageEnum } from '@/types';
 
 interface NotificationSettings {
-  followNotificationsEnabled: boolean;
-  likeNotificationsEnabled: boolean;
-  commentNotificationsEnabled: boolean;
-  reviewNotificationsEnabled: boolean;
+  has_follow_notifications_enabled: boolean;
+  has_like_notifications_enabled: boolean;
+  has_comments_notifications_enabled: boolean;
+  has_reviews_notifications_enabled: boolean;
 }
 
 export default function SettingsPage() {
@@ -18,58 +18,38 @@ export default function SettingsPage() {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-
-  // Local state for settings (would normally come from user object)
   const [theme, setTheme] = useState<ThemeEnum>(ThemeEnum.DARK);
   const [language, setLanguage] = useState<LanguageEnum>(LanguageEnum.EN);
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
-    followNotificationsEnabled: true,
-    likeNotificationsEnabled: true,
-    commentNotificationsEnabled: true,
-    reviewNotificationsEnabled: true,
-  });
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>();
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Redirect to landing if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/landing');
-    }
-  }, [isAuthenticated, router]);
+    } else dispatch(getCurrentUserAsync());
+  }, [isAuthenticated, router, dispatch]);
 
-  // Fetch current user settings
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(getCurrentUserAsync());
-    }
-  }, [isAuthenticated, dispatch]);
-
-  // Initialize settings from current user
   useEffect(() => {
     if (currentUser) {
-      // These fields would need to be added to the User model
-      // For now, using defaults
-      // setTheme(currentUser.theme || 'dark');
-      // setLanguage(currentUser.preferredLanguage || 'en');
-      // setNotificationSettings({
-      //   followNotificationsEnabled: currentUser.followNotificationsEnabled ?? true,
-      //   likeNotificationsEnabled: currentUser.likeNotificationsEnabled ?? true,
-      //   commentNotificationsEnabled: currentUser.commentNotificationsEnabled ?? true,
-      //   reviewNotificationsEnabled: currentUser.reviewNotificationsEnabled ?? true,
-      // });
+      setNotificationSettings({
+        has_follow_notifications_enabled: currentUser.has_follow_notifications_enabled,
+        has_like_notifications_enabled: currentUser.has_like_notifications_enabled,
+        has_comments_notifications_enabled: currentUser.has_comments_notifications_enabled,
+        has_reviews_notifications_enabled: currentUser.has_reviews_notifications_enabled
+      });
+      setTheme(currentUser.preferred_theme);
+      setLanguage(currentUser.preferred_language);
     }
   }, [currentUser]);
 
-  // Handle theme change
   const handleThemeChange = async (newTheme: ThemeEnum) => {
     setTheme(newTheme);
     try {
       setSaving(true);
-      // TODO: API endpoint to update theme
-      // await userRepository.updateSettings({ theme: newTheme });
-      console.log('Theme updated to:', newTheme);
+      if (!currentUser) return;
+      await dispatch(updateUserConfigAsync({ userId: currentUser.id, userData: { preferred_theme: newTheme } })).unwrap();
     } catch (error) {
       console.error('Failed to update theme:', error);
     } finally {
@@ -77,14 +57,12 @@ export default function SettingsPage() {
     }
   };
 
-  // Handle language change
   const handleLanguageChange = async (newLanguage: LanguageEnum) => {
     setLanguage(newLanguage);
     try {
       setSaving(true);
-      // TODO: API endpoint to update language
-      // await userRepository.updateSettings({ language: newLanguage });
-      console.log('Language updated to:', newLanguage);
+      if (!currentUser) return;
+      await dispatch(updateUserConfigAsync({ userId: currentUser.id, userData: { preferred_language: newLanguage } })).unwrap();
     } catch (error) {
       console.error('Failed to update language:', error);
     } finally {
@@ -92,28 +70,18 @@ export default function SettingsPage() {
     }
   };
 
-  // Handle notification setting toggle
   const handleNotificationToggle = async (setting: keyof NotificationSettings) => {
-    const newValue = !notificationSettings[setting];
-    setNotificationSettings((prev) => ({
-      ...prev,
-      [setting]: newValue,
-    }));
+    const newValue = !notificationSettings?.[setting];
+    setNotificationSettings((prev) => {
+      if (!prev) return prev;
+      return { ...prev, [setting]: newValue };
+    });
 
     try {
-      setSaving(true);
-      // TODO: API endpoint to update notification settings
-      // await userRepository.updateSettings({ [setting]: newValue });
-      console.log(`${setting} updated to:`, newValue);
+      if (!currentUser) return;
+      await dispatch(updateUserConfigAsync({ userId: currentUser.id, userData: { [setting]: newValue } })).unwrap();
     } catch (error) {
       console.error(`Failed to update ${setting}:`, error);
-      // Revert on error
-      setNotificationSettings((prev) => ({
-        ...prev,
-        [setting]: !newValue,
-      }));
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -157,11 +125,11 @@ export default function SettingsPage() {
                   className="theme-select"
                   disabled={saving}
                 >
-                  <option value="dark">Dark</option>
-                  <option value="kawaii">Kawaii</option>
-                  <option value="sepia">Sepia</option>
-                  <option value="ocean">Ocean</option>
-                  <option value="forest">Forest</option>
+                  <option value={ThemeEnum.DARK}>Dark</option>
+                  <option value={ThemeEnum.KAWAII}>Kawaii</option>
+                  <option value={ThemeEnum.SEPIA}>Sepia</option>
+                  <option value={ThemeEnum.OCEAN}>Ocean</option>
+                  <option value={ThemeEnum.FOREST}>Forest</option>
                 </select>
               </div>
             </div>
@@ -182,13 +150,13 @@ export default function SettingsPage() {
                   className="theme-select"
                   disabled={saving}
                 >
-                  <option value="en">English</option>
-                  <option value="es">Español</option>
-                  <option value="fr">Français</option>
-                  <option value="de">Deutsch</option>
-                  <option value="it">Italiano</option>
-                  <option value="pt">Português</option>
-                  <option value="ja">日本語</option>
+                  <option value={LanguageEnum.EN}>English</option>
+                  <option value={LanguageEnum.ES}>Español</option>
+                  <option value={LanguageEnum.FR}>Français</option>
+                  <option value={LanguageEnum.DE}>Deutsch</option>
+                  <option value={LanguageEnum.IT}>Italiano</option>
+                  <option value={LanguageEnum.PT}>Português</option>
+                  <option value={LanguageEnum.JA}>日本語</option>
                 </select>
               </div>
             </div>
@@ -208,8 +176,8 @@ export default function SettingsPage() {
                     type="checkbox"
                     id="followNotif"
                     className="toggle-input"
-                    checked={notificationSettings.followNotificationsEnabled}
-                    onChange={() => handleNotificationToggle('followNotificationsEnabled')}
+                    checked={notificationSettings?.has_follow_notifications_enabled}
+                    onChange={() => handleNotificationToggle('has_follow_notifications_enabled')}
                     disabled={saving}
                   />
                   <label htmlFor="followNotif" className="toggle-label"></label>
@@ -226,8 +194,8 @@ export default function SettingsPage() {
                     type="checkbox"
                     id="likeNotif"
                     className="toggle-input"
-                    checked={notificationSettings.likeNotificationsEnabled}
-                    onChange={() => handleNotificationToggle('likeNotificationsEnabled')}
+                    checked={notificationSettings?.has_like_notifications_enabled}
+                    onChange={() => handleNotificationToggle('has_like_notifications_enabled')}
                     disabled={saving}
                   />
                   <label htmlFor="likeNotif" className="toggle-label"></label>
@@ -244,8 +212,8 @@ export default function SettingsPage() {
                     type="checkbox"
                     id="commentNotif"
                     className="toggle-input"
-                    checked={notificationSettings.commentNotificationsEnabled}
-                    onChange={() => handleNotificationToggle('commentNotificationsEnabled')}
+                    checked={notificationSettings?.has_comments_notifications_enabled}
+                    onChange={() => handleNotificationToggle('has_comments_notifications_enabled')}
                     disabled={saving}
                   />
                   <label htmlFor="commentNotif" className="toggle-label"></label>
@@ -262,8 +230,8 @@ export default function SettingsPage() {
                     type="checkbox"
                     id="reviewNotif"
                     className="toggle-input"
-                    checked={notificationSettings.reviewNotificationsEnabled}
-                    onChange={() => handleNotificationToggle('reviewNotificationsEnabled')}
+                    checked={notificationSettings?.has_reviews_notifications_enabled}
+                    onChange={() => handleNotificationToggle('has_reviews_notifications_enabled')}
                     disabled={saving}
                   />
                   <label htmlFor="reviewNotif" className="toggle-label"></label>

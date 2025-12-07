@@ -1,3 +1,4 @@
+import { LanguageEnum, ThemeEnum } from ".";
 import { NotificationType, ReviewItemType } from "./enums";
 
 /**
@@ -22,6 +23,12 @@ export interface User {
   moderator: boolean;
   verified: boolean;
   created_at: Date;
+  preferred_language: LanguageEnum;
+  preferred_theme: ThemeEnum;
+  has_follow_notifications_enabled: boolean;
+  has_like_notifications_enabled: boolean;
+  has_comments_notifications_enabled: boolean;
+  has_reviews_notifications_enabled: boolean; 
 }
 
 // ============================================================================

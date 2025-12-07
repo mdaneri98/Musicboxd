@@ -66,5 +66,6 @@ export type {
   FormFieldError,
   FormErrors,
   FormSubmissionState,
+  UserConfigFormData,
 } from './forms';
 

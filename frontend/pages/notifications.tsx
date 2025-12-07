@@ -3,13 +3,14 @@ import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { NotificationCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, fetchNotificationsAsync, markAllAsReadAsync, selectNotificationPagination, selectNotifications, selectUnreadCount, selectNotificationLoading } from '@/store/slices';
+import { selectIsAuthenticated, selectOrderedNotifications, fetchNotificationsAsync, markAllAsReadAsync, selectNotificationPagination, selectUnreadCount, selectNotificationLoading } from '@/store/slices';
+import { Notification } from '@/types';
 
 export default function NotificationsPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const notifications = useAppSelector(selectNotifications);
+  const notifications = useAppSelector(selectOrderedNotifications);
   const unreadCount = useAppSelector(selectUnreadCount);
   const loadingNotifications = useAppSelector(selectNotificationLoading);
   const pagination = useAppSelector(selectNotificationPagination);
@@ -84,11 +85,11 @@ export default function NotificationsPage() {
 
         {loadingNotifications ? (
           <div className="loading">Loading notifications...</div>
-        ) : Object.values(notifications).length === 0 ? (
+        ) : notifications.length === 0 ? (
           <p className="no-results">No notifications</p>
         ) : (
           <div className="notifications-list">
-            {Object.values(notifications).map((notification) => (
+            {notifications.map((notification: Notification) => (
               <NotificationCard
                 key={notification.id}
                 notification={notification}
