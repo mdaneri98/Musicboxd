@@ -15,7 +15,6 @@ const LanguageSwitcher = ({ className = '', onLanguageChange }: LanguageSwitcher
   const { i18n, t } = useTranslation();
 
   const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
     onLanguageChange?.(lng as Language);
   };
 

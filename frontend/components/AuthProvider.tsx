@@ -5,8 +5,9 @@
  */
 
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { checkAuthAsync, selectAuthInitializing } from '@/store/slices/authSlice';
+import { checkAuthAsync, selectAuthInitializing, selectCurrentUser } from '@/store/slices/authSlice';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -14,12 +15,19 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const dispatch = useAppDispatch();
+  const { i18n } = useTranslation();
   const initializing = useAppSelector(selectAuthInitializing);
+  const currentUser = useAppSelector(selectCurrentUser);
 
   useEffect(() => {
-    // Check auth status on mount (restore from localStorage)
     dispatch(checkAuthAsync());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (currentUser?.preferred_language && i18n.language !== currentUser.preferred_language) {
+      i18n.changeLanguage(currentUser.preferred_language);
+    }
+  }, [currentUser?.preferred_language, i18n]);
 
   // Show loading state while initializing
   if (initializing) {
