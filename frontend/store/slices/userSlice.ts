@@ -553,6 +553,24 @@ const userSlice = createSlice({
         state.loadingReviews = false;
         state.error = action.payload || 'Failed to fetch user reviews';
       });
+
+    // Update User Config
+    builder
+      .addCase(updateUserConfigAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserConfigAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users[action.payload.data.id] = action.payload.data as User;
+        if (state.currentProfile?.id === action.payload.data.id) {
+          state.currentProfile = action.payload.data as User;
+        }
+      })
+      .addCase(updateUserConfigAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to update user config';
+      });
   },
 });
 

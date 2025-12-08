@@ -8,13 +8,15 @@ import { Language } from '@/types/enums';
 
 interface LanguageSwitcherProps {
   className?: string;
+  onLanguageChange?: (language: Language) => void;
 }
 
-const LanguageSwitcher = ({ className = '' }: LanguageSwitcherProps) => {
+const LanguageSwitcher = ({ className = '', onLanguageChange }: LanguageSwitcherProps) => {
   const { i18n, t } = useTranslation();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    onLanguageChange?.(lng as Language);
   };
 
   return (

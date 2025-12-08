@@ -7,6 +7,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { authRepository } from '@/repositories';
 import { User, LoginResponse, RegisterFormData, RefreshTokenResponse } from '@/types';
 import type { RootState } from '../index';
+import { updateUserConfigAsync } from './userSlice';
 
 // ============================================================================
 // State Interface
@@ -19,7 +20,7 @@ export interface AuthState {
   isModerator: boolean;
   loading: boolean;
   error: string | null;
-  initializing: boolean; // For app initialization
+  initializing: boolean; 
 }
 
 // ============================================================================
@@ -334,6 +335,12 @@ const authSlice = createSlice({
         state.jwt = { accessToken: null, refreshToken: null };
         state.isModerator = false;
       });
+
+    builder.addCase(updateUserConfigAsync.fulfilled, (state, action) => {
+      if (state.currentUser?.id === action.payload.data.id) {
+        state.currentUser = action.payload.data as User;
+      }
+    });
   },
 });
 
