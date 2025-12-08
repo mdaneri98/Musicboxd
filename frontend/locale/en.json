@@ -1,0 +1,173 @@
+{
+  "navbar": {
+    "home": "Home",
+    "discovery": "Discovery",
+    "search": "Search",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "logout": "Logout"
+  },
+  "landing": {
+    "title": "Discover Music",
+    "subtitle": "Share your passion for music. Rate, review, and discover new albums, artists, and songs.",
+    "getStarted": "Get Started",
+    "popularReviews": "Popular Reviews",
+    "loading": "Loading popular reviews...",
+    "features": {
+      "writeReviews": {
+        "title": "Write Reviews",
+        "description": "Share your thoughts on albums, artists, and songs with the community."
+      },
+      "joinCommunity": {
+        "title": "Join Community",
+        "description": "Connect with music lovers, follow users, and discover new perspectives."
+      },
+      "discoverMusic": {
+        "title": "Discover Music",
+        "description": "Explore our extensive database of artists, albums, and songs."
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Sign In",
+      "noAccount": "Don't you have an account yet?",
+      "changePassword": "Change password"
+    },
+    "register": {
+      "title": "Register",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Sign Up",
+      "haveAccount": "Already have an account?"
+    }
+  },
+  "profile": {
+    "tabs": {
+      "favorites": "Favorites",
+      "reviews": "Reviews"
+    },
+    "followers": "Followers",
+    "following": "Following",
+    "reviews": "Reviews",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "editProfile": "Edit Profile"
+  },
+  "music": {
+    "tabs": {
+      "popular": "Popular",
+      "topRated": "Top Rated"
+    },
+    "artists": "Artists",
+    "albums": "Albums",
+    "songs": "Songs"
+  },
+  "search": {
+    "tabs": {
+      "music": "Music",
+      "users": "Users"
+    },
+    "placeholder": "Search for artists, albums, songs, or users...",
+    "noResults": "No results found",
+    "searching": "Searching..."
+  },
+  "review": {
+    "tabs": {
+      "likes": "Likes",
+      "comments": "Comments"
+    },
+    "writeReview": "Write a Review",
+    "editReview": "Edit Review",
+    "deleteReview": "Delete Review",
+    "rating": "Rating",
+    "title": "Title",
+    "content": "Content",
+    "submit": "Submit Review",
+    "cancel": "Cancel",
+    "likes": "{{count}} like",
+    "likes_other": "{{count}} likes",
+    "comments": "{{count}} comment",
+    "comments_other": "{{count}} comments"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "types": {
+      "follow": "{{username}} started following you",
+      "like": "{{username}} liked your review",
+      "comment": "{{username}} commented on your review",
+      "newReview": "{{username}} posted a new review"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "privacy": "Privacy",
+    "notifications": "Notifications",
+    "account": "Account",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "themes": {
+      "dark": "Dark",
+      "sepia": "Sepia",
+      "ocean": "Ocean",
+      "forest": "Forest",
+      "kawaii": "Kawaii"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "de": "Deutsch",
+      "fr": "Français",
+      "it": "Italiano",
+      "ja": "日本語",
+      "pt": "Português"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "success": "Success",
+    "failed": "Failed"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "passwordMismatch": "Passwords do not match",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be at most {{max}} characters",
+    "loginFailed": "Invalid username or password",
+    "networkError": "Network error. Please try again.",
+    "notFound": "Resource not found",
+    "unauthorized": "Unauthorized access",
+    "serverError": "Server error. Please try again later."
+  },
+  "footer": {
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© {{year}} Musicboxd. All rights reserved."
+  }
+}

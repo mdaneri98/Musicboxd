@@ -7,12 +7,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import { useTranslation } from 'react-i18next';
 import { Footer } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { reviewRepository } from '@/repositories';
 import type { Review } from '@/types';
 
 const LandingPage = () => {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,46 +44,46 @@ const LandingPage = () => {
           <nav className="nav-bar">
             <div className="logo">Musicboxd</div>
             <div className="nav-links">
-              <Link href="/landing" className="nav-link">Home</Link>
-              <Link href="/music" className="nav-link">Discovery</Link>
-              <Link href="/search" className="nav-link">Search</Link>
-              <Link href="/login" className="nav-link">Login</Link>
-              <Link href="/register" className="nav-link">Register</Link>
+              <Link href="/landing" className="nav-link">{t('navbar.home')}</Link>
+              <Link href="/music" className="nav-link">{t('navbar.discovery')}</Link>
+              <Link href="/search" className="nav-link">{t('navbar.search')}</Link>
+              <Link href="/login" className="nav-link">{t('navbar.login')}</Link>
+              <Link href="/register" className="nav-link">{t('navbar.register')}</Link>
             </div>
           </nav>
         </header>
 
         <main className="content-wrapper">
           <section className="hero-section">
-            <h1>Discover Music</h1>
-            <p>Share your passion for music. Rate, review, and discover new albums, artists, and songs.</p>
+            <h1>{t('landing.title')}</h1>
+            <p>{t('landing.subtitle')}</p>
             <Link href="/register" className="btn btn-primary">
-              Get Started
+              {t('landing.getStarted')}
             </Link>
           </section>
 
           <section className="features-grid">
             <div className="feature-card">
               <img src="/assets/reviewIcon.png" alt="Review Icon" className="feature-icon" />
-              <h3>Write Reviews</h3>
-              <p>Share your thoughts on albums, artists, and songs with the community.</p>
+              <h3>{t('landing.features.writeReviews.title')}</h3>
+              <p>{t('landing.features.writeReviews.description')}</p>
             </div>
             <div className="feature-card">
               <img src="/assets/communityIcon.png" alt="Community Icon" className="feature-icon" />
-              <h3>Join Community</h3>
-              <p>Connect with music lovers, follow users, and discover new perspectives.</p>
+              <h3>{t('landing.features.joinCommunity.title')}</h3>
+              <p>{t('landing.features.joinCommunity.description')}</p>
             </div>
             <div className="feature-card">
               <img src="/assets/discoverIcon.png" alt="Discover Icon" className="feature-icon" />
-              <h3>Discover Music</h3>
-              <p>Explore our extensive database of artists, albums, and songs.</p>
+              <h3>{t('landing.features.discoverMusic.title')}</h3>
+              <p>{t('landing.features.discoverMusic.description')}</p>
             </div>
           </section>
 
           <section className="reviews-section">
-            <h2>Popular Reviews</h2>
+            <h2>{t('landing.popularReviews')}</h2>
             {loading ? (
-              <div className="loading">Loading popular reviews...</div>
+              <div className="loading">{t('landing.loading')}</div>
             ) : (
               <div className="reviews-grid">
                 {reviews.map((review) => (

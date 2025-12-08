@@ -1,0 +1,173 @@
+{
+  "navbar": {
+    "home": "Inicio",
+    "discovery": "Descubrimiento",
+    "search": "Buscar",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "notifications": "Notificaciones",
+    "logout": "Cerrar sesión"
+  },
+  "landing": {
+    "title": "Descubre Música",
+    "subtitle": "Comparte tu pasión por la música. Califica, reseña y descubre nuevos álbumes, artistas y canciones.",
+    "getStarted": "Comenzar",
+    "popularReviews": "Reseñas Populares",
+    "loading": "Cargando reseñas populares...",
+    "features": {
+      "writeReviews": {
+        "title": "Escribe Reseñas",
+        "description": "Comparte tus pensamientos sobre álbumes, artistas y canciones con la comunidad."
+      },
+      "joinCommunity": {
+        "title": "Únete a la Comunidad",
+        "description": "Conecta con amantes de la música, sigue usuarios y descubre nuevas perspectivas."
+      },
+      "discoverMusic": {
+        "title": "Descubre Música",
+        "description": "Explora nuestra extensa base de datos de artistas, álbumes y canciones."
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "username": "Usuario",
+      "password": "Contraseña",
+      "submit": "Entrar",
+      "noAccount": "¿Aún no tienes una cuenta?",
+      "changePassword": "Cambiar contraseña"
+    },
+    "register": {
+      "title": "Registrarse",
+      "username": "Usuario",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "submit": "Crear cuenta",
+      "haveAccount": "¿Ya tienes una cuenta?"
+    }
+  },
+  "profile": {
+    "tabs": {
+      "favorites": "Favoritos",
+      "reviews": "Reseñas"
+    },
+    "followers": "Seguidores",
+    "following": "Siguiendo",
+    "reviews": "Reseñas",
+    "follow": "Seguir",
+    "unfollow": "Dejar de seguir",
+    "editProfile": "Editar perfil"
+  },
+  "music": {
+    "tabs": {
+      "popular": "Popular",
+      "topRated": "Mejor calificado"
+    },
+    "artists": "Artistas",
+    "albums": "Álbumes",
+    "songs": "Canciones"
+  },
+  "search": {
+    "tabs": {
+      "music": "Música",
+      "users": "Usuarios"
+    },
+    "placeholder": "Buscar artistas, álbumes, canciones o usuarios...",
+    "noResults": "No se encontraron resultados",
+    "searching": "Buscando..."
+  },
+  "review": {
+    "tabs": {
+      "likes": "Me gusta",
+      "comments": "Comentarios"
+    },
+    "writeReview": "Escribir una reseña",
+    "editReview": "Editar reseña",
+    "deleteReview": "Eliminar reseña",
+    "rating": "Calificación",
+    "title": "Título",
+    "content": "Contenido",
+    "submit": "Enviar reseña",
+    "cancel": "Cancelar",
+    "likes": "{{count}} me gusta",
+    "likes_other": "{{count}} me gusta",
+    "comments": "{{count}} comentario",
+    "comments_other": "{{count}} comentarios"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar todas como leídas",
+    "noNotifications": "No hay notificaciones",
+    "types": {
+      "follow": "{{username}} comenzó a seguirte",
+      "like": "A {{username}} le gustó tu reseña",
+      "comment": "{{username}} comentó en tu reseña",
+      "newReview": "{{username}} publicó una nueva reseña"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "theme": "Tema",
+    "language": "Idioma",
+    "privacy": "Privacidad",
+    "notifications": "Notificaciones",
+    "account": "Cuenta",
+    "save": "Guardar cambios",
+    "cancel": "Cancelar",
+    "themes": {
+      "dark": "Oscuro",
+      "sepia": "Sepia",
+      "ocean": "Océano",
+      "forest": "Bosque",
+      "kawaii": "Kawaii"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "de": "Deutsch",
+      "fr": "Français",
+      "it": "Italiano",
+      "ja": "日本語",
+      "pt": "Português"
+    }
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "submit": "Enviar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "success": "Éxito",
+    "failed": "Falló"
+  },
+  "errors": {
+    "required": "Este campo es obligatorio",
+    "invalidEmail": "Dirección de correo electrónico no válida",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "minLength": "Debe tener al menos {{min}} caracteres",
+    "maxLength": "Debe tener como máximo {{max}} caracteres",
+    "loginFailed": "Usuario o contraseña incorrectos",
+    "networkError": "Error de red. Por favor, intenta de nuevo.",
+    "notFound": "Recurso no encontrado",
+    "unauthorized": "Acceso no autorizado",
+    "serverError": "Error del servidor. Por favor, intenta más tarde."
+  },
+  "footer": {
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de servicio",
+    "copyright": "© {{year}} Musicboxd. Todos los derechos reservados."
+  }
+}

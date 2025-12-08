@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { store } from '@/store';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import AuthProvider from '@/components/AuthProvider';
+import '../i18n'; // Import i18n configuration
 
 // Import existing CSS files in correct order
 import '@/styles/base.css';

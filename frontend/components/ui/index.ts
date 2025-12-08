@@ -28,3 +28,6 @@ export { default as RatingCard } from './RatingCard';
 // Confirmation Modal
 export { default as ConfirmationModal } from './ConfirmationModal';
 
+// Language Switcher
+export { default as LanguageSwitcher } from './LanguageSwitcher';
+
