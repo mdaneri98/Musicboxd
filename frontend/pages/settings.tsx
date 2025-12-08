@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, deleteUserAsync, updateUserConfigAsync } from '@/store/slices';
-import { ConfirmationModal } from '@/components/ui';
+import { ConfirmationModal, LanguageSwitcher } from '@/components/ui';
 import { ThemeEnum, LanguageEnum } from '@/types';
 
 interface NotificationSettings {
@@ -14,6 +15,7 @@ interface NotificationSettings {
 }
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -105,19 +107,19 @@ export default function SettingsPage() {
     <Layout title="Settings - Musicboxd">
       <div className="settings-container">
         <div className="settings-header">
-          <h1 className="settings-title">Settings</h1>
-          <p className="settings-description">Manage your account preferences and settings</p>
+          <h1 className="settings-title">{t('settings.title')}</h1>
+          <p className="settings-description">{t('settings.description')}</p>
         </div>
 
         <div className="settings-content">
           {/* Appearance Section */}
           <section className="settings-section">
-            <h2 className="section-title">Appearance</h2>
+            <h2 className="section-title">{t('settings.appearance')}</h2>
             <div className="settings-card">
               <div className="settings-option">
                 <div className="option-info">
-                  <h3>Theme</h3>
-                  <p>Choose your preferred color theme</p>
+                  <h3>{t('settings.theme')}</h3>
+                  <p>{t('settings.themeDescription')}</p>
                 </div>
                 <select
                   value={theme}
@@ -125,11 +127,11 @@ export default function SettingsPage() {
                   className="theme-select"
                   disabled={saving}
                 >
-                  <option value={ThemeEnum.DARK}>Dark</option>
-                  <option value={ThemeEnum.KAWAII}>Kawaii</option>
-                  <option value={ThemeEnum.SEPIA}>Sepia</option>
-                  <option value={ThemeEnum.OCEAN}>Ocean</option>
-                  <option value={ThemeEnum.FOREST}>Forest</option>
+                  <option value={ThemeEnum.DARK}>{t('settings.themes.dark')}</option>
+                  <option value={ThemeEnum.KAWAII}>{t('settings.themes.kawaii')}</option>
+                  <option value={ThemeEnum.SEPIA}>{t('settings.themes.sepia')}</option>
+                  <option value={ThemeEnum.OCEAN}>{t('settings.themes.ocean')}</option>
+                  <option value={ThemeEnum.FOREST}>{t('settings.themes.forest')}</option>
                 </select>
               </div>
             </div>
@@ -137,39 +139,20 @@ export default function SettingsPage() {
 
           {/* Language Section */}
           <section className="settings-section">
-            <h2 className="section-title">Language</h2>
+            <h2 className="section-title">{t('settings.language')}</h2>
             <div className="settings-card">
-              <div className="settings-option">
-                <div className="option-info">
-                  <h3>Select Language</h3>
-                  <p>Choose your preferred language</p>
-                </div>
-                <select
-                  value={language}
-                  onChange={(e) => handleLanguageChange(e.target.value as LanguageEnum)}
-                  className="theme-select"
-                  disabled={saving}
-                >
-                  <option value={LanguageEnum.EN}>English</option>
-                  <option value={LanguageEnum.ES}>Español</option>
-                  <option value={LanguageEnum.FR}>Français</option>
-                  <option value={LanguageEnum.DE}>Deutsch</option>
-                  <option value={LanguageEnum.IT}>Italiano</option>
-                  <option value={LanguageEnum.PT}>Português</option>
-                  <option value={LanguageEnum.JA}>日本語</option>
-                </select>
-              </div>
+              <LanguageSwitcher />
             </div>
           </section>
 
           {/* Notifications Section */}
           <section className="settings-section">
-            <h2 className="section-title">Notifications</h2>
+            <h2 className="section-title">{t('settings.notifications')}</h2>
             <div className="settings-card">
               <div className="settings-option">
                 <div className="option-info">
-                  <h3>Follows</h3>
-                  <p>Get notified when someone follows you</p>
+                  <h3>{t('settings.notificationTypes.follows')}</h3>
+                  <p>{t('settings.notificationTypes.followsDescription')}</p>
                 </div>
                 <div className="toggle-switch">
                   <input
@@ -186,8 +169,8 @@ export default function SettingsPage() {
 
               <div className="settings-option">
                 <div className="option-info">
-                  <h3>Likes</h3>
-                  <p>Get notified when someone likes your review</p>
+                  <h3>{t('settings.notificationTypes.likes')}</h3>
+                  <p>{t('settings.notificationTypes.likesDescription')}</p>
                 </div>
                 <div className="toggle-switch">
                   <input
@@ -204,8 +187,8 @@ export default function SettingsPage() {
 
               <div className="settings-option">
                 <div className="option-info">
-                  <h3>Comments</h3>
-                  <p>Get notified when someone comments on your review</p>
+                  <h3>{t('settings.notificationTypes.comments')}</h3>
+                  <p>{t('settings.notificationTypes.commentsDescription')}</p>
                 </div>
                 <div className="toggle-switch">
                   <input
@@ -222,8 +205,8 @@ export default function SettingsPage() {
 
               <div className="settings-option">
                 <div className="option-info">
-                  <h3>Reviews</h3>
-                  <p>Get notified when followed users post a review</p>
+                  <h3>{t('settings.notificationTypes.reviews')}</h3>
+                  <p>{t('settings.notificationTypes.reviewsDescription')}</p>
                 </div>
                 <div className="toggle-switch">
                   <input
@@ -242,18 +225,18 @@ export default function SettingsPage() {
 
           {/* Danger Zone */}
           <section className="settings-section">
-            <h2 className="section-title danger-title">Danger Zone</h2>
+            <h2 className="section-title danger-title">{t('settings.dangerZone')}</h2>
             <div className="settings-card danger-card">
               <div className="settings-option">
                 <div className="option-info">
-                  <h3>Delete Account</h3>
-                  <p>Permanently delete your account and all associated data</p>
+                  <h3>{t('settings.deleteAccount')}</h3>
+                  <p>{t('settings.deleteAccountDescription')}</p>
                 </div>
                 <button
                   onClick={() => setShowDeleteModal(true)}
                   className="btn btn-danger"
                 >
-                  Delete Account
+                  {t('settings.deleteAccount')}
                 </button>
               </div>
             </div>
@@ -264,9 +247,9 @@ export default function SettingsPage() {
       {/* Delete Account Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteModal}
-        message="Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted."
-        confirmText="Delete Account"
-        cancelText="Cancel"
+        message={t('settings.deleteAccountConfirmation')}
+        confirmText={t('settings.deleteAccount')}
+        cancelText={t('common.cancel')}
         onConfirm={handleDeleteAccount}
         onCancel={() => setShowDeleteModal(false)}
       />

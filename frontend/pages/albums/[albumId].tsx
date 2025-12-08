@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout, AlbumInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -23,6 +24,7 @@ import type { Artist, Review } from '@/types';
 import { SongCard } from '@/components/cards';
 
 const AlbumDetailPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { albumId } = router.query;
   const dispatch = useAppDispatch();
@@ -120,9 +122,9 @@ const AlbumDetailPage = () => {
 
   if (loading || !album) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading album...</div>
+          <div className="loading">{t('album.loadingAlbum')}</div>
         </div>
       </Layout>
     );
@@ -130,10 +132,10 @@ const AlbumDetailPage = () => {
 
   if (error) {
     return (
-      <Layout title="Error">
+      <Layout title={t('common.error')}>
         <div className="content-wrapper">
           <div className="alert alert-danger" role="alert">
-            <strong>Error:</strong> {error}
+            <strong>{t('common.error')}:</strong> {error}
           </div>
         </div>
       </Layout>
@@ -158,7 +160,7 @@ const AlbumDetailPage = () => {
         {/* Songs Section */}
         {songs.length > 0 && (
           <section className="entity-section">
-            <h2>Songs</h2>
+            <h2>{t('music.songs')}</h2>
             <ul className="song-list">
               {songs.map((song, index) => (
                 <SongCard key={song.id} song={song} index={index} />
@@ -170,7 +172,7 @@ const AlbumDetailPage = () => {
         {/* Reviews Section */}
         {reviews.length > 0 && (
           <section className="entity-section">
-            <h2>Reviews</h2>
+            <h2>{t('profile.reviews')}</h2>
             <div className="reviews-grid">
               {reviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
@@ -184,7 +186,7 @@ const AlbumDetailPage = () => {
                   onClick={() => setReviewsPage(reviewsPage - 1)}
                   className="btn btn-secondary"
                 >
-                  Previous Page
+                  {t('album.previousPage')}
                 </button>
               )}
               {hasMoreReviews && (
@@ -192,7 +194,7 @@ const AlbumDetailPage = () => {
                   onClick={() => setReviewsPage(reviewsPage + 1)}
                   className="btn btn-secondary"
                 >
-                  Next Page
+                  {t('album.nextPage')}
                 </button>
               )}
             </div>

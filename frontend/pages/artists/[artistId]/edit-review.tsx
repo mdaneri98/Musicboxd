@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
@@ -20,12 +21,13 @@ import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
 
 const EditArtistReviewPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { artistId } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  
+
   const artist = useAppSelector(selectCurrentArtist);
   const loadingArtist = useAppSelector(selectLoadingArtist);
 
@@ -107,9 +109,9 @@ const EditArtistReviewPage = () => {
 
   if (loading || loadingArtist || !artist) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading...</div>
+          <div className="loading">{t('common.loading')}</div>
         </div>
       </Layout>
     );
@@ -118,9 +120,9 @@ const EditArtistReviewPage = () => {
   const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
 
   return (
-    <Layout title={`Musicboxd - Edit Review for ${artist.name}`}>
+    <Layout title={`Musicboxd - ${t('artist.editReviewFor')} ${artist.name}`}>
       <div className="content-wrapper">
-        <h1 className="page-title">Edit Your Review</h1>
+        <h1 className="page-title">{t('artist.editYourReview')}</h1>
 
         {/* Artist Preview */}
         <div className="review-preview">
@@ -153,7 +155,7 @@ const EditArtistReviewPage = () => {
                 onClick={() => setShowDeleteModal(true)}
                 className="btn btn-danger"
               >
-                Delete Review
+                {t('review.deleteReview')}
               </button>
             </div>
           )}
@@ -163,11 +165,11 @@ const EditArtistReviewPage = () => {
       {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteModal}
-        message="Are you sure you want to delete this review?"
+        message={t('artist.confirmDeleteReview')}
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteModal(false)}
-        confirmText="Yes"
-        cancelText="No"
+        confirmText={t('artist.yes')}
+        cancelText={t('artist.no')}
       />
     </Layout>
   );

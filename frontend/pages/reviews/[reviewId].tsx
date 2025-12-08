@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewCard, UserCard } from '@/components/cards';
 import { CommentForm } from '@/components/forms';
@@ -27,6 +28,7 @@ import type { Comment, CommentFormData } from '@/types';
 import { ReviewTab } from '@/types/enums';
 
 const ReviewDetailPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { reviewId, tab: queryTab, pageNum: queryPage } = router.query;
   const dispatch = useAppDispatch();
@@ -140,9 +142,9 @@ const ReviewDetailPage = () => {
 
   if (loadingReview || !review) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading review...</div>
+          <div className="loading">{t('reviewDetail.loadingReview')}</div>
         </div>
       </Layout>
     );
@@ -162,14 +164,14 @@ const ReviewDetailPage = () => {
               onClick={() => handleTabChange(ReviewTab.COMMENTS)}
               style={{ cursor: 'pointer' }}
             >
-              Comments
+              {t('review.tabs.comments')}
             </span>
             <span
               className={`tab ${activeTab === ReviewTab.LIKES ? 'active' : ''}`}
               onClick={() => handleTabChange(ReviewTab.LIKES)}
               style={{ cursor: 'pointer' }}
             >
-              Likes
+              {t('review.tabs.likes')}
             </span>
           </div>
         </div>
@@ -177,7 +179,7 @@ const ReviewDetailPage = () => {
         {activeTab === ReviewTab.LIKES ? (
           <>
             {likedUsers.length === 0 ? (
-              <p className="no-results">No likes yet</p>
+              <p className="no-results">{t('reviewDetail.noLikes')}</p>
             ) : (
               <div className="users-grid">
                 {likedUsers.map((user) => (
@@ -190,7 +192,7 @@ const ReviewDetailPage = () => {
           <>
             {isAuthenticated ? (
               <div className="comment-form-section">
-                <h3>Add a Comment</h3>
+                <h3>{t('reviewDetail.addComment')}</h3>
                 <CommentForm
                   onSubmit={handleCommentSubmit}
                   isLoading={submitLoading}
@@ -199,14 +201,14 @@ const ReviewDetailPage = () => {
               </div>
             ) : (
               <div className="auth-prompt">
-                <p>Please log in to comment</p>
+                <p>{t('reviewDetail.loginToComment')}</p>
               </div>
             )}
 
             {loading ? (
-              <div className="loading">Loading comments...</div>
+              <div className="loading">{t('reviewDetail.loadingComments')}</div>
             ) : comments.length === 0 ? (
-              <p className="no-results">No comments yet</p>
+              <p className="no-results">{t('reviewDetail.noComments')}</p>
             ) : (
               <div className="comments-list">
                 {comments.map((comment) => (
@@ -223,7 +225,7 @@ const ReviewDetailPage = () => {
                           onClick={() => setCommentToDelete(comment.id)}
                           className="btn btn-danger btn-sm"
                         >
-                          Delete
+                          {t('common.delete')}
                         </button>
                       )}
                     </div>
@@ -242,7 +244,7 @@ const ReviewDetailPage = () => {
                 onClick={() => handlePageChange(page - 1)}
                 className="btn btn-secondary"
               >
-                Previous Page
+                {t('reviewDetail.previousPage')}
               </button>
             )}
             {hasMore && (
@@ -250,7 +252,7 @@ const ReviewDetailPage = () => {
                 onClick={() => handlePageChange(page + 1)}
                 className="btn btn-secondary"
               >
-                Next Page
+                {t('reviewDetail.nextPage')}
               </button>
             )}
           </div>
@@ -259,11 +261,11 @@ const ReviewDetailPage = () => {
 
       <ConfirmationModal
         isOpen={commentToDelete !== null}
-        message="Are you sure you want to delete this comment?"
+        message={t('reviewDetail.confirmDeleteComment')}
         onConfirm={handleDeleteComment}
         onCancel={() => setCommentToDelete(null)}
-        confirmText="Yes"
-        cancelText="No"
+        confirmText={t('reviewDetail.yes')}
+        cancelText={t('reviewDetail.no')}
       />
     </Layout>
   );

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { editProfileSchema } from '@/utils/validationSchemas';
 import { EditProfileFormData } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface EditProfileFormProps {
   onSubmit: (data: EditProfileFormData) => void;
@@ -25,6 +26,7 @@ const EditProfileForm = ({
   imagePreview,
   onImageChange,
 }: EditProfileFormProps) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -70,7 +72,7 @@ const EditProfileForm = ({
 
         <div className="mod-entity-details">
           <div>
-            <label className="mod-label">Username</label>
+            <label className="mod-label">{t('profile.username')}</label>
             {errors.username && (
               <p className="form-error">{errors.username.message}</p>
             )}
@@ -82,7 +84,7 @@ const EditProfileForm = ({
           </div>
 
           <div>
-            <label className="mod-label">Name</label>
+            <label className="mod-label">{t('profile.name')}</label>
             {errors.name && (
               <p className="form-error">{errors.name.message}</p>
             )}
@@ -94,7 +96,7 @@ const EditProfileForm = ({
           </div>
 
           <div>
-            <label className="mod-label">Bio</label>
+            <label className="mod-label">{t('profile.bio')}</label>
             {errors.bio && <p className="form-error">{errors.bio.message}</p>}
             <textarea
               {...register('bio')}
@@ -117,7 +119,7 @@ const EditProfileForm = ({
           className="btn btn-primary"
           disabled={isLoading}
         >
-          {isLoading ? 'Updating...' : 'Update'}
+          {isLoading ? t('profile.updating') : t('profile.update')}
         </button>
       </div>
     </form>

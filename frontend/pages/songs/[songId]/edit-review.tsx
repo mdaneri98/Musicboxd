@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  fetchSongByIdAsync, 
-  fetchAlbumByIdAsync, 
-  fetchSongReviewsAsync, 
-  updateReviewAsync, 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  fetchSongByIdAsync,
+  fetchAlbumByIdAsync,
+  fetchSongReviewsAsync,
+  updateReviewAsync,
   deleteReviewAsync,
   selectCurrentSong,
   selectLoadingSong,
@@ -21,6 +22,7 @@ import { imageRepository } from '@/repositories';
 import type { Album, ReviewFormData, HALResource, Review } from '@/types';
 
 const EditSongReviewPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { songId } = router.query;
   const dispatch = useAppDispatch();
@@ -67,13 +69,13 @@ const EditSongReviewPage = () => {
         if (currentUser) {
           const reviews = await dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 100 })).unwrap();
           const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
-          
+
           if (!userReview) {
             // No review to edit, redirect to create
             router.push(`/songs/${songId}/reviews`);
             return;
           }
-          
+
           setExistingReview(userReview.data);
         }
       } catch (error) {
@@ -117,9 +119,9 @@ const EditSongReviewPage = () => {
 
   if (loading || loadingSong || !song) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading...</div>
+          <div className="loading">{t('common.loading')}</div>
         </div>
       </Layout>
     );
@@ -128,9 +130,9 @@ const EditSongReviewPage = () => {
   const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
 
   return (
-    <Layout title={`Musicboxd - Edit Review for ${song.title}`}>
+    <Layout title={`Musicboxd - ${t('song.editReviewFor')} ${song.title}`}>
       <div className="content-wrapper">
-        <h1 className="page-title">Edit Your Review</h1>
+        <h1 className="page-title">{t('song.editYourReview')}</h1>
 
         {/* Song Preview */}
         <div className="review-preview">
@@ -163,7 +165,7 @@ const EditSongReviewPage = () => {
                 onClick={() => setShowDeleteModal(true)}
                 className="btn btn-danger"
               >
-                Delete Review
+                {t('review.deleteReview')}
               </button>
             </div>
           )}
@@ -173,15 +175,14 @@ const EditSongReviewPage = () => {
       {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteModal}
-        message="Are you sure you want to delete this review?"
+        message={t('song.confirmDeleteReview')}
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteModal(false)}
-        confirmText="Yes"
-        cancelText="No"
+        confirmText={t('song.yes')}
+        cancelText={t('song.no')}
       />
     </Layout>
   );
 };
 
 export default EditSongReviewPage;
-

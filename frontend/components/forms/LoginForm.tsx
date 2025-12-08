@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { loginSchema } from '@/utils/validationSchemas';
 import { LoginFormData } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface LoginFormProps {
   onSubmit: (data: LoginFormData) => void;
@@ -16,6 +17,7 @@ interface LoginFormProps {
 }
 
 const LoginForm = ({ onSubmit, error, isLoading }: LoginFormProps) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -28,7 +30,7 @@ const LoginForm = ({ onSubmit, error, isLoading }: LoginFormProps) => {
     <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
       <div className="form-group">
         <label htmlFor="username" className="form-label">
-          Username
+          {t('auth.login.username')}
         </label>
         <input
           type="text"
@@ -43,7 +45,7 @@ const LoginForm = ({ onSubmit, error, isLoading }: LoginFormProps) => {
 
       <div className="form-group">
         <label htmlFor="password" className="form-label">
-          Password
+          {t('auth.login.password')}
         </label>
         <input
           type="password"
@@ -65,7 +67,7 @@ const LoginForm = ({ onSubmit, error, isLoading }: LoginFormProps) => {
       <div className="form-group">
         <label className="checkbox-label">
           <input type="checkbox" {...register('rememberMe')} />
-          <span className="checkbox-text">Remember me</span>
+          <span className="checkbox-text">{t('auth.login.rememberMe')}</span>
         </label>
       </div>
 
@@ -74,7 +76,7 @@ const LoginForm = ({ onSubmit, error, isLoading }: LoginFormProps) => {
         className="btn btn-primary btn-block"
         disabled={isLoading}
       >
-        {isLoading ? 'Logging in...' : 'Login'}
+        {isLoading ? t('auth.login.loggingIn') : t('auth.login.submit')}
       </button>
     </form>
   );

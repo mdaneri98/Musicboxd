@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { registerSchema } from '@/utils/validationSchemas';
 import { RegisterFormData } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface RegisterFormProps {
   onSubmit: (data: RegisterFormData) => void;
@@ -16,6 +17,7 @@ interface RegisterFormProps {
 }
 
 const RegisterForm = ({ onSubmit, error, isLoading }: RegisterFormProps) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -27,7 +29,7 @@ const RegisterForm = ({ onSubmit, error, isLoading }: RegisterFormProps) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
       <div className="form-group">
-        <label className="form-label">Username</label>
+        <label className="form-label">{t('auth.register.username')}</label>
         <input
           type="text"
           {...register('username')}
@@ -39,13 +41,13 @@ const RegisterForm = ({ onSubmit, error, isLoading }: RegisterFormProps) => {
       </div>
 
       <div className="form-group">
-        <label className="form-label">Email</label>
+        <label className="form-label">{t('auth.register.email')}</label>
         <input type="text" {...register('email')} className="form-control" />
         {errors.email && <p className="form-error">{errors.email.message}</p>}
       </div>
 
       <div className="form-group">
-        <label className="form-label">Password</label>
+        <label className="form-label">{t('auth.register.password')}</label>
         <input
           type="password"
           {...register('password')}
@@ -57,7 +59,7 @@ const RegisterForm = ({ onSubmit, error, isLoading }: RegisterFormProps) => {
       </div>
 
       <div className="form-group">
-        <label className="form-label">Repeat Password</label>
+        <label className="form-label">{t('auth.register.repeatPassword')}</label>
         <input
           type="password"
           {...register('repeatPassword')}
@@ -75,7 +77,7 @@ const RegisterForm = ({ onSubmit, error, isLoading }: RegisterFormProps) => {
         className="btn btn-primary btn-block"
         disabled={isLoading}
       >
-        {isLoading ? 'Registering...' : 'Register'}
+        {isLoading ? t('auth.register.registering') : t('auth.register.submit')}
       </button>
     </form>
   );

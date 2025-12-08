@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
@@ -19,6 +20,7 @@ import type { ReviewFormData } from '@/types';
 import { ReviewItemType } from '@/types/enums';
 
 const AlbumReviewPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { albumId } = router.query;
   const dispatch = useAppDispatch();
@@ -95,9 +97,9 @@ const AlbumReviewPage = () => {
 
   if (loading || loadingAlbum || !album) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading...</div>
+          <div className="loading">{t('common.loading')}</div>
         </div>
       </Layout>
     );
@@ -106,9 +108,9 @@ const AlbumReviewPage = () => {
   const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
 
   return (
-    <Layout title={`Musicboxd - Review ${album.title}`}>
+    <Layout title={`Musicboxd - ${t('album.reviewAlbum')} ${album.title}`}>
       <div className="content-wrapper">
-        <h1 className="page-title">Make a Review</h1>
+        <h1 className="page-title">{t('album.makeReview')}</h1>
 
         {/* Album Preview */}
         <div className="review-preview">

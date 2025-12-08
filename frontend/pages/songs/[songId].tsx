@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout, SongInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -21,6 +22,7 @@ import {
 import type { Album, Artist, Review } from '@/types';
 
 const SongDetailPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { songId } = router.query;
   const dispatch = useAppDispatch();
@@ -115,9 +117,9 @@ const SongDetailPage = () => {
 
   if (loading || !song) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading song...</div>
+          <div className="loading">{t('song.loadingSong')}</div>
         </div>
       </Layout>
     );
@@ -125,10 +127,10 @@ const SongDetailPage = () => {
 
   if (error) {
     return (
-      <Layout title="Error">
+      <Layout title={t('common.error')}>
         <div className="content-wrapper">
           <div className="alert alert-danger" role="alert">
-            <strong>Error:</strong> {error}
+            <strong>{t('common.error')}:</strong> {error}
           </div>
         </div>
       </Layout>
@@ -155,18 +157,18 @@ const SongDetailPage = () => {
         <section className="entity-section song-details">
           <div className="song-info-grid">
             <div className="song-info-item">
-              <span className="info-label">Duration:</span>
+              <span className="info-label">{t('song.duration')}:</span>
               <span className="info-value">{formatDuration(parseInt(song.duration))}</span>
             </div>
             {album?.genre && (
               <div className="song-info-item">
-                <span className="info-label">Genre:</span>
+                <span className="info-label">{t('song.genre')}:</span>
                 <span className="info-value">{album.genre}</span>
               </div>
             )}
             {album?.release_date && (
               <div className="song-info-item">
-                <span className="info-label">Release Date:</span>
+                <span className="info-label">{t('song.releaseDate')}:</span>
                 <span className="info-value">{album.formatted_release_date}</span>
               </div>
             )}
@@ -176,7 +178,7 @@ const SongDetailPage = () => {
         {/* Reviews Section */}
         {reviews.length > 0 && (
           <section className="entity-section">
-            <h2>Reviews</h2>
+            <h2>{t('profile.reviews')}</h2>
             <div className="reviews-grid">
               {reviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
@@ -190,7 +192,7 @@ const SongDetailPage = () => {
                   onClick={() => setReviewsPage(reviewsPage - 1)}
                   className="btn btn-secondary"
                 >
-                  Previous Page
+                  {t('song.previousPage')}
                 </button>
               )}
               {hasMoreReviews && (
@@ -198,7 +200,7 @@ const SongDetailPage = () => {
                   onClick={() => setReviewsPage(reviewsPage + 1)}
                   className="btn btn-secondary"
                 >
-                  Next Page
+                  {t('song.nextPage')}
                 </button>
               )}
             </div>

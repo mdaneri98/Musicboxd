@@ -1,18 +1,21 @@
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 
 export default function ReviewNotFound() {
+  const { t } = useTranslation();
+
   return (
-    <Layout title="Review Not Found" showSidebar={false}>
+    <Layout title={t('reviewNotFound.title')} showSidebar={false}>
       <div className="error-page">
         <div className="error-content">
           <h1 className="error-code">404</h1>
-          <h2 className="error-title">Review Not Found</h2>
+          <h2 className="error-title">{t('reviewNotFound.title')}</h2>
           <p className="error-message">
-            The review you are looking for does not exist or has been removed.
+            {t('reviewNotFound.message')}
           </p>
           <Link href="/" className="btn btn-primary">
-            Back to Home
+            {t('reviewNotFound.backToHome')}
           </Link>
         </div>
       </div>

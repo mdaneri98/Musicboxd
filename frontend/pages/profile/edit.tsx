@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { EditProfileForm } from '@/components/forms';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -9,6 +10,7 @@ import type { EditProfileFormData } from '@/types';
 import { imageRepository } from '@/repositories';
 
 const EditProfilePage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -74,7 +76,7 @@ const EditProfilePage = () => {
     <Layout title="Musicboxd - Edit Profile">
       <div className="content-wrapper">
         <div className="mod-form-container">
-          <h1 className="mod-form-title">Edit Profile</h1>
+          <h1 className="mod-form-title">{t('profile.editProfile')}</h1>
 
           <EditProfileForm
             onSubmit={handleSubmit}
@@ -91,7 +93,7 @@ const EditProfilePage = () => {
 
           <div className="form-actions" style={{ marginTop: '1rem' }}>
             <Link href="/profile" className="btn btn-secondary">
-              Discard Changes
+              {t('profile.discardChanges')}
             </Link>
           </div>
         </div>

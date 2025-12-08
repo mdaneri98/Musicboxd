@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  fetchArtistByIdAsync, 
-  fetchArtistReviewsAsync, 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  fetchArtistByIdAsync,
+  fetchArtistReviewsAsync,
   createArtistReviewAsync,
   selectCurrentArtist,
   selectLoadingArtist,
@@ -19,12 +20,13 @@ import type { ReviewFormData } from '@/types';
 import { ReviewItemType } from '@/types/enums';
 
 const ArtistReviewPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { artistId } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  
+
   const artist = useAppSelector(selectCurrentArtist);
   const loadingArtist = useAppSelector(selectLoadingArtist);
 
@@ -54,7 +56,7 @@ const ArtistReviewPage = () => {
         if (currentUser) {
           const reviews = await dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: 1, size: 100 })).unwrap();
           const userReview = reviews.items.find(r => r.data.user_id === currentUser.id);
-          
+
           if (userReview) {
             router.push(`/artists/${artistId}/edit-review`);
             return;
@@ -75,7 +77,7 @@ const ArtistReviewPage = () => {
 
     try {
       setSubmitLoading(true);
-      await dispatch(createArtistReviewAsync({ 
+      await dispatch(createArtistReviewAsync({
         title: data.title,
         description: data.description,
         rating: data.rating,
@@ -96,9 +98,9 @@ const ArtistReviewPage = () => {
 
   if (loading || loadingArtist || !artist) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading...</div>
+          <div className="loading">{t('common.loading')}</div>
         </div>
       </Layout>
     );
@@ -107,9 +109,9 @@ const ArtistReviewPage = () => {
   const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
 
   return (
-    <Layout title={`Musicboxd - Review ${artist.name}`}>
+    <Layout title={`Musicboxd - ${t('artist.reviewArtist')} ${artist.name}`}>
       <div className="content-wrapper">
-        <h1 className="page-title">Make a Review</h1>
+        <h1 className="page-title">{t('artist.makeReview')}</h1>
 
         {/* Artist Preview */}
         <div className="review-preview">

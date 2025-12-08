@@ -5,6 +5,7 @@
  */
 
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/store/hooks';
 import {
   selectIsAuthenticated,
@@ -15,6 +16,7 @@ import { selectUnreadCount } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 
 const Sidebar = () => {
+  const { t } = useTranslation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isModerator = useAppSelector(selectIsModerator);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -28,17 +30,17 @@ const Sidebar = () => {
     <aside className="sidebar">
       <nav className="sidebar-nav">
         {/* Home */}
-        <Link href="/" className="sidebar-icon" title="Home">
+        <Link href="/" className="sidebar-icon" title={t('navbar.home')}>
           <i className="fas fa-home"></i>
         </Link>
 
         {/* Music Discovery */}
-        <Link href="/music" className="sidebar-icon" title="Music">
+        <Link href="/music" className="sidebar-icon" title={t('navbar.discovery')}>
           <i className="fas fa-music"></i>
         </Link>
 
         {/* Search */}
-        <Link href="/search" className="sidebar-icon" title="Search">
+        <Link href="/search" className="sidebar-icon" title={t('navbar.search')}>
           <i className="fas fa-search"></i>
         </Link>
 
@@ -46,7 +48,7 @@ const Sidebar = () => {
         {isAuthenticated && currentUser && (
           <>
             {/* Notifications */}
-            <Link href="/notifications" className="sidebar-icon" title="Notifications">
+            <Link href="/notifications" className="sidebar-icon" title={t('navbar.notifications')}>
               <i className="fas fa-bell"></i>
               {unreadCount > 0 && (
                 <span className="notification-badge">{unreadCount}</span>
@@ -55,7 +57,7 @@ const Sidebar = () => {
 
             {/* Moderator Section */}
             {isModerator && (
-              <Link href="/moderator" className="sidebar-icon" title="Moderator">
+              <Link href="/moderator" className="sidebar-icon" title={t('navbar.moderator', 'Moderator')}>
                 <i className="fas fa-plus-square"></i>
               </Link>
             )}
@@ -64,22 +66,22 @@ const Sidebar = () => {
             <Link
               href={`/users/${currentUser.id}`}
               className="sidebar-icon profile-icon"
-              title="Profile"
+              title={t('navbar.profile')}
             >
               <img
                 src={profileImageUrl}
-                alt="Profile"
+                alt={t('navbar.profile')}
                 className="profile-image"
               />
             </Link>
 
             {/* Settings */}
-            <Link href="/settings" className="sidebar-icon" title="Settings">
+            <Link href="/settings" className="sidebar-icon" title={t('navbar.settings')}>
               <i className="fas fa-cog"></i>
             </Link>
 
             {/* Logout */}
-            <Link href="/logout" className="sidebar-icon" title="Logout">
+            <Link href="/logout" className="sidebar-icon" title={t('navbar.logout')}>
               <i className="fas fa-sign-out-alt"></i>
             </Link>
           </>
@@ -87,7 +89,7 @@ const Sidebar = () => {
 
         {/* Anonymous User Section */}
         {!isAuthenticated && (
-          <Link href="/login" className="sidebar-icon profile-icon" title="Login">
+          <Link href="/login" className="sidebar-icon profile-icon" title={t('navbar.login')}>
             <i className="fa-solid fa-right-to-bracket"></i>
           </Link>
         )}

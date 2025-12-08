@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout, UserInfo } from '@/components/layout';
 import { UserCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -17,10 +18,11 @@ import {
 } from '@/store/slices';
 
 const FollowersPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { userId } = router.query;
   const dispatch = useAppDispatch();
-  
+
   const loggedUser = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectCurrentProfile);
   const followers = useAppSelector(selectFollowers);
@@ -56,9 +58,9 @@ const FollowersPage = () => {
 
   if (loading || !user) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading...</div>
+          <div className="loading">{t('common.loading')}</div>
         </div>
       </Layout>
     );
@@ -72,7 +74,7 @@ const FollowersPage = () => {
   };
 
   return (
-    <Layout title={`Musicboxd - @${user.username} Followers`}>
+    <Layout title={`Musicboxd - @${user.username} ${t('followers.title')}`}>
       <div className="content-wrapper">
         <div className="profile-header">
           <header>
@@ -80,10 +82,10 @@ const FollowersPage = () => {
           </header>
         </div>
 
-        <h1 className="page-title">Followers</h1>
+        <h1 className="page-title">{t('followers.title')}</h1>
 
         {followers.length === 0 ? (
-          <p className="no-results">No followers yet</p>
+          <p className="no-results">{t('followers.noFollowers')}</p>
         ) : (
           <>
             <div className="users-grid">
@@ -98,7 +100,7 @@ const FollowersPage = () => {
                   onClick={() => setPage(page - 1)}
                   className="btn btn-secondary"
                 >
-                  Previous Page
+                  {t('followers.previousPage')}
                 </button>
               )}
               {hasMore && (
@@ -106,7 +108,7 @@ const FollowersPage = () => {
                   onClick={() => setPage(page + 1)}
                   className="btn btn-secondary"
                 >
-                  Next Page
+                  {t('followers.nextPage')}
                 </button>
               )}
             </div>

@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  fetchSongByIdAsync, 
-  fetchAlbumByIdAsync, 
-  fetchSongReviewsAsync, 
-  createSongReviewAsync, 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  fetchSongByIdAsync,
+  fetchAlbumByIdAsync,
+  fetchSongReviewsAsync,
+  createSongReviewAsync,
   selectCurrentSong,
   selectLoadingSong,
   clearCurrentSong
@@ -20,6 +21,7 @@ import type { Album, ReviewFormData, HALResource, Review } from '@/types';
 import { ReviewItemType } from '@/types/enums';
 
 const SongReviewPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { songId } = router.query;
   const dispatch = useAppDispatch();
@@ -64,7 +66,7 @@ const SongReviewPage = () => {
         if (currentUser) {
           const reviews = await dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 100 })).unwrap();
           const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
-          
+
           if (userReview) {
             router.push(`/songs/${songId}/edit-review`);
             return;
@@ -106,9 +108,9 @@ const SongReviewPage = () => {
 
   if (loading || loadingSong || !song) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading...</div>
+          <div className="loading">{t('common.loading')}</div>
         </div>
       </Layout>
     );
@@ -117,9 +119,9 @@ const SongReviewPage = () => {
   const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
 
   return (
-    <Layout title={`Musicboxd - Review ${song.title}`}>
+    <Layout title={`Musicboxd - ${t('song.reviewSong')} ${song.title}`}>
       <div className="content-wrapper">
-        <h1 className="page-title">Make a Review</h1>
+        <h1 className="page-title">{t('song.makeReview')}</h1>
 
         {/* Song Preview */}
         <div className="review-preview">

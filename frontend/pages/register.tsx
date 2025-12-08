@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
+import { useTranslation } from 'react-i18next';
 import { Footer } from '@/components/layout';
 import { RegisterForm } from '@/components/forms';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -15,6 +16,7 @@ import { registerAsync, selectIsAuthenticated, selectAuthError, selectAuthLoadin
 import type { RegisterFormData } from '@/types';
 
 const RegisterPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -42,11 +44,11 @@ const RegisterPage = () => {
           <nav className="nav-bar">
             <div className="logo">Musicboxd</div>
             <div className="nav-links">
-              <Link href="/" className="nav-link">Home</Link>
-              <Link href="/music" className="nav-link">Discovery</Link>
-              <Link href="/search" className="nav-link">Search</Link>
-              <Link href="/login" className="nav-link">Login</Link>
-              <Link href="/register" className="nav-link">Register</Link>
+              <Link href="/" className="nav-link">{t('navbar.home')}</Link>
+              <Link href="/music" className="nav-link">{t('navbar.discovery')}</Link>
+              <Link href="/search" className="nav-link">{t('navbar.search')}</Link>
+              <Link href="/login" className="nav-link">{t('navbar.login')}</Link>
+              <Link href="/register" className="nav-link">{t('navbar.register')}</Link>
             </div>
           </nav>
         </header>
@@ -56,7 +58,7 @@ const RegisterPage = () => {
             <RegisterForm onSubmit={handleRegister} error={error || undefined} isLoading={isLoading} />
             <div className="auth-links">
               <Link href="/login" className="auth-link">
-                Already have an account?
+                {t('auth.register.haveAccount')}
               </Link>
             </div>
           </div>

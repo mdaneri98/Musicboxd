@@ -2,6 +2,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { reviewSchema } from '@/utils/validationSchemas';
 import { ReviewFormData } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface ReviewFormProps {
   onSubmit: (data: ReviewFormData) => void;
@@ -16,6 +17,7 @@ const ReviewForm = ({
   defaultValues,
   isLoading,
 }: ReviewFormProps) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -34,7 +36,7 @@ const ReviewForm = ({
       <form onSubmit={handleSubmit(onSubmit)} className="review-form">
         <div className="form-group">
           <label htmlFor="title" className="form-label">
-            Title
+            {t('review.title')}
           </label>
           <input
             type="text"
@@ -49,7 +51,7 @@ const ReviewForm = ({
 
         <div className="form-group">
           <label htmlFor="description" className="form-label">
-            Description
+            {t('review.description')}
           </label>
           <textarea
             id="description"
@@ -63,7 +65,7 @@ const ReviewForm = ({
         </div>
 
         <div className="form-group">
-          <label className="form-label">Rating</label>
+          <label className="form-label">{t('review.rating')}</label>
           <div className="rating-input">
             <Controller
               name="rating"
@@ -101,14 +103,14 @@ const ReviewForm = ({
             onClick={onCancel}
             className="btn btn-secondary"
           >
-            Cancel
+            {t('review.cancel')}
           </button>
           <button
             type="submit"
             className="btn btn-primary"
             disabled={isLoading}
           >
-            {isLoading ? 'Submitting...' : 'Submit Review'}
+            {isLoading ? t('review.submitting') : t('review.submit')}
           </button>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout, ArtistInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -24,6 +25,7 @@ import type { Review } from '@/types';
 import { AlbumCard, SongCard } from '@/components/cards';
 
 const ArtistDetailPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { artistId } = router.query;
   const dispatch = useAppDispatch();
@@ -106,9 +108,9 @@ const ArtistDetailPage = () => {
 
   if (loading || !artist) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading artist...</div>
+          <div className="loading">{t('artist.loadingArtist')}</div>
         </div>
       </Layout>
     );
@@ -116,10 +118,10 @@ const ArtistDetailPage = () => {
 
   if (error) {
     return (
-      <Layout title="Error">
+      <Layout title={t('common.error')}>
         <div className="content-wrapper">
           <div className="alert alert-danger" role="alert">
-            <strong>Error:</strong> {error}
+            <strong>{t('common.error')}:</strong> {error}
           </div>
         </div>
       </Layout>
@@ -145,7 +147,7 @@ const ArtistDetailPage = () => {
         {/* Albums Section */}
         {albums.length > 0 && (
           <section className="entity-section">
-            <h2>Albums</h2>
+            <h2>{t('music.albums')}</h2>
             <div className="carousel-container">
               <div className="carousel">
                 {albums.map((album) => (
@@ -159,7 +161,7 @@ const ArtistDetailPage = () => {
         {/* Songs Section */}
         {songs.length > 0 && (
           <section className="entity-section">
-            <h2>Popular Songs</h2>
+            <h2>{t('artist.popularSongs')}</h2>
             <ul className="song-list">
               {songs.map((song, index) => (
                 <SongCard key={song.id} song={song} index={index} />
@@ -171,7 +173,7 @@ const ArtistDetailPage = () => {
         {/* Reviews Section */}
         {reviews.length > 0 && (
           <section className="entity-section">
-            <h2>Reviews</h2>
+            <h2>{t('profile.reviews')}</h2>
             <div className="reviews-grid">
               {reviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
@@ -185,7 +187,7 @@ const ArtistDetailPage = () => {
                   onClick={() => setReviewsPage(reviewsPage - 1)}
                   className="btn btn-secondary"
                 >
-                  Previous Page
+                  {t('artist.previousPage')}
                 </button>
               )}
               {hasMoreReviews && (
@@ -193,7 +195,7 @@ const ArtistDetailPage = () => {
                   onClick={() => setReviewsPage(reviewsPage + 1)}
                   className="btn btn-secondary"
                 >
-                  Next Page
+                  {t('artist.nextPage')}
                 </button>
               )}
             </div>

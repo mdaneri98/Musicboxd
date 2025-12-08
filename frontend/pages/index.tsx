@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -13,6 +14,7 @@ import { selectIsAuthenticated, fetchReviewsAsync, selectOrderedReviews, selectL
 import { FilterTypeEnum, HomeTabEnum  } from '@/types';
 
 const HomePage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -61,14 +63,14 @@ const HomePage = () => {
               onClick={() => handleTabChange(HomeTabEnum.FOR_YOU)}
               style={{ cursor: 'pointer' }}
             >
-              For You
+              {t('home.tabs.forYou')}
             </span>
             <span
               className={`tab ${activeTab === HomeTabEnum.FOLLOWING ? 'active' : ''}`}
               onClick={() => handleTabChange(HomeTabEnum.FOLLOWING)}
               style={{ cursor: 'pointer' }}
             >
-              Following
+              {t('home.tabs.following')}
             </span>
           </div>
         </div>
@@ -76,11 +78,11 @@ const HomePage = () => {
         {/* Contenido principal */}
         <section className="reviews-section">
           {loadingReviews ? (
-            <div className="loading">Loading reviews...</div>
+            <div className="loading">{t('home.loadingReviews')}</div>
           ) : Object.values(reviews).length === 0 ? (
             <div className="empty-state">
-              <h3>No reviews found</h3>
-              <h4>Try the previous page or switch tabs</h4>
+              <h3>{t('home.noReviews')}</h3>
+              <h4>{t('home.noReviewsHint')}</h4>
             </div>
           ) : (
             <>
@@ -97,7 +99,7 @@ const HomePage = () => {
                     onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page - 1, size: pagination.size, filter: filter }))}
                     className="btn btn-secondary"
                   >
-                    Previous Page
+                    {t('common.previous')} {t('home.page')}
                   </button>
                 )}
                 {pagination.totalCount > pagination.page * pagination.size && (
@@ -105,7 +107,7 @@ const HomePage = () => {
                     onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page + 1, size: pagination.size, filter: filter }))}
                     className="btn btn-primary"
                   >
-                    Next Page
+                    {t('common.next')} {t('home.page')}
                   </button>
                 )}
               </div>

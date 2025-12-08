@@ -8,6 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { searchSchema } from '@/utils/validationSchemas';
 import { SearchFormData } from '@/types';
 import { SearchType } from '@/types/enums';
+import { useTranslation } from 'react-i18next';
 
 interface SearchFormProps {
   onSubmit: (data: SearchFormData) => void;
@@ -20,6 +21,7 @@ const SearchForm = ({
   defaultValues = { type: SearchType.MUSIC },
   isLoading,
 }: SearchFormProps) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -36,15 +38,15 @@ const SearchForm = ({
           type="text"
           {...register('query')}
           className="search-input"
-          placeholder="Search for music, artists, users..."
+          placeholder={t('search.placeholder')}
         />
         <select {...register('type')} className="search-select">
-          <option value="all">All</option>
-          <option value="users">Users</option>
-          <option value="artists">Artists</option>
-          <option value="albums">Albums</option>
-          <option value="songs">Songs</option>
-          <option value="reviews">Reviews</option>
+          <option value="all">{t('search.filters.all')}</option>
+          <option value="users">{t('search.filters.users')}</option>
+          <option value="artists">{t('search.filters.artists')}</option>
+          <option value="albums">{t('search.filters.albums')}</option>
+          <option value="songs">{t('search.filters.songs')}</option>
+          <option value="reviews">{t('search.filters.reviews')}</option>
         </select>
         <button
           type="submit"

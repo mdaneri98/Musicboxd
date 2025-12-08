@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/store/hooks';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
@@ -21,6 +22,7 @@ import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
 
 const EditAlbumReviewPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { albumId } = router.query;
   const dispatch = useAppDispatch();
@@ -107,9 +109,9 @@ const EditAlbumReviewPage = () => {
 
   if (loading || loadingAlbum || !album) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading...</div>
+          <div className="loading">{t('common.loading')}</div>
         </div>
       </Layout>
     );
@@ -118,9 +120,9 @@ const EditAlbumReviewPage = () => {
   const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
 
   return (
-    <Layout title={`Musicboxd - Edit Review for ${album.title}`}>
+    <Layout title={`Musicboxd - ${t('album.editReviewFor')} ${album.title}`}>
       <div className="content-wrapper">
-        <h1 className="page-title">Edit Your Review</h1>
+        <h1 className="page-title">{t('album.editYourReview')}</h1>
 
         {/* Album Preview */}
         <div className="review-preview">
@@ -155,7 +157,7 @@ const EditAlbumReviewPage = () => {
                 onClick={() => setShowDeleteModal(true)}
                 className="btn btn-danger"
               >
-                Delete Review
+                {t('review.deleteReview')}
               </button>
             </div>
           )}
@@ -165,11 +167,11 @@ const EditAlbumReviewPage = () => {
       {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteModal}
-        message="Are you sure you want to delete this review?"
+        message={t('album.confirmDeleteReview')}
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteModal(false)}
-        confirmText="Yes"
-        cancelText="No"
+        confirmText={t('album.yes')}
+        cancelText={t('album.no')}
       />
     </Layout>
   );

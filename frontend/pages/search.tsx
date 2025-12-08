@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { UserCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -17,6 +18,7 @@ type SearchResultItem = {
 
 
 export default function SearchPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -149,11 +151,11 @@ export default function SearchPage() {
       setShowResults(true);
 
       if (results.length === 0) {
-        setError('No se encontraron resultados');
+        setError(t('search.noResults'));
       }
     } catch (error) {
       console.error('Failed to perform search:', error);
-      setError('Error al buscar');
+      setError(t('search.searchError'));
       setSearchResults([]);
     }
   }, [activeTab, dispatch]);
@@ -189,7 +191,7 @@ export default function SearchPage() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showResults || searchResults.length === 0) {
       if (e.key === 'Enter' && searchResults.length === 0) {
-        setError('No se encontraron resultados');
+        setError(t('search.noResults'));
       }
       return;
     }
@@ -225,13 +227,13 @@ export default function SearchPage() {
             className={`tab ${activeTab === SearchTabEnum.MUSIC ? 'active' : ''}`}
             onClick={() => handleTabChange(SearchTabEnum.MUSIC)}
           >
-            Music
+            {t('search.tabs.music')}
           </span>
           <span
             className={`tab ${activeTab === SearchTabEnum.USERS ? 'active' : ''}`}
             onClick={() => handleTabChange(SearchTabEnum.USERS)}
           >
-            Users
+            {t('search.tabs.users')}
           </span>
         </div>
 
@@ -242,7 +244,7 @@ export default function SearchPage() {
             type="text"
             className="form-control search-input"
             id="searchInput"
-            placeholder="Search..."
+            placeholder={t('search.placeholder')}
             value={searchQuery}
             onChange={handleSearchChange}
             onKeyDown={handleKeyDown}
@@ -291,7 +293,7 @@ export default function SearchPage() {
       {/* Recommended Users */}
       {!searchQuery && recommendedUsers.length > 0 && (
         <>
-          <h1 className="page-title">Recommended Users</h1>
+          <h1 className="page-title">{t('search.recommendedUsers')}</h1>
           <div className="users-grid">
             {recommendedUsers.map((user) => (
               <UserCard key={user.id} user={user} />

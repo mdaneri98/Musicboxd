@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { NotificationCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -7,6 +8,7 @@ import { selectIsAuthenticated, selectOrderedNotifications, fetchNotificationsAs
 import { Notification } from '@/types';
 
 export default function NotificationsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -75,18 +77,18 @@ export default function NotificationsPage() {
     <Layout title="Notifications - Musicboxd">
       <div className="notifications-container">
         <div className="notifications">
-          <h2>Notifications</h2>
+          <h2>{t('notifications.title')}</h2>
           {unreadCount > 0 && (
             <button onClick={handleMarkAllAsRead} className="mark-read-btn">
-              Mark all as read
+              {t('notifications.markAllRead')}
             </button>
           )}
         </div>
 
         {loadingNotifications ? (
-          <div className="loading">Loading notifications...</div>
+          <div className="loading">{t('notifications.loading')}</div>
         ) : notifications.length === 0 ? (
-          <p className="no-results">No notifications</p>
+          <p className="no-results">{t('notifications.noNotifications')}</p>
         ) : (
           <div className="notifications-list">
             {notifications.map((notification: Notification) => (
@@ -102,12 +104,12 @@ export default function NotificationsPage() {
         <div className="pagination">
           {pagination.page > 1 && (
             <button onClick={handlePreviousPage} className="btn btn-secondary">
-              Previous Page
+              {t('common.previous')} {t('notifications.page')}
             </button>
           )}
           {pagination.totalCount > pagination.page * pagination.size && (
             <button onClick={handleNextPage} className="btn btn-secondary">
-              Next Page
+              {t('common.next')} {t('notifications.page')}
             </button>
           )}
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistPagination, selectAlbumPagination, selectSongPagination, selectOrderedArtists, selectOrderedAlbums, selectOrderedSongs } from '@/store/slices';
@@ -7,6 +8,7 @@ import { Artist, Album, Song, FilterTypeEnum, ReviewItemTypeEnum } from '@/types
 import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
 
 const ViewAllMusicPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tab: queryTab, filter: queryFilter, page: queryPage } = router.query;
@@ -86,21 +88,21 @@ const ViewAllMusicPage = () => {
                 onClick={() => handleTabChange(ReviewItemTypeEnum.ARTIST)}
                 style={{ cursor: 'pointer' }}
               >
-                Artists
+                {t('music.artists')}
               </span>
               <span
                 className={`tab ${activeTab === ReviewItemTypeEnum.ALBUM ? 'active' : ''}`}
                 onClick={() => handleTabChange(ReviewItemTypeEnum.ALBUM)}
                 style={{ cursor: 'pointer' }}
               >
-                Albums
+                {t('music.albums')}
               </span>
               <span
                 className={`tab ${activeTab === ReviewItemTypeEnum.SONG ? 'active' : ''}`}
                 onClick={() => handleTabChange(ReviewItemTypeEnum.SONG)}
                 style={{ cursor: 'pointer' }}
               >
-                Songs
+                {t('music.songs')}
               </span>
             </div>
           </div>
@@ -110,7 +112,7 @@ const ViewAllMusicPage = () => {
             <form className="filters-form">
               <div className="filter-group">
                 <label htmlFor="sort" className="filter-label">
-                  Sort by
+                  {t('music.sortBy')}
                 </label>
                 <select
                   name="filter"
@@ -119,14 +121,14 @@ const ViewAllMusicPage = () => {
                   value={filter}
                   onChange={handleFilterChange}
                 >
-                  <option value={FilterTypeEnum.POPULAR}>Most Popular</option>
-                  <option value={FilterTypeEnum.RATING}>Top Rated</option>
-                  <option value={FilterTypeEnum.RECENT}>Recently Added</option>
-                  <option value={FilterTypeEnum.FIRST}>First Added</option>
+                  <option value={FilterTypeEnum.POPULAR}>{t('music.mostPopular')}</option>
+                  <option value={FilterTypeEnum.RATING}>{t('music.topRated')}</option>
+                  <option value={FilterTypeEnum.RECENT}>{t('music.recentlyAdded')}</option>
+                  <option value={FilterTypeEnum.FIRST}>{t('music.firstAdded')}</option>
                   {activeTab === ReviewItemTypeEnum.ALBUM && (
                     <>
-                      <option value={FilterTypeEnum.NEWEST}>Newest</option>
-                      <option value={FilterTypeEnum.OLDEST}>Oldest</option>
+                      <option value={FilterTypeEnum.NEWEST}>{t('music.newest')}</option>
+                      <option value={FilterTypeEnum.OLDEST}>{t('music.oldest')}</option>
                     </>
                   )}
                 </select>
@@ -142,7 +144,7 @@ const ViewAllMusicPage = () => {
         {/* Content Grid */}
         <div className="view-all-content">
           {loading ? (
-            <div className="loading">Loading...</div>
+            <div className="loading">{t('common.loading')}</div>
           ) : (
             <>
               {activeTab === ReviewItemTypeEnum.ARTIST && (
@@ -176,7 +178,7 @@ const ViewAllMusicPage = () => {
                     onClick={() => handlePageChange(page - 1)}
                     className="btn btn-secondary"
                   >
-                    Previous Page
+                    {t('common.previous')} {t('music.page')}
                   </button>
                 )}
                 {hasMore && (
@@ -184,7 +186,7 @@ const ViewAllMusicPage = () => {
                     onClick={() => handlePageChange(page + 1)}
                     className="btn btn-secondary"
                   >
-                    Next Page
+                    {t('common.next')} {t('music.page')}
                   </button>
                 )}
               </div>

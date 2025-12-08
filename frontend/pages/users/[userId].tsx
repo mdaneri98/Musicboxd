@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { Layout, UserInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -27,6 +28,7 @@ import { ProfileTabEnum } from '@/types';
 import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
 
 const UserProfilePage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { userId, tab: queryTab } = router.query;
   const dispatch = useAppDispatch();
@@ -100,16 +102,16 @@ const UserProfilePage = () => {
 
   if (loadingFavorites || loadingReviews || !user) {
     return (
-      <Layout title="Loading...">
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">Loading profile...</div>
+          <div className="loading">{t('userProfile.loadingProfile')}</div>
         </div>
       </Layout>
     );
   }
 
   return (
-    <Layout title={`Musicboxd - ${user.username}'s Profile`}>
+    <Layout title={`Musicboxd - ${user.username}'s ${t('userProfile.profile')}`}>
       <div className="content-wrapper">
         <UserInfo
           user={user}
@@ -128,7 +130,7 @@ const UserProfilePage = () => {
             onClick={() => handleTabChange(ProfileTabEnum.FAVORITES)}
             style={{ cursor: 'pointer' }}
           >
-            Favorites
+            {t('profile.tabs.favorites')}
           </span>
           <span
             id="reviewsButton"
@@ -136,21 +138,21 @@ const UserProfilePage = () => {
             onClick={() => handleTabChange(ProfileTabEnum.REVIEWS)}
             style={{ cursor: 'pointer' }}
           >
-            Reviews
+            {t('profile.tabs.reviews')}
           </span>
         </div>
 
         {/* Favorites Section */}
         {loadingFavorites ? (
-          <div className="loading">Loading favorites...</div>
+          <div className="loading">{t('profile.loadingFavorites')}</div>
         ) : (
           activeTab === ProfileTabEnum.FAVORITES && (
           <section className="favorites-section">
             {/* Favorite Artists */}
-            <h2>Favorite Artists</h2>
+            <h2>{t('profile.favoriteArtists')}</h2>
             {Object.values(favoriteArtists).length === 0 ? (
               <div className="empty-state">
-                <p className="add-favorites">Add up to 5 favorite artists to your profile</p>
+                <p className="add-favorites">{t('profile.addFavoriteArtists')}</p>
               </div>
             ) : (
               <div className="carousel-container">
@@ -163,10 +165,10 @@ const UserProfilePage = () => {
             )}
 
             {/* Favorite Albums */}
-            <h2>Favorite Albums</h2>
+            <h2>{t('profile.favoriteAlbums')}</h2>
             {Object.values(favoriteAlbums).length === 0 ? (
               <div className="empty-state">
-                <p className="add-favorites">Add up to 5 favorite albums to your profile</p>
+                <p className="add-favorites">{t('profile.addFavoriteAlbums')}</p>
               </div>
             ) : (
               <div className="carousel-container">
@@ -179,10 +181,10 @@ const UserProfilePage = () => {
             )}
 
             {/* Favorite Songs */}
-            <h2>Favorite Songs</h2>
+            <h2>{t('profile.favoriteSongs')}</h2>
             {Object.values(favoriteSongs).length === 0 ? (
               <div className="empty-state">
-                <p className="add-favorites">Add up to 5 favorite songs to your profile</p>
+                <p className="add-favorites">{t('profile.addFavoriteSongs')}</p>
               </div>
             ) : (
               <ul className="song-list">
@@ -198,10 +200,10 @@ const UserProfilePage = () => {
         {activeTab === ProfileTabEnum.REVIEWS && (
           <section className="reviews-section">
             {loadingReviews ? (
-              <div className="loading">Loading reviews...</div>
+              <div className="loading">{t('profile.loadingReviews')}</div>
             ) : Object.values(reviews).length === 0 ? (
               <div className="empty-state">
-                <h3>No reviews found</h3>
+                <h3>{t('profile.noReviews')}</h3>
               </div>
             ) : (
               <>
@@ -218,7 +220,7 @@ const UserProfilePage = () => {
                       onClick={() => dispatch(fetchUserReviewsAsync({ userId: user.id, page: reviewsPagination.page - 1, size: reviewsPagination.size }))}
                       className="btn btn-secondary"
                     >
-                      Previous Page
+                      {t('userProfile.previousPage')}
                     </button>
                   )}
                   {reviewsPagination.totalCount > reviewsPagination.page * reviewsPagination.size && (
@@ -226,7 +228,7 @@ const UserProfilePage = () => {
                       onClick={() => dispatch(fetchUserReviewsAsync({ userId: user.id, page: reviewsPagination.page + 1, size: reviewsPagination.size }))}
                       className="btn btn-secondary"
                     >
-                      Next Page
+                      {t('userProfile.nextPage')}
                     </button>
                   )}
                 </div>

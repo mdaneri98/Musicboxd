@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { commentSchema } from '@/utils/validationSchemas';
 import { CommentFormData } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface CommentFormProps {
   onSubmit: (data: CommentFormData) => void;
@@ -25,6 +26,7 @@ const CommentForm = ({
   placeholder = 'Write a comment...',
   reviewId,
 }: CommentFormProps) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -63,7 +65,7 @@ const CommentForm = ({
             onClick={onCancel}
             className="btn btn-secondary"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
         )}
         <button
@@ -71,7 +73,7 @@ const CommentForm = ({
           className="btn btn-primary"
           disabled={isLoading}
         >
-          {isLoading ? 'Posting...' : 'Post Comment'}
+          {isLoading ? t('comment.posting') : t('comment.postComment')}
         </button>
       </div>
     </form>

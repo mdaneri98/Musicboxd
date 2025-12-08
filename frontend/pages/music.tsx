@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistLoading, selectAlbumLoading, selectSongLoading } from '@/store/slices';
@@ -10,6 +11,7 @@ import SongCard from '@/components/cards/SongCard';
 
 
 const MusicDiscoveryPage = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const artistLoading = useAppSelector(selectArtistLoading);
   const albumLoading = useAppSelector(selectAlbumLoading);
@@ -67,13 +69,13 @@ const MusicDiscoveryPage = () => {
       <div className="content-wrapper">
         <div className="discovery-header">
           <div className="call-to-action-container">
-            <h1>Discovery</h1>
-            <h4>Explore the best music, curated for you</h4>
+            <h1>{t('music.discovery')}</h1>
+            <h4>{t('music.discoverySubtitle')}</h4>
           </div>
         </div>
 
         {loading ? (
-          <div className="loading">Loading music...</div>
+          <div className="loading">{t('music.loadingMusic')}</div>
         ) : (
           <>
             {/* Artists Section */}
@@ -86,7 +88,7 @@ const MusicDiscoveryPage = () => {
                     onClick={() => setArtistTab(MusicTabEnum.POPULAR)}
                     style={{ cursor: 'pointer' }}
                   >
-                    Most Popular
+                    {t('music.mostPopular')}
                   </span>
                   <span
                     id="topRatedArtistButton"
@@ -94,7 +96,7 @@ const MusicDiscoveryPage = () => {
                     onClick={() => setArtistTab(MusicTabEnum.TOP_RATED)}
                     style={{ cursor: 'pointer' }}
                   >
-                    Top Rated
+                    {t('music.topRated')}
                   </span>
                 </div>
               </div>
@@ -102,9 +104,9 @@ const MusicDiscoveryPage = () => {
               {artistTab === MusicTabEnum.TOP_RATED && topRatedArtists.length > 0 && (
                 <div id="topRatedArtistTab" className="tab-content">
                   <h2>
-                    Top Rated Artists
+                    {t('music.topRatedArtists')}
                     <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.ARTIST}`} className="view-all-link">
-                      View All
+                      {t('music.viewAll')}
                     </Link>
                   </h2>
                   <div className="carousel-container">
@@ -120,9 +122,9 @@ const MusicDiscoveryPage = () => {
               {artistTab === MusicTabEnum.POPULAR && popularArtists.length > 0 && (
                 <div id="popularArtistTab" className="tab-content">
                   <h2>
-                    Most Popular Artists
+                    {t('music.mostPopularArtists')}
                     <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.ARTIST}`} className="view-all-link">
-                      View All
+                      {t('music.viewAll')}
                     </Link>
                   </h2>
                   <div className="carousel-container">
@@ -146,7 +148,7 @@ const MusicDiscoveryPage = () => {
                     onClick={() => setAlbumTab(MusicTabEnum.POPULAR)}
                     style={{ cursor: 'pointer' }}
                   >
-                    Most Popular
+                    {t('music.mostPopular')}
                   </span>
                   <span
                     id="topRatedAlbumButton"
@@ -154,7 +156,7 @@ const MusicDiscoveryPage = () => {
                     onClick={() => setAlbumTab(MusicTabEnum.TOP_RATED)}
                     style={{ cursor: 'pointer' }}
                   >
-                    Top Rated
+                    {t('music.topRated')}
                   </span>
                 </div>
               </div>
@@ -162,9 +164,9 @@ const MusicDiscoveryPage = () => {
               {albumTab === MusicTabEnum.TOP_RATED && topRatedAlbums.length > 0 && (
                 <div id="topRatedAlbumTab" className="tab-content">
                   <h2>
-                    Top Rated Albums
+                    {t('music.topRatedAlbums')}
                     <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.ALBUM}`} className="view-all-link">
-                      View All
+                      {t('music.viewAll')}
                     </Link>
                   </h2>
                   <div className="carousel-container">
@@ -180,9 +182,9 @@ const MusicDiscoveryPage = () => {
               {albumTab === MusicTabEnum.POPULAR && popularAlbums.length > 0 && (
                 <div id="popularAlbumTab" className="tab-content">
                   <h2>
-                    Most Popular Albums
+                    {t('music.mostPopularAlbums')}
                     <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.ALBUM}`} className="view-all-link">
-                      View All
+                      {t('music.viewAll')}
                     </Link>
                   </h2>
                   <div className="carousel-container">
@@ -206,7 +208,7 @@ const MusicDiscoveryPage = () => {
                     onClick={() => setSongTab(MusicTabEnum.POPULAR)}
                     style={{ cursor: 'pointer' }}
                   >
-                    Most Popular
+                    {t('music.mostPopular')}
                   </span>
                   <span
                     id="topRatedSongButton"
@@ -214,7 +216,7 @@ const MusicDiscoveryPage = () => {
                     onClick={() => setSongTab(MusicTabEnum.TOP_RATED)}
                     style={{ cursor: 'pointer' }}
                   >
-                    Top Rated
+                    {t('music.topRated')}
                   </span>
                 </div>
               </div>
@@ -222,9 +224,9 @@ const MusicDiscoveryPage = () => {
               {songTab === MusicTabEnum.TOP_RATED && topRatedSongs.length > 0 && (
                 <div id="topRatedSongTab" className="tab-content">
                   <h2>
-                    Top Rated Songs
+                    {t('music.topRatedSongs')}
                     <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.SONG}`} className="view-all-link">
-                      View All
+                      {t('music.viewAll')}
                     </Link>
                   </h2>
                   <ul className="song-list">
@@ -238,9 +240,9 @@ const MusicDiscoveryPage = () => {
               {songTab === MusicTabEnum.POPULAR && popularSongs.length > 0 && (
                 <div id="popularSongTab" className="tab-content">
                   <h2>
-                    Most Popular Songs
+                    {t('music.mostPopularSongs')}
                     <Link href={`/music/view-all?tab=${ReviewItemTypeEnum.SONG}`} className="view-all-link">
-                      View All
+                      {t('music.viewAll')}
                     </Link>
                   </h2>
                   <ul className="song-list">
