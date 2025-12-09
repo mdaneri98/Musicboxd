@@ -22,7 +22,7 @@ export const formatTimeAgo = (dateTime: Date | string): string => {
     const monthKey = `time.months.${date.getMonth() + 1}`;
     const year = date.getFullYear();
     const monthName = i18n.t(monthKey);
-    return `${monthName} ${day}, ${year}`;
+    return i18n.t('time.dateFormat', { day: day.toString(), month: monthName, year: year.toString() });
   } else if (months > 0) {
     return months === 1 
       ? i18n.t('time.monthAgo', { count: months })
@@ -61,5 +61,5 @@ export const formatDate = (date: Date | string | null): string => {
   const year = dateObj.getFullYear();
   const monthName = i18n.t(monthKey);
   
-  return i18n.t('time.dateFormat', { day, month: monthName, year });
+  return i18n.t('time.dateFormat', { day: day.toString(), month: monthName, year: year.toString() });
 };

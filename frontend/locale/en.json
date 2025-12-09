@@ -451,7 +451,7 @@
     "monthAgo": "{{count}} month ago",
     "monthsAgo": "{{count}} months ago",
     "unknown": "Unknown",
-    "dateFormat": "{{day}} {{month}}, {{year}}",
+    "dateFormat": "{{month}} {{day}}, {{year}}",
     "months": {
       "1": "January",
       "2": "February",
