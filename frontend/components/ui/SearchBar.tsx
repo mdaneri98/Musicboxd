@@ -1,5 +1,6 @@
 import { useState, useEffect, InputHTMLAttributes } from 'react';
 import { useDebounce } from '@/hooks';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Search Bar Component with Debouncing
@@ -18,10 +19,11 @@ export function SearchBar({
   onSearch,
   debounceDelay = 500,
   showClearButton = true,
-  placeholder = 'Search...',
+  placeholder = "Search...",
   className = '',
   ...props
 }: SearchBarProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, debounceDelay);
 
@@ -45,7 +47,7 @@ export function SearchBar({
         type="text"
         value={query}
         onChange={handleChange}
-        placeholder={placeholder}
+        placeholder={t("common.search")}
         className="search-input"
         {...props}
       />

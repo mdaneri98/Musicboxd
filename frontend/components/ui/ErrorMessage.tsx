@@ -4,6 +4,8 @@
  * Best Practice: Consistent error display with proper accessibility
  */
 
+import { useTranslation } from 'react-i18next';
+
 interface ErrorMessageProps {
   message: string | null | undefined;
   title?: string;
@@ -17,6 +19,7 @@ export function ErrorMessage({
   onRetry,
   className = '',
 }: ErrorMessageProps) {
+  const { t } = useTranslation();
   if (!message) return null;
 
   return (
@@ -31,7 +34,7 @@ export function ErrorMessage({
             className="btn btn-secondary btn-small"
             type="button"
           >
-            Try Again
+            {t("common.tryAgain")}  
           </button>
         )}
       </div>

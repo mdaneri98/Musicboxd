@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { User } from '@/types';
 import { imageRepository } from '@/repositories';
+import { useTranslation } from 'react-i18next';
 
 interface UserInfoProps {
   user: User;
@@ -13,7 +14,7 @@ interface UserInfoProps {
 
 export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthenticated, isFollowing, followLoading, onFollowToggle }) => {
   const userImgUrl = user.image_id ? imageRepository.getImageUrl(user.image_id) : '/assets/default-user.png';
-  
+  const { t } = useTranslation();
   return (
     <section className="user-profile-header">
       <div className="user-profile-main">
@@ -21,13 +22,13 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthen
           <img src={userImgUrl} alt={user.username} className="user-profile-image" />
         </Link>
         <div className="user-profile-info">
-          <div className="entity-type">User</div>
+          <div className="entity-type">{t("label.user")}</div>
           <div className="user-badges">
             {user.verified && (
-              <span className="badge badge-verified">Verified</span>
+              <span className="badge badge-verified">{t("label.verified")}</span>
             )}
             {user.moderator && (
-              <span className="badge badge-moderator">Moderator</span>
+              <span className="badge badge-moderator">{t("label.moderator")}</span>
             )}
           </div>
           <Link href={`/users/${user.id}`} className="user-profile-name">
@@ -41,17 +42,17 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthen
           <div className="user-profile-stats">
             <Link href={`/users/${user.id}?tab=reviews`} className="stat-link">
               <span className="stat-value">{user.review_amount || 0}</span>
-              <span className="stat-label">Reviews</span>
+              <span className="stat-label">{t("label.reviews")}</span>
             </Link>
 
             <Link href={`/users/${user.id}/followers`} className="stat-link">
               <span className="stat-value">{user.followers_amount || 0}</span>
-              <span className="stat-label">Followers</span>
+              <span className="stat-label">{t("label.followers")}</span>
             </Link>
 
             <Link href={`/users/${user.id}/following`} className="stat-link">
               <span className="stat-value">{user.following_amount || 0}</span>
-              <span className="stat-label">Following</span>
+              <span className="stat-label">{t("label.following")}</span>
             </Link>
           </div>
         </div>
@@ -61,12 +62,12 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthen
       {isOwnProfile ? (
           <Link href="/profile/edit">
             <button className="btn btn-primary">
-              Edit Profile
+              {t("label.editProfile")}
             </button>
           </Link>
       ) : (
           <button className={`btn ${isFollowing ? 'btn-secondary' : 'btn-primary'}`} onClick={onFollowToggle} disabled={followLoading}>
-            {followLoading ? 'Loading...' : (isFollowing ? 'Unfollow' : 'Follow')}
+            {followLoading ? t("common.loading") : (isFollowing ? t("common.unfollow") : t("common.follow"))}
           </button>
       )
       }
@@ -74,7 +75,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthen
       ) :
       (
         <Link href="/login" className="btn btn-primary">
-          Login to Follow
+          {t("common.loginToFollow")}
         </Link>
 
       )}

@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { Album, Artist, User } from '@/types';
 import { RatingCard } from '@/components/ui';
 import { imageRepository } from '@/repositories';
-
+import { formatDate } from '@/utils/timeUtils';
+import { useTranslation } from 'react-i18next';
 interface AlbumInfoProps {
   album: Album;
   artist: Artist | null;
@@ -28,7 +29,7 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
 }) => {
   const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
   const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
-
+  const { t } = useTranslation();
   return (
     <>
       {/* Album Header */}
@@ -56,7 +57,7 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
               <div className="album-info">
                 {album.genre && <span className="album-genre">{album.genre}</span>}
                 {album.genre && album.release_date && <span className="info-separator">&bull;</span>}
-                {album.release_date && <span className="album-date">{album.formatted_release_date}</span>}
+                {album.release_date && <span className="album-date">{formatDate(album.release_date)}</span>}
               </div>
             </div>
           </div>
@@ -80,7 +81,7 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
       <section className="entity-actions">
         {!isAuthenticated ? (
           <Link href="/login" className="btn btn-primary">
-            Login to Add Favorite
+              {t("common.loginToAddFavorite")}
           </Link>
         ) : (
           <button
@@ -89,10 +90,10 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
             className={`btn ${isFavorite ? 'btn-secondary' : 'btn-primary'}`}
           >
             {favoriteLoading
-              ? 'Loading...'
+              ? t("common.loading")
               : isFavorite
-              ? 'Remove from Favorites'
-              : 'Add to Favorites'}
+              ? t("common.removeFromFavorites")
+              : t("common.addToFavorites")}
           </button>
         )}
       </section>

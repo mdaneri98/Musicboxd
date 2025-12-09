@@ -15,6 +15,7 @@ import {
   blockReviewAsync,
   unblockReviewAsync,
 } from '@/store/slices';
+import { formatTimeAgo } from '@/utils/timeUtils';
 
 interface ReviewCardProps {
   review: Review;
@@ -141,9 +142,17 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             />
             <div className="user-details">
               <span className="review-timestamp">
-                {review.time_ago}
+                {formatTimeAgo(review.created_at)}
               </span>
               <span className="user-name">{review.username}</span>
+              <div className="user-badges">
+                {review.user_verified && (
+                  <span className="badge badge-verified">{t("label.verified")}</span>
+                )}
+                {review.user_moderator && (
+                  <span className="badge badge-moderator">{t("label.moderator")}</span>
+                )}
+              </div>
             </div>
           </Link>
         </div>

@@ -21,6 +21,8 @@ public class ReviewDTO {
     private Long itemId;
     private String itemName;
     private Long itemImageId;
+    private Boolean userVerified;
+    private Boolean userModerator;
 
     public ReviewDTO() {}
 
@@ -153,6 +155,22 @@ public class ReviewDTO {
 
     public void setUserImageId(Long userImageId) {
         this.userImageId = userImageId;
+    }
+
+    public Boolean getUserVerified() {
+        return userVerified;
+    }
+
+    public void setUserVerified(Boolean userVerified) {
+        this.userVerified = userVerified;
+    }
+
+    public Boolean getUserModerator() {
+        return userModerator;
+    }
+
+    public void setUserModerator(Boolean userModerator) {
+        this.userModerator = userModerator;
     }
 }
 

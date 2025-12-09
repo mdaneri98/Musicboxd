@@ -125,7 +125,12 @@
       "music": "Música",
       "users": "Usuarios"
     },
-    "placeholder": "Buscar artistas, álbumes, canciones o usuarios...",
+    "placeholder": {
+      "music": "Buscar artistas, álbumes, canciones...",
+      "users": "Buscar usuarios...",
+      "artist": "Buscar artista...",
+      "album": "Buscar álbum..."
+    },
     "noResults": "No se encontraron resultados",
     "searching": "Buscando...",
     "searchError": "Error al buscar",
@@ -179,10 +184,10 @@
     "loading": "Cargando notificaciones...",
     "page": "Página",
     "types": {
-      "follow": "{{username}} comenzó a seguirte",
-      "like": "A {{username}} le gustó tu reseña",
-      "comment": "{{username}} comentó en tu reseña",
-      "newReview": "{{username}} publicó una nueva reseña"
+      "FOLLOW": "{{username}} comenzó a seguirte",
+      "LIKE": "A {{username}} le gustó tu reseña",
+      "COMMENT": "{{username}} comentó en tu reseña",
+      "NEW_REVIEW": "{{username}} publicó una nueva reseña de {{itemName}}"
     }
   },
   "settings": {
@@ -191,6 +196,7 @@
     "theme": "Tema",
     "themeDescription": "Elige tu tema de color preferido",
     "language": "Idioma",
+    "languageDescription": "Elige tu idioma preferido",
     "appearance": "Apariencia",
     "privacy": "Privacidad",
     "notifications": "Notificaciones",
@@ -229,6 +235,7 @@
     }
   },
   "common": {
+    "date": "{{date}}",
     "loading": "Cargando...",
     "error": "Ocurrió un error",
     "save": "Guardar",
@@ -274,7 +281,11 @@
     "goToPage": "Ir a la página",
     "page": "Página",
     "of": "de",
-    "rateThis": "Calificar esto",
+    "rateThis": {
+      "artist": "Calificar a este artista",
+      "album": "Calificar a este álbum",
+      "song": "Calificar a esta canción"
+    },
     "editYourReview": "Editar tu reseña",
     "totalRatings": "Calificaciones totales",
     "averageRating": "Calificación promedio",
@@ -394,5 +405,47 @@
     "notFollowing": "No sigue a nadie aún",
     "previousPage": "Página anterior",
     "nextPage": "Página siguiente"
+  },
+  "label": {
+    "user": "Usuario",
+    "artist": "Artista",
+    "album": "Álbum",
+    "song": "Canción",
+    "reviews": "Reseñas",
+    "followers": "Seguidores",
+    "following": "Siguiendo",
+    "verified": "Verificado",
+    "moderator": "Moderador",
+    "editProfile": "Editar perfil",
+    "addArtist": "Agregar artista",
+    "addAlbum": "Agregar álbum",
+    "addSong": "Agregar canción"
+  },
+  "time": {
+    "justNow": "Ahora mismo",
+    "minuteAgo": "{{count}} minuto atrás",
+    "minutesAgo": "{{count}} minutos atrás",
+    "hourAgo": "{{count}} hora atrás",
+    "hoursAgo": "{{count}} horas atrás",
+    "dayAgo": "{{count}} día atrás",
+    "daysAgo": "{{count}} días atrás",
+    "monthAgo": "{{count}} mes atrás",
+    "monthsAgo": "{{count}} meses atrás",
+    "unknown": "Desconocido",
+    "dateFormat": "{{day}} de {{month}}, {{year}}",
+    "months": {
+      "1": "Enero",
+      "2": "Febrero",
+      "3": "Marzo",
+      "4": "Abril",
+      "5": "Mayo",
+      "6": "Junio",
+      "7": "Julio",
+      "8": "Agosto",
+      "9": "Septiembre",
+      "10": "Octubre",
+      "11": "Noviembre",
+      "12": "Diciembre"
+    }
   }
 }

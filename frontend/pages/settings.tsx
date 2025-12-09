@@ -138,7 +138,9 @@ export default function SettingsPage() {
           <section className="settings-section">
             <h2 className="section-title">{t('settings.language')}</h2>
             <div className="settings-card">
+              <div className="settings-option">
               <LanguageSwitcher onLanguageChange={handleLanguageChange} />
+              </div>
             </div>
           </section>
 

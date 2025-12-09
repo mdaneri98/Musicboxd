@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAppDispatch } from '@/store/hooks';
 import { likeReviewAsync, unlikeReviewAsync } from '@/store/slices';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Like Button Component for Reviews
@@ -27,14 +28,13 @@ export function LikeButton({
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { t } = useTranslation();
   const handleToggleLike = async () => {
     setIsLoading(true);
     const previousLiked = isLiked;
     const previousCount = likeCount;
 
     try {
-      // Optimistic update
       const newIsLiked = !isLiked;
       const newCount = newIsLiked ? likeCount + 1 : likeCount - 1;
       setIsLiked(newIsLiked);
@@ -48,10 +48,9 @@ export function LikeButton({
 
       onLikeChange?.(newIsLiked, newCount);
     } catch (error) {
-      // Revert on error
       setIsLiked(previousLiked);
       setLikeCount(previousCount);
-      console.error('Failed to toggle like:', error);
+      console.error(t("common.failedToToggleLike"), error);
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +62,7 @@ export function LikeButton({
       disabled={isLoading}
       className={`like-button ${isLiked ? 'liked' : ''} ${className}`}
       type="button"
-      aria-label={isLiked ? 'Unlike review' : 'Like review'}
+      aria-label={isLiked ? t("common.unlikeReview") : t("common.likeReview")}
     >
       <span className="like-icon">{isLiked ? '❤️' : '🤍'}</span>
       <span className="like-count">{likeCount}</span>

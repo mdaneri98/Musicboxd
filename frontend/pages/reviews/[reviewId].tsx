@@ -26,6 +26,7 @@ import {
 } from '@/store/slices';
 import type { Comment, CommentFormData } from '@/types';
 import { ReviewTab } from '@/types/enums';
+import { formatTimeAgo } from '@/utils/timeUtils';
 
 const ReviewDetailPage = () => {
   const { t } = useTranslation();
@@ -217,7 +218,7 @@ const ReviewDetailPage = () => {
                       <div className="comment-user">
                         <span className="comment-username">{comment.username}</span>
                         <span className="comment-date">
-                          {comment.time_ago}
+                          {formatTimeAgo(comment.created_at)}
                         </span>
                       </div>
                       {canDeleteComment(comment) && (

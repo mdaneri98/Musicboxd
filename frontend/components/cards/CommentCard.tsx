@@ -9,6 +9,8 @@ import { Comment } from '@/types';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCurrentUser, deleteCommentAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
+import { useTranslation } from 'react-i18next';
+import { formatTimeAgo } from '@/utils/timeUtils';
 
 interface CommentCardProps {
   comment: Comment;
@@ -18,6 +20,7 @@ interface CommentCardProps {
 const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectCurrentUser);
+  const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const isOwner = currentUser?.id === comment.user_id;
@@ -59,7 +62,7 @@ const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
           <div className="comment-user-info">
             <span className="comment-username">{comment.username}</span>
             <span className="comment-timestamp">
-              {comment.time_ago}
+              {formatTimeAgo(comment.created_at)}
             </span>
           </div>
         </Link>

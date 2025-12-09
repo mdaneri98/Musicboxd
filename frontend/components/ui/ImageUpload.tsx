@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useImagePreview } from '@/hooks';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Image Upload Component with Preview
@@ -30,7 +31,7 @@ export function ImageUpload({
     allowedTypes,
     initialPreview: currentImageUrl,
   });
-
+  const { t } = useTranslation();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleFileChange(e);
     const selectedFile = e.target.files?.[0];
@@ -84,7 +85,7 @@ export function ImageUpload({
               {loading ? 'Loading...' : 'Click to upload or drag and drop'}
             </p>
             <p className="upload-hint">
-              Max size: {maxSizeMB}MB
+              {t("common.maxSize")}: {maxSizeMB}MB
             </p>
           </div>
         </div>

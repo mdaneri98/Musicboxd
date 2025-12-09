@@ -10,6 +10,7 @@ import { markAsReadAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { NotificationTypeEnum } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { formatTimeAgo } from '@/utils/timeUtils';
 
 interface NotificationCardProps {
   notification: Notification;
@@ -53,8 +54,8 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
           <div className="notification-content">
             <Link href={isReviewRelated ? `/reviews/${notification.review_id}` : `/users/${notification.trigger_user_id}`}>
               <div className="notification-text">
-                <p>{t(`notifications.types.${notification.type}`, { username: notification.trigger_username })}</p>
-                <span className="notification-time">{notification.time_ago}</span>
+                <p>{t(`notifications.types.${notification.type}`, { username: notification.trigger_username, itemName: notification.review_item_name })}</p>
+                <span className="notification-time">{formatTimeAgo(notification.created_at)}</span>
               </div>
             </Link>
           </div>

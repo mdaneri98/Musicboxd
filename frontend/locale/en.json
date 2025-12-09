@@ -136,7 +136,9 @@
     },
     "placeholder": {
       "music": "Search for artists, albums and songs",
-      "users": "Search for users"
+      "users": "Search for users",
+      "artist": "Search for artist",
+      "album": "Search for album"
     },
     "noResults": "No results found",
     "searching": "Searching...",
@@ -194,9 +196,9 @@
     "page": "Page",
     "types": {
       "FOLLOW": "{{username}} started following you",
-      "LIKE": "{{username}} liked your review",
-      "COMMENT": "{{username}} commented on your review",
-      "NEW_REVIEW": "{{username}} posted a new review"
+      "LIKE": "{{username}} liked your review of {{itemName}}",
+      "COMMENT": "{{username}} commented on your review of {{itemName}}",
+      "NEW_REVIEW": "{{username}} posted a new review of {{itemName}}"
     }
   },
   "settings": {
@@ -205,6 +207,7 @@
     "theme": "Theme",
     "themeDescription": "Choose your preferred color theme",
     "language": "Language",
+    "languageDescription": "Choose your preferred language",
     "appearance": "Appearance",
     "privacy": "Privacy",
     "notifications": "Notifications",
@@ -243,6 +246,7 @@
     }
   },
   "common": {
+    "date": "{{date}}",
     "loading": "Loading...",
     "error": "An error occurred",
     "save": "Save",
@@ -288,11 +292,17 @@
     "goToPage": "Go to page",
     "page": "Page",
     "of": "of",
-    "rateThis": "Rate this",
+    "rateThis": {
+      "artist": "Rate this artist",
+      "album": "Rate this album",
+      "song": "Rate this song"
+    },
     "editYourReview": "Edit Your Review",
     "totalRatings": "Total Ratings",
     "averageRating": "Average Rating",
-    "yourRating": "Your Rating"
+    "yourRating": "Your Rating",
+    "failedToToggleLike": "Failed to toggle like",
+    "failedToToggleFollow": "Failed to toggle follow"
   },
   "errors": {
     "required": "This field is required",
@@ -416,10 +426,48 @@
     "nextPage": "Next Page"
   },
   "label": {
+    "artist": "Artist",
+    "album": "Album",
+    "song": "Song",
+    "user": "User",
     "reviews": "Reviews",
     "followers": "Followers",
     "following": "Following",
     "verified": "Verified",
-    "moderator": "Moderator"
+    "moderator": "Moderator",
+    "editProfile": "Edit Profile",
+    "addArtist": "Add Artist",
+    "addAlbum": "Add Album",
+    "addSong": "Add Song"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minuteAgo": "{{count}} minute ago",
+    "minutesAgo": "{{count}} minutes ago",
+    "hourAgo": "{{count}} hour ago",
+    "hoursAgo": "{{count}} hours ago",
+    "dayAgo": "{{count}} day ago",
+    "daysAgo": "{{count}} days ago",
+    "monthAgo": "{{count}} month ago",
+    "monthsAgo": "{{count}} months ago",
+    "unknown": "Unknown",
+    "dateFormat": "{{day}} {{month}}, {{year}}",
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "moderator": {
+      "title": "Moderator Dashboard"
+    }
   }
 }

@@ -55,7 +55,7 @@ export interface Album {
   title: string;
   artist_id: number;
   artist_name: string;
-  release_date?: Date;
+  release_date: Date;
   genre?: string;
   image_id?: number;
   rating_count: number;
@@ -63,7 +63,6 @@ export interface Album {
   created_at: number;
   updated_at?: number;
   deleted: boolean;
-  formatted_release_date?: string;
   favorite?: boolean; // Context-dependent
   reviewed?: boolean; // Context-dependent
 }
@@ -85,7 +84,7 @@ export interface Song {
   created_at: number;
   updated_at?: number;
   deleted: boolean;
-  formatted_release_date?: string;
+  release_date: Date;
   favorite?: boolean; // Context-dependent
   reviewed?: boolean; // Context-dependent
 }
@@ -112,7 +111,8 @@ export interface Review {
   is_blocked: boolean;
   created_at: Date;
   updated_at?: Date;
-  time_ago: string;
+  user_verified: boolean;
+  user_moderator: boolean;
 }
 
 // ============================================================================
@@ -126,7 +126,6 @@ export interface Comment {
   review_id: number;
   content: string;
   created_at: Date;
-  time_ago: string;
 }
 
 // ============================================================================
@@ -147,7 +146,6 @@ export interface Notification {
   review_item_image_id?: number;
   is_read: boolean;
   created_at: Date;
-  time_ago: string;
 }
 
 // ============================================================================

@@ -18,6 +18,7 @@ import {
 import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
 import { ReviewItemType } from '@/types/enums';
+import { formatDate } from '@/utils/timeUtils';
 
 const AlbumReviewPage = () => {
   const { t } = useTranslation();
@@ -119,7 +120,7 @@ const AlbumReviewPage = () => {
             <div className="review-preview-info">
               <h2 className="review-preview-title">{album.title}</h2>
               {album.release_date && (
-                  <p className="review-preview-subtitle">{album.formatted_release_date}</p>
+                  <p className="review-preview-subtitle">{formatDate(album.release_date)}</p>
               )}
             </div>
           </Link>

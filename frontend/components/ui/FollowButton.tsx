@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppDispatch } from '@/store/hooks';
 import { followUserAsync, unfollowUserAsync } from '@/store/slices';
-
+import { useTranslation } from 'react-i18next';
 /**
  * Follow/Unfollow Button Component
  * 
@@ -24,13 +24,12 @@ export function FollowButton({
   const dispatch = useAppDispatch();
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { t } = useTranslation();
   const handleToggleFollow = async () => {
     setIsLoading(true);
     const previousState = isFollowing;
 
     try {
-      // Optimistic update
       setIsFollowing(!isFollowing);
 
       if (isFollowing) {
@@ -43,7 +42,7 @@ export function FollowButton({
     } catch (error) {
       // Revert on error
       setIsFollowing(previousState);
-      console.error('Failed to toggle follow:', error);
+      console.error(t("common.failedToToggleFollow"), error);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +55,7 @@ export function FollowButton({
       className={`btn ${isFollowing ? 'btn-secondary' : 'btn-primary'} ${className}`}
       type="button"
     >
-      {isLoading ? 'Loading...' : isFollowing ? 'Unfollow' : 'Follow'}
+      {isLoading ? t("common.loading") : isFollowing ? t("common.unfollow") : t("common.follow")}
     </button>
   );
 }

@@ -1,0 +1,473 @@
+{
+  "navbar": {
+    "home": "Início",
+    "discovery": "Descobrir",
+    "search": "Pesquisar",
+    "login": "Entrar",
+    "register": "Registrar",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "notifications": "Notificações",
+    "moderator": "Moderador",
+    "logout": "Sair"
+  },
+  "landing": {
+    "title": "Descubra música",
+    "subtitle": "Compartilhe sua paixão por música. Avalie, analise e descubra novos álbuns, artistas e músicas.",
+    "getStarted": "Começar",
+    "popularReviews": "Resenhas populares",
+    "loading": "Carregando resenhas populares...",
+    "features": {
+      "writeReviews": {
+        "title": "Escreva resenhas",
+        "description": "Compartilhe seus pensamentos sobre álbuns, artistas e músicas com a comunidade."
+      },
+      "joinCommunity": {
+        "title": "Junte-se à comunidade",
+        "description": "Conecte-se com amantes de música, siga usuários e descubra novas perspectivas."
+      },
+      "discoverMusic": {
+        "title": "Descubra música",
+        "description": "Explore nosso extenso banco de dados de artistas, álbuns e músicas."
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "username": "Nome de usuário",
+      "password": "Senha",
+      "submit": "Entrar",
+      "noAccount": "Ainda não tem uma conta?",
+      "changePassword": "Alterar senha",
+      "rememberMe": "Lembrar de mim",
+      "loggingIn": "Entrando..."
+    },
+    "register": {
+      "title": "Registrar",
+      "username": "Nome de usuário",
+      "email": "Email",
+      "password": "Senha",
+      "confirmPassword": "Confirmar senha",
+      "repeatPassword": "Repetir senha",
+      "submit": "Registrar",
+      "haveAccount": "Já tem uma conta?",
+      "registering": "Registrando..."
+    }
+  },
+  "home": {
+    "tabs": {
+      "forYou": "Para você",
+      "following": "Seguindo"
+    },
+    "loadingReviews": "Carregando resenhas...",
+    "noReviews": "Nenhuma resenha encontrada",
+    "noReviewsHint": "Tente a página anterior ou mude de aba",
+    "page": "Página"
+  },
+  "profile": {
+    "tabs": {
+      "favorites": "Favoritos",
+      "reviews": "Resenhas"
+    },
+    "followers": "Seguidores",
+    "following": "Seguindo",
+    "reviews": "Resenhas",
+    "follow": "Seguir",
+    "unfollow": "Deixar de seguir",
+    "editProfile": "Editar perfil",
+    "username": "Nome de usuário",
+    "name": "Nome",
+    "bio": "Bio",
+    "update": "Atualizar",
+    "updating": "Atualizando...",
+    "loadingFavorites": "Carregando favoritos...",
+    "loadingReviews": "Carregando resenhas...",
+    "favoriteArtists": "Artistas favoritos",
+    "favoriteAlbums": "Álbuns favoritos",
+    "favoriteSongs": "Músicas favoritas",
+    "addFavoriteArtists": "Adicione até 5 artistas favoritos ao seu perfil",
+    "addFavoriteAlbums": "Adicione até 5 álbuns favoritos ao seu perfil",
+    "addFavoriteSongs": "Adicione até 5 músicas favoritas ao seu perfil",
+    "noReviews": "Nenhuma resenha encontrada",
+    "page": "Página",
+    "discardChanges": "Descartar alterações"
+  },
+  "music": {
+    "tabs": {
+      "popular": "Popular",
+      "topRated": "Mais votados"
+    },
+    "artists": "Artistas",
+    "albums": "Álbuns",
+    "songs": "Músicas",
+    "discovery": "Descobrir",
+    "discoverySubtitle": "Explore a melhor música, selecionada para você",
+    "loadingMusic": "Carregando música...",
+    "mostPopular": "Mais populares",
+    "topRated": "Mais votados",
+    "topRatedArtists": "Artistas mais votados",
+    "mostPopularArtists": "Artistas mais populares",
+    "topRatedAlbums": "Álbuns mais votados",
+    "mostPopularAlbums": "Álbuns mais populares",
+    "topRatedSongs": "Músicas mais votadas",
+    "mostPopularSongs": "Músicas mais populares",
+    "viewAll": "Ver todos",
+    "sortBy": "Ordenar por",
+    "recentlyAdded": "Adicionados recentemente",
+    "firstAdded": "Primeiros adicionados",
+    "newest": "Mais recentes",
+    "oldest": "Mais antigos",
+    "page": "Página",
+    "filters": {
+      "popular": "Popular",
+      "recent": "Mais recente",
+      "rating": "Avaliação",
+      "likes": "Curtidas",
+      "first": "Primeiro",
+      "newest": "Mais recente",
+      "oldest": "Mais antigo"
+    }
+  },
+  "search": {
+    "tabs": {
+      "music": "Música",
+      "users": "Usuários"
+    },
+    "placeholder": {
+      "music": "Pesquisar artistas, álbuns e músicas",
+      "users": "Pesquisar usuários",
+      "artist": "Pesquisar artista",
+      "album": "Pesquisar álbum"
+    },
+    "noResults": "Nenhum resultado encontrado",
+    "searching": "Pesquisando...",
+    "searchError": "Erro na pesquisa",
+    "recommendedUsers": "Usuários recomendados",
+    "filters": {
+      "all": "Todos",
+      "users": "Usuários",
+      "artists": "Artistas",
+      "albums": "Álbuns",
+      "songs": "Músicas",
+      "reviews": "Resenhas"
+    }
+  },
+  "review": {
+    "tabs": {
+      "likes": "Curtidas",
+      "comments": "Comentários"
+    },
+    "writeReview": "Escrever uma resenha",
+    "editReview": "Editar resenha",
+    "deleteReview": "Excluir resenha",
+    "rating": "Avaliação",
+    "title": "Título",
+    "content": "Conteúdo",
+    "description": "Descrição",
+    "submit": "Enviar resenha",
+    "submitting": "Enviando...",
+    "cancel": "Cancelar",
+    "likes": "{{count}} curtida",
+    "likes_other": "{{count}} curtidas",
+    "comments": "{{count}} comentário",
+    "comments_other": "{{count}} comentários",
+    "blockedByModerator": "Esta resenha foi bloqueada por um moderador",
+    "tryMakingAnother": "Tente fazer outra",
+    "unblock": "Desbloquear",
+    "block": "Bloquear",
+    "itemType": {
+      "artist": "Artista",
+      "album": "Álbum",
+      "song": "Música"
+    }
+  },
+  "comment": {
+    "writeComment": "Escreva um comentário...",
+    "postComment": "Publicar comentário",
+    "posting": "Publicando..."
+  },
+  "notifications": {
+    "title": "Notificações",
+    "markAsRead": "Marcar como lido",
+    "markAllRead": "Marcar tudo como lido",
+    "noNotifications": "Sem notificações",
+    "loading": "Carregando notificações...",
+    "page": "Página",
+    "types": {
+      "FOLLOW": "{{username}} começou a seguir você",
+      "LIKE": "{{username}} curtiu sua resenha de {{itemName}}",
+      "COMMENT": "{{username}} comentou em sua resenha de {{itemName}}",
+      "NEW_REVIEW": "{{username}} publicou uma nova resenha de {{itemName}}"
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "description": "Gerencie suas preferências e configurações de conta",
+    "theme": "Tema",
+    "themeDescription": "Escolha seu tema de cor preferido",
+    "language": "Idioma",
+    "languageDescription": "Escolha seu idioma preferido",
+    "appearance": "Aparência",
+    "privacy": "Privacidade",
+    "notifications": "Notificações",
+    "account": "Conta",
+    "save": "Salvar alterações",
+    "cancel": "Cancelar",
+    "dangerZone": "Zona de perigo",
+    "deleteAccount": "Excluir conta",
+    "deleteAccountDescription": "Exclua permanentemente sua conta e todos os dados associados",
+    "deleteAccountConfirmation": "Tem certeza de que deseja excluir sua conta? Esta ação não pode ser desfeita e todos os seus dados serão excluídos permanentemente.",
+    "notificationTypes": {
+      "follows": "Seguidores",
+      "followsDescription": "Receber notificação quando alguém seguir você",
+      "likes": "Curtidas",
+      "likesDescription": "Receber notificação quando alguém curtir sua resenha",
+      "comments": "Comentários",
+      "commentsDescription": "Receber notificação quando alguém comentar em sua resenha",
+      "reviews": "Resenhas",
+      "reviewsDescription": "Receber notificação quando usuários seguidos publicarem uma resenha"
+    },
+    "themes": {
+      "dark": "Escuro",
+      "sepia": "Sépia",
+      "ocean": "Oceano",
+      "forest": "Floresta",
+      "kawaii": "Kawaii"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "de": "Deutsch",
+      "fr": "Français",
+      "it": "Italiano",
+      "ja": "日本語",
+      "pt": "Português"
+    }
+  },
+  "common": {
+    "date": "{{date}}",
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "submit": "Enviar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "success": "Sucesso",
+    "failed": "Falhou",
+    "follow": "Seguir",
+    "unfollow": "Deixar de seguir",
+    "like": "Curtir",
+    "unlike": "Descurtir",
+    "loginToReview": "Entre para avaliar",
+    "loginToFollow": "Entre para seguir",
+    "loginToAddFavorite": "Entre para adicionar favorito",
+    "editProfile": "Editar perfil",
+    "addToFavorites": "Adicionar aos favoritos",
+    "removeFromFavorites": "Remover dos favoritos",
+    "markAsRead": "Marcar como lido",
+    "confirmDelete": "Tem certeza de que deseja excluir isso?",
+    "confirmDeleteComment": "Tem certeza de que deseja excluir este comentário?",
+    "editComment": "Editar comentário",
+    "deleteComment": "Excluir comentário",
+    "tryAgain": "Tentar novamente",
+    "clickToUpload": "Clique para enviar ou arraste e solte",
+    "maxSize": "Tamanho máximo",
+    "remove": "Remover",
+    "sortBy": "Ordenar por",
+    "clearSearch": "Limpar pesquisa",
+    "likeReview": "Curtir resenha",
+    "unlikeReview": "Descurtir resenha",
+    "closeModal": "Fechar modal",
+    "goToFirstPage": "Ir para a primeira página",
+    "goToPreviousPage": "Ir para a página anterior",
+    "goToNextPage": "Ir para a próxima página",
+    "goToLastPage": "Ir para a última página",
+    "goToPage": "Ir para a página",
+    "page": "Página",
+    "of": "de",
+    "rateThis": {
+      "artist": "Avaliar este artista",
+      "album": "Avaliar este álbum",
+      "song": "Avaliar esta música"
+    },
+    "editYourReview": "Editar sua resenha",
+    "totalRatings": "Total de avaliações",
+    "averageRating": "Avaliação média",
+    "yourRating": "Sua avaliação",
+    "failedToToggleLike": "Falha ao alternar curtida",
+    "failedToToggleFollow": "Falha ao alternar seguir"
+  },
+  "errors": {
+    "required": "Este campo é obrigatório",
+    "invalidEmail": "Endereço de email inválido",
+    "passwordMismatch": "As senhas não correspondem",
+    "minLength": "Deve ter pelo menos {{min}} caracteres",
+    "maxLength": "Deve ter no máximo {{max}} caracteres",
+    "loginFailed": "Nome de usuário ou senha inválidos",
+    "networkError": "Erro de rede. Por favor, tente novamente.",
+    "notFound": "Recurso não encontrado",
+    "unauthorized": "Acesso não autorizado",
+    "serverError": "Erro do servidor. Por favor, tente novamente mais tarde.",
+    "pages": {
+      "403": {
+        "title": "Acesso proibido",
+        "message": "Você não tem permissão para acessar este recurso. Entre em contato com o administrador se acredita que isso é um erro."
+      },
+      "404": {
+        "title": "Página não encontrada",
+        "message": "A página que você está procurando pode ter sido removida, renomeada ou está temporariamente indisponível."
+      },
+      "500": {
+        "title": "Erro interno do servidor",
+        "message": "Algo deu errado do nosso lado. Estamos trabalhando para corrigir o problema. Por favor, tente novamente mais tarde."
+      },
+      "backToHome": "Voltar ao início"
+    }
+  },
+  "footer": {
+    "about": "Sobre",
+    "contact": "Contato",
+    "privacy": "Política de privacidade",
+    "terms": "Termos de serviço",
+    "copyright": "© {{year}} Musicboxd. Todos os direitos reservados."
+  },
+  "album": {
+    "loadingAlbum": "Carregando álbum...",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página",
+    "editReviewFor": "Editar resenha de",
+    "editYourReview": "Editar sua resenha",
+    "confirmDeleteReview": "Tem certeza de que deseja excluir esta resenha?",
+    "yes": "Sim",
+    "no": "Não",
+    "reviewAlbum": "Avaliar",
+    "makeReview": "Fazer uma resenha"
+  },
+  "artist": {
+    "loadingArtist": "Carregando artista...",
+    "popularSongs": "Músicas populares",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página",
+    "editReviewFor": "Editar resenha de",
+    "editYourReview": "Editar sua resenha",
+    "confirmDeleteReview": "Tem certeza de que deseja excluir esta resenha?",
+    "yes": "Sim",
+    "no": "Não",
+    "reviewArtist": "Avaliar",
+    "makeReview": "Fazer uma resenha"
+  },
+  "song": {
+    "loadingSong": "Carregando música...",
+    "duration": "Duração",
+    "genre": "Gênero",
+    "releaseDate": "Data de lançamento",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página",
+    "editReviewFor": "Editar resenha de",
+    "editYourReview": "Editar sua resenha",
+    "confirmDeleteReview": "Tem certeza de que deseja excluir esta resenha?",
+    "yes": "Sim",
+    "no": "Não",
+    "reviewSong": "Avaliar",
+    "makeReview": "Fazer uma resenha"
+  },
+  "reviewDetail": {
+    "loadingReview": "Carregando resenha...",
+    "noLikes": "Ainda sem curtidas",
+    "addComment": "Adicionar um comentário",
+    "loginToComment": "Por favor, entre para comentar",
+    "loadingComments": "Carregando comentários...",
+    "noComments": "Ainda sem comentários",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página",
+    "confirmDeleteComment": "Tem certeza de que deseja excluir este comentário?",
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "reviewNotFound": {
+    "title": "Resenha não encontrada",
+    "message": "A resenha que você está procurando não existe ou foi removida.",
+    "backToHome": "Voltar ao início"
+  },
+  "userNotFound": {
+    "title": "Usuário não encontrado",
+    "message": "O usuário que você está procurando não existe ou foi removido.",
+    "backToHome": "Voltar ao início"
+  },
+  "userProfile": {
+    "loadingProfile": "Carregando perfil...",
+    "profile": "Perfil",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página",
+    "moderator": "Moderador",
+    "verified": "Verificado",
+    "user": "Usuário",
+    "artist": "Artista",
+    "album": "Álbum",
+    "song": "Música"
+  },
+  "followers": {
+    "title": "Seguidores",
+    "noFollowers": "Ainda sem seguidores",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página"
+  },
+  "following": {
+    "title": "Seguindo",
+    "notFollowing": "Ainda não segue ninguém",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página"
+  },
+  "label": {
+    "artist": "Artista",
+    "album": "Álbum",
+    "song": "Música",
+    "user": "Usuário",
+    "reviews": "Resenhas",
+    "followers": "Seguidores",
+    "following": "Seguindo",
+    "verified": "Verificado",
+    "moderator": "Moderador",
+    "editProfile": "Editar perfil",
+    "addArtist": "Adicionar artista",
+    "addAlbum": "Adicionar álbum",
+    "addSong": "Adicionar música"
+  },
+  "time": {
+    "justNow": "Agora mesmo",
+    "minuteAgo": "{{count}} minuto atrás",
+    "minutesAgo": "{{count}} minutos atrás",
+    "hourAgo": "{{count}} hora atrás",
+    "hoursAgo": "{{count}} horas atrás",
+    "dayAgo": "{{count}} dia atrás",
+    "daysAgo": "{{count}} dias atrás",
+    "monthAgo": "{{count}} mês atrás",
+    "monthsAgo": "{{count}} meses atrás",
+    "unknown": "Desconhecido",
+    "dateFormat": "{{day}} de {{month}} de {{year}}",
+    "months": {
+      "1": "Janeiro",
+      "2": "Fevereiro",
+      "3": "Março",
+      "4": "Abril",
+      "5": "Maio",
+      "6": "Junho",
+      "7": "Julho",
+      "8": "Agosto",
+      "9": "Setembro",
+      "10": "Outubro",
+      "11": "Novembro",
+      "12": "Dezembro"
+    },
+    "moderator": {
+      "title": "Painel do moderador"
+    }
+  }
+}

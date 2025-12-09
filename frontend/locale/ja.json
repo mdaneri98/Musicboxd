@@ -1,0 +1,473 @@
+{
+  "navbar": {
+    "home": "ホーム",
+    "discovery": "発見",
+    "search": "検索",
+    "login": "ログイン",
+    "register": "登録",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "notifications": "通知",
+    "moderator": "モデレーター",
+    "logout": "ログアウト"
+  },
+  "landing": {
+    "title": "音楽を発見",
+    "subtitle": "音楽への情熱を共有しましょう。新しいアルバム、アーティスト、曲を評価、レビュー、発見できます。",
+    "getStarted": "始める",
+    "popularReviews": "人気のレビュー",
+    "loading": "人気のレビューを読み込み中...",
+    "features": {
+      "writeReviews": {
+        "title": "レビューを書く",
+        "description": "アルバム、アーティスト、曲についての感想をコミュニティと共有しましょう。"
+      },
+      "joinCommunity": {
+        "title": "コミュニティに参加",
+        "description": "音楽愛好家とつながり、ユーザーをフォローし、新しい視点を発見しましょう。"
+      },
+      "discoverMusic": {
+        "title": "音楽を発見",
+        "description": "アーティスト、アルバム、曲の豊富なデータベースを探索しましょう。"
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "submit": "サインイン",
+      "noAccount": "まだアカウントをお持ちでないですか？",
+      "changePassword": "パスワードを変更",
+      "rememberMe": "ログイン状態を保持",
+      "loggingIn": "ログイン中..."
+    },
+    "register": {
+      "title": "登録",
+      "username": "ユーザー名",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "confirmPassword": "パスワードを確認",
+      "repeatPassword": "パスワードを再入力",
+      "submit": "登録",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "registering": "登録中..."
+    }
+  },
+  "home": {
+    "tabs": {
+      "forYou": "おすすめ",
+      "following": "フォロー中"
+    },
+    "loadingReviews": "レビューを読み込み中...",
+    "noReviews": "レビューが見つかりません",
+    "noReviewsHint": "前のページを試すか、タブを切り替えてください",
+    "page": "ページ"
+  },
+  "profile": {
+    "tabs": {
+      "favorites": "お気に入り",
+      "reviews": "レビュー"
+    },
+    "followers": "フォロワー",
+    "following": "フォロー中",
+    "reviews": "レビュー",
+    "follow": "フォロー",
+    "unfollow": "フォロー解除",
+    "editProfile": "プロフィールを編集",
+    "username": "ユーザー名",
+    "name": "名前",
+    "bio": "自己紹介",
+    "update": "更新",
+    "updating": "更新中...",
+    "loadingFavorites": "お気に入りを読み込み中...",
+    "loadingReviews": "レビューを読み込み中...",
+    "favoriteArtists": "お気に入りのアーティスト",
+    "favoriteAlbums": "お気に入りのアルバム",
+    "favoriteSongs": "お気に入りの曲",
+    "addFavoriteArtists": "プロフィールにお気に入りのアーティストを5つまで追加できます",
+    "addFavoriteAlbums": "プロフィールにお気に入りのアルバムを5つまで追加できます",
+    "addFavoriteSongs": "プロフィールにお気に入りの曲を5つまで追加できます",
+    "noReviews": "レビューが見つかりません",
+    "page": "ページ",
+    "discardChanges": "変更を破棄"
+  },
+  "music": {
+    "tabs": {
+      "popular": "人気",
+      "topRated": "高評価"
+    },
+    "artists": "アーティスト",
+    "albums": "アルバム",
+    "songs": "曲",
+    "discovery": "発見",
+    "discoverySubtitle": "あなたのために厳選された最高の音楽を探索",
+    "loadingMusic": "音楽を読み込み中...",
+    "mostPopular": "最も人気",
+    "topRated": "高評価",
+    "topRatedArtists": "高評価のアーティスト",
+    "mostPopularArtists": "人気のアーティスト",
+    "topRatedAlbums": "高評価のアルバム",
+    "mostPopularAlbums": "人気のアルバム",
+    "topRatedSongs": "高評価の曲",
+    "mostPopularSongs": "人気の曲",
+    "viewAll": "すべて見る",
+    "sortBy": "並び替え",
+    "recentlyAdded": "最近追加",
+    "firstAdded": "最初に追加",
+    "newest": "最新",
+    "oldest": "最古",
+    "page": "ページ",
+    "filters": {
+      "popular": "人気",
+      "recent": "最新",
+      "rating": "評価",
+      "likes": "いいね",
+      "first": "最初",
+      "newest": "最新",
+      "oldest": "最古"
+    }
+  },
+  "search": {
+    "tabs": {
+      "music": "音楽",
+      "users": "ユーザー"
+    },
+    "placeholder": {
+      "music": "アーティスト、アルバム、曲を検索",
+      "users": "ユーザーを検索",
+      "artist": "アーティストを検索",
+      "album": "アルバムを検索"
+    },
+    "noResults": "結果が見つかりません",
+    "searching": "検索中...",
+    "searchError": "検索エラー",
+    "recommendedUsers": "おすすめのユーザー",
+    "filters": {
+      "all": "すべて",
+      "users": "ユーザー",
+      "artists": "アーティスト",
+      "albums": "アルバム",
+      "songs": "曲",
+      "reviews": "レビュー"
+    }
+  },
+  "review": {
+    "tabs": {
+      "likes": "いいね",
+      "comments": "コメント"
+    },
+    "writeReview": "レビューを書く",
+    "editReview": "レビューを編集",
+    "deleteReview": "レビューを削除",
+    "rating": "評価",
+    "title": "タイトル",
+    "content": "内容",
+    "description": "説明",
+    "submit": "レビューを投稿",
+    "submitting": "投稿中...",
+    "cancel": "キャンセル",
+    "likes": "{{count}}いいね",
+    "likes_other": "{{count}}いいね",
+    "comments": "{{count}}コメント",
+    "comments_other": "{{count}}コメント",
+    "blockedByModerator": "このレビューはモデレーターによってブロックされました",
+    "tryMakingAnother": "別のレビューを作成してみてください",
+    "unblock": "ブロック解除",
+    "block": "ブロック",
+    "itemType": {
+      "artist": "アーティスト",
+      "album": "アルバム",
+      "song": "曲"
+    }
+  },
+  "comment": {
+    "writeComment": "コメントを書く...",
+    "postComment": "コメントを投稿",
+    "posting": "投稿中..."
+  },
+  "notifications": {
+    "title": "通知",
+    "markAsRead": "既読にする",
+    "markAllRead": "すべて既読にする",
+    "noNotifications": "通知はありません",
+    "loading": "通知を読み込み中...",
+    "page": "ページ",
+    "types": {
+      "FOLLOW": "{{username}}があなたをフォローしました",
+      "LIKE": "{{username}}があなたの{{itemName}}のレビューにいいねしました",
+      "COMMENT": "{{username}}があなたの{{itemName}}のレビューにコメントしました",
+      "NEW_REVIEW": "{{username}}が{{itemName}}の新しいレビューを投稿しました"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "description": "アカウントの設定と環境設定を管理",
+    "theme": "テーマ",
+    "themeDescription": "お好みのカラーテーマを選択",
+    "language": "言語",
+    "languageDescription": "あなたの好みの言語を選択",
+    "appearance": "外観",
+    "privacy": "プライバシー",
+    "notifications": "通知",
+    "account": "アカウント",
+    "save": "変更を保存",
+    "cancel": "キャンセル",
+    "dangerZone": "危険ゾーン",
+    "deleteAccount": "アカウントを削除",
+    "deleteAccountDescription": "アカウントと関連するすべてのデータを完全に削除します",
+    "deleteAccountConfirmation": "本当にアカウントを削除しますか？この操作は取り消せず、すべてのデータが完全に削除されます。",
+    "notificationTypes": {
+      "follows": "フォロワー",
+      "followsDescription": "誰かがあなたをフォローしたときに通知を受け取る",
+      "likes": "いいね",
+      "likesDescription": "誰かがあなたのレビューにいいねしたときに通知を受け取る",
+      "comments": "コメント",
+      "commentsDescription": "誰かがあなたのレビューにコメントしたときに通知を受け取る",
+      "reviews": "レビュー",
+      "reviewsDescription": "フォローしているユーザーがレビューを投稿したときに通知を受け取る"
+    },
+    "themes": {
+      "dark": "ダーク",
+      "sepia": "セピア",
+      "ocean": "オーシャン",
+      "forest": "フォレスト",
+      "kawaii": "かわいい"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "de": "Deutsch",
+      "fr": "Français",
+      "it": "Italiano",
+      "ja": "日本語",
+      "pt": "Português"
+    }
+  },
+  "common": {
+    "date": "{{date}}",
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "submit": "送信",
+    "back": "戻る",
+    "next": "次へ",
+    "previous": "前へ",
+    "close": "閉じる",
+    "confirm": "確認",
+    "success": "成功",
+    "failed": "失敗",
+    "follow": "フォロー",
+    "unfollow": "フォロー解除",
+    "like": "いいね",
+    "unlike": "いいね解除",
+    "loginToReview": "レビューするにはログイン",
+    "loginToFollow": "フォローするにはログイン",
+    "loginToAddFavorite": "お気に入りに追加するにはログイン",
+    "editProfile": "プロフィールを編集",
+    "addToFavorites": "お気に入りに追加",
+    "removeFromFavorites": "お気に入りから削除",
+    "markAsRead": "既読にする",
+    "confirmDelete": "本当に削除しますか？",
+    "confirmDeleteComment": "本当にこのコメントを削除しますか？",
+    "editComment": "コメントを編集",
+    "deleteComment": "コメントを削除",
+    "tryAgain": "再試行",
+    "clickToUpload": "クリックしてアップロードまたはドラッグ＆ドロップ",
+    "maxSize": "最大サイズ",
+    "remove": "削除",
+    "sortBy": "並び替え",
+    "clearSearch": "検索をクリア",
+    "likeReview": "レビューにいいね",
+    "unlikeReview": "いいねを取り消す",
+    "closeModal": "モーダルを閉じる",
+    "goToFirstPage": "最初のページへ",
+    "goToPreviousPage": "前のページへ",
+    "goToNextPage": "次のページへ",
+    "goToLastPage": "最後のページへ",
+    "goToPage": "ページへ移動",
+    "page": "ページ",
+    "of": "/",
+    "rateThis": {
+      "artist": "このアーティストを評価",
+      "album": "このアルバムを評価",
+      "song": "この曲を評価"
+    },
+    "editYourReview": "レビューを編集",
+    "totalRatings": "総評価数",
+    "averageRating": "平均評価",
+    "yourRating": "あなたの評価",
+    "failedToToggleLike": "いいねの切り替えに失敗しました",
+    "failedToToggleFollow": "フォローの切り替えに失敗しました"
+  },
+  "errors": {
+    "required": "このフィールドは必須です",
+    "invalidEmail": "無効なメールアドレスです",
+    "passwordMismatch": "パスワードが一致しません",
+    "minLength": "最低{{min}}文字必要です",
+    "maxLength": "最大{{max}}文字までです",
+    "loginFailed": "ユーザー名またはパスワードが無効です",
+    "networkError": "ネットワークエラーです。再試行してください。",
+    "notFound": "リソースが見つかりません",
+    "unauthorized": "アクセスが許可されていません",
+    "serverError": "サーバーエラーです。後で再試行してください。",
+    "pages": {
+      "403": {
+        "title": "アクセス禁止",
+        "message": "このリソースにアクセスする権限がありません。エラーだと思われる場合は、管理者にお問い合わせください。"
+      },
+      "404": {
+        "title": "ページが見つかりません",
+        "message": "お探しのページは削除されたか、名前が変更されたか、一時的に利用できない可能性があります。"
+      },
+      "500": {
+        "title": "内部サーバーエラー",
+        "message": "サーバー側で問題が発生しました。問題の解決に取り組んでいます。後で再試行してください。"
+      },
+      "backToHome": "ホームに戻る"
+    }
+  },
+  "footer": {
+    "about": "について",
+    "contact": "お問い合わせ",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "copyright": "© {{year}} Musicboxd. All rights reserved."
+  },
+  "album": {
+    "loadingAlbum": "アルバムを読み込み中...",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "editReviewFor": "レビューを編集：",
+    "editYourReview": "レビューを編集",
+    "confirmDeleteReview": "本当にこのレビューを削除しますか？",
+    "yes": "はい",
+    "no": "いいえ",
+    "reviewAlbum": "レビュー",
+    "makeReview": "レビューを書く"
+  },
+  "artist": {
+    "loadingArtist": "アーティストを読み込み中...",
+    "popularSongs": "人気の曲",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "editReviewFor": "レビューを編集：",
+    "editYourReview": "レビューを編集",
+    "confirmDeleteReview": "本当にこのレビューを削除しますか？",
+    "yes": "はい",
+    "no": "いいえ",
+    "reviewArtist": "レビュー",
+    "makeReview": "レビューを書く"
+  },
+  "song": {
+    "loadingSong": "曲を読み込み中...",
+    "duration": "再生時間",
+    "genre": "ジャンル",
+    "releaseDate": "リリース日",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "editReviewFor": "レビューを編集：",
+    "editYourReview": "レビューを編集",
+    "confirmDeleteReview": "本当にこのレビューを削除しますか？",
+    "yes": "はい",
+    "no": "いいえ",
+    "reviewSong": "レビュー",
+    "makeReview": "レビューを書く"
+  },
+  "reviewDetail": {
+    "loadingReview": "レビューを読み込み中...",
+    "noLikes": "まだいいねがありません",
+    "addComment": "コメントを追加",
+    "loginToComment": "コメントするにはログインしてください",
+    "loadingComments": "コメントを読み込み中...",
+    "noComments": "まだコメントがありません",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "confirmDeleteComment": "本当にこのコメントを削除しますか？",
+    "yes": "はい",
+    "no": "いいえ"
+  },
+  "reviewNotFound": {
+    "title": "レビューが見つかりません",
+    "message": "お探しのレビューは存在しないか、削除された可能性があります。",
+    "backToHome": "ホームに戻る"
+  },
+  "userNotFound": {
+    "title": "ユーザーが見つかりません",
+    "message": "お探しのユーザーは存在しないか、削除された可能性があります。",
+    "backToHome": "ホームに戻る"
+  },
+  "userProfile": {
+    "loadingProfile": "プロフィールを読み込み中...",
+    "profile": "プロフィール",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "moderator": "モデレーター",
+    "verified": "認証済み",
+    "user": "ユーザー",
+    "artist": "アーティスト",
+    "album": "アルバム",
+    "song": "曲"
+  },
+  "followers": {
+    "title": "フォロワー",
+    "noFollowers": "まだフォロワーがいません",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ"
+  },
+  "following": {
+    "title": "フォロー中",
+    "notFollowing": "まだ誰もフォローしていません",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ"
+  },
+  "label": {
+    "artist": "アーティスト",
+    "album": "アルバム",
+    "song": "曲",
+    "user": "ユーザー",
+    "reviews": "レビュー",
+    "followers": "フォロワー",
+    "following": "フォロー中",
+    "verified": "認証済み",
+    "moderator": "モデレーター",
+    "editProfile": "プロフィールを編集",
+    "addArtist": "アーティストを追加",
+    "addAlbum": "アルバムを追加",
+    "addSong": "曲を追加"
+  },
+  "time": {
+    "justNow": "たった今",
+    "minuteAgo": "{{count}}分前",
+    "minutesAgo": "{{count}}分前",
+    "hourAgo": "{{count}}時間前",
+    "hoursAgo": "{{count}}時間前",
+    "dayAgo": "{{count}}日前",
+    "daysAgo": "{{count}}日前",
+    "monthAgo": "{{count}}ヶ月前",
+    "monthsAgo": "{{count}}ヶ月前",
+    "unknown": "不明",
+    "dateFormat": "{{year}}年{{month}}{{day}}日",
+    "months": {
+      "1": "1月",
+      "2": "2月",
+      "3": "3月",
+      "4": "4月",
+      "5": "5月",
+      "6": "6月",
+      "7": "7月",
+      "8": "8月",
+      "9": "9月",
+      "10": "10月",
+      "11": "11月",
+      "12": "12月"
+    },
+    "moderator": {
+      "title": "モデレーターダッシュボード"
+    }
+  }
+}

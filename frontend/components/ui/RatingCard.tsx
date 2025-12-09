@@ -7,6 +7,7 @@
 import Link from 'next/link';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices';
+import { useTranslation } from 'react-i18next';
 
 interface RatingCardProps {
   totalRatings: number;
@@ -28,13 +29,13 @@ const RatingCard = ({
   entityLabel,
 }: RatingCardProps) => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-
+  const { t } = useTranslation();
   return (
     <div className="rating-card">
       <div className="rating-stats">
         <div className="rating-stat-item">
           <div className="rating-value">{totalRatings}</div>
-          <div className="rating-label">Total Ratings</div>
+          <div className="rating-label">{t("common.totalRatings")}</div>
         </div>
         <div className="rating-stat-item">
           <div className="rating-value">
@@ -42,7 +43,7 @@ const RatingCard = ({
             {averageRating.toFixed(2)}
             <span className="rating-max">/ 5</span>
           </div>
-          <div className="rating-label">Average Rating</div>
+          <div className="rating-label">{t("common.averageRating")}</div>
         </div>
         <div className="rating-stat-item">
           <div className="rating-value">
@@ -56,14 +57,15 @@ const RatingCard = ({
             )}
             <span className="rating-max">/ 5</span>
           </div>
-          <div className="rating-label">Your Rating</div>
+          <div className="rating-label">{t("common.yourRating")}</div>
         </div>
       </div>
 
       <div className="rating-actions">
         {!isAuthenticated ? (
           <Link href="/login" className="btn btn-primary btn-block">
-            Login to Review
+            {t("common.loginToReview")}
+            <i className="fas fa-star"></i>
           </Link>
         ) : !reviewed ? (
           <Link
@@ -71,7 +73,7 @@ const RatingCard = ({
             className="btn btn-primary btn-block"
           >
             <i className="fas fa-star"></i>
-            Rate this {entityLabel}
+            {t(`common.rateThis.${entityLabel}`)}
           </Link>
         ) : (
           <Link
@@ -79,7 +81,7 @@ const RatingCard = ({
             className="btn btn-secondary btn-block"
           >
             <i className="fas fa-edit"></i>
-            Edit Your Review
+            {t("common.editYourReview")}
           </Link>
         )}
       </div>

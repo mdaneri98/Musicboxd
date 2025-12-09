@@ -16,7 +16,6 @@ export { LikeButton } from './LikeButton';
 
 // Search & Filter
 export { SearchBar } from './SearchBar';
-export { FilterBar } from './FilterBar';
 
 // Forms
 export { ImageUpload } from './ImageUpload';

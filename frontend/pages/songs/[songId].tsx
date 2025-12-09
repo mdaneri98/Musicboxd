@@ -20,6 +20,7 @@ import {
   clearCurrentSong
 } from '@/store/slices';
 import type { Album, Artist, Review } from '@/types';
+import { formatDate } from '@/utils/timeUtils';
 
 const SongDetailPage = () => {
   const { t } = useTranslation();
@@ -169,7 +170,7 @@ const SongDetailPage = () => {
             {album?.release_date && (
               <div className="song-info-item">
                 <span className="info-label">{t('song.releaseDate')}:</span>
-                <span className="info-value">{album.formatted_release_date}</span>
+                <span className="info-value">{formatDate(song.release_date)}</span>
               </div>
             )}
           </div>

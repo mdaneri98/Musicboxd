@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Artist, User } from '@/types';
 import { RatingCard } from '@/components/ui';
 import { imageRepository } from '@/repositories';
-
+import { useTranslation } from 'react-i18next';
 interface ArtistInfoProps {
   artist: Artist;
   currentUser: User | null;
@@ -25,7 +25,7 @@ export const ArtistInfo: React.FC<ArtistInfoProps> = ({
   onFavoriteToggle,
 }) => {
   const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
-
+  const { t } = useTranslation();
   return (
     <>
       {/* Artist Header */}
@@ -64,7 +64,7 @@ export const ArtistInfo: React.FC<ArtistInfoProps> = ({
       <section className="entity-actions">
         {!isAuthenticated ? (
           <Link href="/login" className="btn btn-primary">
-            Login to Add Favorite
+            {t("common.loginToAddFavorite")}
           </Link>
         ) : (
           <button
@@ -73,10 +73,10 @@ export const ArtistInfo: React.FC<ArtistInfoProps> = ({
             className={`btn ${isFavorite ? 'btn-secondary' : 'btn-primary'}`}
           >
             {favoriteLoading
-              ? 'Loading...'
+              ? t("common.loading")
               : isFavorite
-              ? 'Remove from Favorites'
-              : 'Add to Favorites'}
+              ? t("common.removeFromFavorites")
+              : t("common.addToFavorites")}
           </button>
         )}
       </section>

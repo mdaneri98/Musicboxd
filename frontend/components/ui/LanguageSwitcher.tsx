@@ -19,13 +19,16 @@ const LanguageSwitcher = ({ className = '', onLanguageChange }: LanguageSwitcher
   };
 
   return (
-    <div className={`language-switcher ${className}`}>
-      <label htmlFor="language-select">{t('settings.language')}</label>
+    <>
+      <div className="option-info">
+        <h3>{t('settings.language')}</h3>
+        <p>{t('settings.languageDescription')}</p>
+      </div>
       <select
         id="language-select"
         value={i18n.language}
         onChange={(e) => changeLanguage(e.target.value)}
-        className="language-select"
+        className="theme-select"
       >
         <option value={Language.EN}>{t('settings.languages.en')}</option>
         <option value={Language.ES}>{t('settings.languages.es')}</option>
@@ -35,7 +38,7 @@ const LanguageSwitcher = ({ className = '', onLanguageChange }: LanguageSwitcher
         <option value={Language.JA}>{t('settings.languages.ja')}</option>
         <option value={Language.PT}>{t('settings.languages.pt')}</option>
       </select>
-    </div>
+    </>
   );
 };
 

@@ -1,0 +1,473 @@
+{
+  "navbar": {
+    "home": "Accueil",
+    "discovery": "Découverte",
+    "search": "Recherche",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "notifications": "Notifications",
+    "moderator": "Modérateur",
+    "logout": "Déconnexion"
+  },
+  "landing": {
+    "title": "Découvrez la musique",
+    "subtitle": "Partagez votre passion pour la musique. Notez, critiquez et découvrez de nouveaux albums, artistes et chansons.",
+    "getStarted": "Commencer",
+    "popularReviews": "Critiques populaires",
+    "loading": "Chargement des critiques populaires...",
+    "features": {
+      "writeReviews": {
+        "title": "Écrire des critiques",
+        "description": "Partagez vos pensées sur les albums, artistes et chansons avec la communauté."
+      },
+      "joinCommunity": {
+        "title": "Rejoindre la communauté",
+        "description": "Connectez-vous avec les amateurs de musique, suivez des utilisateurs et découvrez de nouvelles perspectives."
+      },
+      "discoverMusic": {
+        "title": "Découvrir la musique",
+        "description": "Explorez notre vaste base de données d'artistes, d'albums et de chansons."
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Connexion",
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "noAccount": "Vous n'avez pas encore de compte ?",
+      "changePassword": "Changer le mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "loggingIn": "Connexion en cours..."
+    },
+    "register": {
+      "title": "S'inscrire",
+      "username": "Nom d'utilisateur",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "repeatPassword": "Répéter le mot de passe",
+      "submit": "S'inscrire",
+      "haveAccount": "Vous avez déjà un compte ?",
+      "registering": "Inscription en cours..."
+    }
+  },
+  "home": {
+    "tabs": {
+      "forYou": "Pour vous",
+      "following": "Abonnements"
+    },
+    "loadingReviews": "Chargement des critiques...",
+    "noReviews": "Aucune critique trouvée",
+    "noReviewsHint": "Essayez la page précédente ou changez d'onglet",
+    "page": "Page"
+  },
+  "profile": {
+    "tabs": {
+      "favorites": "Favoris",
+      "reviews": "Critiques"
+    },
+    "followers": "Abonnés",
+    "following": "Abonnements",
+    "reviews": "Critiques",
+    "follow": "Suivre",
+    "unfollow": "Ne plus suivre",
+    "editProfile": "Modifier le profil",
+    "username": "Nom d'utilisateur",
+    "name": "Nom",
+    "bio": "Bio",
+    "update": "Mettre à jour",
+    "updating": "Mise à jour en cours...",
+    "loadingFavorites": "Chargement des favoris...",
+    "loadingReviews": "Chargement des critiques...",
+    "favoriteArtists": "Artistes favoris",
+    "favoriteAlbums": "Albums favoris",
+    "favoriteSongs": "Chansons favorites",
+    "addFavoriteArtists": "Ajoutez jusqu'à 5 artistes favoris à votre profil",
+    "addFavoriteAlbums": "Ajoutez jusqu'à 5 albums favoris à votre profil",
+    "addFavoriteSongs": "Ajoutez jusqu'à 5 chansons favorites à votre profil",
+    "noReviews": "Aucune critique trouvée",
+    "page": "Page",
+    "discardChanges": "Annuler les modifications"
+  },
+  "music": {
+    "tabs": {
+      "popular": "Populaire",
+      "topRated": "Mieux notés"
+    },
+    "artists": "Artistes",
+    "albums": "Albums",
+    "songs": "Chansons",
+    "discovery": "Découverte",
+    "discoverySubtitle": "Explorez la meilleure musique, sélectionnée pour vous",
+    "loadingMusic": "Chargement de la musique...",
+    "mostPopular": "Les plus populaires",
+    "topRated": "Mieux notés",
+    "topRatedArtists": "Artistes les mieux notés",
+    "mostPopularArtists": "Artistes les plus populaires",
+    "topRatedAlbums": "Albums les mieux notés",
+    "mostPopularAlbums": "Albums les plus populaires",
+    "topRatedSongs": "Chansons les mieux notées",
+    "mostPopularSongs": "Chansons les plus populaires",
+    "viewAll": "Voir tout",
+    "sortBy": "Trier par",
+    "recentlyAdded": "Récemment ajoutés",
+    "firstAdded": "Premiers ajoutés",
+    "newest": "Plus récents",
+    "oldest": "Plus anciens",
+    "page": "Page",
+    "filters": {
+      "popular": "Populaire",
+      "recent": "Plus récent",
+      "rating": "Note",
+      "likes": "J'aime",
+      "first": "Premier",
+      "newest": "Plus récent",
+      "oldest": "Plus ancien"
+    }
+  },
+  "search": {
+    "tabs": {
+      "music": "Musique",
+      "users": "Utilisateurs"
+    },
+    "placeholder": {
+      "music": "Rechercher des artistes, albums et chansons",
+      "users": "Rechercher des utilisateurs",
+      "artist": "Rechercher un artiste",
+      "album": "Rechercher un album"
+    },
+    "noResults": "Aucun résultat trouvé",
+    "searching": "Recherche en cours...",
+    "searchError": "Erreur de recherche",
+    "recommendedUsers": "Utilisateurs recommandés",
+    "filters": {
+      "all": "Tout",
+      "users": "Utilisateurs",
+      "artists": "Artistes",
+      "albums": "Albums",
+      "songs": "Chansons",
+      "reviews": "Critiques"
+    }
+  },
+  "review": {
+    "tabs": {
+      "likes": "J'aime",
+      "comments": "Commentaires"
+    },
+    "writeReview": "Écrire une critique",
+    "editReview": "Modifier la critique",
+    "deleteReview": "Supprimer la critique",
+    "rating": "Note",
+    "title": "Titre",
+    "content": "Contenu",
+    "description": "Description",
+    "submit": "Soumettre la critique",
+    "submitting": "Envoi en cours...",
+    "cancel": "Annuler",
+    "likes": "{{count}} j'aime",
+    "likes_other": "{{count}} j'aime",
+    "comments": "{{count}} commentaire",
+    "comments_other": "{{count}} commentaires",
+    "blockedByModerator": "Cette critique a été bloquée par un modérateur",
+    "tryMakingAnother": "Essayez d'en créer une autre",
+    "unblock": "Débloquer",
+    "block": "Bloquer",
+    "itemType": {
+      "artist": "Artiste",
+      "album": "Album",
+      "song": "Chanson"
+    }
+  },
+  "comment": {
+    "writeComment": "Écrire un commentaire...",
+    "postComment": "Publier le commentaire",
+    "posting": "Publication en cours..."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAsRead": "Marquer comme lu",
+    "markAllRead": "Tout marquer comme lu",
+    "noNotifications": "Aucune notification",
+    "loading": "Chargement des notifications...",
+    "page": "Page",
+    "types": {
+      "FOLLOW": "{{username}} a commencé à vous suivre",
+      "LIKE": "{{username}} a aimé votre critique de {{itemName}}",
+      "COMMENT": "{{username}} a commenté votre critique de {{itemName}}",
+      "NEW_REVIEW": "{{username}} a publié une nouvelle critique de {{itemName}}"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "description": "Gérez vos préférences et paramètres de compte",
+    "theme": "Thème",
+    "themeDescription": "Choisissez votre thème de couleur préféré",
+    "language": "Langue",
+    "languageDescription": "Choisissez votre langue préférée",
+    "appearance": "Apparence",
+    "privacy": "Confidentialité",
+    "notifications": "Notifications",
+    "account": "Compte",
+    "save": "Enregistrer les modifications",
+    "cancel": "Annuler",
+    "dangerZone": "Zone de danger",
+    "deleteAccount": "Supprimer le compte",
+    "deleteAccountDescription": "Supprimez définitivement votre compte et toutes les données associées",
+    "deleteAccountConfirmation": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action ne peut pas être annulée et toutes vos données seront définitivement supprimées.",
+    "notificationTypes": {
+      "follows": "Abonnés",
+      "followsDescription": "Être notifié quand quelqu'un vous suit",
+      "likes": "J'aime",
+      "likesDescription": "Être notifié quand quelqu'un aime votre critique",
+      "comments": "Commentaires",
+      "commentsDescription": "Être notifié quand quelqu'un commente votre critique",
+      "reviews": "Critiques",
+      "reviewsDescription": "Être notifié quand les utilisateurs suivis publient une critique"
+    },
+    "themes": {
+      "dark": "Sombre",
+      "sepia": "Sépia",
+      "ocean": "Océan",
+      "forest": "Forêt",
+      "kawaii": "Kawaii"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "de": "Deutsch",
+      "fr": "Français",
+      "it": "Italiano",
+      "ja": "日本語",
+      "pt": "Português"
+    }
+  },
+  "common": {
+    "date": "{{date}}",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "submit": "Soumettre",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "success": "Succès",
+    "failed": "Échec",
+    "follow": "Suivre",
+    "unfollow": "Ne plus suivre",
+    "like": "J'aime",
+    "unlike": "Je n'aime plus",
+    "loginToReview": "Connectez-vous pour critiquer",
+    "loginToFollow": "Connectez-vous pour suivre",
+    "loginToAddFavorite": "Connectez-vous pour ajouter aux favoris",
+    "editProfile": "Modifier le profil",
+    "addToFavorites": "Ajouter aux favoris",
+    "removeFromFavorites": "Retirer des favoris",
+    "markAsRead": "Marquer comme lu",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ceci ?",
+    "confirmDeleteComment": "Êtes-vous sûr de vouloir supprimer ce commentaire ?",
+    "editComment": "Modifier le commentaire",
+    "deleteComment": "Supprimer le commentaire",
+    "tryAgain": "Réessayer",
+    "clickToUpload": "Cliquez pour télécharger ou glissez-déposez",
+    "maxSize": "Taille maximale",
+    "remove": "Supprimer",
+    "sortBy": "Trier par",
+    "clearSearch": "Effacer la recherche",
+    "likeReview": "Aimer la critique",
+    "unlikeReview": "Ne plus aimer la critique",
+    "closeModal": "Fermer la fenêtre",
+    "goToFirstPage": "Aller à la première page",
+    "goToPreviousPage": "Aller à la page précédente",
+    "goToNextPage": "Aller à la page suivante",
+    "goToLastPage": "Aller à la dernière page",
+    "goToPage": "Aller à la page",
+    "page": "Page",
+    "of": "sur",
+    "rateThis": {
+      "artist": "Noter cet artiste",
+      "album": "Noter cet album",
+      "song": "Noter cette chanson"
+    },
+    "editYourReview": "Modifier votre critique",
+    "totalRatings": "Notes totales",
+    "averageRating": "Note moyenne",
+    "yourRating": "Votre note",
+    "failedToToggleLike": "Échec du changement de j'aime",
+    "failedToToggleFollow": "Échec du changement d'abonnement"
+  },
+  "errors": {
+    "required": "Ce champ est obligatoire",
+    "invalidEmail": "Adresse e-mail invalide",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "minLength": "Doit contenir au moins {{min}} caractères",
+    "maxLength": "Doit contenir au maximum {{max}} caractères",
+    "loginFailed": "Nom d'utilisateur ou mot de passe invalide",
+    "networkError": "Erreur réseau. Veuillez réessayer.",
+    "notFound": "Ressource non trouvée",
+    "unauthorized": "Accès non autorisé",
+    "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
+    "pages": {
+      "403": {
+        "title": "Accès interdit",
+        "message": "Vous n'avez pas la permission d'accéder à cette ressource. Veuillez contacter l'administrateur si vous pensez qu'il s'agit d'une erreur."
+      },
+      "404": {
+        "title": "Page non trouvée",
+        "message": "La page que vous recherchez a peut-être été supprimée, renommée ou est temporairement indisponible."
+      },
+      "500": {
+        "title": "Erreur interne du serveur",
+        "message": "Quelque chose s'est mal passé de notre côté. Nous travaillons à résoudre le problème. Veuillez réessayer plus tard."
+      },
+      "backToHome": "Retour à l'accueil"
+    }
+  },
+  "footer": {
+    "about": "À propos",
+    "contact": "Contact",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "copyright": "© {{year}} Musicboxd. Tous droits réservés."
+  },
+  "album": {
+    "loadingAlbum": "Chargement de l'album...",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "editReviewFor": "Modifier la critique de",
+    "editYourReview": "Modifier votre critique",
+    "confirmDeleteReview": "Êtes-vous sûr de vouloir supprimer cette critique ?",
+    "yes": "Oui",
+    "no": "Non",
+    "reviewAlbum": "Critiquer",
+    "makeReview": "Écrire une critique"
+  },
+  "artist": {
+    "loadingArtist": "Chargement de l'artiste...",
+    "popularSongs": "Chansons populaires",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "editReviewFor": "Modifier la critique de",
+    "editYourReview": "Modifier votre critique",
+    "confirmDeleteReview": "Êtes-vous sûr de vouloir supprimer cette critique ?",
+    "yes": "Oui",
+    "no": "Non",
+    "reviewArtist": "Critiquer",
+    "makeReview": "Écrire une critique"
+  },
+  "song": {
+    "loadingSong": "Chargement de la chanson...",
+    "duration": "Durée",
+    "genre": "Genre",
+    "releaseDate": "Date de sortie",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "editReviewFor": "Modifier la critique de",
+    "editYourReview": "Modifier votre critique",
+    "confirmDeleteReview": "Êtes-vous sûr de vouloir supprimer cette critique ?",
+    "yes": "Oui",
+    "no": "Non",
+    "reviewSong": "Critiquer",
+    "makeReview": "Écrire une critique"
+  },
+  "reviewDetail": {
+    "loadingReview": "Chargement de la critique...",
+    "noLikes": "Pas encore de j'aime",
+    "addComment": "Ajouter un commentaire",
+    "loginToComment": "Veuillez vous connecter pour commenter",
+    "loadingComments": "Chargement des commentaires...",
+    "noComments": "Pas encore de commentaires",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "confirmDeleteComment": "Êtes-vous sûr de vouloir supprimer ce commentaire ?",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "reviewNotFound": {
+    "title": "Critique non trouvée",
+    "message": "La critique que vous recherchez n'existe pas ou a été supprimée.",
+    "backToHome": "Retour à l'accueil"
+  },
+  "userNotFound": {
+    "title": "Utilisateur non trouvé",
+    "message": "L'utilisateur que vous recherchez n'existe pas ou a été supprimé.",
+    "backToHome": "Retour à l'accueil"
+  },
+  "userProfile": {
+    "loadingProfile": "Chargement du profil...",
+    "profile": "Profil",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "moderator": "Modérateur",
+    "verified": "Vérifié",
+    "user": "Utilisateur",
+    "artist": "Artiste",
+    "album": "Album",
+    "song": "Chanson"
+  },
+  "followers": {
+    "title": "Abonnés",
+    "noFollowers": "Pas encore d'abonnés",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante"
+  },
+  "following": {
+    "title": "Abonnements",
+    "notFollowing": "Ne suit encore personne",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante"
+  },
+  "label": {
+    "artist": "Artiste",
+    "album": "Album",
+    "song": "Chanson",
+    "user": "Utilisateur",
+    "reviews": "Critiques",
+    "followers": "Abonnés",
+    "following": "Abonnements",
+    "verified": "Vérifié",
+    "moderator": "Modérateur",
+    "editProfile": "Modifier le profil",
+    "addArtist": "Ajouter un artiste",
+    "addAlbum": "Ajouter un album",
+    "addSong": "Ajouter une chanson"
+  },
+  "time": {
+    "justNow": "À l'instant",
+    "minuteAgo": "Il y a {{count}} minute",
+    "minutesAgo": "Il y a {{count}} minutes",
+    "hourAgo": "Il y a {{count}} heure",
+    "hoursAgo": "Il y a {{count}} heures",
+    "dayAgo": "Il y a {{count}} jour",
+    "daysAgo": "Il y a {{count}} jours",
+    "monthAgo": "Il y a {{count}} mois",
+    "monthsAgo": "Il y a {{count}} mois",
+    "unknown": "Inconnu",
+    "dateFormat": "{{day}} {{month}}, {{year}}",
+    "months": {
+      "1": "Janvier",
+      "2": "Février",
+      "3": "Mars",
+      "4": "Avril",
+      "5": "Mai",
+      "6": "Juin",
+      "7": "Juillet",
+      "8": "Août",
+      "9": "Septembre",
+      "10": "Octobre",
+      "11": "Novembre",
+      "12": "Décembre"
+    },
+    "moderator": {
+      "title": "Tableau de bord modérateur"
+    }
+  }
+}

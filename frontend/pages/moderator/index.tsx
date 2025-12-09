@@ -7,6 +7,7 @@ import { Artist, Album, HALResource } from '@/types';
 import { fetchArtistsAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { ReviewItemType } from '@/types/enums';
+import { useTranslation } from 'react-i18next';
 
 type SearchResultItem = {
   id: number;
@@ -21,7 +22,7 @@ export default function ModeratorDashboardPage() {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<ReviewItemType>(ReviewItemType.ARTIST);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
@@ -68,7 +69,6 @@ export default function ModeratorDashboardPage() {
         setError(null);
 
         if (activeTab === ReviewItemType.ALBUM) {
-          // Search for artists (to select artist for album)
           const artistsData = await dispatch(fetchArtistsAsync({ page: 1, size: 10, search: query })).unwrap();
           const artists = artistsData.items.map((item: HALResource<Artist>) => item.data);
           const results: SearchResultItem[] = artists.map((artist: Artist) => ({
@@ -101,10 +101,9 @@ export default function ModeratorDashboardPage() {
           setShowResults(true);
 
           if (results.length === 0) {
-            setError('No se encontraron resultados');
+            setError(t("search.noResults"));
           }
         } else if (activeTab === ReviewItemType.SONG) {
-          // Search for albums (to select album for song)
           const albumsData = await dispatch(fetchAlbumsAsync({ page: 1, size: 10, search: query })).unwrap();
           const albums = albumsData.items.map((item: HALResource<Album>) => item.data);
           const results: SearchResultItem[] = albums.map((album: Album) => ({
@@ -137,12 +136,12 @@ export default function ModeratorDashboardPage() {
           setShowResults(true);
 
           if (results.length === 0) {
-            setError('No se encontraron resultados');
+            setError(t("search.noResults"));
           }
         }
       } catch (error) {
-        console.error('Failed to perform search:', error);
-        setError('Error al buscar');
+        console.error(t("search.searchError"), error);
+        setError(t("search.searchError"));
         setSearchResults([]);
       }
     },
@@ -181,7 +180,7 @@ export default function ModeratorDashboardPage() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showResults || searchResults.length === 0) {
       if (e.key === 'Enter' && searchResults.length === 0) {
-        setError('No se encontraron resultados');
+        setError(t("search.noResults"));
       }
       return;
     }
@@ -226,14 +225,14 @@ export default function ModeratorDashboardPage() {
 
   const showSearchWrapper = activeTab !== ReviewItemType.ARTIST;
   const buttonText =
-    activeTab === ReviewItemType.ARTIST ? 'Add Artist' : activeTab === ReviewItemType.ALBUM ? 'Add Album' : 'Add Song';
+    activeTab === ReviewItemType.ARTIST ? t("label.addArtist") : activeTab === ReviewItemType.ALBUM ? t("label.addAlbum") : t("label.addSong");
   const searchPlaceholder =
-    activeTab === ReviewItemType.ALBUM ? 'Search for artist...' : 'Search for album...';
+    activeTab === ReviewItemType.ALBUM ? t("search.placeholder.artist") : t("search.placeholder.album");
 
   return (
-    <Layout title="Moderator Dashboard - Musicboxd">
+    <Layout title={t("moderator.title")}>
       <div className="search-container">
-        <h1 className="search-title">Moderator</h1>
+        <h1 className="search-title">{t("label.moderator")}</h1>
 
         {/* Tabs */}
         <div className="tabs">
@@ -241,19 +240,19 @@ export default function ModeratorDashboardPage() {
             className={`tab ${activeTab === ReviewItemType.ARTIST ? 'active' : ''}`}
             onClick={() => handleTabChange(ReviewItemType.ARTIST)}
           >
-            Artist
+            {t("label.artist")}
           </span>
           <span
               className={`tab ${activeTab === ReviewItemType.ALBUM ? 'active' : ''}`}
             onClick={() => handleTabChange(ReviewItemType.ALBUM)}
           >
-            Album
+            {t("label.album")}
           </span>
           <span
             className={`tab ${activeTab === ReviewItemType.SONG ? 'active' : ''}`}
             onClick={() => handleTabChange(ReviewItemType.SONG)}
           >
-            Song
+            {t("label.song")}
           </span>
         </div>
 
