@@ -167,6 +167,7 @@
     "tryMakingAnother": "Intenta hacer otra",
     "unblock": "Desbloquear",
     "block": "Bloquear",
+    "confirmBlockReview": "¿Estás seguro de que quieres bloquear esta reseña?",
     "itemType": {
       "artist": "Artista",
       "album": "Álbum",

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Review, ReviewItemTypeEnum } from '@/types';
 import { imageRepository } from '@/repositories';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsModerator } from '@/store/slices';
+import { selectCurrentUser, selectIsModerator } from '@/store/slices';
 import { useTranslation } from 'react-i18next';
 import {
   likeReviewAsync,
@@ -16,15 +16,21 @@ import {
   unblockReviewAsync,
 } from '@/store/slices';
 import { formatTimeAgo } from '@/utils/timeUtils';
+import { ConfirmationModal } from '../ui';
+import { useState } from 'react';
 
 interface ReviewCardProps {
   review: Review;
 }
 
 const ReviewCard = ({ review }: ReviewCardProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const isModerator = useAppSelector(selectIsModerator);
-  const { t } = useTranslation();
+  const currentUser = useAppSelector(selectCurrentUser);
+  const [reviewToBlock, setReviewToBlock] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(review.is_blocked);
+
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (review.liked) {
@@ -34,13 +40,15 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
     }
   };
 
-  const handleBlock = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (review.is_blocked) {
-      await dispatch(unblockReviewAsync(review.id));
+  const handleBlock = async (reviewId: number) => {
+    if (isBlocked) {
+      await dispatch(unblockReviewAsync(reviewId));
+      setIsBlocked(false);
     } else {
-      await dispatch(blockReviewAsync(review.id));
+      await dispatch(blockReviewAsync(reviewId));
+      setIsBlocked(true);
     }
+    setReviewToBlock(false);
   };
 
   const itemImageUrl = review.item_image_id
@@ -77,22 +85,30 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
     }
   };
 
-  if (review.is_blocked) {
+  if (isBlocked) {
     return (
       <div className="review-card">
         <div className="review-content blocked">
           <h4 className="review-content-title">
             {t('review.blockedByModerator')}
           </h4>
+          {review.user_id == currentUser?.id && (
           <p className="review-description">{t('review.tryMakingAnother')}</p>
+           )}
           {isModerator && (
-            <button
-              onClick={handleBlock}
-              className="btn btn-secondary"
-            >
-              {t('review.unblock') } 
-              <i className="fa-solid fa-ban"></i>
-            </button>
+            <div>
+              <div className="review-content">
+                <h4 className="review-content-title">{review.title}</h4>
+                <p className="review-description">{review.description}</p>
+              </div>
+              <button
+                onClick={() => handleBlock(review.id)}
+                className="btn btn-secondary"
+              >
+                {t('review.unblock') + ' '} 
+                <i className="fa-solid fa-ban"></i>
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -179,15 +195,25 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           {/* Moderator actions */}
           {isModerator && (
             <div className="action-item">
-              <button onClick={handleBlock} className="action-btn danger">
+              <button onClick={() => setReviewToBlock(true)} className="action-btn danger">
                 <i className="fa-solid fa-ban"></i>
               </button>
             </div>
           )}
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={reviewToBlock}
+        message={t('review.confirmBlockReview')}
+        onConfirm={() => handleBlock(review.id)}
+        onCancel={() => setReviewToBlock(false)}
+        confirmText={t('review.block')}
+        cancelText={t('review.cancel')}
+      />
     </div>
   );
+
+
 };
 
 export default ReviewCard;

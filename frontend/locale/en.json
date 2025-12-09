@@ -176,6 +176,7 @@
     "tryMakingAnother": "Try making another one",
     "unblock": "Unblock ",
     "block": "Block",
+    "confirmBlockReview": "Are you sure you want to block this review?",
     "itemType": {
       "artist": "Artist",
       "album": "Album",

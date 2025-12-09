@@ -176,6 +176,7 @@
     "tryMakingAnother": "別のレビューを作成してみてください",
     "unblock": "ブロック解除",
     "block": "ブロック",
+    "confirmBlockReview": "本当にこのレビューをブロックしますか？",
     "itemType": {
       "artist": "アーティスト",
       "album": "アルバム",
