@@ -1,3 +1,4 @@
+import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { reviewSchema } from '@/utils/validationSchemas';
@@ -73,7 +74,7 @@ const ReviewForm = ({
               render={({ field }) => (
                 <div className="star-rating-input">
                   {[5, 4, 3, 2, 1].map((star) => (
-                    <div key={star}>
+                    <React.Fragment key={star}>
                       <input
                         type="radio"
                         id={`star${star}`}
@@ -86,7 +87,7 @@ const ReviewForm = ({
                       <label htmlFor={`star${star}`} className="star-label">
                         &#9733;
                       </label>
-                    </div>
+                    </React.Fragment>
                   ))}
                 </div>
               )}
