@@ -6,6 +6,7 @@ import { NotificationCard } from '@/components/cards';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, selectOrderedNotifications, fetchNotificationsAsync, markAllAsReadAsync, selectNotificationPagination, selectUnreadCount, selectNotificationLoading } from '@/store/slices';
 import { Notification } from '@/types';
+import { LoadingSpinner } from '@/components/ui';
 
 export default function NotificationsPage() {
   const { t } = useTranslation();
@@ -86,7 +87,10 @@ export default function NotificationsPage() {
         </div>
 
         {loadingNotifications ? (
-          <div className="loading">{t('notifications.loading')}</div>
+          <>
+            <div className="loading">{t('notifications.loading')}</div>
+            <LoadingSpinner size="large" />
+          </>
         ) : notifications.length === 0 ? (
           <p className="no-results">{t('notifications.noNotifications')}</p>
         ) : (

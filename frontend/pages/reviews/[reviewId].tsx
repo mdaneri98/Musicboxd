@@ -45,7 +45,7 @@ const ReviewDetailPage = () => {
   const commentsPagination = useAppSelector(selectCommentsPagination);
   const likesPagination = useAppSelector(selectLikesPagination);
 
-  const [activeTab, setActiveTab] = useState<ReviewTab>(ReviewTab.COMMENTS);
+  const [activeTab, setActiveTab] = useState<ReviewTab>(queryTab as ReviewTab);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);

@@ -160,10 +160,10 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
         <div className="review-actions">
           {/* Like action */}
           <div className="action-item">
-            <Link href={`/reviews/${review.id}?page=likes`}>
+            <Link href={`/reviews/${review.id}?tab=likes`}>
               <span className="action-count">{review.likes}</span>
             </Link>
-            <button onClick={handleLike} className={`action-link ${review.liked ? 'active' : ''}`}>
+            <button onClick={handleLike} className={`action-btn ${review.liked ? 'active' : ''}`}>
               <i className={`fa-${review.liked ? 'solid' : 'regular'} fa-heart`}></i>
             </button>
           </div>
@@ -171,7 +171,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           {/* Comment action */}
           <div className="action-item">
             <Link href={`/reviews/${review.id}`} className="action-link">
-              <span className="action-count">{review.comment_amount}</span>
+              <span className="action-count"> {review.comment_amount} </span>
               <i className="fa-regular fa-comment"></i>
             </Link>
           </div>
@@ -179,7 +179,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           {/* Moderator actions */}
           {isModerator && (
             <div className="action-item">
-              <button onClick={handleBlock} className="action-link danger">
+              <button onClick={handleBlock} className="action-btn danger">
                 <i className="fa-solid fa-ban"></i>
               </button>
             </div>
