@@ -174,7 +174,7 @@
     "comments_other": "{{count}} comments",
     "blockedByModerator": "This review was blocked by a moderator",
     "tryMakingAnother": "Try making another one",
-    "unblock": "Unblock",
+    "unblock": "Unblock ",
     "block": "Block",
     "itemType": {
       "artist": "Artist",

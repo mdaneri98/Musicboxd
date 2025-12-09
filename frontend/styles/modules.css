@@ -74,6 +74,7 @@
 .review-description {
   color: var(--color-text-secondary);
   line-height: 1.6;
+  margin-bottom: inherit;
 }
 
 .review-footer {

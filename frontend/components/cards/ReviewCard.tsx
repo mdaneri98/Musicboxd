@@ -90,7 +90,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
               onClick={handleBlock}
               className="btn btn-secondary"
             >
-              {t('reviewCard.unblock')}
+              {t('review.unblock') } 
               <i className="fa-solid fa-ban"></i>
             </button>
           )}
