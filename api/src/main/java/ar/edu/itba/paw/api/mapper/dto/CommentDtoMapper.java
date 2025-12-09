@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.dto.CommentDTO;
-import ar.edu.itba.paw.api.utils.DateFormatter;
 import ar.edu.itba.paw.models.Comment;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,6 @@ public class CommentDtoMapper {
         dto.setReviewId(comment.getReview() != null ? comment.getReview().getId() : null);
         dto.setContent(comment.getContent());
         dto.setCreatedAt(comment.getCreatedAt());
-        dto.setTimeAgo(DateFormatter.formatTimeAgo(comment.getCreatedAt()));
 
         return dto;
     }

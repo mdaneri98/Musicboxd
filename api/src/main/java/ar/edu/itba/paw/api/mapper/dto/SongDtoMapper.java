@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.dto.SongDTO;
-import ar.edu.itba.paw.api.utils.DateFormatter;
 import ar.edu.itba.paw.models.Song;
 import org.springframework.stereotype.Component;
 
@@ -32,15 +31,11 @@ public class SongDtoMapper {
         dto.setAvgRating(song.getAvgRating());
         dto.setCreatedAt(song.getCreatedAt());
         dto.setUpdatedAt(song.getUpdatedAt());
-        
+        dto.setReleaseDate(song.getAlbum() != null && song.getAlbum().getReleaseDate() != null ? song.getAlbum().getReleaseDate() : null);
         if (song.getArtists() != null && !song.getArtists().isEmpty()) {
             dto.setArtistId(song.getArtists().get(0).getId());
         }
         
-        if (song.getAlbum() != null && song.getAlbum().getReleaseDate() != null) {
-            dto.setFormattedReleaseDate(DateFormatter.formatDate(song.getAlbum().getReleaseDate()));
-        }
-
         return dto;
     }
 

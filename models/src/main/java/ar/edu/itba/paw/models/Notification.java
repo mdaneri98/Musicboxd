@@ -38,10 +38,6 @@ public class Notification {
     @Column(name = "message", nullable = false)
     private String message;
 
-    @Transient
-    private String timeAgo;
-    
-
     public enum NotificationType {
         LIKE,
         COMMENT,
@@ -127,13 +123,5 @@ public class Notification {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getTimeAgo() {
-        return timeAgo;
-    }
-
-    public void setTimeAgo(String timeAgo) {
-        this.timeAgo = timeAgo;
     }
 }

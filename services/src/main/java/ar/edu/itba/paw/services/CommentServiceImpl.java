@@ -7,7 +7,6 @@ import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.CommentDao;
 import ar.edu.itba.paw.persistence.ReviewDao;
 import ar.edu.itba.paw.persistence.UserDao;
-import ar.edu.itba.paw.services.utils.TimeUtils;
 import ar.edu.itba.paw.exception.not_found.CommentNotFoundException;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
 import ar.edu.itba.paw.exception.not_found.ReviewNotFoundException;
@@ -37,14 +36,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<Comment> findAll() {
         List<Comment> comments = commentDao.findAll();
-        setTimeAgo(comments);
         return comments;
     }
 
     @Override
     public List<Comment> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         List<Comment> comments = commentDao.findPaginated(filterType, page, pageSize);
-        setTimeAgo(comments);
         return comments;
     }
 
@@ -61,21 +58,18 @@ public class CommentServiceImpl implements CommentService {
         User user = comment.getUser();
         Review review = comment.getReview();
         notificationService.notifyComment(review, user);
-        updatedComment.setTimeAgo(TimeUtils.formatTimeAgo(updatedComment.getCreatedAt()));
         return updatedComment;
     }
 
     @Override
     public Comment findById(Long id) {
         Comment comment = commentDao.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
-        comment.setTimeAgo(TimeUtils.formatTimeAgo(comment.getCreatedAt()));
         return comment;
     }
 
     @Override
     public List<Comment> findByReviewId(Long reviewId, Integer pageNum, Integer pageSize) {
         List<Comment> comments = commentDao.findByReviewId(reviewId, pageNum, pageSize);
-        setTimeAgo(comments);
         return comments;
     }
 
@@ -104,7 +98,6 @@ public class CommentServiceImpl implements CommentService {
 
         updateReviewCommentAmount(review.getId());
         notificationService.notifyComment(review, user);
-        savedComment.setTimeAgo(TimeUtils.formatTimeAgo(savedComment.getCreatedAt()));
         return savedComment;
     }
 
@@ -123,12 +116,6 @@ public class CommentServiceImpl implements CommentService {
         reviewDao.updateCommentAmount(reviewId);
     }
 
-    private void setTimeAgo(List<Comment> comments) {
-        for (Comment comment : comments) {
-            comment.setTimeAgo(TimeUtils.formatTimeAgo(comment.getCreatedAt()));
-        }
-    }
-
     @Override
     public Long countByReviewId(Long reviewId) {
         return commentDao.countByReviewId(reviewId);
@@ -141,8 +128,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> findBySubstring(String substring, Integer page, Integer size) {
-        List<Comment> comments = commentDao.findBySubstring(substring, page, size);
-        setTimeAgo(comments);
-        return comments;
+        return commentDao.findBySubstring(substring, page, size);
     }
 }

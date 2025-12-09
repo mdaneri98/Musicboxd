@@ -44,7 +44,7 @@ export default function SearchPage() {
   // Fetch recommended users on mount
   useEffect(() => {
     const fetchRecommendedUsers = async () => {
-      try {
+      try { 
         const usersData = await dispatch(fetchUsersAsync({ page: 1, size: 6, filter: FilterTypeEnum.RECOMMENDED })).unwrap();
         setRecommendedUsers(usersData.items.map((user: HALResource<User>) => user.data as User));
       } catch (error) {
@@ -232,11 +232,11 @@ export default function SearchPage() {
           <span
             className={`tab ${activeTab === SearchTabEnum.USERS ? 'active' : ''}`}
             onClick={() => handleTabChange(SearchTabEnum.USERS)}
-          >
+          > 
             {t('search.tabs.users')}
           </span>
         </div>
-
+ 
         {/* Search Input */}
         <div className="search-wrapper" ref={searchWrapperRef}>
           <input
@@ -244,7 +244,7 @@ export default function SearchPage() {
             type="text"
             className="form-control search-input"
             id="searchInput"
-            placeholder={t('search.placeholder')}
+            placeholder={t(`search.placeholder.${activeTab}`)}
             value={searchQuery}
             onChange={handleSearchChange}
             onKeyDown={handleKeyDown}

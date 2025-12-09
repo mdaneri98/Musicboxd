@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.dto.NotificationDTO;
-import ar.edu.itba.paw.api.utils.DateFormatter;
 import ar.edu.itba.paw.models.Notification;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +32,6 @@ public class NotificationDtoMapper {
         dto.setCreatedAt(notification.getCreatedAt());
         dto.setIsRead(notification.isRead());
         dto.setMessage(notification.getMessage());
-        dto.setTimeAgo(DateFormatter.formatTimeAgo(notification.getCreatedAt()));
 
         return dto;
     }

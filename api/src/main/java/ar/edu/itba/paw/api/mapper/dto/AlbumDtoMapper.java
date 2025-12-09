@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.dto.AlbumDTO;
-import ar.edu.itba.paw.api.utils.DateFormatter;
 import ar.edu.itba.paw.models.Album;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,6 @@ public class AlbumDtoMapper {
         dto.setTitle(album.getTitle());
         dto.setGenre(album.getGenre());
         dto.setReleaseDate(album.getReleaseDate());
-        dto.setFormattedReleaseDate(DateFormatter.formatDate(album.getReleaseDate()));
         dto.setImageId(album.getImage() != null ? album.getImage().getId() : null);
         dto.setArtistId(album.getArtist() != null ? album.getArtist().getId() : null);
         dto.setArtistName(album.getArtist() != null ? album.getArtist().getName() : null);

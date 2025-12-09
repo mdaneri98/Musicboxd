@@ -21,7 +21,6 @@ export default function SettingsPage() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   const [theme, setTheme] = useState<ThemeEnum>(ThemeEnum.DARK);
-  const [language, setLanguage] = useState<LanguageEnum>(LanguageEnum.EN);
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>();
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -42,7 +41,6 @@ export default function SettingsPage() {
         has_reviews_notifications_enabled: currentUser.has_reviews_notifications_enabled
       });
       setTheme(currentUser.preferred_theme);
-      setLanguage(currentUser.preferred_language);
     }
   }, [currentUser]);
 
@@ -60,7 +58,6 @@ export default function SettingsPage() {
   };
 
   const handleLanguageChange = async (newLanguage: LanguageEnum) => {
-    setLanguage(newLanguage);
     try {
       setSaving(true);
       if (!currentUser) return;

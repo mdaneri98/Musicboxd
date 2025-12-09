@@ -7,12 +7,14 @@
 import Link from 'next/link';
 import { imageRepository } from '@/repositories';
 import { User } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface UserCardProps {
   user: User;
 }
 
 const UserCard = ({ user }: UserCardProps) => {
+  const { t } = useTranslation();
   const profileImageUrl = user.image_id
     ? imageRepository.getImageUrl(user.image_id)
     : '/assets/default-avatar.png';
@@ -31,12 +33,12 @@ const UserCard = ({ user }: UserCardProps) => {
         </div>
         {user.moderator && (
           <div className="user-card-badges">
-            <span className="badge badge-moderator">Moderator</span>
+            <span className="badge badge-moderator">{t('label.moderator')}</span>
           </div>
         )}
         {user.verified && (
           <div className="user-card-badges">
-            <span className="badge badge-verified">Verified</span>
+            <span className="badge badge-verified">{t('label.verified')}</span>
           </div>
         )}
       </div>
@@ -44,15 +46,15 @@ const UserCard = ({ user }: UserCardProps) => {
       <div className="user-card-stats">
         <div className="user-card-stat">
           <span className="user-card-stat-value">{user.review_amount}</span>
-          <span className="user-card-stat-label">Reviews</span>
+          <span className="user-card-stat-label">{t('label.reviews')}</span>
         </div>
         <div className="user-card-stat">
           <span className="user-card-stat-value">{user.followers_amount}</span>
-          <span className="user-card-stat-label">Followers</span>
+          <span className="user-card-stat-label">{t('label.followers')}</span>
         </div>
         <div className="user-card-stat">
           <span className="user-card-stat-value">{user.following_amount}</span>
-          <span className="user-card-stat-label">Following</span>
+          <span className="user-card-stat-label">{t('label.following')}</span>
         </div>
       </div>
     </Link>

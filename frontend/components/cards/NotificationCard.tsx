@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/store/hooks';
 import { markAsReadAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { NotificationTypeEnum } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface NotificationCardProps {
   notification: Notification;
@@ -16,7 +17,7 @@ interface NotificationCardProps {
 
 const NotificationCard = ({ notification }: NotificationCardProps) => {
   const dispatch = useAppDispatch();
-
+  const { t } = useTranslation();
   const handleMarkAsRead = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -50,19 +51,12 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
           </Link>
 
           <div className="notification-content">
-            {isReviewRelated && notification.review_id ? (
-              <Link href={`/reviews/${notification.review_id}`} className="notification-review-link">
-                <div className="notification-text">
-                  <p>{notification.message}</p>
-                  <span className="notification-time">{notification.time_ago}</span>
-                </div>
-              </Link>
-            ) : (
-              <Link href={`/users/${notification.trigger_user_id}`}>
-                <p>{notification.message}</p>
+            <Link href={isReviewRelated ? `/reviews/${notification.review_id}` : `/users/${notification.trigger_user_id}`}>
+              <div className="notification-text">
+                <p>{t(`notifications.types.${notification.type}`, { username: notification.trigger_username })}</p>
                 <span className="notification-time">{notification.time_ago}</span>
-              </Link>
-            )}
+              </div>
+            </Link>
           </div>
         </div>
 
@@ -77,7 +71,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
 
       {!notification.is_read && (
         <button onClick={handleMarkAsRead} className="mark-read-btn">
-          Mark as read
+          {t('notifications.markAsRead')}
         </button>
       )}
     </div>

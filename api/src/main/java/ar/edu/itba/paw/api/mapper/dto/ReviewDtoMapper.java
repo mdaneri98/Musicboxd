@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.dto.ReviewDTO;
-import ar.edu.itba.paw.api.utils.DateFormatter;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.stereotype.Component;
@@ -36,7 +35,6 @@ public class ReviewDtoMapper {
         dto.setItemId(review.getItemId());
         dto.setItemName(review.getItemName());
         dto.setItemImageId(review.getItemImage() != null ? review.getItemImage().getId() : null);
-        dto.setTimeAgo(DateFormatter.formatTimeAgo(review.getCreatedAt()));
         
         return dto;
     }

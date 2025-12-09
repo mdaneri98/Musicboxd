@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.api.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class SongDTO {
@@ -15,7 +16,7 @@ public class SongDTO {
     private Integer ratingCount;
     private Double avgRating;
     private LocalDateTime createdAt;
-    private String formattedReleaseDate;
+    private LocalDate releaseDate;
     private LocalDateTime updatedAt;
     private Boolean isDeleted;
     private Boolean isReviewed;
@@ -152,12 +153,12 @@ public class SongDTO {
         this.isFavorite = isFavorite;
     }
 
-    public String getFormattedReleaseDate() {
-        return formattedReleaseDate;
+    public LocalDate getReleaseDate() {
+        return releaseDate;
     }
 
-    public void setFormattedReleaseDate(String formattedReleaseDate) {
-        this.formattedReleaseDate = formattedReleaseDate;
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
     }
 }
 

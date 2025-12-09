@@ -27,9 +27,6 @@ public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Transient
-    private String timeAgo;
-
     public Comment() { /* JPA needs it */ }
 
     public Comment(Long id, User user, Review review, String content, LocalDateTime createdAt) {
@@ -93,13 +90,5 @@ public class Comment {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public String getTimeAgo() {
-        return timeAgo;
-    }
-
-    public void setTimeAgo(String timeAgo) {
-        this.timeAgo = timeAgo;
     }
 }

@@ -83,12 +83,12 @@
     "updating": "Actualizando...",
     "loadingFavorites": "Cargando favoritos...",
     "loadingReviews": "Cargando reseñas...",
-    "favoriteArtists": "Artistas Favoritos",
-    "favoriteAlbums": "Álbumes Favoritos",
-    "favoriteSongs": "Canciones Favoritas",
-    "addFavoriteArtists": "Agrega hasta 5 artistas favoritos a tu perfil",
-    "addFavoriteAlbums": "Agrega hasta 5 álbumes favoritos a tu perfil",
-    "addFavoriteSongs": "Agrega hasta 5 canciones favoritas a tu perfil",
+    "favoriteArtists": "Artistas favoritos",
+    "favoriteAlbums": "Álbumes favoritos",
+    "favoriteSongs": "Canciones favoritas",
+    "addFavoriteArtists": "Añade hasta 5 artistas favoritos a tu perfil",
+    "addFavoriteAlbums": "Añade hasta 5 álbumes favoritos a tu perfil",
+    "addFavoriteSongs": "Añade hasta 5 canciones favoritas a tu perfil",
     "noReviews": "No se encontraron reseñas",
     "page": "Página",
     "discardChanges": "Descartar cambios"
@@ -104,20 +104,20 @@
     "discovery": "Descubrimiento",
     "discoverySubtitle": "Explora la mejor música, seleccionada para ti",
     "loadingMusic": "Cargando música...",
-    "mostPopular": "Más Popular",
-    "topRated": "Mejor Calificado",
-    "topRatedArtists": "Artistas Mejor Calificados",
-    "mostPopularArtists": "Artistas Más Populares",
-    "topRatedAlbums": "Álbumes Mejor Calificados",
-    "mostPopularAlbums": "Álbumes Más Populares",
-    "topRatedSongs": "Canciones Mejor Calificadas",
-    "mostPopularSongs": "Canciones Más Populares",
-    "viewAll": "Ver Todo",
+    "mostPopular": "Más popular",
+    "topRated": "Mejor calificado",
+    "topRatedArtists": "Artistas mejor calificados",
+    "mostPopularArtists": "Artistas más populares",
+    "topRatedAlbums": "Álbumes mejor calificados",
+    "mostPopularAlbums": "Álbumes más populares",
+    "topRatedSongs": "Canciones mejor calificadas",
+    "mostPopularSongs": "Canciones más populares",
+    "viewAll": "Ver todo",
     "sortBy": "Ordenar por",
-    "recentlyAdded": "Agregados Recientemente",
-    "firstAdded": "Agregados Primero",
-    "newest": "Más Nuevos",
-    "oldest": "Más Antiguos",
+    "recentlyAdded": "Agregados recientemente",
+    "firstAdded": "Agregados primero",
+    "newest": "Más nuevos",
+    "oldest": "Más antiguos",
     "page": "Página"
   },
   "search": {
@@ -129,7 +129,7 @@
     "noResults": "No se encontraron resultados",
     "searching": "Buscando...",
     "searchError": "Error al buscar",
-    "recommendedUsers": "Usuarios Recomendados",
+    "recommendedUsers": "Usuarios recomendados",
     "filters": {
       "all": "Todo",
       "users": "Usuarios",
@@ -157,7 +157,16 @@
     "likes": "{{count}} me gusta",
     "likes_other": "{{count}} me gusta",
     "comments": "{{count}} comentario",
-    "comments_other": "{{count}} comentarios"
+    "comments_other": "{{count}} comentarios",
+    "blockedByModerator": "Esta reseña fue bloqueada por un moderador",
+    "tryMakingAnother": "Intenta hacer otra",
+    "unblock": "Desbloquear",
+    "block": "Bloquear",
+    "itemType": {
+      "artist": "Artista",
+      "album": "Álbum",
+      "song": "Canción"
+    }
   },
   "comment": {
     "postComment": "Publicar comentario",
@@ -267,8 +276,8 @@
     "of": "de",
     "rateThis": "Calificar esto",
     "editYourReview": "Editar tu reseña",
-    "totalRatings": "Calificaciones Totales",
-    "averageRating": "Calificación Promedio",
+    "totalRatings": "Calificaciones totales",
+    "averageRating": "Calificación promedio",
     "yourRating": "Tu Calificación"
   },
   "errors": {
@@ -284,15 +293,15 @@
     "serverError": "Error del servidor. Por favor, intenta más tarde.",
     "pages": {
       "403": {
-        "title": "Acceso Prohibido",
+        "title": "Acceso prohibido",
         "message": "No tienes permiso para acceder a este recurso. Contacta al administrador si crees que esto es un error."
       },
       "404": {
-        "title": "Página No Encontrada",
+        "title": "Página no encontrada",
         "message": "La página que buscas podría haber sido eliminada, cambiado de nombre o no estar disponible temporalmente."
       },
       "500": {
-        "title": "Error Interno del Servidor",
+        "title": "Error interno del servidor",
         "message": "Algo salió mal de nuestro lado. Estamos trabajando para solucionar el problema. Por favor, intenta más tarde."
       },
       "backToHome": "Volver al inicio"
@@ -307,23 +316,23 @@
   },
   "album": {
     "loadingAlbum": "Cargando álbum...",
-    "previousPage": "Página Anterior",
-    "nextPage": "Página Siguiente",
-    "editReviewFor": "Editar Reseña de",
-    "editYourReview": "Editar Tu Reseña",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "editReviewFor": "Editar reseña de",
+    "editYourReview": "Editar tu reseña",
     "confirmDeleteReview": "¿Estás seguro de que quieres eliminar esta reseña?",
     "yes": "Sí",
     "no": "No",
     "reviewAlbum": "Reseñar",
-    "makeReview": "Hacer una Reseña"
+    "makeReview": "Hacer una reseña"
   },
   "artist": {
     "loadingArtist": "Cargando artista...",
-    "popularSongs": "Canciones Populares",
-    "previousPage": "Página Anterior",
-    "nextPage": "Página Siguiente",
-    "editReviewFor": "Editar Reseña de",
-    "editYourReview": "Editar Tu Reseña",
+    "popularSongs": "Canciones populares",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "editReviewFor": "Editar reseña de",
+    "editYourReview": "Editar tu reseña",
     "confirmDeleteReview": "¿Estás seguro de que quieres eliminar esta reseña?",
     "yes": "Sí",
     "no": "No",
@@ -334,39 +343,39 @@
     "loadingSong": "Cargando canción...",
     "duration": "Duración",
     "genre": "Género",
-    "releaseDate": "Fecha de Lanzamiento",
-    "previousPage": "Página Anterior",
-    "nextPage": "Página Siguiente",
-    "editReviewFor": "Editar Reseña de",
-    "editYourReview": "Editar Tu Reseña",
+    "releaseDate": "Fecha de lanzamiento",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "editReviewFor": "Editar reseña de",
+    "editYourReview": "Editar tu reseña",
     "confirmDeleteReview": "¿Estás seguro de que quieres eliminar esta reseña?",
     "yes": "Sí",
     "no": "No",
     "reviewSong": "Reseñar",
-    "makeReview": "Hacer una Reseña"
+    "makeReview": "Hacer una reseña"
   },
   "reviewDetail": {
     "loadingReview": "Cargando reseña...",
     "noLikes": "Sin me gusta aún",
-    "addComment": "Agregar un Comentario",
+    "addComment": "Añadir un comentario",
     "loginToComment": "Por favor inicia sesión para comentar",
     "loadingComments": "Cargando comentarios...",
     "noComments": "Sin comentarios aún",
-    "previousPage": "Página Anterior",
-    "nextPage": "Página Siguiente",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
     "confirmDeleteComment": "¿Estás seguro de que quieres eliminar este comentario?",
     "yes": "Sí",
     "no": "No"
   },
   "reviewNotFound": {
-    "title": "Reseña No Encontrada",
+    "title": "Reseña no encontrada",
     "message": "La reseña que buscas no existe o ha sido eliminada.",
-    "backToHome": "Volver al Inicio"
+    "backToHome": "Volver al inicio"
   },
   "userNotFound": {
-    "title": "Usuario No Encontrado",
+    "title": "Usuario no encontrado",
     "message": "El usuario que buscas no existe o ha sido eliminado.",
-    "backToHome": "Volver al Inicio"
+    "backToHome": "Volver al inicio"
   },
   "userProfile": {
     "loadingProfile": "Cargando perfil...",
@@ -377,13 +386,13 @@
   "followers": {
     "title": "Seguidores",
     "noFollowers": "Sin seguidores aún",
-    "previousPage": "Página Anterior",
-    "nextPage": "Página Siguiente"
+      "previousPage": "Página anterior",
+    "nextPage": "Página siguiente"
   },
   "following": {
     "title": "Siguiendo",
     "notFollowing": "No sigue a nadie aún",
-    "previousPage": "Página Anterior",
-    "nextPage": "Página Siguiente"
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente"
   }
 }

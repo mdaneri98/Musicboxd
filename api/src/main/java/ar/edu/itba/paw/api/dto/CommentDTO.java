@@ -11,7 +11,6 @@ public class CommentDTO {
     private Long reviewId;
     private String content;
     private LocalDateTime createdAt;
-    private String timeAgo;
 
     public CommentDTO() {}
 
@@ -69,14 +68,6 @@ public class CommentDTO {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public String getTimeAgo() {
-        return timeAgo;
-    }
-    
-    public void setTimeAgo(String timeAgo) {
-        this.timeAgo = timeAgo;
     }
 }
 

@@ -8,6 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { commentSchema } from '@/utils/validationSchemas';
 import { CommentFormData } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 interface CommentFormProps {
   onSubmit: (data: CommentFormData) => void;
@@ -23,7 +24,7 @@ const CommentForm = ({
   onCancel,
   defaultValues,
   isLoading,
-  placeholder = 'Write a comment...',
+  placeholder = t('comment.writeComment'),
   reviewId,
 }: CommentFormProps) => {
   const { t } = useTranslation();

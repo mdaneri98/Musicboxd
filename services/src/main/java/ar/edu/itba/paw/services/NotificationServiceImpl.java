@@ -5,7 +5,6 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.NotificationDao;
-import ar.edu.itba.paw.services.utils.TimeUtils;
 import ar.edu.itba.paw.exception.not_found.NotificationNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -155,9 +154,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     @Override
     public List<Notification> getUserNotifications(Long userId, Integer page, Integer pageSize) {
-        List<Notification> notifications = notificationDao.getNotificationsForUser(userId, page, pageSize);
-        notifications.forEach(n -> n.setTimeAgo(TimeUtils.formatTimeAgo(n.getCreatedAt())));
-        return notifications;
+        return notificationDao.getNotificationsForUser(userId, page, pageSize);
     }
 
     @Transactional

@@ -134,7 +134,10 @@
       "music": "Music",
       "users": "Users"
     },
-    "placeholder": "Search for artists, albums, songs, or users...",
+    "placeholder": {
+      "music": "Search for artists, albums and songs",
+      "users": "Search for users"
+    },
     "noResults": "No results found",
     "searching": "Searching...",
     "searchError": "Error searching",
@@ -170,23 +173,30 @@
     "blockedByModerator": "This review was blocked by a moderator",
     "tryMakingAnother": "Try making another one",
     "unblock": "Unblock",
-    "block": "Block"
+    "block": "Block",
+    "itemType": {
+      "artist": "Artist",
+      "album": "Album",
+      "song": "Song"
+    }
   },
   "comment": {
+    "writeComment": "Write a comment...",
     "postComment": "Post Comment",
     "posting": "Posting..."
   },
   "notifications": {
     "title": "Notifications",
+    "markAsRead": "Mark as read",
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications",
     "loading": "Loading notifications...",
     "page": "Page",
     "types": {
-      "follow": "{{username}} started following you",
-      "like": "{{username}} liked your review",
-      "comment": "{{username}} commented on your review",
-      "newReview": "{{username}} posted a new review"
+      "FOLLOW": "{{username}} started following you",
+      "LIKE": "{{username}} liked your review",
+      "COMMENT": "{{username}} commented on your review",
+      "NEW_REVIEW": "{{username}} posted a new review"
     }
   },
   "settings": {
@@ -404,5 +414,12 @@
     "notFollowing": "Not following anyone yet",
     "previousPage": "Previous Page",
     "nextPage": "Next Page"
+  },
+  "label": {
+    "reviews": "Reviews",
+    "followers": "Followers",
+    "following": "Following",
+    "verified": "Verified",
+    "moderator": "Moderator"
   }
 }

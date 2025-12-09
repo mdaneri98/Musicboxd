@@ -8,6 +8,7 @@ import { Review, ReviewItemTypeEnum } from '@/types';
 import { imageRepository } from '@/repositories';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsModerator } from '@/store/slices';
+import { useTranslation } from 'react-i18next';
 import {
   likeReviewAsync,
   unlikeReviewAsync,
@@ -22,7 +23,7 @@ interface ReviewCardProps {
 const ReviewCard = ({ review }: ReviewCardProps) => {
   const dispatch = useAppDispatch();
   const isModerator = useAppSelector(selectIsModerator);
-
+  const { t } = useTranslation();
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (review.liked) {
@@ -62,8 +63,17 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
     }
   };
 
-  const getItemTypeLabel = () => {
-    return review.item_type;
+  const getItemTypeTranslationKey = () => {
+    switch (review.item_type) {
+      case ReviewItemTypeEnum.ARTIST:
+        return 'review.itemType.artist';
+      case ReviewItemTypeEnum.ALBUM:
+        return 'review.itemType.album';
+      case ReviewItemTypeEnum.SONG:
+        return 'review.itemType.song';
+      default:
+        return 'review.itemType.unknown';
+    }
   };
 
   if (review.is_blocked) {
@@ -71,15 +81,15 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
       <div className="review-card">
         <div className="review-content blocked">
           <h4 className="review-content-title">
-            This review was blocked by a moderator
+            {t('review.blockedByModerator')}
           </h4>
-          <p className="review-description">Try making another one</p>
+          <p className="review-description">{t('review.tryMakingAnother')}</p>
           {isModerator && (
             <button
               onClick={handleBlock}
               className="btn btn-secondary"
             >
-              Unblock
+              {t('reviewCard.unblock')}
               <i className="fa-solid fa-ban"></i>
             </button>
           )}
@@ -100,7 +110,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
         </div>
         <div className="review-header-info">
           <h3 className="review-title">{review.item_name}</h3>
-          <p className="review-type">{getItemTypeLabel()}</p>
+          <p className="review-type">{t(getItemTypeTranslationKey())}</p>
         </div>
         <div className="rating-display">
           <div className="star-rating">
