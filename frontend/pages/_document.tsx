@@ -1,5 +1,18 @@
 import { Html, Head, Main, NextScript } from 'next/document';
 
+// Script to apply theme immediately before React hydration
+// This prevents flash of wrong theme (FOWT)
+const themeInitScript = `
+  (function() {
+    try {
+      var theme = localStorage.getItem('cached-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+`;
+
 export default function Document() {
   return (
     <Html lang="en">
@@ -14,6 +27,8 @@ export default function Document() {
         />
       </Head>
       <body>
+        {/* Apply theme before hydration to prevent flash */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <Main />
         <NextScript />
       </body>

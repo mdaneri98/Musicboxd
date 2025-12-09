@@ -5,7 +5,9 @@ import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, deleteUserAsync, updateUserConfigAsync } from '@/store/slices';
 import { ConfirmationModal, LanguageSwitcher } from '@/components/ui';
+import { useThemeContext } from '@/components/ThemeProvider';
 import { ThemeEnum, LanguageEnum } from '@/types';
+import { Theme } from '@/types/enums';
 
 interface NotificationSettings {
   has_follow_notifications_enabled: boolean;
@@ -20,7 +22,7 @@ export default function SettingsPage() {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  const [theme, setTheme] = useState<ThemeEnum>(ThemeEnum.DARK);
+  const { theme, setTheme } = useThemeContext();
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>();
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -40,12 +42,12 @@ export default function SettingsPage() {
         has_comments_notifications_enabled: currentUser.has_comments_notifications_enabled,
         has_reviews_notifications_enabled: currentUser.has_reviews_notifications_enabled
       });
-      setTheme(currentUser.preferred_theme);
     }
   }, [currentUser]);
 
   const handleThemeChange = async (newTheme: ThemeEnum) => {
-    setTheme(newTheme);
+    // Apply theme immediately via context
+    setTheme(newTheme as Theme);
     try {
       setSaving(true);
       if (!currentUser) return;

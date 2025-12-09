@@ -7,6 +7,9 @@ export { useUser } from './useUser';
 // Ownership Check Hook
 export { useOwnershipCheck } from './useOwnershipCheck';
 
+// Theme Hook
+export { useTheme } from './useTheme';
+
 // Utility Hooks
 export { useDebounce } from './useDebounce';
 export { usePagination } from './usePagination';

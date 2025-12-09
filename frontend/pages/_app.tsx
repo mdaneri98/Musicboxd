@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { store } from '@/store';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import AuthProvider from '@/components/AuthProvider';
+import ThemeProvider from '@/components/ThemeProvider';
 import '../i18n'; // Import i18n configuration
 
 // Import existing CSS files in correct order
@@ -15,9 +16,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
       <AuthProvider>
-        <ErrorBoundary>
-          <Component {...pageProps} />
-        </ErrorBoundary>
+        <ThemeProvider>
+          <ErrorBoundary>
+            <Component {...pageProps} />
+          </ErrorBoundary>
+        </ThemeProvider>
       </AuthProvider>
     </Provider>
   );
