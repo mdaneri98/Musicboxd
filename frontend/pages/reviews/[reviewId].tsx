@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
-import { ReviewCard, UserCard } from '@/components/cards';
+import { ReviewCard, UserCard, CommentCard } from '@/components/cards';
 import { CommentForm } from '@/components/forms';
 import { ConfirmationModal } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -26,7 +26,7 @@ import {
 } from '@/store/slices';
 import type { Comment, CommentFormData } from '@/types';
 import { ReviewTab } from '@/types/enums';
-import { formatTimeAgo } from '@/utils/timeUtils';
+import Link from 'next/link';
 
 const ReviewDetailPage = () => {
   const { t } = useTranslation();
@@ -201,8 +201,12 @@ const ReviewDetailPage = () => {
                 />
               </div>
             ) : (
-              <div className="auth-prompt">
-                <p>{t('reviewDetail.loginToComment')}</p>
+              <div className="form-actions">
+                <Link href="/login">
+                  <button className="btn btn-primary">
+                    {t('reviewDetail.loginToComment')}
+                  </button>
+                </Link>
               </div>
             )}
 
@@ -213,25 +217,11 @@ const ReviewDetailPage = () => {
             ) : (
               <div className="comments-list">
                 {comments.map((comment) => (
-                  <div key={comment.id} className="comment-card">
-                    <div className="comment-header">
-                      <div className="comment-user">
-                        <span className="comment-username">{comment.username}</span>
-                        <span className="comment-date">
-                          {formatTimeAgo(comment.created_at)}
-                        </span>
-                      </div>
-                      {canDeleteComment(comment) && (
-                        <button
-                          onClick={() => setCommentToDelete(comment.id)}
-                          className="btn btn-danger btn-sm"
-                        >
-                          {t('common.delete')}
-                        </button>
-                      )}
-                    </div>
-                    <div className="comment-content">{comment.content}</div>
-                  </div>
+                  <CommentCard 
+                    key={comment.id} 
+                    comment={comment}
+                    onDelete={canDeleteComment(comment) ? () => setCommentToDelete(comment.id) : undefined}
+                  />
                 ))}
               </div>
             )}

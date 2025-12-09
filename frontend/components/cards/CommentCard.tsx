@@ -1,6 +1,6 @@
 /**
  * CommentCard Component
- * Displays comment information with edit/delete actions
+ * Displays comment information with user details and actions
  */
 
 import Link from 'next/link';
@@ -9,28 +9,35 @@ import { Comment } from '@/types';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCurrentUser, deleteCommentAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
-import { useTranslation } from 'react-i18next';
 import { formatTimeAgo } from '@/utils/timeUtils';
+import { useTranslation } from 'react-i18next';
 
 interface CommentCardProps {
   comment: Comment;
   onEdit?: (comment: Comment) => void;
+  onDelete?: () => void;
 }
 
-const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
+const CommentCard = ({ comment, onEdit, onDelete }: CommentCardProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectCurrentUser);
-  const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const isOwner = currentUser?.id === comment.user_id;
+  const canDelete = isOwner || onDelete;
 
   const userImageUrl = comment.user_image_id
     ? imageRepository.getImageUrl(comment.user_image_id)
     : '/assets/default-avatar.png';
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) {
+    if (onDelete) {
+      onDelete();
+      return;
+    }
+    
+    if (!window.confirm(t('common.confirmDeleteComment'))) {
       return;
     }
     
@@ -52,33 +59,55 @@ const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
 
   return (
     <div className="comment-card">
-      <div className="comment-header">
-        <Link href={`/users/${comment.user_id}`} className="comment-user">
+      <div className="comment-layout">
+        {/* User Info Section */}
+        <Link href={`/users/${comment.user_id}`} className="comment-user-section">
           <img
             src={userImageUrl}
             alt={comment.username}
-            className="img-avatar"
+            className="comment-avatar"
           />
-          <div className="comment-user-info">
-            <span className="comment-username">{comment.username}</span>
+          <div className="comment-user-details">
+            <div className="comment-user-name-row">
+              <span className="comment-username">{comment.username}</span>
+              <div className="comment-badges">
+                {comment.user_verified && (
+                  <span className="badge badge-verified">{t('label.verified')}</span>
+                )}
+                {comment.user_moderator && (
+                  <span className="badge badge-moderator">{t('label.moderator')}</span>
+                )}
+              </div>
+            </div>
             <span className="comment-timestamp">
               {formatTimeAgo(comment.created_at)}
             </span>
           </div>
         </Link>
-        {isOwner && (
+
+        {/* Comment Content */}
+        <div className="comment-body">
+          <p className="comment-text">{comment.content}</p>
+        </div>
+
+        {/* Actions */}
+        {canDelete && (
           <div className="comment-actions">
-            <button
-              onClick={handleEdit}
-              className="btn-icon"
-              title="Edit comment"
-            >
-              <i className="fas fa-edit"></i>
-            </button>
+            {isOwner && onEdit && (
+              <button
+                onClick={handleEdit}
+                className="action-btn"
+                title={t('common.editComment')}
+                aria-label={t('common.editComment')}
+              >
+                <i className="fas fa-edit"></i>
+              </button>
+            )}
             <button
               onClick={handleDelete}
-              className="btn-icon danger"
-              title="Delete comment"
+              className="action-btn danger"
+              title={t('common.deleteComment')}
+              aria-label={t('common.deleteComment')}
               disabled={isDeleting}
             >
               <i className="fas fa-trash"></i>
@@ -86,12 +115,8 @@ const CommentCard = ({ comment, onEdit }: CommentCardProps) => {
           </div>
         )}
       </div>
-      <div className="comment-content">
-        <p>{comment.content}</p>
-      </div>
     </div>
   );
 };
 
 export default CommentCard;
-

@@ -26,6 +26,8 @@ public class CommentDtoMapper {
         dto.setReviewId(comment.getReview() != null ? comment.getReview().getId() : null);
         dto.setContent(comment.getContent());
         dto.setCreatedAt(comment.getCreatedAt());
+        dto.setUserModerator(comment.getUser() != null ? comment.getUser().getModerator() : null);
+        dto.setUserVerified(comment.getUser() != null ? comment.getUser().getVerified() : null);
 
         return dto;
     }

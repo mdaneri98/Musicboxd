@@ -11,6 +11,8 @@ public class CommentDTO {
     private Long reviewId;
     private String content;
     private LocalDateTime createdAt;
+    private Boolean userVerified;
+    private Boolean userModerator;
 
     public CommentDTO() {}
 
@@ -68,6 +70,22 @@ public class CommentDTO {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Boolean getUserVerified() {
+        return userVerified;
+    }
+
+    public void setUserVerified(Boolean userVerified) {
+        this.userVerified = userVerified;
+    }
+
+    public Boolean getUserModerator() {
+        return userModerator;
+    }
+
+    public void setUserModerator(Boolean userModerator) {
+        this.userModerator = userModerator;
     }
 }
 

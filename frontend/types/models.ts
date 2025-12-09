@@ -126,6 +126,8 @@ export interface Comment {
   review_id: number;
   content: string;
   created_at: Date;
+  user_verified: boolean;
+  user_moderator: boolean;
 }
 
 // ============================================================================
