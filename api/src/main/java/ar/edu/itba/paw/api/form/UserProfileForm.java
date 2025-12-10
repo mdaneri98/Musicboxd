@@ -16,10 +16,11 @@ public class UserProfileForm {
 
     public UserProfileForm() {}
 
-    public UserProfileForm(String username, String name, String bio) {
+    public UserProfileForm(String username, String name, String bio, Long imageId) {
         this.username = username;
         this.name = name;
         this.bio = bio;
+        this.imageId = imageId;
     }
 
     public String getUsername() {

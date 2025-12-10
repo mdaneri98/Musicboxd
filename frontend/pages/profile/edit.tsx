@@ -56,12 +56,15 @@ const EditProfilePage = () => {
         }
       }
 
-      // Prepare updated user data (excluding username as it's not changeable)
-      const userData: Partial<EditProfileFormData> = {
+      const userData: any = {
         name: data.name,
         bio: data.bio,
-        profilePicture: profilePictureId,
       };
+
+      // Only include image_id if a new image was uploaded
+      if (profilePictureId !== undefined) {
+        userData.image_id = profilePictureId;
+      }
 
       // Update user profile
       await dispatch(updateUserAsync({ id: currentUser.id, userData })).unwrap();

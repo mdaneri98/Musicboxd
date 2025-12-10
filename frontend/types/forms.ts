@@ -52,7 +52,7 @@ export interface EditProfileFormData {
   username: string;
   name?: string;
   bio?: string;
-  profilePicture?: number;
+  imageId?: number;
 }
 
 
