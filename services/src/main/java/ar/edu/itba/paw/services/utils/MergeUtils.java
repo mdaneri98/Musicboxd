@@ -27,7 +27,6 @@ public class MergeUtils {
         setFieldIfNotNull(existingUser::setEmail, userUpdate.getEmail());
         setFieldIfNotNull(existingUser::setName, userUpdate.getName());
         setFieldIfNotNull(existingUser::setBio, userUpdate.getBio());
-        setFieldIfNotNull(existingUser::setImageId, userUpdate.getImageId());
         setFieldIfNotNull(existingUser::setPreferredLanguage, userUpdate.getPreferredLanguage());
         setFieldIfNotNull(existingUser::setTheme, userUpdate.getTheme());
     }
