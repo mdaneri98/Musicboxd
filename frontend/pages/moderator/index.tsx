@@ -204,7 +204,7 @@ export default function ModeratorDashboardPage() {
   const handleRedirect = () => {
     switch (activeTab) {
       case ReviewItemType.ARTIST:
-        router.push('/moderator/add-artist');
+        router.push('/moderator/music');
         break;
       case ReviewItemType.ALBUM:
         if (selectedItem && selectedItem.type === ReviewItemType.ARTIST) {
@@ -217,6 +217,11 @@ export default function ModeratorDashboardPage() {
         }
         break;
     }
+  };
+
+  // Handle edit artist (redirect to music editor with artist ID)
+  const handleEditArtist = (artistId: number) => {
+    router.push(`/moderator/music?artistId=${artistId}`);
   };
 
   if (!isAuthenticated || (currentUser && !currentUser.moderator)) {

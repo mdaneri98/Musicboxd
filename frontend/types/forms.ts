@@ -161,6 +161,59 @@ export interface EditSongFormData {
 }
 
 // ============================================================================
+// Integrated Music Forms (ModArtistForm with nested albums and songs)
+// ============================================================================
+
+/**
+ * Song form for nested usage in ModAlbumForm
+ */
+export interface ModSongFormData {
+  id?: number;
+  title: string;
+  duration: string; // MM:SS format
+  trackNumber?: number;
+  albumId?: number;
+  deleted?: boolean;
+  // UI state
+  _tempId?: string; // Temporary ID for new songs (UI only)
+  _isCollapsed?: boolean;
+}
+
+/**
+ * Album form for nested usage in ModArtistForm
+ */
+export interface ModAlbumFormData {
+  id?: number;
+  title: string;
+  genre?: string;
+  releaseDate?: string; // ISO date string (yyyy-MM-dd)
+  albumImageId?: number;
+  artistId?: number;
+  songs: ModSongFormData[];
+  deleted?: boolean;
+  // UI state
+  _tempId?: string; // Temporary ID for new albums (UI only)
+  _isCollapsed?: boolean;
+  _imageFile?: File; // For image upload
+  _imagePreview?: string;
+}
+
+/**
+ * Integrated artist form with nested albums and songs
+ */
+export interface ModArtistFormData {
+  id?: number;
+  name: string;
+  bio?: string;
+  artistImgId?: number;
+  albums: ModAlbumFormData[];
+  deleted?: boolean;
+  // UI state
+  _imageFile?: File; // For image upload
+  _imagePreview?: string;
+}
+
+// ============================================================================
 // Search Form (1)
 // ============================================================================
 

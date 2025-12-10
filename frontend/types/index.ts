@@ -67,5 +67,8 @@ export type {
   FormErrors,
   FormSubmissionState,
   UserConfigFormData,
+  ModSongFormData,
+  ModAlbumFormData,
+  ModArtistFormData,
 } from './forms';
 
