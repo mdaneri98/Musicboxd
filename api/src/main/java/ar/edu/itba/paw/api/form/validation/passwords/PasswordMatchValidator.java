@@ -11,14 +11,15 @@ public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch
     @Override
     public boolean isValid(PasswordConfirmation form, ConstraintValidatorContext context) {
         if (form == null) {
-            return false;
+            return true;
         }
 
         String password = form.getPassword();
         String confirmPassword = form.getRepeatPassword();
 
+        // If either is null, let @NotBlank handle it
         if (password == null || confirmPassword == null) {
-            return false;
+            return true;
         }
 
         return password.equals(confirmPassword);
