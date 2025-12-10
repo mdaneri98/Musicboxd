@@ -223,14 +223,16 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User userUpdate) {
         LOGGER.info("Updating user with ID: {}", userUpdate.getId());
         User existingUser = userDao.findById(userUpdate.getId()).orElseThrow(() -> new UserNotFoundException(userUpdate.getId()));
-        
-        if (userUpdate.getImageId() != null) 
-            existingUser.setImage(imageService.findById(userUpdate.getImageId()));
+
+        if (userUpdate.getImage() != null && userUpdate.getImage().getId() != null) {
+            LOGGER.info("Updating user image to image ID: {}", userUpdate.getImage().getId());
+            existingUser.setImage(imageService.findById(userUpdate.getImage().getId()));
+        }
 
         MergeUtils.mergeUserFields(existingUser, userUpdate);
         User updatedUser = saveUser(existingUser);
         LOGGER.info("User with ID {} updated successfully", userUpdate.getId());
-        
+
         return updatedUser;
     }
 

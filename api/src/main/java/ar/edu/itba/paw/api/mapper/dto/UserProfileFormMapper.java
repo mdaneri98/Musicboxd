@@ -2,6 +2,7 @@ package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.dto.UserDTO;
 import ar.edu.itba.paw.api.form.UserProfileForm;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.User;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +21,9 @@ public class UserProfileFormMapper {
         user.setUsername(form.getUsername());
         user.setName(form.getName());
         user.setBio(form.getBio());
-        // Store imageId temporarily - UserServiceImpl will use ImageService to get the full Image
+
         if (form.getImageId() != null) {
-            ar.edu.itba.paw.models.Image image = new ar.edu.itba.paw.models.Image(form.getImageId(), null);
+            Image image = new Image(form.getImageId(), null);
             user.setImage(image);
         }
 
