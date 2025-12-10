@@ -81,7 +81,6 @@ public class ArtistServiceImpl implements ArtistService {
         LOGGER.info("Attempting to delete artist with ID: {}", id);
         Artist artist = artistDao.findById(id).orElseThrow(() -> new ArtistNotFoundException(id));
 
-        // Delete albums
         albumService.findByArtistId(id).forEach(album -> albumService.delete(album.getId()));
 
         List<Long> userIds = new ArrayList<>();
@@ -135,17 +134,11 @@ public class ArtistServiceImpl implements ArtistService {
             artist.setImage(imageService.findById(artistInput.getImage().getId()));
         }
         
-        // Merge fields
         if (artistInput.getName() != null) artist.setName(artistInput.getName());
         if (artistInput.getBio() != null) artist.setBio(artistInput.getBio());
 
         artist = artistDao.update(artist);
         LOGGER.info("Artist updated successfully");
-
-        if (artistInput.getAlbums() != null && !artistInput.getAlbums().isEmpty()) {
-            LOGGER.info("Updating albums for artist: {} (ID: {})", artist.getName(), artist.getId());
-            albumService.updateAll(artistInput.getAlbums(), artist);
-        }
         return artist;
     }
 

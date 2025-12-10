@@ -129,7 +129,6 @@ public class AlbumServiceImpl implements AlbumService {
             album.setImage(imageService.findById(albumInput.getImage().getId()));
         }
         
-        // Merge fields
         if (albumInput.getTitle() != null) album.setTitle(albumInput.getTitle());
         if (albumInput.getGenre() != null) album.setGenre(albumInput.getGenre());
         if (albumInput.getReleaseDate() != null) album.setReleaseDate(albumInput.getReleaseDate());
@@ -137,10 +136,6 @@ public class AlbumServiceImpl implements AlbumService {
         album = albumDao.update(album);
         LOGGER.info("Album updated successfully");
 
-        if (albumInput.getSongs() != null && !albumInput.getSongs().isEmpty()) {
-            LOGGER.info("Updating songs for album: {} (ID: {})", album.getTitle(), album.getId());
-            songService.updateAll(albumInput.getSongs(), album);
-        }
         return album;
     }
 
@@ -148,12 +143,19 @@ public class AlbumServiceImpl implements AlbumService {
     @Transactional
     public Boolean updateAll(List<Album> albums, Artist artist) {
         LOGGER.info("Updating multiple albums for artist ID: {}", artist.getId());
-        for (Album album : albums) {
-            album.setArtist(artist);
-            if (album.getId() != null && album.getId() != 0) {
-                update(album);
+        for (Album albumInput : albums) {
+            if (albumInput.getArtist() == null) {
+                albumInput.setArtist(new Artist(artist.getId()));
+            }
+            
+            if (albumInput.getId() != null && albumInput.getId() != 0) {
+                Album savedAlbum = update(albumInput);
+                if (albumInput.getSongs() != null && !albumInput.getSongs().isEmpty()) {
+                    LOGGER.info("Updating songs for album: {} (ID: {})", savedAlbum.getTitle(), savedAlbum.getId());
+                    songService.updateAll(albumInput.getSongs(), savedAlbum);
+                }
             } else {
-                create(album);
+                create(albumInput);
             }
         }
         LOGGER.info("All albums updated successfully for artist ID: {}", artist.getId());

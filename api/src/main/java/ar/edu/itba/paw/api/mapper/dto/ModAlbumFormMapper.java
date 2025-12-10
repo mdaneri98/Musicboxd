@@ -8,6 +8,7 @@ import ar.edu.itba.paw.api.dto.AlbumDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +39,14 @@ public class ModAlbumFormMapper {
             album.setArtist(new Artist(form.getArtistId()));
         }
         
-        // Map nested songs if present
+        if (form.getId() == null) {
+            album.setRatingCount(0);
+            album.setAvgRating(0.0);
+            album.setCreatedAt(LocalDateTime.now());
+            album.setUpdatedAt(LocalDateTime.now());
+        }
+        
+
         if (form.getSongs() != null && !form.getSongs().isEmpty()) {
             album.setSongs(form.getSongs().stream()
                     .filter(s -> !s.isDeleted())
@@ -49,10 +57,6 @@ public class ModAlbumFormMapper {
         return album;
     }
 
-    /**
-     * @deprecated Use toModel() instead. This method will be removed after ArtistService refactoring.
-     */
-    @Deprecated
     public AlbumDTO toDTO(ModAlbumForm form) {
         if (form == null) {
             return null;
@@ -67,7 +71,6 @@ public class ModAlbumFormMapper {
         dto.setArtistId(form.getArtistId());
         dto.setIsDeleted(form.isDeleted());
         
-        // Map nested songs if present
         if (form.getSongs() != null && !form.getSongs().isEmpty()) {
             dto.setSongs(form.getSongs().stream()
                     .map(songFormMapper::toDTO)
@@ -90,12 +93,6 @@ public class ModAlbumFormMapper {
         }
         if (form.getArtistId() != null) {
             album.setArtist(new Artist(form.getArtistId()));
-        }
-        if (form.getSongs() != null && !form.getSongs().isEmpty()) {
-            album.setSongs(form.getSongs().stream()
-                .filter(s -> !s.isDeleted())
-                .map(songFormMapper::toModel)
-                .collect(Collectors.toList()));
         }
         return album;
     }

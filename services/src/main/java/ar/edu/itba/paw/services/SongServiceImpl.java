@@ -100,7 +100,6 @@ public class SongServiceImpl implements SongService {
         Song song = new Song(songInput.getTitle(), songInput.getDuration(), songInput.getTrackNumber(), album);
         songDao.create(song);
         
-        // Handle artist association
         if (songInput.getArtists() != null && !songInput.getArtists().isEmpty()) {
             songDao.saveSongArtist(song, songInput.getArtists().get(0));
         } else if (album != null && album.getArtist() != null) {
@@ -139,7 +138,6 @@ public class SongServiceImpl implements SongService {
                     .orElseThrow(() -> new AlbumNotFoundException(songInput.getAlbum().getId())));
         }
         
-        // Merge fields
         if (songInput.getTitle() != null) song.setTitle(songInput.getTitle());
         if (songInput.getDuration() != null) song.setDuration(songInput.getDuration());
         if (songInput.getTrackNumber() != null) song.setTrackNumber(songInput.getTrackNumber());
@@ -153,17 +151,19 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public Boolean updateAll(List<Song> songs, Album album) {
         LOGGER.info("Updating multiple songs for album: {}", album.getTitle());
-        for (Song song : songs) {
-            song.setAlbum(album);
-            if (song.getArtists() == null || song.getArtists().isEmpty()) {
+        for (Song songInput : songs) {
+            if (songInput.getAlbum() == null) {
+                songInput.setAlbum(new Album(album.getId()));
+            }
+            if (songInput.getArtists() == null || songInput.getArtists().isEmpty()) {
                 List<Artist> artists = new ArrayList<>();
                 artists.add(album.getArtist());
-                song.setArtists(artists);
+                songInput.setArtists(artists);
             }
-            if (song.getId() != null && song.getId() != 0) {
-                update(song);
+            if (songInput.getId() != null && songInput.getId() != 0) {
+                update(songInput);
             } else {
-                create(song);
+                create(songInput);
             }
         }
         LOGGER.info("All songs updated successfully for album: {}", album.getTitle());

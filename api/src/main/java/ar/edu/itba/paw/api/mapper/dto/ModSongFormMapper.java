@@ -6,6 +6,8 @@ import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.api.dto.SongDTO;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 /**
  * Mapper to convert ModSongForm to Song model
  */
@@ -26,6 +28,14 @@ public class ModSongFormMapper {
             song.setAlbum(new Album(form.getAlbumId()));
         }
         
+
+        if (form.getId() == null) {
+            song.setRatingCount(0);
+            song.setAvgRating(0.0);
+            song.setCreatedAt(LocalDateTime.now());
+            song.setUpdatedAt(LocalDateTime.now());
+        }
+        
         return song;
     }
 
@@ -35,10 +45,6 @@ public class ModSongFormMapper {
         return song;
     }
 
-    /**
-     * @deprecated Use toModel() instead. This method will be removed after SongService refactoring.
-     */
-    @Deprecated
     public SongDTO toDTO(ModSongForm form) {
         if (form == null) {
             return null;
