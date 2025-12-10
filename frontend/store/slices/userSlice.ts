@@ -129,11 +129,11 @@ export const fetchUserByIdAsync = createAsyncThunk<
  */
 export const updateUserAsync = createAsyncThunk<
   HALResource<User>,
-  { id: number; userData: EditProfileFormData },
+  { id: number; userData: Partial<EditProfileFormData> },
   { rejectValue: string }
 >('users/updateUser', async ({ id, userData }, { rejectWithValue }) => {
   try {
-    const user = await userRepository.updateUser(id, userData);
+    const user = await userRepository.updateUser(id, userData as EditProfileFormData);
     return user as HALResource<User>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to update user');

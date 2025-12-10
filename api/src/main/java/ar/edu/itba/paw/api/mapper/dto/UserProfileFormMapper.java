@@ -15,7 +15,7 @@ public class UserProfileFormMapper {
         if (form == null) {
             return null;
         }
-        
+
         User user = new User();
         user.setUsername(form.getUsername());
         user.setName(form.getName());
@@ -25,7 +25,7 @@ public class UserProfileFormMapper {
             ar.edu.itba.paw.models.Image image = new ar.edu.itba.paw.models.Image(form.getImageId(), null);
             user.setImage(image);
         }
-        
+
         return user;
     }
 

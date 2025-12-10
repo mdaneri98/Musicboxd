@@ -44,14 +44,13 @@ const EditProfileForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mod-form">
         {/* Profile Picture with Preview */}
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <input
             type="file"
             id="userImageInput"
-            {...register('profilePicture')}
             accept=".jpg,.jpeg,.png"
             className="hidden-input"
             onChange={handleFileChange}
@@ -65,21 +64,17 @@ const EditProfileForm = ({
             onClick={() => document.getElementById('userImageInput')?.click()}
             alt="Profile Image"
           />
-          {errors.profilePicture && (
-            <p className="form-error">{errors.profilePicture.message as string}</p>
-          )}
         </div>
 
         <div className="mod-entity-details">
           <div>
             <label className="mod-label">{t('profile.username')}</label>
-            {errors.username && (
-              <p className="form-error">{errors.username.message}</p>
-            )}
             <input
               type="text"
               {...register('username')}
               className="form-control"
+              disabled
+              readOnly
             />
           </div>
 

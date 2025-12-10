@@ -62,7 +62,7 @@ export const resetPasswordSchema = Yup.object().shape({
 
 export const editProfileSchema = Yup.object().shape({
   username: Yup.string()
-    .required('Username is required')
+    .optional()
     .min(3, 'Username must be at least 3 characters')
     .max(50, 'Username must be at most 50 characters')
     .matches(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores and dashes'),
