@@ -1,6 +1,6 @@
 /**
  * ConfirmationModal Component
- * Reusable confirmation dialog (from components/confirmation-window.jsp)
+ * Reusable confirmation dialog
  */
 
 interface ConfirmationModalProps {
@@ -22,34 +22,30 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    // Only close if clicking the overlay itself, not the modal content
+    if (e.target === e.currentTarget) {
+      onCancel();
+    }
+  };
+
   return (
-    <>
-      <div
-        className="modal-overlay"
-        onClick={onCancel}
-        style={{
-          display: 'block',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        }}
-      />
-      <div className="confirmation-modal" style={{ display: 'block' }}>
-        <div className="modal-content">
-          <p className="modal-message">{message}</p>
-          <div className="modal-actions">
-            <button onClick={onCancel} className="btn btn-secondary modal-btn">
+    <div className="modal-overlay" onClick={handleOverlayClick}>
+      <div className="confirmation-modal">
+        <div className="confirmation-content">
+          <p className="confirmation-message">{message}</p>
+          <div className="confirmation-actions">
+            <button onClick={onCancel} className="btn btn-secondary">
               {cancelText}
             </button>
-            <button onClick={onConfirm} className="btn btn-danger modal-btn">
+            <button onClick={onConfirm} className="btn btn-danger">
               {confirmText}
             </button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
 export default ConfirmationModal;
-
