@@ -7,6 +7,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, selectUserReviewsPagination, fetchFavoriteArtistsAsync, fetchFavoriteAlbumsAsync, fetchFavoriteSongsAsync, fetchUserReviewsAsync, selectFavoriteArtists, selectFavoriteAlbums, selectFavoriteSongs, selectUserReviews, selectLoadingFavorites, selectLoadingReviews } from '@/store/slices';
 import { ProfileTabEnum } from '@/types';
 import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
+import { LoadingSpinner } from '@/components/ui';
 
 const ProfilePage = () => {
   const { t } = useTranslation();
@@ -87,12 +88,14 @@ const ProfilePage = () => {
 
         {/* Favorites Section */}
         {loadingFavorites ? (
-          <div className="loading">{t('profile.loadingFavorites')}</div>
+          <div className="loading">{t('profile.loadingFavorites')}
+          <LoadingSpinner size="large" />
+          </div>
         ) : (
           activeTab === ProfileTabEnum.FAVORITES && (
           <section className="favorites-section">
-            {/* Favorite Artists */}
-            <h2>{t('profile.favoriteArtists')}</h2>
+                        {/* Favorite Artists */}
+                        <h2>{t('profile.favoriteArtists')}</h2>
             {Object.values(favoriteArtists).length === 0 ? (
               <div className="empty-state">
                 <p className="add-favorites">{t('profile.addFavoriteArtists')}</p>
@@ -138,7 +141,6 @@ const ProfilePage = () => {
             )}
           </section>
         ))}
-
         {/* Reviews Section */}
         {activeTab === ProfileTabEnum.REVIEWS && (
           <section className="reviews-section">

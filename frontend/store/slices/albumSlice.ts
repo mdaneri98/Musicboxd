@@ -342,8 +342,18 @@ const albumSlice = createSlice({
       });
 
     builder
+      .addCase(addAlbumFavoriteAsync.fulfilled, (state, action) => {
+        const updatedAlbum = action.payload.data as Album;
+        state.currentAlbum = updatedAlbum;
+        state.albums[updatedAlbum.id] = updatedAlbum;
+      })
       .addCase(addAlbumFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to add album to favorites';
+      })
+      .addCase(removeAlbumFavoriteAsync.fulfilled, (state, action) => {
+        const updatedAlbum = action.payload.data as Album;
+        state.currentAlbum = updatedAlbum;
+        state.albums[updatedAlbum.id] = updatedAlbum;
       })
       .addCase(removeAlbumFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to remove album from favorites';

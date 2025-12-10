@@ -42,7 +42,6 @@ const AlbumDetailPage = () => {
   const [reviewsPage, setReviewsPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const isFavorite = album?.favorite || false;
   const [userRating, setUserRating] = useState<number | undefined>();
   // Limpiar al desmontar
   useEffect(() => {
@@ -108,7 +107,7 @@ const AlbumDetailPage = () => {
 
     try {
       setFavoriteLoading(true);
-      if (isFavorite) {
+      if (album.favorite) {
         await dispatch(removeAlbumFavoriteAsync(album.id)).unwrap();
       } else {
         await dispatch(addAlbumFavoriteAsync(album.id)).unwrap();
@@ -150,7 +149,7 @@ const AlbumDetailPage = () => {
           artist={artist}
           currentUser={currentUser}
           isAuthenticated={isAuthenticated}
-          isFavorite={isFavorite}
+          isFavorite={album.favorite || false}
           favoriteLoading={favoriteLoading}
           userRating={userRating}
           isReviewed={album.reviewed || false}

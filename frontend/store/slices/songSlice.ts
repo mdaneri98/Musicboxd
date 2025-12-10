@@ -153,26 +153,26 @@ export const createSongReviewAsync = createAsyncThunk<
 });
 
 export const addSongFavoriteAsync = createAsyncThunk<
-  number,
+  HALResource<Song>,
   number,
   { rejectValue: string }
 >('songs/addFavorite', async (songId, { rejectWithValue }) => {
   try {
     await songRepository.addSongFavorite(songId);
-    return songId;
+    return await songRepository.getSongById(songId) as HALResource<Song>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to add song to favorites');
   }
 });
 
 export const removeSongFavoriteAsync = createAsyncThunk<
-  number,
+  HALResource<Song>,
   number,
   { rejectValue: string }
 >('songs/removeFavorite', async (songId, { rejectWithValue }) => {
   try {
     await songRepository.removeSongFavorite(songId);
-    return songId;
+    return await songRepository.getSongById(songId) as HALResource<Song>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to remove song from favorites');
   }
@@ -314,8 +314,18 @@ const songSlice = createSlice({
       });
 
     builder
+      .addCase(addSongFavoriteAsync.fulfilled, (state, action) => {
+        const updatedSong = action.payload.data as Song;
+        state.currentSong = updatedSong;
+        state.songs[updatedSong.id] = updatedSong;
+      })
       .addCase(addSongFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to add song to favorites';
+      })
+      .addCase(removeSongFavoriteAsync.fulfilled, (state, action) => {
+        const updatedSong = action.payload.data as Song;
+        state.currentSong = updatedSong;
+        state.songs[updatedSong.id] = updatedSong;
       })
       .addCase(removeSongFavoriteAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to remove song from favorites';

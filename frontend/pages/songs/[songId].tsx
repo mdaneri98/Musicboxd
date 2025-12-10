@@ -58,12 +58,12 @@ const SongDetailPage = () => {
         dispatch(fetchAlbumByIdAsync(songData.data.album_id))
           .unwrap()
           .then((albumData) => setAlbum(albumData.data))
-          .catch((err) => console.error('Failed to fetch album:', err));
+          .catch((err) => console.error(t('common.error'), err));
         
         dispatch(fetchArtistByIdAsync(songData.data.artist_id))
           .unwrap()
           .then((artistData) => setArtist(artistData.data))
-          .catch((err) => console.error('Failed to fetch artist:', err));
+          .catch((err) => console.error(t('common.error'), err));
 
           if(songData.data.reviewed && isAuthenticated && currentUser) {
             const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
@@ -72,7 +72,7 @@ const SongDetailPage = () => {
             }
           }
       })
-      .catch((err) => console.error('Failed to fetch song:', err));
+      .catch((err) => console.error(t('common.error'), err));
   }, [songId, dispatch]);
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const SongDetailPage = () => {
       .then((reviewsData) => {
         setHasMoreReviews(reviewsData.items.length === 20);
       })
-      .catch((err) => console.error('Failed to fetch reviews:', err));
+      .catch((err) => console.error(t('common.error'), err));
   }, [songId, reviewsPage, isAuthenticated, currentUser, dispatch]);
 
   const handleFavoriteToggle = async () => {
@@ -103,7 +103,7 @@ const SongDetailPage = () => {
         await dispatch(addSongFavoriteAsync(song.id)).unwrap();
       }
     } catch (err) {
-      console.error('Failed to toggle favorite:', err);
+      console.error(t('common.error'), err);
     } finally {
       setFavoriteLoading(false);
     }

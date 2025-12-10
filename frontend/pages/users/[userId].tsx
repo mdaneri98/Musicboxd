@@ -26,6 +26,7 @@ import {
 } from '@/store/slices';
 import { ProfileTabEnum } from '@/types';
 import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
+import { LoadingSpinner } from '@/components/ui';
 
 const UserProfilePage = () => {
   const { t } = useTranslation();
@@ -144,7 +145,10 @@ const UserProfilePage = () => {
 
         {/* Favorites Section */}
         {loadingFavorites ? (
-          <div className="loading">{t('profile.loadingFavorites')}</div>
+          <div className="loading-container">
+           <div className="loading">{t('profile.loadingFavorites')}</div>
+          <LoadingSpinner size="large" />
+          </div>
         ) : (
           activeTab === ProfileTabEnum.FAVORITES && (
           <section className="favorites-section">
