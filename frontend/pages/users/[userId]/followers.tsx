@@ -14,7 +14,8 @@ import {
   clearCurrentProfile,
   selectCurrentUser,
   selectIsAuthenticated,
-  followUserAsync
+  followUserAsync,
+  unfollowUserAsync
 } from '@/store/slices';
 
 const FollowersPage = () => {
@@ -47,7 +48,6 @@ const FollowersPage = () => {
     
     const userIdNum = parseInt(userId as string);
     dispatch(fetchUserByIdAsync(userIdNum));
-    setIsFollowing(user?.followed ?? false);
     dispatch(fetchFollowersAsync({ userId: userIdNum, page, size: 20 }))
       .unwrap()
       .then((followersData) => {
@@ -55,6 +55,13 @@ const FollowersPage = () => {
       })
       .catch((err) => console.error('Failed to fetch followers:', err));
   }, [userId, page, dispatch]);
+
+  // Update isFollowing when user data is loaded
+  useEffect(() => {
+    if (user) {
+      setIsFollowing(user.followed ?? false);
+    }
+  }, [user]);
 
   if (loading || !user) {
     return (
@@ -67,10 +74,22 @@ const FollowersPage = () => {
   }
 
   const handleFollowToggle = async () => {
-    setFollowLoading(true);
-    await dispatch(followUserAsync(user.id));
-    setIsFollowing(true);
-    setFollowLoading(false);
+    if (!user) return;
+    
+    try {
+      setFollowLoading(true);
+      if (isFollowing) {
+        await dispatch(unfollowUserAsync(user.id)).unwrap();
+        setIsFollowing(false);
+      } else {
+        await dispatch(followUserAsync(user.id)).unwrap();
+        setIsFollowing(true);
+      }
+    } catch (error) {
+      console.error('Failed to toggle follow:', error);
+    } finally {
+      setFollowLoading(false);
+    }
   };
 
   return (
