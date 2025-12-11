@@ -115,7 +115,7 @@ export default function SearchPage() {
 
       const userResults: SearchResultItem[] = usersData.items.map((user: HALResource<User>) => ({
         id: user.data.id,
-        name: user.data.name || user.data.username,
+        name: user.data.username,
         type: SearchTypeEnum.USERS,
         imgId: user.data.image_id,
         imageUrl: user.data.image_id ? imageRepository.getImageUrl(user.data.image_id) : undefined,

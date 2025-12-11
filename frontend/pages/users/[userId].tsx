@@ -153,49 +153,43 @@ const UserProfilePage = () => {
           activeTab === ProfileTabEnum.FAVORITES && (
           <section className="favorites-section">
             {/* Favorite Artists */}
-            <h2>{t('profile.favoriteArtists')}</h2>
-            {Object.values(favoriteArtists).length === 0 ? (
-              <div className="empty-state">
-                <p className="add-favorites">{t('profile.addFavoriteArtists')}</p>
-              </div>
-            ) : (
-              <div className="carousel-container">
-                <div className="carousel">
-                  {Object.values(favoriteArtists).map((artist) => (
-                    <ArtistCard key={artist.id} artist={artist} />
-                  ))}
+            {Object.values(favoriteArtists).length > 0 && (
+              <div>
+              <h2>{t('profile.favoriteArtists')}</h2>
+                <div className="carousel-container">
+                  <div className="carousel">
+                    {Object.values(favoriteArtists).map((artist) => (
+                      <ArtistCard key={artist.id} artist={artist} />
+                    ))}
+                  </div>
                 </div>
               </div>
-            )}
+              )}
 
             {/* Favorite Albums */}
-            <h2>{t('profile.favoriteAlbums')}</h2>
-            {Object.values(favoriteAlbums).length === 0 ? (
-              <div className="empty-state">
-                <p className="add-favorites">{t('profile.addFavoriteAlbums')}</p>
-              </div>
-            ) : (
-              <div className="carousel-container">
-                <div className="carousel">
-                  {Object.values(favoriteAlbums).map((album) => (
-                    <AlbumCard key={album.id} album={album} />
-                  ))}
+            {Object.values(favoriteAlbums).length > 0 && (
+              <div>
+                <h2>{t('profile.favoriteAlbums')}</h2>    
+                <div className="carousel-container">
+                  <div className="carousel">
+                    {Object.values(favoriteAlbums).map((album) => (
+                      <AlbumCard key={album.id} album={album} />
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Favorite Songs */}
-            <h2>{t('profile.favoriteSongs')}</h2>
-            {Object.values(favoriteSongs).length === 0 ? (
-              <div className="empty-state">
-                <p className="add-favorites">{t('profile.addFavoriteSongs')}</p>
+            {Object.values(favoriteSongs).length > 0 && (
+              <div>
+                <h2>{t('profile.favoriteSongs')}</h2>
+                <ul className="song-list">
+                  {Object.values(favoriteSongs).map((song, index) => (
+                    <SongCard key={song.id} song={song} index={index} />
+                  ))}
+                </ul>
               </div>
-            ) : (
-              <ul className="song-list">
-                {Object.values(favoriteSongs).map((song, index) => (
-                  <SongCard key={song.id} song={song} index={index} />
-                ))}
-              </ul>
             )}
           </section>
         ))}
