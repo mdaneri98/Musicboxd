@@ -68,9 +68,15 @@ const UserProfilePage = () => {
     dispatch(fetchFavoriteArtistsAsync(userIdNum));
     dispatch(fetchFavoriteAlbumsAsync(userIdNum));
     dispatch(fetchFavoriteSongsAsync(userIdNum));
-    dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: reviewsPagination.page, size: reviewsPagination.size }))
-    setIsFollowing(user?.followed ?? false);
+    dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: reviewsPagination.page, size: reviewsPagination.size }));
   }, [userId, dispatch]);
+
+  // Update isFollowing when user data is loaded
+  useEffect(() => {
+    if (user) {
+      setIsFollowing(user.followed ?? false);
+    }
+  }, [user]);
 
 
   const handleFollowToggle = async () => {

@@ -76,11 +76,7 @@ const FollowersPage = () => {
   return (
     <Layout title={`Musicboxd - @${user.username} ${t('followers.title')}`}>
       <div className="content-wrapper">
-        <div className="profile-header">
-          <header>
-            <UserInfo user={user} isOwnProfile={isOwnProfile} isAuthenticated={isAuthenticated} isFollowing={isFollowing} followLoading={followLoading} onFollowToggle={handleFollowToggle} />
-          </header>
-        </div>
+        <UserInfo user={user} isOwnProfile={isOwnProfile} isAuthenticated={isAuthenticated} isFollowing={isFollowing} followLoading={followLoading} onFollowToggle={handleFollowToggle} />
 
         <h1 className="page-title">{t('followers.title')}</h1>
 

@@ -60,11 +60,7 @@ const ProfilePage = () => {
     <Layout title="Musicboxd - My Profile">
       <div className="content-wrapper">
         {/* User Info Header */}
-        <div className="profile-header">
-          <header>
-            <UserInfo user={currentUser} isOwnProfile={true} isAuthenticated={isAuthenticated} isFollowing={false} followLoading={false} onFollowToggle={() => {}} />
-          </header>
-        </div>
+        <UserInfo user={currentUser} isOwnProfile={true} isAuthenticated={isAuthenticated} isFollowing={false} followLoading={false} onFollowToggle={() => {}} />
 
         {/* Tabs */}
         <div className="tabs">
