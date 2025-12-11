@@ -5,22 +5,31 @@
  */
 
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import {
   selectIsAuthenticated,
   selectIsModerator,
   selectCurrentUser,
+  logoutAsync,
 } from '@/store/slices';
 import { selectUnreadCount } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 
 const Sidebar = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isModerator = useAppSelector(selectIsModerator);
   const currentUser = useAppSelector(selectCurrentUser);
   const unreadCount = useAppSelector(selectUnreadCount);
+
+  const handleLogout = async () => {
+    await dispatch(logoutAsync());
+    router.push('/');
+  };
 
   const profileImageUrl = currentUser && currentUser.image_id
     ? imageRepository.getImageUrl(currentUser.image_id)
@@ -81,9 +90,9 @@ const Sidebar = () => {
             </Link>
 
             {/* Logout */}
-            <Link href="/logout" className="sidebar-icon" title={t('navbar.logout')}>
+            <button onClick={handleLogout} className="sidebar-icon" title={t('navbar.logout')}>
               <i className="fas fa-sign-out-alt"></i>
-            </Link>
+            </button>
           </>
         )}
 

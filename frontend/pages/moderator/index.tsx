@@ -15,6 +15,7 @@ type SearchResultItem = {
   type: ReviewItemType;
   imgId?: number;
   imageUrl?: string;
+  artistId?: number;
 };
 
 export default function ModeratorDashboardPage() {
@@ -77,6 +78,7 @@ export default function ModeratorDashboardPage() {
             type: ReviewItemType.ARTIST,
             imgId: artist.image_id,
             imageUrl: artist.image_id ? imageRepository.getImageUrl(artist.image_id) : undefined,
+            artistId: artist.id,
           })) as SearchResultItem[];
 
           // Sort by relevance
@@ -112,6 +114,7 @@ export default function ModeratorDashboardPage() {
             type: ReviewItemType.ALBUM,
             imgId: album.image_id,
             imageUrl: album.image_id ? imageRepository.getImageUrl(album.image_id) : undefined,
+            artistId: album.artist_id,
           })) as SearchResultItem[];
 
           // Sort by relevance
@@ -208,12 +211,12 @@ export default function ModeratorDashboardPage() {
         break;
       case ReviewItemType.ALBUM:
         if (selectedItem && selectedItem.type === ReviewItemType.ARTIST) {
-          router.push(`/moderator/add-album?artistId=${selectedItem.id}`);
+          router.push(`/moderator/music?artistId=${selectedItem.id}`);
         }
         break;
       case ReviewItemType.SONG:
         if (selectedItem && selectedItem.type === ReviewItemType.ALBUM) {
-          router.push(`/moderator/add-song?albumId=${selectedItem.id}`);
+          router.push(`/moderator/music?artistId=${selectedItem.artistId}&albumId=${selectedItem.id}`);
         }
         break;
     }

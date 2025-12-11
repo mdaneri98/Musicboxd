@@ -40,7 +40,7 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
             <div className="entity-type">
               Album
               {currentUser && currentUser.moderator && (
-                <Link href={`/mod/albums/${album.id}/edit`} className="edit-link">
+                <Link href={`/moderator/music?artistId=${album.artist_id}&albumId=${album.id}`} className="edit-link">
                   <i className="fas fa-pencil-alt"></i>
                 </Link>
               )}

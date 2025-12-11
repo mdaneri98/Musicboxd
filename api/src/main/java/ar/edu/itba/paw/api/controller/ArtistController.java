@@ -147,10 +147,8 @@ public class ArtistController extends BaseController {
         Artist oldArtist = artistService.findById(id);
         Artist artistToUpdate = modArtistFormMapper.mergeModel(oldArtist, modArtistForm);
         Artist updatedArtist = artistService.update(artistToUpdate);
-        
         List<Album> albumsToUpdate = modArtistFormMapper.toAlbumList(modArtistForm);
         albumService.updateAll(albumsToUpdate, updatedArtist);
-        
         ArtistDTO artistDTO = artistDtoMapper.toDTO(updatedArtist);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
         return buildResponse(artistResource);

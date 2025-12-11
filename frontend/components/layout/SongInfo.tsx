@@ -41,7 +41,7 @@ export const SongInfo: React.FC<SongInfoProps> = ({
             <div className="entity-type">
               Song
               {currentUser && currentUser.moderator && (
-                <Link href={`/mod/songs/${song.id}/edit`} className="edit-link">
+                <Link href={`/moderator/music?artistId=${song.artist_id}&albumId=${song.album_id}&songId=${song.id}`} className="edit-link">
                   <i className="fas fa-pencil-alt"></i>
                 </Link>
               )}
