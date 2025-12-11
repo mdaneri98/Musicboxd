@@ -282,6 +282,8 @@
     "goToPage": "Ir a la página",
     "page": "Página",
     "of": "de",
+    "noMoreContent": "Has llegado al final",
+    "loadingMore": "Cargando más...",
     "rateThis": {
       "artist": "Calificar a este artista",
       "album": "Calificar a este álbum",

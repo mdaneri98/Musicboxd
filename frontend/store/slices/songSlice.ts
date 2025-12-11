@@ -19,7 +19,7 @@ export interface SongState {
   songs: Record<number, Song>;
   // Ordered songs id list
   orderedSongsIds: number[];
-    // Current song being viewed
+  // Current song being viewed
   currentSong: Song | null;
   // Related data for current song
   songReviews: Review[];
@@ -28,11 +28,20 @@ export interface SongState {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
+  };
+  reviewsPagination: {
+    page: number;
+    size: number;
+    totalCount: number;
+    hasMore: boolean;
   };
   // Loading states
   loading: boolean;
+  loadingMore: boolean;
   loadingSong: boolean;
   loadingReviews: boolean;
+  loadingMoreReviews: boolean;
   // Error state
   error: string | null;
 }
@@ -42,7 +51,7 @@ export interface SongState {
 // ============================================================================
 
 const initialState: SongState = {
-  songs: [],
+  songs: {},
   orderedSongsIds: [],
   currentSong: null,
   songReviews: [],
@@ -50,10 +59,19 @@ const initialState: SongState = {
     page: 1,
     size: 20,
     totalCount: 0,
+    hasMore: true,
+  },
+  reviewsPagination: {
+    page: 1,
+    size: 20,
+    totalCount: 0,
+    hasMore: true,
   },
   loading: false,
+  loadingMore: false,
   loadingSong: false,
   loadingReviews: false,
+  loadingMoreReviews: false,
   error: null,
 };
 
@@ -66,6 +84,19 @@ export const fetchSongsAsync = createAsyncThunk<
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
 >('songs/fetchSongs', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
+  try {
+    const response = await songRepository.getSongs(page, size, search, filter);
+    return response as Collection<HALResource<Song>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch songs');
+  }
+});
+
+export const fetchMoreSongsAsync = createAsyncThunk<
+  Collection<HALResource<Song>>,
+  { page: number; size?: number; search?: string; filter?: string },
+  { rejectValue: string }
+>('songs/fetchMoreSongs', async ({ page, size = 20, search, filter }, { rejectWithValue }) => {
   try {
     const response = await songRepository.getSongs(page, size, search, filter);
     return response as Collection<HALResource<Song>>;
@@ -139,6 +170,19 @@ export const fetchSongReviewsAsync = createAsyncThunk<
   }
 });
 
+export const fetchMoreSongReviewsAsync = createAsyncThunk<
+  Collection<HALResource<Review>>,
+  { songId: number; page: number; size?: number; filter?: string },
+  { rejectValue: string }
+>('songs/fetchMoreSongReviews', async ({ songId, page, size = 20, filter }, { rejectWithValue }) => {
+  try {
+    const response = await songRepository.getSongReviews(songId, page, size, filter);
+    return response as Collection<HALResource<Review>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more song reviews');
+  }
+});
+
 export const createSongReviewAsync = createAsyncThunk<
   HALResource<Review>,
   ReviewFormData,
@@ -192,6 +236,12 @@ const songSlice = createSlice({
     clearCurrentSong: (state) => {
       state.currentSong = null;
       state.songReviews = [];
+      state.reviewsPagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+    },
+    clearSongs: (state) => {
+      state.songs = {};
+      state.orderedSongsIds = [];
+      state.pagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
     },
     addSong: (state, action: PayloadAction<Song>) => {
       state.songs[action.payload.id] = action.payload;
@@ -212,21 +262,49 @@ const songSlice = createSlice({
       })
       .addCase(fetchSongsAsync.fulfilled, (state, action) => {
         state.loading = false;
+        state.songs = {};
+        state.orderedSongsIds = [];
         action.payload.items.forEach((song) => {
-          if (!state.songs[song.data.id]) {
-            state.songs[song.data.id] = song.data as Song;
-          }
+          state.songs[song.data.id] = song.data as Song;
+          state.orderedSongsIds.push(song.data.id);
         });
-        state.orderedSongsIds = action.payload.items.map((song) => song.data.id);
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchSongsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch songs';
+      });
+
+    builder
+      .addCase(fetchMoreSongsAsync.pending, (state) => {
+        state.loadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreSongsAsync.fulfilled, (state, action) => {
+        state.loadingMore = false;
+        action.payload.items.forEach((song) => {
+          if (!state.songs[song.data.id]) {
+            state.songs[song.data.id] = song.data as Song;
+            state.orderedSongsIds.push(song.data.id);
+          }
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.pagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreSongsAsync.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.error = action.payload || 'Failed to fetch more songs';
       });
 
     builder
@@ -305,12 +383,43 @@ const songSlice = createSlice({
       })
       .addCase(fetchSongReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        // Sobrescribir el array completo en lugar de acumular
         state.songReviews = action.payload.items.map((review) => review.data as Review);
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.reviewsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
       })
       .addCase(fetchSongReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;
         state.error = action.payload || 'Failed to fetch song reviews';
+      });
+
+    builder
+      .addCase(fetchMoreSongReviewsAsync.pending, (state) => {
+        state.loadingMoreReviews = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreSongReviewsAsync.fulfilled, (state, action) => {
+        state.loadingMoreReviews = false;
+        const existingIds = new Set(state.songReviews.map(r => r.id));
+        const newReviews = action.payload.items
+          .map((review) => review.data as Review)
+          .filter(r => !existingIds.has(r.id));
+        state.songReviews = [...state.songReviews, ...newReviews];
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.reviewsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreSongReviewsAsync.rejected, (state, action) => {
+        state.loadingMoreReviews = false;
+        state.error = action.payload || 'Failed to fetch more song reviews';
       });
 
     builder
@@ -353,7 +462,7 @@ const songSlice = createSlice({
 // Actions & Selectors
 // ============================================================================
 
-export const { clearError, clearCurrentSong, addSong, removeSong } = songSlice.actions;
+export const { clearError, clearCurrentSong, clearSongs, addSong, removeSong } = songSlice.actions;
 
 export const selectSongs = (state: RootState) => state.songs.songs;
 export const selectSongIds = (state: RootState) => state.songs.orderedSongsIds;
@@ -365,10 +474,15 @@ export const selectSongById = (songId: number) => (state: RootState) => state.so
 export const selectCurrentSong = (state: RootState) => state.songs.currentSong;
 export const selectSongReviews = (state: RootState) => state.songs.songReviews;
 export const selectSongPagination = (state: RootState) => state.songs.pagination;
+export const selectSongReviewsPagination = (state: RootState) => state.songs.reviewsPagination;
 export const selectSongLoading = (state: RootState) => state.songs.loading;
+export const selectSongLoadingMore = (state: RootState) => state.songs.loadingMore;
 export const selectSongError = (state: RootState) => state.songs.error;
 export const selectLoadingSong = (state: RootState) => state.songs.loadingSong;
 export const selectLoadingSongReviews = (state: RootState) => state.songs.loadingReviews;
+export const selectLoadingMoreSongReviews = (state: RootState) => state.songs.loadingMoreReviews;
+export const selectSongsHasMore = (state: RootState) => state.songs.pagination.hasMore;
+export const selectSongReviewsHasMore = (state: RootState) => state.songs.reviewsPagination.hasMore;
 
 export default songSlice.reducer;
 

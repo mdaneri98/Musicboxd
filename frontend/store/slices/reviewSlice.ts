@@ -27,22 +27,28 @@ export interface ReviewState {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
   };
   commentsPagination: {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
   };
   likesPagination: {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
   };
   // Loading states
   loading: boolean;
+  loadingMore: boolean;
   loadingReview: boolean;
   loadingComments: boolean;
+  loadingMoreComments: boolean;
   loadingLikes: boolean;
+  loadingMoreLikes: boolean;
   // Error state
   error: string | null;
 }
@@ -61,21 +67,27 @@ const initialState: ReviewState = {
     page: 1,
     size: 20,
     totalCount: 0,
+    hasMore: true,
   },
   commentsPagination: {
     page: 1,
     size: 20,
     totalCount: 0,
+    hasMore: true,
   },
   likesPagination: {
     page: 1,
     size: 20,
     totalCount: 0,
+    hasMore: true,
   },
   loading: false,
+  loadingMore: false,
   loadingReview: false,
   loadingComments: false,
+  loadingMoreComments: false,
   loadingLikes: false,
+  loadingMoreLikes: false,
   error: null,
 };
 
@@ -84,7 +96,7 @@ const initialState: ReviewState = {
 // ============================================================================
 
 /**
- * Fetch paginated reviews list
+ * Fetch paginated reviews list (replaces existing data - for initial load or filter change)
  */
 export const fetchReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
@@ -96,6 +108,22 @@ export const fetchReviewsAsync = createAsyncThunk<
     return response as Collection<HALResource<Review>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch reviews');
+  }
+});
+
+/**
+ * Fetch more reviews (appends to existing data - for infinite scroll)
+ */
+export const fetchMoreReviewsAsync = createAsyncThunk<
+  Collection<HALResource<Review>>,
+  { page: number; size?: number; search?: string; filter?: string },
+  { rejectValue: string }
+>('reviews/fetchMoreReviews', async ({ page, size = 20, search, filter }, { rejectWithValue }) => {
+  try {
+    const response = await reviewRepository.getReviews(page, size, search, filter);
+    return response as Collection<HALResource<Review>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more reviews');
   }
 });
 
@@ -164,7 +192,7 @@ export const deleteReviewAsync = createAsyncThunk<
 });
 
 /**
- * Fetch users who liked a review
+ * Fetch users who liked a review (replaces existing - for initial load)
  */
 export const fetchReviewLikesAsync = createAsyncThunk<
   Collection<HALResource<User>>,
@@ -176,6 +204,22 @@ export const fetchReviewLikesAsync = createAsyncThunk<
     return response as Collection<HALResource<User>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch review likes');
+  }
+});
+
+/**
+ * Fetch more users who liked a review (appends - for infinite scroll)
+ */
+export const fetchMoreReviewLikesAsync = createAsyncThunk<
+  Collection<HALResource<User>>,
+  { reviewId: number; page: number; size?: number },
+  { rejectValue: string }
+>('reviews/fetchMoreReviewLikes', async ({ reviewId, page, size = 20 }, { rejectWithValue }) => {
+  try {
+    const response = await reviewRepository.getReviewLikes(reviewId, page, size);
+    return response as Collection<HALResource<User>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more likes');
   }
 });
 
@@ -212,7 +256,7 @@ export const unlikeReviewAsync = createAsyncThunk<
 });
 
 /**
- * Fetch comments for a review
+ * Fetch comments for a review (replaces existing - for initial load)
  */
 export const fetchReviewCommentsAsync = createAsyncThunk<
   Collection<HALResource<Comment>>,
@@ -224,6 +268,22 @@ export const fetchReviewCommentsAsync = createAsyncThunk<
     return response as Collection<HALResource<Comment>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch review comments');
+  }
+});
+
+/**
+ * Fetch more comments for a review (appends - for infinite scroll)
+ */
+export const fetchMoreReviewCommentsAsync = createAsyncThunk<
+  Collection<HALResource<Comment>>,
+  { reviewId: number; page: number; size?: number },
+  { rejectValue: string }
+>('reviews/fetchMoreReviewComments', async ({ reviewId, page, size = 20 }, { rejectWithValue }) => {
+  try {
+    const response = await reviewRepository.getReviewComments(reviewId, page, size);
+    return response as Collection<HALResource<Comment>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more comments');
   }
 });
 
@@ -313,6 +373,17 @@ const reviewSlice = createSlice({
       state.currentReview = null;
       state.reviewComments = [];
       state.reviewLikes = [];
+      state.commentsPagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+      state.likesPagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+    },
+
+    /**
+     * Clear reviews list (for filter/tab change)
+     */
+    clearReviews: (state) => {
+      state.reviews = {};
+      state.orderedReviewsIds = [];
+      state.pagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
     },
 
     /**
@@ -330,7 +401,7 @@ const reviewSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Fetch Reviews
+    // Fetch Reviews (initial load - replaces data)
     builder
       .addCase(fetchReviewsAsync.pending, (state) => {
         state.loading = true;
@@ -338,17 +409,52 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        action.payload.items.forEach((review) => { state.reviews[review.data.id] = review.data as Review; });
-        state.orderedReviewsIds = action.payload.items.map((review) => review.data.id);
+        // Clear and replace data
+        state.reviews = {};
+        state.orderedReviewsIds = [];
+        action.payload.items.forEach((review) => { 
+          state.reviews[review.data.id] = review.data as Review;
+          state.orderedReviewsIds.push(review.data.id);
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchReviewsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch reviews';
+      });
+
+    // Fetch More Reviews (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreReviewsAsync.pending, (state) => {
+        state.loadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreReviewsAsync.fulfilled, (state, action) => {
+        state.loadingMore = false;
+        // Append data without duplicates
+        action.payload.items.forEach((review) => {
+          if (!state.reviews[review.data.id]) {
+            state.reviews[review.data.id] = review.data as Review;
+            state.orderedReviewsIds.push(review.data.id);
+          }
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.pagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreReviewsAsync.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.error = action.payload || 'Failed to fetch more reviews';
       });
 
     // Fetch Review By ID
@@ -418,7 +524,7 @@ const reviewSlice = createSlice({
         state.error = action.payload || 'Failed to delete review';
       });
 
-    // Fetch Review Likes
+    // Fetch Review Likes (initial load - replaces data)
     builder
       .addCase(fetchReviewLikesAsync.pending, (state) => {
         state.loadingLikes = true;
@@ -427,15 +533,46 @@ const reviewSlice = createSlice({
       .addCase(fetchReviewLikesAsync.fulfilled, (state, action) => {
         state.loadingLikes = false;
         state.reviewLikes = action.payload.items.map((like) => like.data as User);
+        const loadedCount = action.payload.currentPage * action.payload.pageSize;
+        const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
         state.likesPagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchReviewLikesAsync.rejected, (state, action) => {
         state.loadingLikes = false;
         state.error = action.payload || 'Failed to fetch review likes';
+      });
+
+    // Fetch More Review Likes (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreReviewLikesAsync.pending, (state) => {
+        state.loadingMoreLikes = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreReviewLikesAsync.fulfilled, (state, action) => {
+        state.loadingMoreLikes = false;
+        // Append without duplicates
+        const existingIds = new Set(state.reviewLikes.map(u => u.id));
+        const newLikes = action.payload.items
+          .map((like) => like.data as User)
+          .filter(u => !existingIds.has(u.id));
+        state.reviewLikes = [...state.reviewLikes, ...newLikes];
+        const loadedCount = action.payload.currentPage * action.payload.pageSize;
+        const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
+        state.likesPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreReviewLikesAsync.rejected, (state, action) => {
+        state.loadingMoreLikes = false;
+        state.error = action.payload || 'Failed to fetch more likes';
       });
 
     // Like Review
@@ -474,7 +611,7 @@ const reviewSlice = createSlice({
         state.error = action.payload || 'Failed to unlike review';
       });
 
-    // Fetch Review Comments
+    // Fetch Review Comments (initial load - replaces data)
     builder
       .addCase(fetchReviewCommentsAsync.pending, (state) => {
         state.loadingComments = true;
@@ -483,15 +620,48 @@ const reviewSlice = createSlice({
       .addCase(fetchReviewCommentsAsync.fulfilled, (state, action) => {
         state.loadingComments = false;
         state.reviewComments = action.payload.items.map((comment) => comment.data as Comment);
+        // hasMore is false if we got fewer items than page size OR if we've loaded all items
+        const loadedCount = action.payload.currentPage * action.payload.pageSize;
+        const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
         state.commentsPagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchReviewCommentsAsync.rejected, (state, action) => {
         state.loadingComments = false;
         state.error = action.payload || 'Failed to fetch review comments';
+      });
+
+    // Fetch More Review Comments (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreReviewCommentsAsync.pending, (state) => {
+        state.loadingMoreComments = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreReviewCommentsAsync.fulfilled, (state, action) => {
+        state.loadingMoreComments = false;
+        // Append without duplicates
+        const existingIds = new Set(state.reviewComments.map(c => c.id));
+        const newComments = action.payload.items
+          .map((comment) => comment.data as Comment)
+          .filter(c => !existingIds.has(c.id));
+        state.reviewComments = [...state.reviewComments, ...newComments];
+        // hasMore is false if we got fewer items than page size OR if we've loaded all items
+        const loadedCount = action.payload.currentPage * action.payload.pageSize;
+        const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
+        state.commentsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreReviewCommentsAsync.rejected, (state, action) => {
+        state.loadingMoreComments = false;
+        state.error = action.payload || 'Failed to fetch more comments';
       });
 
     // Post Comment
@@ -573,7 +743,7 @@ const reviewSlice = createSlice({
 // Actions & Selectors
 // ============================================================================
 
-export const { clearError, clearCurrentReview, addReview, removeReview } = reviewSlice.actions;
+export const { clearError, clearCurrentReview, clearReviews, addReview, removeReview } = reviewSlice.actions;
 
 export const selectReviews = (state: RootState) => state.reviews.reviews;
 export const selectReviewIds = (state: RootState) => state.reviews.orderedReviewsIds;
@@ -589,12 +759,18 @@ export const selectReviewComments = (state: RootState) => state.reviews.reviewCo
 export const selectReviewLikes = (state: RootState) => state.reviews.reviewLikes;
 export const selectReviewPagination = (state: RootState) => state.reviews.pagination;
 export const selectReviewLoading = (state: RootState) => state.reviews.loading;
+export const selectReviewLoadingMore = (state: RootState) => state.reviews.loadingMore;
 export const selectReviewError = (state: RootState) => state.reviews.error;
 export const selectLoadingReview = (state: RootState) => state.reviews.loadingReview;
 export const selectLoadingComments = (state: RootState) => state.reviews.loadingComments;
+export const selectLoadingMoreComments = (state: RootState) => state.reviews.loadingMoreComments;
 export const selectLoadingLikes = (state: RootState) => state.reviews.loadingLikes;
+export const selectLoadingMoreLikes = (state: RootState) => state.reviews.loadingMoreLikes;
 export const selectCommentsPagination = (state: RootState) => state.reviews.commentsPagination;
 export const selectLikesPagination = (state: RootState) => state.reviews.likesPagination;
+export const selectReviewsHasMore = (state: RootState) => state.reviews.pagination.hasMore;
+export const selectCommentsHasMore = (state: RootState) => state.reviews.commentsPagination.hasMore;
+export const selectLikesHasMore = (state: RootState) => state.reviews.likesPagination.hasMore;
 
 export default reviewSlice.reducer;
 

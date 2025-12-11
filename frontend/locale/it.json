@@ -293,6 +293,8 @@
     "goToPage": "Vai alla pagina",
     "page": "Pagina",
     "of": "di",
+    "noMoreContent": "Hai raggiunto la fine",
+    "loadingMore": "Caricamento di più...",
     "rateThis": {
       "artist": "Valuta questo artista",
       "album": "Valuta questo album",

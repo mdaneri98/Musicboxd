@@ -31,24 +31,42 @@ export interface UserState {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
   };
-
+  // Followers pagination
+  followersPagination: {
+    page: number;
+    size: number;
+    totalCount: number;
+    hasMore: boolean;
+  };
+  // Following pagination
+  followingPagination: {
+    page: number;
+    size: number;
+    totalCount: number;
+    hasMore: boolean;
+  };
   // Reviews pagination info
   reviewsPagination: {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
   };
   // Loading states
   loading: boolean;
   loadingProfile: boolean;
   loadingFollowers: boolean;
+  loadingMoreFollowers: boolean;
   loadingFollowing: boolean;
+  loadingMoreFollowing: boolean;
   loadingFavorites: boolean;
   loadingFavoriteArtists: boolean;
   loadingFavoriteAlbums: boolean;
   loadingFavoriteSongs: boolean;
   loadingReviews: boolean;
+  loadingMoreReviews: boolean;
   // Error state
   error: string | null;
 }
@@ -70,21 +88,38 @@ const initialState: UserState = {
     page: 1,
     size: 20,
     totalCount: 0,
+    hasMore: true,
+  },
+  followersPagination: {
+    page: 1,
+    size: 20,
+    totalCount: 0,
+    hasMore: true,
+  },
+  followingPagination: {
+    page: 1,
+    size: 20,
+    totalCount: 0,
+    hasMore: true,
   },
   reviewsPagination: {
     page: 1,
     size: 20,
     totalCount: 0,
+    hasMore: true,
   },
   loading: false,
   loadingProfile: false,
   loadingFollowers: false,
+  loadingMoreFollowers: false,
   loadingFollowing: false,
+  loadingMoreFollowing: false,
   loadingFavorites: false,
   loadingFavoriteArtists: false,
   loadingFavoriteAlbums: false,
   loadingFavoriteSongs: false,
   loadingReviews: false,
+  loadingMoreReviews: false,
   error: null,
 };
 
@@ -157,7 +192,7 @@ export const deleteUserAsync = createAsyncThunk<
 });
 
 /**
- * Fetch user's followers
+ * Fetch user's followers (initial load - replaces data)
  */
 export const fetchFollowersAsync = createAsyncThunk<
   Collection<HALResource<User>>,
@@ -173,7 +208,23 @@ export const fetchFollowersAsync = createAsyncThunk<
 });
 
 /**
- * Fetch users that this user is following
+ * Fetch more followers (infinite scroll - appends data)
+ */
+export const fetchMoreFollowersAsync = createAsyncThunk<
+  Collection<HALResource<User>>,
+  { userId: number; page: number; size?: number },
+  { rejectValue: string }
+>('users/fetchMoreFollowers', async ({ userId, page, size = 20 }, { rejectWithValue }) => {
+  try {
+    const response = await userRepository.getFollowers(userId, page, size);
+    return response as Collection<HALResource<User>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more followers');
+  }
+});
+
+/**
+ * Fetch users that this user is following (initial load - replaces data)
  */
 export const fetchFollowingAsync = createAsyncThunk<
   Collection<HALResource<User>>,
@@ -185,6 +236,22 @@ export const fetchFollowingAsync = createAsyncThunk<
     return response as Collection<HALResource<User>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch following');
+  }
+});
+
+/**
+ * Fetch more following (infinite scroll - appends data)
+ */
+export const fetchMoreFollowingAsync = createAsyncThunk<
+  Collection<HALResource<User>>,
+  { userId: number; page: number; size?: number },
+  { rejectValue: string }
+>('users/fetchMoreFollowing', async ({ userId, page, size = 20 }, { rejectWithValue }) => {
+  try {
+    const response = await userRepository.getFollowing(userId, page, size);
+    return response as Collection<HALResource<User>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more following');
   }
 });
 
@@ -269,7 +336,7 @@ export const fetchFavoriteSongsAsync = createAsyncThunk<
 });
 
 /**
- * Fetch user's reviews
+ * Fetch user's reviews (initial load - replaces data)
  */
 export const fetchUserReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
@@ -281,6 +348,22 @@ export const fetchUserReviewsAsync = createAsyncThunk<
     return response as Collection<HALResource<Review>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch user reviews');
+  }
+});
+
+/**
+ * Fetch more user reviews (infinite scroll - appends data)
+ */
+export const fetchMoreUserReviewsAsync = createAsyncThunk<
+  Collection<HALResource<Review>>,
+  { userId: number; page: number; size?: number; filter?: string },
+  { rejectValue: string }
+>('users/fetchMoreUserReviews', async ({ userId, page, size = 20, filter }, { rejectWithValue }) => {
+  try {
+    const response = await userRepository.getUserReviews(userId, page, size, filter);
+    return response as Collection<HALResource<Review>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more reviews');
   }
 });
 
@@ -354,10 +437,12 @@ const userSlice = createSlice({
         action.payload.items.forEach((user) => {
           state.users[user.data.id] = user.data as User;
         });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchUsersAsync.rejected, (state, action) => {
@@ -417,7 +502,7 @@ const userSlice = createSlice({
         state.error = action.payload || 'Failed to delete user';
       });
 
-    // Fetch Followers
+    // Fetch Followers (initial - replaces data)
     builder
       .addCase(fetchFollowersAsync.pending, (state) => {
         state.loadingFollowers = true;
@@ -425,19 +510,53 @@ const userSlice = createSlice({
       })
       .addCase(fetchFollowersAsync.fulfilled, (state, action) => {
         state.loadingFollowers = false;
-        // Sobrescribir el array completo en lugar de acumular
         state.followers = action.payload.items.map((user) => user.data as User);
-        // Add to normalized state
         action.payload.items.forEach((user) => {
           state.users[user.data.id] = user.data as User;
         });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.followersPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
       })
       .addCase(fetchFollowersAsync.rejected, (state, action) => {
         state.loadingFollowers = false;
         state.error = action.payload || 'Failed to fetch followers';
       });
 
-    // Fetch Following
+    // Fetch More Followers (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreFollowersAsync.pending, (state) => {
+        state.loadingMoreFollowers = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreFollowersAsync.fulfilled, (state, action) => {
+        state.loadingMoreFollowers = false;
+        const existingIds = new Set(state.followers.map(u => u.id));
+        const newFollowers = action.payload.items
+          .map((user) => user.data as User)
+          .filter(u => !existingIds.has(u.id));
+        state.followers = [...state.followers, ...newFollowers];
+        action.payload.items.forEach((user) => {
+          state.users[user.data.id] = user.data as User;
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.followersPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreFollowersAsync.rejected, (state, action) => {
+        state.loadingMoreFollowers = false;
+        state.error = action.payload || 'Failed to fetch more followers';
+      });
+
+    // Fetch Following (initial - replaces data)
     builder
       .addCase(fetchFollowingAsync.pending, (state) => {
         state.loadingFollowing = true;
@@ -445,16 +564,50 @@ const userSlice = createSlice({
       })
       .addCase(fetchFollowingAsync.fulfilled, (state, action) => {
         state.loadingFollowing = false;
-        // Sobrescribir el array completo en lugar de acumular
         state.following = action.payload.items.map((user) => user.data as User);
-        // Add to normalized state
         action.payload.items.forEach((user) => {
           state.users[user.data.id] = user.data as User;
         });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.followingPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
       })
       .addCase(fetchFollowingAsync.rejected, (state, action) => {
         state.loadingFollowing = false;
         state.error = action.payload || 'Failed to fetch following';
+      });
+
+    // Fetch More Following (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreFollowingAsync.pending, (state) => {
+        state.loadingMoreFollowing = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreFollowingAsync.fulfilled, (state, action) => {
+        state.loadingMoreFollowing = false;
+        const existingIds = new Set(state.following.map(u => u.id));
+        const newFollowing = action.payload.items
+          .map((user) => user.data as User)
+          .filter(u => !existingIds.has(u.id));
+        state.following = [...state.following, ...newFollowing];
+        action.payload.items.forEach((user) => {
+          state.users[user.data.id] = user.data as User;
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.followingPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreFollowingAsync.rejected, (state, action) => {
+        state.loadingMoreFollowing = false;
+        state.error = action.payload || 'Failed to fetch more following';
       });
 
     // Follow User
@@ -534,7 +687,7 @@ const userSlice = createSlice({
         state.error = action.payload || 'Failed to fetch favorite songs';
       });
 
-    // Fetch User Reviews
+    // Fetch User Reviews (initial - replaces data)
     builder
       .addCase(fetchUserReviewsAsync.pending, (state) => {
         state.loadingReviews = true;
@@ -543,15 +696,43 @@ const userSlice = createSlice({
       .addCase(fetchUserReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
         state.userReviews = action.payload.items.map((review) => review.data as Review);
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.reviewsPagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchUserReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;
         state.error = action.payload || 'Failed to fetch user reviews';
+      });
+
+    // Fetch More User Reviews (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreUserReviewsAsync.pending, (state) => {
+        state.loadingMoreReviews = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreUserReviewsAsync.fulfilled, (state, action) => {
+        state.loadingMoreReviews = false;
+        const existingIds = new Set(state.userReviews.map(r => r.id));
+        const newReviews = action.payload.items
+          .map((review) => review.data as Review)
+          .filter(r => !existingIds.has(r.id));
+        state.userReviews = [...state.userReviews, ...newReviews];
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.reviewsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreUserReviewsAsync.rejected, (state, action) => {
+        state.loadingMoreReviews = false;
+        state.error = action.payload || 'Failed to fetch more reviews';
       });
 
     // Update User Config
@@ -595,14 +776,22 @@ export const selectFavoriteAlbums = (state: RootState) => state.users.favoriteAl
 export const selectFavoriteSongs = (state: RootState) => state.users.favoriteSongs;
 export const selectUserReviews = (state: RootState) => state.users.userReviews;
 export const selectUserPagination = (state: RootState) => state.users.pagination;
+export const selectFollowersPagination = (state: RootState) => state.users.followersPagination;
+export const selectFollowingPagination = (state: RootState) => state.users.followingPagination;
 export const selectUserReviewsPagination = (state: RootState) => state.users.reviewsPagination;
 export const selectUserLoading = (state: RootState) => state.users.loading;
 export const selectUserError = (state: RootState) => state.users.error;
 export const selectLoadingProfile = (state: RootState) => state.users.loadingProfile;
 export const selectLoadingFollowers = (state: RootState) => state.users.loadingFollowers;
+export const selectLoadingMoreFollowers = (state: RootState) => state.users.loadingMoreFollowers;
 export const selectLoadingFollowing = (state: RootState) => state.users.loadingFollowing;
+export const selectLoadingMoreFollowing = (state: RootState) => state.users.loadingMoreFollowing;
 export const selectLoadingFavorites = (state: RootState) => state.users.loadingFavoriteArtists || state.users.loadingFavoriteAlbums || state.users.loadingFavoriteSongs;
 export const selectLoadingReviews = (state: RootState) => state.users.loadingReviews;
+export const selectLoadingMoreReviews = (state: RootState) => state.users.loadingMoreReviews;
+export const selectFollowersHasMore = (state: RootState) => state.users.followersPagination.hasMore;
+export const selectFollowingHasMore = (state: RootState) => state.users.followingPagination.hasMore;
+export const selectUserReviewsHasMore = (state: RootState) => state.users.reviewsPagination.hasMore;
 
 // ============================================================================
 // Reducer Export

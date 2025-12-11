@@ -1,13 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout, UserInfo } from '@/components/layout';
-import { ReviewCard } from '@/components/cards';
-import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, selectUserReviewsPagination, fetchFavoriteArtistsAsync, fetchFavoriteAlbumsAsync, fetchFavoriteSongsAsync, fetchUserReviewsAsync, selectFavoriteArtists, selectFavoriteAlbums, selectFavoriteSongs, selectUserReviews, selectLoadingFavorites, selectLoadingReviews } from '@/store/slices';
-import { ProfileTabEnum } from '@/types';
-import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
+import { ReviewCard, ArtistCard, AlbumCard, SongCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useInfiniteScroll } from '@/hooks';
+import { 
+  selectIsAuthenticated, 
+  selectCurrentUser, 
+  getCurrentUserAsync, 
+  selectUserReviewsPagination, 
+  fetchFavoriteArtistsAsync, 
+  fetchFavoriteAlbumsAsync, 
+  fetchFavoriteSongsAsync, 
+  fetchUserReviewsAsync, 
+  fetchMoreUserReviewsAsync,
+  selectFavoriteArtists, 
+  selectFavoriteAlbums, 
+  selectFavoriteSongs, 
+  selectUserReviews, 
+  selectLoadingFavorites, 
+  selectLoadingReviews,
+  selectLoadingMoreReviews,
+  selectUserReviewsHasMore,
+} from '@/store/slices';
+import { ProfileTabEnum } from '@/types';
 
 const ProfilePage = () => {
   const { t } = useTranslation();
@@ -25,8 +43,9 @@ const ProfilePage = () => {
   const reviews = useAppSelector(selectUserReviews);
   const loadingFavorites = useAppSelector(selectLoadingFavorites);
   const loadingReviews = useAppSelector(selectLoadingReviews);
-  const pagination = useAppSelector(selectUserReviewsPagination); 
-
+  const loadingMoreReviews = useAppSelector(selectLoadingMoreReviews);
+  const pagination = useAppSelector(selectUserReviewsPagination);
+  const hasMoreReviews = useAppSelector(selectUserReviewsHasMore);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -44,16 +63,36 @@ const ProfilePage = () => {
       dispatch(fetchFavoriteArtistsAsync(currentUser.id));
       dispatch(fetchFavoriteAlbumsAsync(currentUser.id));
       dispatch(fetchFavoriteSongsAsync(currentUser.id));
-      dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: pagination.page, size: pagination.size }));
+      dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: 1, size: 20 }));
     }
   }, [currentUser, dispatch]);
+
+  // Load more callback for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    if (!currentUser || !hasMoreReviews || loadingMoreReviews) return;
+    
+    const nextPage = pagination.page + 1;
+    await dispatch(fetchMoreUserReviewsAsync({ 
+      userId: currentUser.id, 
+      page: nextPage, 
+      size: pagination.size 
+    }));
+  }, [dispatch, currentUser, pagination.page, pagination.size, hasMoreReviews, loadingMoreReviews]);
+
+  // Infinite scroll hook
+  const { sentinelRef, isFetchingMore } = useInfiniteScroll({
+    onLoadMore: handleLoadMore,
+    hasMore: hasMoreReviews,
+    isLoading: loadingReviews || loadingMoreReviews,
+    enabled: activeTab === ProfileTabEnum.REVIEWS && !!currentUser && !loadingReviews,
+  });
 
   const handleTabChange = (tab: ProfileTabEnum) => {
     setActiveTab(tab);
   };
 
   if (!isAuthenticated || !currentUser) {
-    return null; // Will redirect
+    return null;
   }
 
   return (
@@ -84,14 +123,15 @@ const ProfilePage = () => {
 
         {/* Favorites Section */}
         {loadingFavorites ? (
-          <div className="loading">{t('profile.loadingFavorites')}
-          <LoadingSpinner size="large" />
+          <div className="loading">
+            {t('profile.loadingFavorites')}
+            <LoadingSpinner size="large" />
           </div>
         ) : (
           activeTab === ProfileTabEnum.FAVORITES && (
           <section className="favorites-section">
-                        {/* Favorite Artists */}
-                        <h2>{t('profile.favoriteArtists')}</h2>
+            {/* Favorite Artists */}
+            <h2>{t('profile.favoriteArtists')}</h2>
             {Object.values(favoriteArtists).length === 0 ? (
               <div className="empty-state">
                 <p className="add-favorites">{t('profile.addFavoriteArtists')}</p>
@@ -137,42 +177,40 @@ const ProfilePage = () => {
             )}
           </section>
         ))}
+
         {/* Reviews Section */}
         {activeTab === ProfileTabEnum.REVIEWS && (
           <section className="reviews-section">
-            {loadingReviews ? (
-              <div className="loading">{t('profile.loadingReviews')}</div>
-            ) : Object.values(reviews).length === 0 ? (
+            {loadingReviews && reviews.length === 0 ? (
+              <LoadingSpinner size="large" message={t('profile.loadingReviews')} />
+            ) : reviews.length === 0 ? (
               <div className="empty-state">
                 <h3>{t('profile.noReviews')}</h3>
               </div>
             ) : (
               <>
                 <div className="reviews-grid">
-                  {Object.values(reviews).map((review) => (
+                  {reviews.map((review) => (
                     <ReviewCard key={review.id} review={review} />
                   ))}
                 </div>
 
-                {/* Pagination */}
-                <div className="pagination">
-                  {pagination.page > 1 && (
-                    <button
-                      onClick={() => dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: pagination.page - 1, size: pagination.size }))}
-                      className="btn btn-secondary"
-                    >
-                      {t('common.previous')} {t('profile.page')}
-                    </button>
-                  )}
-                  {pagination.totalCount > pagination.page * pagination.size && (
-                    <button
-                      onClick={() => dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: pagination.page + 1, size: pagination.size }))}
-                      className="btn btn-secondary"
-                    >
-                      {t('common.next')} {t('profile.page')}
-                    </button>
-                  )}
-                </div>
+                {/* Sentinel element for infinite scroll */}
+                <div ref={sentinelRef} className="infinite-scroll-sentinel" />
+
+                {/* Loading indicator for more content */}
+                {(loadingMoreReviews || isFetchingMore) && (
+                  <div className="loading-more">
+                    <LoadingSpinner size="small" />
+                  </div>
+                )}
+
+                {/* End of content message */}
+                {!hasMoreReviews && reviews.length > 0 && (
+                  <div className="end-of-content">
+                    <p>{t('common.noMoreContent')}</p>
+                  </div>
+                )}
               </>
             )}
           </section>
@@ -183,4 +221,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-

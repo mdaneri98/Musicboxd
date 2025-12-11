@@ -3039,3 +3039,37 @@ textarea.form-control {
     }
 }
 
+/* ============================================================================
+   Infinite Scroll
+   ============================================================================ */
+
+.infinite-scroll-sentinel {
+    height: 100px;
+    width: 100%;
+    margin: var(--space-md) 0;
+}
+
+.comments-list {
+    margin-bottom: var(--space-md);
+}
+
+.loading-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-lg);
+    margin-top: var(--space-md);
+}
+
+.end-of-content {
+    text-align: center;
+    padding: var(--space-lg);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-md);
+}
+
+.end-of-content p {
+    margin: 0;
+}
+

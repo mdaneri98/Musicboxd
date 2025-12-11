@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout, UserInfo } from '@/components/layout';
-import { ReviewCard } from '@/components/cards';
+import { ReviewCard, ArtistCard, AlbumCard, SongCard } from '@/components/cards';
+import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useInfiniteScroll } from '@/hooks';
 import { 
   selectIsAuthenticated, 
   fetchUserByIdAsync,
@@ -11,6 +13,7 @@ import {
   fetchFavoriteAlbumsAsync,
   fetchFavoriteSongsAsync,
   fetchUserReviewsAsync,
+  fetchMoreUserReviewsAsync,
   followUserAsync,
   unfollowUserAsync,
   selectCurrentUser,
@@ -20,13 +23,13 @@ import {
   selectFavoriteSongs,
   selectUserReviews,
   selectUserReviewsPagination,
+  selectUserReviewsHasMore,
   clearCurrentProfile,
   selectLoadingReviews,
+  selectLoadingMoreReviews,
   selectLoadingFavorites
 } from '@/store/slices';
 import { ProfileTabEnum } from '@/types';
-import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
-import { LoadingSpinner } from '@/components/ui';
 
 const UserProfilePage = () => {
   const { t } = useTranslation();
@@ -43,8 +46,10 @@ const UserProfilePage = () => {
   const favoriteSongs = useAppSelector(selectFavoriteSongs);
   const reviews = useAppSelector(selectUserReviews);
   const loadingFavorites = useAppSelector(selectLoadingFavorites);
-  const   loadingReviews = useAppSelector(selectLoadingReviews);
-  const reviewsPagination = useAppSelector(selectUserReviewsPagination); 
+  const loadingReviews = useAppSelector(selectLoadingReviews);
+  const loadingMoreReviews = useAppSelector(selectLoadingMoreReviews);
+  const reviewsPagination = useAppSelector(selectUserReviewsPagination);
+  const hasMoreReviews = useAppSelector(selectUserReviewsHasMore);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
@@ -68,8 +73,8 @@ const UserProfilePage = () => {
     dispatch(fetchFavoriteArtistsAsync(userIdNum));
     dispatch(fetchFavoriteAlbumsAsync(userIdNum));
     dispatch(fetchFavoriteSongsAsync(userIdNum));
-    dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: reviewsPagination.page, size: reviewsPagination.size }));
-  }, [userId, dispatch]);
+    dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: 1, size: 20 }));
+  }, [userId, dispatch, loggedUser, router, activeTab]);
 
   // Update isFollowing when user data is loaded
   useEffect(() => {
@@ -78,6 +83,27 @@ const UserProfilePage = () => {
     }
   }, [user]);
 
+  // Load more callback for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    if (!userId || !hasMoreReviews || loadingMoreReviews) return;
+    
+    const userIdNum = parseInt(userId as string);
+    const nextPage = reviewsPagination.page + 1;
+    
+    await dispatch(fetchMoreUserReviewsAsync({ 
+      userId: userIdNum, 
+      page: nextPage, 
+      size: reviewsPagination.size 
+    }));
+  }, [dispatch, userId, reviewsPagination.page, reviewsPagination.size, hasMoreReviews, loadingMoreReviews]);
+
+  // Infinite scroll hook
+  const { sentinelRef, isFetchingMore } = useInfiniteScroll({
+    onLoadMore: handleLoadMore,
+    hasMore: hasMoreReviews,
+    isLoading: loadingReviews || loadingMoreReviews,
+    enabled: activeTab === ProfileTabEnum.REVIEWS && !!user && !loadingReviews,
+  });
 
   const handleFollowToggle = async () => {
     if (!isAuthenticated) {
@@ -107,11 +133,21 @@ const UserProfilePage = () => {
     setActiveTab(tab);
   };
 
-  if (loadingFavorites || loadingReviews || !user) {
+  if (loadingFavorites || (loadingReviews && !user)) {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">{t('userProfile.loadingProfile')}</div>
+          <LoadingSpinner size="large" message={t('userProfile.loadingProfile')} />
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Layout title={t('common.loading')}>
+        <div className="content-wrapper">
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );
@@ -152,33 +188,32 @@ const UserProfilePage = () => {
         {/* Favorites Section */}
         {loadingFavorites ? (
           <div className="loading-container">
-           <div className="loading">{t('profile.loadingFavorites')}</div>
-          <LoadingSpinner size="large" />
+            <LoadingSpinner size="large" message={t('profile.loadingFavorites')} />
           </div>
         ) : (
           activeTab === ProfileTabEnum.FAVORITES && (
           <section className="favorites-section">
             {/* Favorite Artists */}
-            {Object.values(favoriteArtists).length > 0 && (
+            {favoriteArtists.length > 0 && (
               <div>
-              <h2>{t('profile.favoriteArtists')}</h2>
+                <h2>{t('profile.favoriteArtists')}</h2>
                 <div className="carousel-container">
                   <div className="carousel">
-                    {Object.values(favoriteArtists).map((artist) => (
+                    {favoriteArtists.map((artist) => (
                       <ArtistCard key={artist.id} artist={artist} />
                     ))}
                   </div>
                 </div>
               </div>
-              )}
+            )}
 
             {/* Favorite Albums */}
-            {Object.values(favoriteAlbums).length > 0 && (
+            {favoriteAlbums.length > 0 && (
               <div>
                 <h2>{t('profile.favoriteAlbums')}</h2>    
                 <div className="carousel-container">
                   <div className="carousel">
-                    {Object.values(favoriteAlbums).map((album) => (
+                    {favoriteAlbums.map((album) => (
                       <AlbumCard key={album.id} album={album} />
                     ))}
                   </div>
@@ -187,11 +222,11 @@ const UserProfilePage = () => {
             )}
 
             {/* Favorite Songs */}
-            {Object.values(favoriteSongs).length > 0 && (
+            {favoriteSongs.length > 0 && (
               <div>
                 <h2>{t('profile.favoriteSongs')}</h2>
                 <ul className="song-list">
-                  {Object.values(favoriteSongs).map((song, index) => (
+                  {favoriteSongs.map((song, index) => (
                     <SongCard key={song.id} song={song} index={index} />
                   ))}
                 </ul>
@@ -203,39 +238,36 @@ const UserProfilePage = () => {
         {/* Reviews Section */}
         {activeTab === ProfileTabEnum.REVIEWS && (
           <section className="reviews-section">
-            {loadingReviews ? (
-              <div className="loading">{t('profile.loadingReviews')}</div>
-            ) : Object.values(reviews).length === 0 ? (
+            {loadingReviews && reviews.length === 0 ? (
+              <LoadingSpinner size="large" message={t('profile.loadingReviews')} />
+            ) : reviews.length === 0 ? (
               <div className="empty-state">
                 <h3>{t('profile.noReviews')}</h3>
               </div>
             ) : (
               <>
                 <div className="reviews-grid">
-                  {Object.values(reviews).map((review) => (
+                  {reviews.map((review) => (
                     <ReviewCard key={review.id} review={review} />
                   ))}
                 </div>
 
-                {/* Pagination */}
-                <div className="pagination">
-                  {reviewsPagination.page > 1 && (
-                    <button
-                      onClick={() => dispatch(fetchUserReviewsAsync({ userId: user.id, page: reviewsPagination.page - 1, size: reviewsPagination.size }))}
-                      className="btn btn-secondary"
-                    >
-                      {t('userProfile.previousPage')}
-                    </button>
-                  )}
-                  {reviewsPagination.totalCount > reviewsPagination.page * reviewsPagination.size && (
-                    <button
-                      onClick={() => dispatch(fetchUserReviewsAsync({ userId: user.id, page: reviewsPagination.page + 1, size: reviewsPagination.size }))}
-                      className="btn btn-secondary"
-                    >
-                      {t('userProfile.nextPage')}
-                    </button>
-                  )}
-                </div>
+                {/* Sentinel element for infinite scroll */}
+                <div ref={sentinelRef} className="infinite-scroll-sentinel" />
+
+                {/* Loading indicator for more content */}
+                {(loadingMoreReviews || isFetchingMore) && (
+                  <div className="loading-more">
+                    <LoadingSpinner size="small" />
+                  </div>
+                )}
+
+                {/* End of content message */}
+                {!hasMoreReviews && reviews.length > 0 && (
+                  <div className="end-of-content">
+                    <p>{t('common.noMoreContent')}</p>
+                  </div>
+                )}
               </>
             )}
           </section>

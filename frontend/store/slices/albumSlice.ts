@@ -28,12 +28,21 @@ export interface AlbumState {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
+  };
+  reviewsPagination: {
+    page: number;
+    size: number;
+    totalCount: number;
+    hasMore: boolean;
   };
   // Loading states
   loading: boolean;
+  loadingMore: boolean;
   loadingAlbum: boolean;
   loadingSongs: boolean;
   loadingReviews: boolean;
+  loadingMoreReviews: boolean;
   // Error state
   error: string | null;
 }
@@ -43,7 +52,7 @@ export interface AlbumState {
 // ============================================================================
 
 const initialState: AlbumState = {
-  albums: [],
+  albums: {},
   orderedAlbumsIds: [],
   currentAlbum: null,
   albumSongs: [],
@@ -52,11 +61,20 @@ const initialState: AlbumState = {
     page: 1,
     size: 20,
     totalCount: 0,
+    hasMore: true,
+  },
+  reviewsPagination: {
+    page: 1,
+    size: 20,
+    totalCount: 0,
+    hasMore: true,
   },
   loading: false,
+  loadingMore: false,
   loadingAlbum: false,
   loadingSongs: false,
   loadingReviews: false,
+  loadingMoreReviews: false,
   error: null,
 };
 
@@ -74,6 +92,19 @@ export const fetchAlbumsAsync = createAsyncThunk<
     return response as Collection<HALResource<Album>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch albums');
+  }
+});
+
+export const fetchMoreAlbumsAsync = createAsyncThunk<
+  Collection<HALResource<Album>>,
+  { page: number; size?: number; search?: string; filter?: string },
+  { rejectValue: string }
+>('albums/fetchMoreAlbumsAsync', async ({ page, size = 20, search, filter }, { rejectWithValue }) => {
+  try {
+    const response = await albumRepository.getAlbums(page, size, search, filter);
+    return response as Collection<HALResource<Album>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more albums');
   }
 });
 
@@ -155,6 +186,19 @@ export const fetchAlbumReviewsAsync = createAsyncThunk<
   }
 });
 
+export const fetchMoreAlbumReviewsAsync = createAsyncThunk<
+  Collection<HALResource<Review>>,
+  { albumId: number; page: number; size?: number; filter?: string },
+  { rejectValue: string }
+>('albums/fetchMoreAlbumReviews', async ({ albumId, page, size = 20, filter }, { rejectWithValue }) => {
+  try {
+    const response = await albumRepository.getAlbumReviews(albumId, page, size, filter);
+    return response as Collection<HALResource<Review>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more album reviews');
+  }
+});
+
 export const createAlbumReviewAsync = createAsyncThunk<
   HALResource<Review>,
   ReviewFormData,
@@ -209,6 +253,12 @@ const albumSlice = createSlice({
       state.currentAlbum = null;
       state.albumSongs = [];
       state.albumReviews = [];
+      state.reviewsPagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+    },
+    clearAlbums: (state) => {
+      state.albums = {};
+      state.orderedAlbumsIds = [];
+      state.pagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
     },
     addAlbum: (state, action: PayloadAction<Album>) => {
       state.albums[action.payload.id] = action.payload;
@@ -225,21 +275,49 @@ const albumSlice = createSlice({
       })
       .addCase(fetchAlbumsAsync.fulfilled, (state, action) => {
         state.loading = false;
+        state.albums = {};
+        state.orderedAlbumsIds = [];
         action.payload.items.forEach((album) => {
-          if (!state.albums[album.data.id]) {
-            state.albums[album.data.id] = album.data as Album;
-          }
+          state.albums[album.data.id] = album.data as Album;
+          state.orderedAlbumsIds.push(album.data.id);
         });
-        state.orderedAlbumsIds = action.payload.items.map((album) => album.data.id);
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchAlbumsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch albums';
+      });
+
+    builder
+      .addCase(fetchMoreAlbumsAsync.pending, (state) => {
+        state.loadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreAlbumsAsync.fulfilled, (state, action) => {
+        state.loadingMore = false;
+        action.payload.items.forEach((album) => {
+          if (!state.albums[album.data.id]) {
+            state.albums[album.data.id] = album.data as Album;
+            state.orderedAlbumsIds.push(album.data.id);
+          }
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.pagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreAlbumsAsync.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.error = action.payload || 'Failed to fetch more albums';
       });
 
     builder
@@ -333,12 +411,43 @@ const albumSlice = createSlice({
       })
       .addCase(fetchAlbumReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        // Sobrescribir el array completo en lugar de acumular
         state.albumReviews = action.payload.items.map((review) => review.data as Review);
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.reviewsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
       })
       .addCase(fetchAlbumReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;
         state.error = action.payload || 'Failed to fetch album reviews';
+      });
+
+    builder
+      .addCase(fetchMoreAlbumReviewsAsync.pending, (state) => {
+        state.loadingMoreReviews = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreAlbumReviewsAsync.fulfilled, (state, action) => {
+        state.loadingMoreReviews = false;
+        const existingIds = new Set(state.albumReviews.map(r => r.id));
+        const newReviews = action.payload.items
+          .map((review) => review.data as Review)
+          .filter(r => !existingIds.has(r.id));
+        state.albumReviews = [...state.albumReviews, ...newReviews];
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.reviewsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreAlbumReviewsAsync.rejected, (state, action) => {
+        state.loadingMoreReviews = false;
+        state.error = action.payload || 'Failed to fetch more album reviews';
       });
 
     builder
@@ -381,7 +490,7 @@ const albumSlice = createSlice({
 // Actions & Selectors
 // ============================================================================
 
-export const { clearError, clearCurrentAlbum, addAlbum, removeAlbum } = albumSlice.actions;
+export const { clearError, clearCurrentAlbum, clearAlbums, addAlbum, removeAlbum } = albumSlice.actions;
 
 export const selectAlbums = (state: RootState) => state.albums.albums;
 export const selectAlbumIds = (state: RootState) => state.albums.orderedAlbumsIds;
@@ -395,9 +504,14 @@ export const selectCurrentAlbum = (state: RootState) => state.albums.currentAlbu
 export const selectAlbumSongs = (state: RootState) => state.albums.albumSongs;
 export const selectAlbumReviews = (state: RootState) => state.albums.albumReviews;
 export const selectAlbumPagination = (state: RootState) => state.albums.pagination;
+export const selectAlbumReviewsPagination = (state: RootState) => state.albums.reviewsPagination;
 export const selectAlbumLoading = (state: RootState) => state.albums.loading;
+export const selectAlbumLoadingMore = (state: RootState) => state.albums.loadingMore;
 export const selectAlbumError = (state: RootState) => state.albums.error;
 export const selectLoadingAlbum = (state: RootState) => state.albums.loadingAlbum;
+export const selectLoadingMoreAlbumReviews = (state: RootState) => state.albums.loadingMoreReviews;
+export const selectAlbumsHasMore = (state: RootState) => state.albums.pagination.hasMore;
+export const selectAlbumReviewsHasMore = (state: RootState) => state.albums.reviewsPagination.hasMore;
 export const selectLoadingAlbumSongs = (state: RootState) => state.albums.loadingSongs;
 export const selectLoadingAlbumReviews = (state: RootState) => state.albums.loadingReviews;
 

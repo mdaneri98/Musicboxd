@@ -293,6 +293,8 @@
     "goToPage": "Gehe zu Seite",
     "page": "Seite",
     "of": "von",
+    "noMoreContent": "Du hast das Ende erreicht",
+    "loadingMore": "Lade mehr...",
     "rateThis": {
       "artist": "Diesen Künstler bewerten",
       "album": "Dieses Album bewerten",

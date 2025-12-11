@@ -24,9 +24,11 @@ export interface NotificationState {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
   };
   // Loading states
   loading: boolean;
+  loadingMore: boolean;
   loadingCount: boolean;
   // Error state
   error: string | null;
@@ -44,8 +46,10 @@ const initialState: NotificationState = {
     page: 1,
     size: 20,
     totalCount: 0,
+    hasMore: true,
   },
   loading: false,
+  loadingMore: false,
   loadingCount: false,
   error: null,
 };
@@ -67,6 +71,22 @@ export const fetchNotificationsAsync = createAsyncThunk<
     return response as Collection<HALResource<Notification>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch notifications');
+  }
+});
+
+/**
+ * Fetch more notifications (for infinite scroll)
+ */
+export const fetchMoreNotificationsAsync = createAsyncThunk<
+  Collection<HALResource<Notification>>,
+  { page: number; size?: number },
+  { rejectValue: string }
+>('notifications/fetchMoreNotificationsAsync', async ({ page, size = 20 }, { rejectWithValue }) => {
+  try {
+    const response = await notificationRepository.getNotifications(page, size);
+    return response as Collection<HALResource<Notification>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more notifications');
   }
 });
 
@@ -191,34 +211,74 @@ const notificationSlice = createSlice({
         page: 1,
         size: 20,
         totalCount: 0,
+        hasMore: true,
       };
     },
   },
   extraReducers: (builder) => {
-    // Fetch Notifications
+    // Fetch Notifications (initial load - clears existing data)
     builder
       .addCase(fetchNotificationsAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchNotificationsAsync.fulfilled, (state, action) => {
-        state.loading = false;      
-        action.payload.items.forEach((notification) => {
-          if (!state.notifications[notification.data.id]) { 
-            state.notifications[notification.data.id] = notification.data as Notification;
-          }
-        });
-        state.notificationIds = action.payload.items.map((notification) => notification.data.id);
+        state.loading = false;
+        // Clear existing data for initial load
+        state.notifications = {};
+        state.notificationIds = [];
         
+        action.payload.items.forEach((notification) => {
+          state.notifications[notification.data.id] = notification.data as Notification;
+          state.notificationIds.push(notification.data.id);
+        });
+        
+        // Calculate hasMore: check if there are more items to load
+        const loadedCount = action.payload.currentPage * action.payload.pageSize;
+        const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchNotificationsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch notifications';
+      });
+
+    // Fetch More Notifications (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreNotificationsAsync.pending, (state) => {
+        state.loadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreNotificationsAsync.fulfilled, (state, action) => {
+        state.loadingMore = false;
+        
+        action.payload.items.forEach((notification) => {
+          if (!state.notifications[notification.data.id]) {
+            state.notifications[notification.data.id] = notification.data as Notification;
+            state.notificationIds.push(notification.data.id);
+          }
+        });
+        
+        // Calculate hasMore: check if there are more items to load
+        const loadedCount = action.payload.currentPage * action.payload.pageSize;
+        const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
+        state.pagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreNotificationsAsync.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.error = action.payload || 'Failed to fetch more notifications';
+        // Stop infinite scroll on error to prevent retry loops
+        state.pagination.hasMore = false;
       });
 
     // Fetch Unread Count
@@ -314,8 +374,10 @@ export const selectUnreadNotifications = (state: RootState) =>
 export const selectUnreadCount = (state: RootState) => state.notifications.unreadCount;
 export const selectNotificationPagination = (state: RootState) => state.notifications.pagination;
 export const selectNotificationLoading = (state: RootState) => state.notifications.loading;
+export const selectNotificationLoadingMore = (state: RootState) => state.notifications.loadingMore;
 export const selectNotificationError = (state: RootState) => state.notifications.error;
 export const selectLoadingCount = (state: RootState) => state.notifications.loadingCount;
+export const selectNotificationsHasMore = (state: RootState) => state.notifications.pagination.hasMore;
 
 export default notificationSlice.reducer;
 

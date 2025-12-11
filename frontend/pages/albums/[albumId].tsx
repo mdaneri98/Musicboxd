@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout, AlbumInfo } from '@/components/layout';
-import { ReviewCard } from '@/components/cards';
+import { ReviewCard, SongCard } from '@/components/cards';
+import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useInfiniteScroll } from '@/hooks';
 import { 
   selectIsAuthenticated, 
   selectCurrentUser,
@@ -11,17 +13,20 @@ import {
   fetchArtistByIdAsync,
   fetchAlbumSongsAsync,
   fetchAlbumReviewsAsync,
+  fetchMoreAlbumReviewsAsync,
   addAlbumFavoriteAsync,
   removeAlbumFavoriteAsync,
   selectCurrentAlbum,
   selectAlbumSongs,
   selectAlbumReviews,
   selectLoadingAlbum,
+  selectLoadingMoreAlbumReviews,
+  selectAlbumReviewsPagination,
+  selectAlbumReviewsHasMore,
   selectAlbumError,
   clearCurrentAlbum
 } from '@/store/slices';
 import type { Artist, Review } from '@/types';
-import { SongCard } from '@/components/cards';
 
 const AlbumDetailPage = () => {
   const { t } = useTranslation();
@@ -31,19 +36,21 @@ const AlbumDetailPage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  // Usar selectores de Redux
+  // Use Redux selectors
   const album = useAppSelector(selectCurrentAlbum);
   const songs = useAppSelector(selectAlbumSongs);
   const reviews = useAppSelector(selectAlbumReviews);
   const loading = useAppSelector(selectLoadingAlbum);
+  const loadingMoreReviews = useAppSelector(selectLoadingMoreAlbumReviews);
+  const reviewsPagination = useAppSelector(selectAlbumReviewsPagination);
+  const hasMoreReviews = useAppSelector(selectAlbumReviewsHasMore);
   const error = useAppSelector(selectAlbumError);
   
   const [artist, setArtist] = useState<Artist | null>(null);
-  const [reviewsPage, setReviewsPage] = useState(1);
-  const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [userRating, setUserRating] = useState<number | undefined>();
-  // Limpiar al desmontar
+
+  // Clear on unmount
   useEffect(() => {
     return () => {
       dispatch(clearCurrentAlbum());
@@ -67,12 +74,6 @@ const AlbumDetailPage = () => {
           .catch((err) => {
             console.error('Failed to fetch artist:', err);
           });
-          if(albumData.data.reviewed && isAuthenticated && currentUser) {
-            const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
-            if (userReview) {
-              setUserRating(userReview.rating);
-            }
-          }
       })
       .catch((err) => {
         console.error('Failed to fetch album:', err);
@@ -80,22 +81,42 @@ const AlbumDetailPage = () => {
     
     // Fetch songs
     dispatch(fetchAlbumSongsAsync({ albumId: albumIdNum, page: 0, size: 100 }));
+    
+    // Fetch reviews (initial load)
+    dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 20 }));
   }, [albumId, dispatch]);
 
-  // Fetch reviews
+  // Set user rating when reviews and user data are available
   useEffect(() => {
-    if (!albumId) return;
+    if (album?.reviewed && isAuthenticated && currentUser && reviews.length > 0) {
+      const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
+      if (userReview) {
+        setUserRating(userReview.rating);
+      }
+    }
+  }, [album?.reviewed, isAuthenticated, currentUser, reviews]);
+
+  // Load more callback for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    if (!albumId || !hasMoreReviews || loadingMoreReviews) return;
     
     const albumIdNum = parseInt(albumId as string);
-    dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: reviewsPage, size: 20 }))
-      .unwrap()
-      .then((reviewsData) => {
-        setHasMoreReviews(reviewsData.items.length === 20);
-      })
-      .catch((err) => {
-        console.error('Failed to fetch reviews:', err);
-      });
-  }, [albumId, reviewsPage, isAuthenticated, currentUser, dispatch]);
+    const nextPage = reviewsPagination.page + 1;
+    
+    await dispatch(fetchMoreAlbumReviewsAsync({ 
+      albumId: albumIdNum, 
+      page: nextPage, 
+      size: reviewsPagination.size 
+    }));
+  }, [dispatch, albumId, reviewsPagination.page, reviewsPagination.size, hasMoreReviews, loadingMoreReviews]);
+
+  // Infinite scroll hook
+  const { sentinelRef, isFetchingMore } = useInfiniteScroll({
+    onLoadMore: handleLoadMore,
+    hasMore: hasMoreReviews,
+    isLoading: loading || loadingMoreReviews,
+    enabled: !!album && !loading,
+  });
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {
@@ -123,7 +144,7 @@ const AlbumDetailPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">{t('album.loadingAlbum')}</div>
+          <LoadingSpinner size="large" message={t('album.loadingAlbum')} />
         </div>
       </Layout>
     );
@@ -178,25 +199,22 @@ const AlbumDetailPage = () => {
               ))}
             </div>
 
-            {/* Pagination */}
-            <div className="pagination">
-              {reviewsPage > 1 && (
-                <button
-                  onClick={() => setReviewsPage(reviewsPage - 1)}
-                  className="btn btn-secondary"
-                >
-                  {t('album.previousPage')}
-                </button>
-              )}
-              {hasMoreReviews && (
-                <button
-                  onClick={() => setReviewsPage(reviewsPage + 1)}
-                  className="btn btn-secondary"
-                >
-                  {t('album.nextPage')}
-                </button>
-              )}
-            </div>
+            {/* Sentinel element for infinite scroll */}
+            <div ref={sentinelRef} className="infinite-scroll-sentinel" />
+
+            {/* Loading indicator for more content */}
+            {(loadingMoreReviews || isFetchingMore) && (
+              <div className="loading-more">
+                <LoadingSpinner size="small" />
+              </div>
+            )}
+
+            {/* End of content message */}
+            {!hasMoreReviews && reviews.length > 0 && (
+              <div className="end-of-content">
+                <p>{t('common.noMoreContent')}</p>
+              </div>
+            )}
           </section>
         )}
       </div>
@@ -205,4 +223,3 @@ const AlbumDetailPage = () => {
 };
 
 export default AlbumDetailPage;
-

@@ -293,6 +293,8 @@
     "goToPage": "Go to page",
     "page": "Page",
     "of": "of",
+    "noMoreContent": "You've reached the end",
+    "loadingMore": "Loading more...",
     "rateThis": {
       "artist": "Rate this artist",
       "album": "Rate this album",

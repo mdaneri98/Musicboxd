@@ -293,6 +293,8 @@
     "goToPage": "Aller à la page",
     "page": "Page",
     "of": "sur",
+    "noMoreContent": "Vous avez atteint la fin",
+    "loadingMore": "Chargement de plus...",
     "rateThis": {
       "artist": "Noter cet artiste",
       "album": "Noter cet album",
