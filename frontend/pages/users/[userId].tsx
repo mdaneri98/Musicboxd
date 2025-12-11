@@ -196,7 +196,7 @@ const UserProfilePage = () => {
             {/* Favorite Artists */}
             {favoriteArtists.length === 0 && favoriteAlbums.length === 0 && favoriteSongs.length === 0 && (
               <div className="empty-state">
-                <p className="add-favorites">{t('common.noMoreContent')}</p>
+                <p className="add-favorites">{t('common.noFavoritesYet')}</p>
               </div>
             )}
             {favoriteArtists.length > 0 && (
