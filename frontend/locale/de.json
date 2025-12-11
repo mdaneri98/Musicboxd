@@ -305,7 +305,8 @@
     "averageRating": "Durchschnittsbewertung",
     "yourRating": "Deine Bewertung",
     "failedToToggleLike": "Like konnte nicht geändert werden",
-    "failedToToggleFollow": "Folgen konnte nicht geändert werden"
+    "failedToToggleFollow": "Folgen konnte nicht geändert werden",
+    "noFavoritesYet": "Noch keine Favoriten"
   },
   "errors": {
     "required": "Dieses Feld ist erforderlich",

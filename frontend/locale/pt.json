@@ -305,7 +305,8 @@
     "averageRating": "Avaliação média",
     "yourRating": "Sua avaliação",
     "failedToToggleLike": "Falha ao alternar curtida",
-    "failedToToggleFollow": "Falha ao alternar seguir"
+    "failedToToggleFollow": "Falha ao alternar seguir",
+    "noFavoritesYet": "Ainda não tem favoritos"
   },
   "errors": {
     "required": "Este campo é obrigatório",

@@ -194,6 +194,11 @@ const UserProfilePage = () => {
           activeTab === ProfileTabEnum.FAVORITES && (
           <section className="favorites-section">
             {/* Favorite Artists */}
+            {favoriteArtists.length === 0 && favoriteAlbums.length === 0 && favoriteSongs.length === 0 && (
+              <div className="empty-state">
+                <p className="add-favorites">{t('common.noMoreContent')}</p>
+              </div>
+            )}
             {favoriteArtists.length > 0 && (
               <div>
                 <h2>{t('profile.favoriteArtists')}</h2>
@@ -237,6 +242,7 @@ const UserProfilePage = () => {
 
         {/* Reviews Section */}
         {activeTab === ProfileTabEnum.REVIEWS && (
+
           <section className="reviews-section">
             {loadingReviews && reviews.length === 0 ? (
               <LoadingSpinner size="large" message={t('profile.loadingReviews')} />

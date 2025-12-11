@@ -292,7 +292,10 @@
     "editYourReview": "Editar tu reseña",
     "totalRatings": "Calificaciones totales",
     "averageRating": "Calificación promedio",
-    "yourRating": "Tu Calificación"
+    "failedToToggleLike": "No se pudo cambiar el like",
+    "yourRating": "Tu Calificación",
+    "failedToToggleFollow": "No se pudo cambiar el seguimiento",
+    "noFavoritesYet": "No hay favoritos aún"
   },
   "errors": {
     "required": "Este campo es obligatorio",

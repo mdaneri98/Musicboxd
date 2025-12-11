@@ -305,7 +305,8 @@
     "averageRating": "Average Rating",
     "yourRating": "Your Rating",
     "failedToToggleLike": "Failed to toggle like",
-    "failedToToggleFollow": "Failed to toggle follow"
+    "failedToToggleFollow": "Failed to toggle follow",
+    "noFavoritesYet": "No favorites yet"
   },
   "errors": {
     "required": "This field is required",

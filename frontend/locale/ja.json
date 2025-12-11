@@ -305,7 +305,8 @@
     "averageRating": "平均評価",
     "yourRating": "あなたの評価",
     "failedToToggleLike": "いいねの切り替えに失敗しました",
-    "failedToToggleFollow": "フォローの切り替えに失敗しました"
+    "failedToToggleFollow": "フォローの切り替えに失敗しました",
+    "noFavoritesYet": "まだお気に入りがありません"
   },
   "errors": {
     "required": "このフィールドは必須です",

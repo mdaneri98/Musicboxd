@@ -305,7 +305,8 @@
     "averageRating": "Note moyenne",
     "yourRating": "Votre note",
     "failedToToggleLike": "Échec du changement de j'aime",
-    "failedToToggleFollow": "Échec du changement d'abonnement"
+    "failedToToggleFollow": "Échec du changement d'abonnement",
+    "noFavoritesYet": "Vous n'avez pas encore de favoris"
   },
   "errors": {
     "required": "Ce champ est obligatoire",

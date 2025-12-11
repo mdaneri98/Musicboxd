@@ -305,7 +305,8 @@
     "averageRating": "Valutazione media",
     "yourRating": "La tua valutazione",
     "failedToToggleLike": "Impossibile cambiare mi piace",
-    "failedToToggleFollow": "Impossibile cambiare segui"
+    "failedToToggleFollow": "Impossibile cambiare segui",
+    "noFavoritesYet": "Non hai ancora preferiti"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
