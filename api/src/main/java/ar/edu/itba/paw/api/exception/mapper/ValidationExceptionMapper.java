@@ -47,6 +47,13 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
                 .map(this::buildValidationError)
                 .collect(Collectors.toList());
 
+        for (ErrorResponseDTO.ValidationErrorDTO validationError : validationErrors) {
+            LOGGER.warn("Validation error - Field: {}, Message: {}, Rejected Value: {}",
+                validationError.getField(),
+                validationError.getMessage(),
+                validationError.getRejectedValue());
+        }
+
         ErrorResponseDTO error = errorResponseBuilder.buildWithValidations(
                 HttpStatus.BAD_REQUEST,
                 "exception.BadRequest",

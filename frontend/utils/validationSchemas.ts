@@ -23,19 +23,20 @@ export const loginSchema = Yup.object().shape({
 export const registerSchema = Yup.object().shape({
   username: Yup.string()
     .required('Username is required')
-    .min(3, 'Username must be at least 3 characters')
+    .min(4, 'Username must be at least 4 characters')
     .max(50, 'Username must be at most 50 characters')
-    .matches(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores and dashes'),
+    .matches(/^[a-zA-Z][a-zA-Z0-9]*$/, 'Username must start with a letter and contain only letters and numbers'),
   email: Yup.string()
     .required('Email is required')
     .email('Invalid email address')
     .max(100, 'Email must be at most 100 characters'),
   password: Yup.string()
     .required('Password is required')
-    .min(6, 'Password must be at least 6 characters')
+    .min(8, 'Password must be at least 8 characters')
     .max(100, 'Password must be at most 100 characters'),
   repeatPassword: Yup.string()
     .required('Please confirm your password')
+    .min(8, 'Password must be at least 8 characters')
     .oneOf([Yup.ref('password')], 'Passwords must match'),
 });
 
@@ -61,7 +62,7 @@ export const resetPasswordSchema = Yup.object().shape({
 
 export const editProfileSchema = Yup.object().shape({
   username: Yup.string()
-    .required('Username is required')
+    .optional()
     .min(3, 'Username must be at least 3 characters')
     .max(50, 'Username must be at most 50 characters')
     .matches(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores and dashes'),

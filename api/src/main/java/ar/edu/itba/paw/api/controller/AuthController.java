@@ -15,6 +15,8 @@ import ar.edu.itba.paw.models.AuthResult;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.AuthService;
 import ar.edu.itba.paw.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,8 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthController extends BaseController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private AuthService authService;
@@ -56,11 +60,16 @@ public class AuthController extends BaseController {
     @POST
     @Path(ApiUriConstants.REGISTER)
     public Response register(@Valid UserForm userForm) {
+        LOGGER.info("Register request received - Username: {}, Email: {}, Password: {}, RepeatPassword: {}",
+            userForm.getUsername(), userForm.getEmail(),
+            userForm.getPassword() != null ? "***" : "null",
+            userForm.getRepeatPassword() != null ? "***" : "null");
+
         CreateUserDTO createUserDTO = userFormMapper.toDTO(userForm);
         User user = userService.create(createUserDTO.getUsername(), createUserDTO.getEmail(), createUserDTO.getPassword());
         UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
-        
+
         return Response.status(Response.Status.CREATED).entity(userResource).build();
     }
 

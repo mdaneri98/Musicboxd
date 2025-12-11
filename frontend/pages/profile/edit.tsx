@@ -18,6 +18,7 @@ const EditProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const [imagePreview, setImagePreview] = useState<string | undefined>();
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -42,11 +43,34 @@ const EditProfilePage = () => {
       setLoading(true);
       setError(undefined);
 
+      // Upload image and get ID if a new image was selected
+      let profilePictureId: number | undefined;
+      if (imageFile) {
+        try {
+          profilePictureId = await imageRepository.uploadImage(imageFile);
+        } catch (error) {
+          console.error('Failed to upload image:', error);
+          setError('Failed to upload image. Please try again.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      const userData: any = {
+        name: data.name,
+        bio: data.bio,
+      };
+
+      // Only include image_id if a new image was uploaded
+      if (profilePictureId !== undefined) {
+        userData.image_id = profilePictureId;
+      }
+
       // Update user profile
-      await dispatch(updateUserAsync({ id: currentUser.id, userData: data }));
+      await dispatch(updateUserAsync({ id: currentUser.id, userData })).unwrap();
 
       // Refresh current user data
-      await dispatch(getCurrentUserAsync());
+      await dispatch(getCurrentUserAsync()).unwrap();
 
       // Redirect to profile
       router.push('/profile');
@@ -60,6 +84,7 @@ const EditProfilePage = () => {
 
   const handleImageChange = (file: File | null) => {
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);

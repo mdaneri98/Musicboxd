@@ -1,9 +1,3 @@
-/**
- * Register Page
- * User registration page with form
- * Migrated from: users/register.jsp
- */
-
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';

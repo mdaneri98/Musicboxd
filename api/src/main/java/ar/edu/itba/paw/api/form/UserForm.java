@@ -5,26 +5,36 @@ import ar.edu.itba.paw.api.form.validation.EmailNotInUse;
 import ar.edu.itba.paw.api.form.validation.UsernameNotInUse;
 import ar.edu.itba.paw.api.form.validation.passwords.PasswordConfirmation;
 import ar.edu.itba.paw.api.form.validation.passwords.PasswordMatch;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @PasswordMatch(message = "{validation.user.password.match}")
 public class UserForm implements PasswordConfirmation {
 
+    @JsonProperty("username")
+    @NotBlank(message = "{validation.user.username.notblank}")
     @Size(min = 4, max = 50, message = "{validation.user.username.size}")
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.user.username.pattern}")
     @UsernameNotInUse(message = "{validation.user.username.in.use}")
     private String username;
 
+    @JsonProperty("email")
+    @NotBlank(message = "{validation.user.email.notblank}")
     @EmailNotInUse(message = "{validation.user.email.in.use}")
     @Email(message = "{validation.user.email.invalid}")
     private String email;
 
+    @JsonProperty("password")
+    @NotBlank(message = "{validation.user.password.notblank}")
     @Size(min = 8, message = "{validation.user.password.size}")
     private String password;
 
+    @JsonProperty("repeatPassword")
+    @NotBlank(message = "{validation.user.password.notblank}")
     @Size(min = 8, message = "{validation.user.password.size}")
     private String repeatPassword;
 

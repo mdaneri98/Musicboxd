@@ -24,7 +24,6 @@ public class MergeUtils {
     }
 
     private static void mergeBasicFields(User existingUser, User userUpdate) {
-        setFieldIfNotNull(existingUser::setUsername, userUpdate.getUsername());
         setFieldIfNotNull(existingUser::setEmail, userUpdate.getEmail());
         setFieldIfNotNull(existingUser::setName, userUpdate.getName());
         setFieldIfNotNull(existingUser::setBio, userUpdate.getBio());

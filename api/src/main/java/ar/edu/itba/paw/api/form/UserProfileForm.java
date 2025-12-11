@@ -1,15 +1,9 @@
 package ar.edu.itba.paw.api.form;
 
-import ar.edu.itba.paw.api.form.validation.UsernameNotInUse;
-
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class UserProfileForm {
 
-    @Size(min = 4, max = 50, message = "{validation.profile.username.size}")
-    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.profile.username.pattern}")
-    @UsernameNotInUse(message = "{validation.profile.username.in.use}")
     private String username;
 
     @Size(max = 100, message = "{validation.profile.name.size}")
@@ -22,10 +16,11 @@ public class UserProfileForm {
 
     public UserProfileForm() {}
 
-    public UserProfileForm(String username, String name, String bio) {
+    public UserProfileForm(String username, String name, String bio, Long imageId) {
         this.username = username;
         this.name = name;
         this.bio = bio;
+        this.imageId = imageId;
     }
 
     public String getUsername() {
