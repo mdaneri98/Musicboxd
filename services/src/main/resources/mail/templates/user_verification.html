@@ -2,43 +2,116 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" content="text/html" http-equiv="content-type">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>[[#{email.verify.title}]]</title>
     <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
         .container {
+            background-color: #ffffff;
             max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: Arial, sans-serif;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 20px 0;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498DB;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
         }
-        .header {
+
+        h1 {
+            color: #2C3E50;
             font-size: 24px;
             margin-bottom: 20px;
         }
-        .message {
-            line-height: 1.5;
-            margin-bottom: 20px;
+
+        p {
+            font-size: 16px;
+            color: #7F8C8D;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .button {
+            text-decoration: none;
+            display: inline-block;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #3498DB;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin: 20px 0;
+        }
+
+        .button:hover {
+            background-color: #2980B9;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        .divider {
+            border-top: 1px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+                margin: 20px auto;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            .button {
+                padding: 12px 30px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1 class="header" th:text="#{email.verify.title}"></h1>
+    <div class="logo">Musicboxd</div>
 
-    <p class="message" th:text="#{email.verify.message}"></p>
+    <h1 th:text="#{email.verify.title}">Welcome to Musicboxd!</h1>
 
-    <a class="button" th:href="${verificationURL}" th:text="#{email.verify.button}"></a>
+    <p th:text="#{email.verify.message}">Thank you for signing up! Please verify your email address by clicking the button below to activate your account.</p>
 
-    <p class="footer" th:text="#{email.footer.message}"></p>
+    <a class="button" th:href="${verificationURL}" th:text="#{email.verify.button}">Verify Email Address</a>
+
+    <div class="divider"></div>
+
+    <p class="footer" th:text="#{email.footer.message}">If you didn't create this account, you can safely ignore this email.</p>
 </div>
 </body>
 </html>
