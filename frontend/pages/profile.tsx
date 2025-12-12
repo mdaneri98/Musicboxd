@@ -63,7 +63,7 @@ const ProfilePage = () => {
       dispatch(fetchFavoriteArtistsAsync(currentUser.id));
       dispatch(fetchFavoriteAlbumsAsync(currentUser.id));
       dispatch(fetchFavoriteSongsAsync(currentUser.id));
-      dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: 1, size: 20 }));
+      dispatch(fetchUserReviewsAsync({ userId: currentUser.id, page: 1, size: 10 }));
     }
   }, [currentUser, dispatch]);
 

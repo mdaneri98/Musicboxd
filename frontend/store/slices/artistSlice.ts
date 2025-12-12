@@ -62,13 +62,13 @@ const initialState: ArtistState = {
   artistReviews: [],
   pagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
   reviewsPagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
@@ -93,7 +93,7 @@ export const fetchArtistsAsync = createAsyncThunk<
   Collection<HALResource<Artist>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('artists/fetchArtists', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
+>('artists/fetchArtists', async ({ page = 1, size = 10, search, filter }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtists(page, size, search, filter);
     return response as Collection<HALResource<Artist>>;
@@ -109,7 +109,7 @@ export const fetchMoreArtistsAsync = createAsyncThunk<
   Collection<HALResource<Artist>>,
   { page: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('artists/fetchMoreArtists', async ({ page, size = 20, search, filter }, { rejectWithValue }) => {
+>('artists/fetchMoreArtists', async ({ page, size = 10, search, filter }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtists(page, size, search, filter);
     return response as Collection<HALResource<Artist>>;
@@ -189,7 +189,7 @@ export const fetchArtistAlbumsAsync = createAsyncThunk<
   Collection<HALResource<Album>>,
   { artistId: number; page?: number; size?: number },
   { rejectValue: string }
->('artists/fetchArtistAlbums', async ({ artistId, page = 1, size = 20 }, { rejectWithValue }) => {
+>('artists/fetchArtistAlbums', async ({ artistId, page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistAlbums(artistId, page, size);
     return response as Collection<HALResource<Album>>;
@@ -205,7 +205,7 @@ export const fetchArtistSongsAsync = createAsyncThunk<
   Collection<HALResource<Song>>,
   { artistId: number; page?: number; size?: number },
   { rejectValue: string }
->('artists/fetchArtistSongs', async ({ artistId, page = 1, size = 20 }, { rejectWithValue }) => {
+>('artists/fetchArtistSongs', async ({ artistId, page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistSongs(artistId, page, size);
     return response as Collection<HALResource<Song>>;
@@ -221,7 +221,7 @@ export const fetchArtistReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { artistId: number; page?: number; size?: number; filter?: string },
   { rejectValue: string }
->('artists/fetchArtistReviews', async ({ artistId, page = 1, size = 20, filter }, { rejectWithValue }) => {
+>('artists/fetchArtistReviews', async ({ artistId, page = 1, size = 10, filter }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistReviews(artistId, page, size, filter);
     return response as Collection<HALResource<Review>>;
@@ -237,7 +237,7 @@ export const fetchMoreArtistReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { artistId: number; page: number; size?: number; filter?: string },
   { rejectValue: string }
->('artists/fetchMoreArtistReviews', async ({ artistId, page, size = 20, filter }, { rejectWithValue }) => {
+>('artists/fetchMoreArtistReviews', async ({ artistId, page, size = 10, filter }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistReviews(artistId, page, size, filter);
     return response as Collection<HALResource<Review>>;
@@ -314,7 +314,7 @@ const artistSlice = createSlice({
       state.artistAlbums = [];
       state.artistSongs = [];
       state.artistReviews = [];
-      state.reviewsPagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+      state.reviewsPagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
 
     /**
@@ -323,7 +323,7 @@ const artistSlice = createSlice({
     clearArtists: (state) => {
       state.artists = {};
       state.orderedArtistsIds = [];
-      state.pagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+      state.pagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
 
     /**

@@ -9,6 +9,7 @@ import {
   selectCurrentUser,
 } from '@/store/slices';
 import { imageRepository, artistRepository, albumRepository } from '@/repositories';
+import { validateMusicEditorForm } from '@/utils/validationSchemas';
 import type { ModArtistFormData, ModAlbumFormData, ModSongFormData } from '@/types/forms';
 import type { Song, Album, Artist, HALResource } from '@/types';
 
@@ -322,55 +323,19 @@ export default function MusicEditorPage() {
     });
   };
 
-  // Validation
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = t('moderator.validation.nameRequired');
-    } else if (formData.name.length < 2 || formData.name.length > 50) {
-      newErrors.name = t('moderator.validation.nameLength');
-    }
-
-    if (formData.bio && formData.bio.length > 2048) {
-      newErrors.bio = t('moderator.validation.bioLength');
-    }
-
-    // Validate albums
-    formData.albums.forEach((album, albumIndex) => {
-      if (album.deleted) return;
-
-      if (!album.title.trim()) {
-        newErrors[`album_${albumIndex}_title`] = t('moderator.validation.albumTitleRequired');
-      } else if (album.title.length < 2 || album.title.length > 100) {
-        newErrors[`album_${albumIndex}_title`] = t('moderator.validation.albumTitleLength');
-      }
-
-      // Validate songs
-      album.songs.forEach((song, songIndex) => {
-        if (song.deleted) return;
-
-        if (!song.title.trim()) {
-          newErrors[`album_${albumIndex}_song_${songIndex}_title`] = t('moderator.validation.songTitleRequired');
-        } else if (song.title.length < 1 || song.title.length > 100) {
-          newErrors[`album_${albumIndex}_song_${songIndex}_title`] = t('moderator.validation.songTitleLength');
-        }
-
-        if (!song.duration || !/^(?:(?:([0-9]{1,2}):)?([0-5]?[0-9]):)?([0-5][0-9])$/.test(song.duration)) {
-          newErrors[`album_${albumIndex}_song_${songIndex}_duration`] = t('moderator.validation.songDurationFormat');
-        }
-      });
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  // Validation using Yup schemas
+  const validateForm = async (): Promise<boolean> => {
+    const validationErrors = await validateMusicEditorForm(formData, t);
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
   };
 
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    const isValid = await validateForm();
+    if (!isValid) {
       return;
     }
 

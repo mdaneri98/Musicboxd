@@ -118,7 +118,16 @@
     "firstAdded": "Agregados primero",
     "newest": "Más nuevos",
     "oldest": "Más antiguos",
-    "page": "Página"
+    "page": "Página",
+    "filters": {
+      "popular": "Popular",
+      "recent": "Más reciente",
+      "rating": "Calificación",
+      "likes": "Me gusta",
+      "first": "Primero",
+      "newest": "Más nuevo",
+      "oldest": "Más antiguo"
+    }
   },
   "search": {
     "tabs": {
@@ -175,11 +184,13 @@
     }
   },
   "comment": {
+    "writeComment": "Escribe un comentario...",
     "postComment": "Publicar comentario",
     "posting": "Publicando..."
   },
   "notifications": {
     "title": "Notificaciones",
+    "markAsRead": "Marcar como leída",
     "markAllRead": "Marcar todas como leídas",
     "noNotifications": "No hay notificaciones",
     "loading": "Cargando notificaciones...",
@@ -399,8 +410,14 @@
   "userProfile": {
     "loadingProfile": "Cargando perfil...",
     "profile": "Perfil",
-    "previousPage": "Página Anterior",
-    "nextPage": "Página Siguiente"
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "moderator": "Moderador",
+    "verified": "Verificado",
+    "user": "Usuario",
+    "artist": "Artista",
+    "album": "Álbum",
+    "song": "Canción"
   },
   "followers": {
     "title": "Seguidores",
@@ -467,10 +484,14 @@
       "nameLength": "El nombre debe tener entre 2 y 50 caracteres",
       "bioLength": "La biografía debe tener máximo 2048 caracteres",
       "albumTitleRequired": "El título del álbum es requerido",
-      "albumTitleLength": "El título del álbum debe tener entre 2 y 100 caracteres",
+      "albumTitleLength": "El título del álbum debe tener entre 1 y 100 caracteres",
+      "genreLength": "El género debe tener máximo 50 caracteres",
       "songTitleRequired": "El título de la canción es requerido",
       "songTitleLength": "El título de la canción debe tener entre 1 y 100 caracteres",
-      "songDurationFormat": "La duración debe estar en formato MM:SS"
+      "songDurationRequired": "La duración es requerida",
+      "songDurationFormat": "La duración debe estar en formato MM:SS",
+      "trackNumberPositive": "El número de pista debe ser positivo",
+      "trackNumberMax": "El número de pista debe ser máximo 500"
     }
   },
   "time": {
@@ -498,6 +519,110 @@
       "10": "Octubre",
       "11": "Noviembre",
       "12": "Diciembre"
+    },
+    "moderator": {
+      "title": "Panel de Moderador"
+    }
+  },
+  "validation": {
+    "username": {
+      "required": "El nombre de usuario es requerido",
+      "minLength": "El nombre de usuario debe tener al menos 3 caracteres",
+      "minLengthRegister": "El nombre de usuario debe tener al menos 4 caracteres",
+      "maxLength": "El nombre de usuario debe tener máximo 50 caracteres",
+      "format": "El nombre de usuario debe comenzar con una letra y contener solo letras y números",
+      "formatProfile": "El nombre de usuario solo puede contener letras, números, guiones bajos y guiones"
+    },
+    "password": {
+      "required": "La contraseña es requerida",
+      "minLength": "La contraseña debe tener al menos 6 caracteres",
+      "minLengthRegister": "La contraseña debe tener al menos 8 caracteres",
+      "maxLength": "La contraseña debe tener máximo 100 caracteres",
+      "confirmRequired": "Por favor confirma tu contraseña",
+      "mismatch": "Las contraseñas deben coincidir",
+      "currentRequired": "La contraseña actual es requerida",
+      "newRequired": "La nueva contraseña es requerida",
+      "confirmNewRequired": "Por favor confirma tu nueva contraseña",
+      "requiredForDelete": "La contraseña es requerida para eliminar tu cuenta"
+    },
+    "email": {
+      "required": "El correo electrónico es requerido",
+      "invalid": "Dirección de correo electrónico inválida",
+      "maxLength": "El correo debe tener máximo 100 caracteres"
+    },
+    "name": {
+      "maxLength": "El nombre debe tener máximo 100 caracteres"
+    },
+    "bio": {
+      "maxLength": "La biografía debe tener máximo 500 caracteres",
+      "maxLengthLong": "La biografía debe tener máximo 2000 caracteres"
+    },
+    "title": {
+      "required": "El título es requerido",
+      "minLength": "El título debe tener al menos 3 caracteres",
+      "maxLength": "El título debe tener máximo 100 caracteres"
+    },
+    "description": {
+      "required": "La descripción es requerida",
+      "minLength": "La descripción debe tener al menos 10 caracteres",
+      "maxLength": "La descripción debe tener máximo 2000 caracteres"
+    },
+    "rating": {
+      "required": "La calificación es requerida",
+      "min": "La calificación debe ser al menos 1",
+      "max": "La calificación debe ser máximo 5"
+    },
+    "comment": {
+      "required": "El comentario es requerido",
+      "minLength": "El comentario debe tener al menos 2 caracteres",
+      "maxLength": "El comentario debe tener máximo 500 caracteres"
+    },
+    "artistName": {
+      "required": "El nombre del artista es requerido",
+      "minLength": "El nombre del artista debe tener al menos 1 caracter",
+      "maxLength": "El nombre del artista debe tener máximo 100 caracteres"
+    },
+    "albumTitle": {
+      "required": "El título del álbum es requerido",
+      "minLength": "El título del álbum debe tener al menos 1 caracter",
+      "maxLength": "El título del álbum debe tener máximo 100 caracteres"
+    },
+    "songTitle": {
+      "required": "El título de la canción es requerido",
+      "minLength": "El título de la canción debe tener al menos 1 caracter",
+      "maxLength": "El título de la canción debe tener máximo 100 caracteres"
+    },
+    "artist": {
+      "required": "El artista es requerido",
+      "select": "Por favor selecciona un artista"
+    },
+    "album": {
+      "required": "El álbum es requerido",
+      "select": "Por favor selecciona un álbum"
+    },
+    "releaseDate": {
+      "future": "La fecha de lanzamiento no puede ser en el futuro"
+    },
+    "genre": {
+      "maxLength": "El género debe tener máximo 50 caracteres"
+    },
+    "duration": {
+      "required": "La duración es requerida",
+      "format": "La duración debe estar en formato MM:SS"
+    },
+    "trackNumber": {
+      "positive": "El número de pista debe ser positivo",
+      "max": "El número de pista debe ser máximo 999"
+    },
+    "search": {
+      "required": "La búsqueda es requerida",
+      "minLength": "La búsqueda debe tener al menos 1 caracter",
+      "maxLength": "La búsqueda debe tener máximo 100 caracteres",
+      "invalidType": "Tipo de búsqueda inválido"
+    },
+    "deleteConfirmation": {
+      "required": "Por favor escribe DELETE para confirmar",
+      "invalid": "Por favor escribe DELETE para confirmar"
     }
   }
 }

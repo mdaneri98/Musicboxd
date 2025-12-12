@@ -43,8 +43,8 @@ export default function NotificationsPage() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        await dispatch(fetchNotificationsAsync({ page: 1, size: 20 })).unwrap();
-      } catch (error) {
+        await dispatch(fetchNotificationsAsync({ page: 1, size: 10 })).unwrap();
+      } catch (error) { 
         console.error('Failed to fetch notifications:', error);
       }
     };

@@ -83,7 +83,7 @@ const AlbumDetailPage = () => {
     dispatch(fetchAlbumSongsAsync({ albumId: albumIdNum, page: 0, size: 100 }));
     
     // Fetch reviews (initial load)
-    dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 20 }));
+    dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 10 }));
   }, [albumId, dispatch]);
 
   // Set user rating when reviews and user data are available

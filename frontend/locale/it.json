@@ -475,5 +475,154 @@
     "moderator": {
       "title": "Dashboard moderatore"
     }
+  },
+  "moderator": {
+    "title": "Dashboard moderatore",
+    "musicEditor": "Editor musicale",
+    "addArtist": "Aggiungi artista",
+    "editArtist": "Modifica artista",
+    "artistInfo": "Informazioni artista",
+    "artistName": "Nome artista",
+    "artistImage": "Immagine artista",
+    "enterArtistName": "Inserisci nome artista",
+    "bio": "Biografia",
+    "enterBio": "Inserisci biografia artista...",
+    "albums": "Album",
+    "addAlbum": "Aggiungi album",
+    "newAlbum": "Nuovo album",
+    "albumTitle": "Titolo album",
+    "enterAlbumTitle": "Inserisci titolo album",
+    "albumImage": "Immagine album",
+    "genre": "Genere",
+    "enterGenre": "Inserisci genere",
+    "releaseDate": "Data di uscita",
+    "removeAlbum": "Rimuovi album",
+    "songs": "canzoni",
+    "addSong": "Aggiungi canzone",
+    "songTitle": "Titolo canzone",
+    "removeSong": "Rimuovi canzone",
+    "noSongsYet": "Nessuna canzone aggiunta",
+    "noAlbumsYet": "Nessun album aggiunto",
+    "clickAddAlbumHint": "Clicca su 'Aggiungi album' per aggiungere album e canzoni",
+    "clickToUploadImage": "Clicca per caricare immagine",
+    "createArtist": "Crea artista",
+    "saveChanges": "Salva modifiche",
+    "failedToLoadArtist": "Impossibile caricare i dati dell'artista",
+    "failedToSaveArtist": "Impossibile salvare l'artista. Riprova.",
+    "validation": {
+      "nameRequired": "Il nome dell'artista è obbligatorio",
+      "nameLength": "Il nome deve avere tra 2 e 50 caratteri",
+      "bioLength": "La biografia deve avere al massimo 2048 caratteri",
+      "albumTitleRequired": "Il titolo dell'album è obbligatorio",
+      "albumTitleLength": "Il titolo dell'album deve avere tra 1 e 100 caratteri",
+      "genreLength": "Il genere deve avere al massimo 50 caratteri",
+      "songTitleRequired": "Il titolo della canzone è obbligatorio",
+      "songTitleLength": "Il titolo della canzone deve avere tra 1 e 100 caratteri",
+      "songDurationRequired": "La durata è obbligatoria",
+      "songDurationFormat": "La durata deve essere nel formato MM:SS",
+      "trackNumberPositive": "Il numero di traccia deve essere positivo",
+      "trackNumberMax": "Il numero di traccia deve essere al massimo 500"
+    }
+  },
+  "validation": {
+    "username": {
+      "required": "Il nome utente è obbligatorio",
+      "minLength": "Il nome utente deve avere almeno 3 caratteri",
+      "minLengthRegister": "Il nome utente deve avere almeno 4 caratteri",
+      "maxLength": "Il nome utente deve avere al massimo 50 caratteri",
+      "format": "Il nome utente deve iniziare con una lettera e contenere solo lettere e numeri",
+      "formatProfile": "Il nome utente può contenere solo lettere, numeri, trattini bassi e trattini"
+    },
+    "password": {
+      "required": "La password è obbligatoria",
+      "minLength": "La password deve avere almeno 6 caratteri",
+      "minLengthRegister": "La password deve avere almeno 8 caratteri",
+      "maxLength": "La password deve avere al massimo 100 caratteri",
+      "confirmRequired": "Per favore conferma la tua password",
+      "mismatch": "Le password devono corrispondere",
+      "currentRequired": "La password attuale è obbligatoria",
+      "newRequired": "La nuova password è obbligatoria",
+      "confirmNewRequired": "Per favore conferma la tua nuova password",
+      "requiredForDelete": "La password è obbligatoria per eliminare il tuo account"
+    },
+    "email": {
+      "required": "L'email è obbligatoria",
+      "invalid": "Indirizzo email non valido",
+      "maxLength": "L'email deve avere al massimo 100 caratteri"
+    },
+    "name": {
+      "maxLength": "Il nome deve avere al massimo 100 caratteri"
+    },
+    "bio": {
+      "maxLength": "La bio deve avere al massimo 500 caratteri",
+      "maxLengthLong": "La bio deve avere al massimo 2000 caratteri"
+    },
+    "title": {
+      "required": "Il titolo è obbligatorio",
+      "minLength": "Il titolo deve avere almeno 3 caratteri",
+      "maxLength": "Il titolo deve avere al massimo 100 caratteri"
+    },
+    "description": {
+      "required": "La descrizione è obbligatoria",
+      "minLength": "La descrizione deve avere almeno 10 caratteri",
+      "maxLength": "La descrizione deve avere al massimo 2000 caratteri"
+    },
+    "rating": {
+      "required": "La valutazione è obbligatoria",
+      "min": "La valutazione deve essere almeno 1",
+      "max": "La valutazione deve essere al massimo 5"
+    },
+    "comment": {
+      "required": "Il commento è obbligatorio",
+      "minLength": "Il commento deve avere almeno 2 caratteri",
+      "maxLength": "Il commento deve avere al massimo 500 caratteri"
+    },
+    "artistName": {
+      "required": "Il nome dell'artista è obbligatorio",
+      "minLength": "Il nome dell'artista deve avere almeno 1 carattere",
+      "maxLength": "Il nome dell'artista deve avere al massimo 100 caratteri"
+    },
+    "albumTitle": {
+      "required": "Il titolo dell'album è obbligatorio",
+      "minLength": "Il titolo dell'album deve avere almeno 1 carattere",
+      "maxLength": "Il titolo dell'album deve avere al massimo 100 caratteri"
+    },
+    "songTitle": {
+      "required": "Il titolo della canzone è obbligatorio",
+      "minLength": "Il titolo della canzone deve avere almeno 1 carattere",
+      "maxLength": "Il titolo della canzone deve avere al massimo 100 caratteri"
+    },
+    "artist": {
+      "required": "L'artista è obbligatorio",
+      "select": "Per favore seleziona un artista"
+    },
+    "album": {
+      "required": "L'album è obbligatorio",
+      "select": "Per favore seleziona un album"
+    },
+    "releaseDate": {
+      "future": "La data di uscita non può essere nel futuro"
+    },
+    "genre": {
+      "maxLength": "Il genere deve avere al massimo 50 caratteri"
+    },
+    "duration": {
+      "required": "La durata è obbligatoria",
+      "format": "La durata deve essere nel formato MM:SS"
+    },
+    "trackNumber": {
+      "positive": "Il numero di traccia deve essere positivo",
+      "max": "Il numero di traccia deve essere al massimo 999"
+    },
+    "search": {
+      "required": "La ricerca è obbligatoria",
+      "minLength": "La ricerca deve avere almeno 1 carattere",
+      "maxLength": "La ricerca deve avere al massimo 100 caratteri",
+      "invalidType": "Tipo di ricerca non valido"
+    },
+    "deleteConfirmation": {
+      "required": "Per favore digita DELETE per confermare",
+      "invalid": "Per favore digita DELETE per confermare"
+    }
   }
 }

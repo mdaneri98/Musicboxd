@@ -475,5 +475,154 @@
     "moderator": {
       "title": "Tableau de bord modérateur"
     }
+  },
+  "moderator": {
+    "title": "Tableau de bord modérateur",
+    "musicEditor": "Éditeur de musique",
+    "addArtist": "Ajouter un artiste",
+    "editArtist": "Modifier l'artiste",
+    "artistInfo": "Informations sur l'artiste",
+    "artistName": "Nom de l'artiste",
+    "artistImage": "Image de l'artiste",
+    "enterArtistName": "Entrez le nom de l'artiste",
+    "bio": "Biographie",
+    "enterBio": "Entrez la biographie de l'artiste...",
+    "albums": "Albums",
+    "addAlbum": "Ajouter un album",
+    "newAlbum": "Nouvel album",
+    "albumTitle": "Titre de l'album",
+    "enterAlbumTitle": "Entrez le titre de l'album",
+    "albumImage": "Image de l'album",
+    "genre": "Genre",
+    "enterGenre": "Entrez le genre",
+    "releaseDate": "Date de sortie",
+    "removeAlbum": "Supprimer l'album",
+    "songs": "chansons",
+    "addSong": "Ajouter une chanson",
+    "songTitle": "Titre de la chanson",
+    "removeSong": "Supprimer la chanson",
+    "noSongsYet": "Aucune chanson ajoutée",
+    "noAlbumsYet": "Aucun album ajouté",
+    "clickAddAlbumHint": "Cliquez sur 'Ajouter un album' pour ajouter des albums et des chansons",
+    "clickToUploadImage": "Cliquez pour télécharger une image",
+    "createArtist": "Créer l'artiste",
+    "saveChanges": "Enregistrer les modifications",
+    "failedToLoadArtist": "Échec du chargement des données de l'artiste",
+    "failedToSaveArtist": "Échec de l'enregistrement de l'artiste. Veuillez réessayer.",
+    "validation": {
+      "nameRequired": "Le nom de l'artiste est requis",
+      "nameLength": "Le nom doit contenir entre 2 et 50 caractères",
+      "bioLength": "La biographie doit contenir au maximum 2048 caractères",
+      "albumTitleRequired": "Le titre de l'album est requis",
+      "albumTitleLength": "Le titre de l'album doit contenir entre 1 et 100 caractères",
+      "genreLength": "Le genre doit contenir au maximum 50 caractères",
+      "songTitleRequired": "Le titre de la chanson est requis",
+      "songTitleLength": "Le titre de la chanson doit contenir entre 1 et 100 caractères",
+      "songDurationRequired": "La durée est requise",
+      "songDurationFormat": "La durée doit être au format MM:SS",
+      "trackNumberPositive": "Le numéro de piste doit être positif",
+      "trackNumberMax": "Le numéro de piste doit être au maximum 500"
+    }
+  },
+  "validation": {
+    "username": {
+      "required": "Le nom d'utilisateur est requis",
+      "minLength": "Le nom d'utilisateur doit contenir au moins 3 caractères",
+      "minLengthRegister": "Le nom d'utilisateur doit contenir au moins 4 caractères",
+      "maxLength": "Le nom d'utilisateur doit contenir au maximum 50 caractères",
+      "format": "Le nom d'utilisateur doit commencer par une lettre et ne contenir que des lettres et des chiffres",
+      "formatProfile": "Le nom d'utilisateur ne peut contenir que des lettres, chiffres, tirets bas et tirets"
+    },
+    "password": {
+      "required": "Le mot de passe est requis",
+      "minLength": "Le mot de passe doit contenir au moins 6 caractères",
+      "minLengthRegister": "Le mot de passe doit contenir au moins 8 caractères",
+      "maxLength": "Le mot de passe doit contenir au maximum 100 caractères",
+      "confirmRequired": "Veuillez confirmer votre mot de passe",
+      "mismatch": "Les mots de passe doivent correspondre",
+      "currentRequired": "Le mot de passe actuel est requis",
+      "newRequired": "Le nouveau mot de passe est requis",
+      "confirmNewRequired": "Veuillez confirmer votre nouveau mot de passe",
+      "requiredForDelete": "Le mot de passe est requis pour supprimer votre compte"
+    },
+    "email": {
+      "required": "L'email est requis",
+      "invalid": "Adresse email invalide",
+      "maxLength": "L'email doit contenir au maximum 100 caractères"
+    },
+    "name": {
+      "maxLength": "Le nom doit contenir au maximum 100 caractères"
+    },
+    "bio": {
+      "maxLength": "La bio doit contenir au maximum 500 caractères",
+      "maxLengthLong": "La bio doit contenir au maximum 2000 caractères"
+    },
+    "title": {
+      "required": "Le titre est requis",
+      "minLength": "Le titre doit contenir au moins 3 caractères",
+      "maxLength": "Le titre doit contenir au maximum 100 caractères"
+    },
+    "description": {
+      "required": "La description est requise",
+      "minLength": "La description doit contenir au moins 10 caractères",
+      "maxLength": "La description doit contenir au maximum 2000 caractères"
+    },
+    "rating": {
+      "required": "La note est requise",
+      "min": "La note doit être au moins 1",
+      "max": "La note doit être au maximum 5"
+    },
+    "comment": {
+      "required": "Le commentaire est requis",
+      "minLength": "Le commentaire doit contenir au moins 2 caractères",
+      "maxLength": "Le commentaire doit contenir au maximum 500 caractères"
+    },
+    "artistName": {
+      "required": "Le nom de l'artiste est requis",
+      "minLength": "Le nom de l'artiste doit contenir au moins 1 caractère",
+      "maxLength": "Le nom de l'artiste doit contenir au maximum 100 caractères"
+    },
+    "albumTitle": {
+      "required": "Le titre de l'album est requis",
+      "minLength": "Le titre de l'album doit contenir au moins 1 caractère",
+      "maxLength": "Le titre de l'album doit contenir au maximum 100 caractères"
+    },
+    "songTitle": {
+      "required": "Le titre de la chanson est requis",
+      "minLength": "Le titre de la chanson doit contenir au moins 1 caractère",
+      "maxLength": "Le titre de la chanson doit contenir au maximum 100 caractères"
+    },
+    "artist": {
+      "required": "L'artiste est requis",
+      "select": "Veuillez sélectionner un artiste"
+    },
+    "album": {
+      "required": "L'album est requis",
+      "select": "Veuillez sélectionner un album"
+    },
+    "releaseDate": {
+      "future": "La date de sortie ne peut pas être dans le futur"
+    },
+    "genre": {
+      "maxLength": "Le genre doit contenir au maximum 50 caractères"
+    },
+    "duration": {
+      "required": "La durée est requise",
+      "format": "La durée doit être au format MM:SS"
+    },
+    "trackNumber": {
+      "positive": "Le numéro de piste doit être positif",
+      "max": "Le numéro de piste doit être au maximum 999"
+    },
+    "search": {
+      "required": "La recherche est requise",
+      "minLength": "La recherche doit contenir au moins 1 caractère",
+      "maxLength": "La recherche doit contenir au maximum 100 caractères",
+      "invalidType": "Type de recherche invalide"
+    },
+    "deleteConfirmation": {
+      "required": "Veuillez taper DELETE pour confirmer",
+      "invalid": "Veuillez taper DELETE pour confirmer"
+    }
   }
 }

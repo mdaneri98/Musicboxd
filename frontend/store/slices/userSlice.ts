@@ -86,25 +86,25 @@ const initialState: UserState = {
   userReviews: [],
   pagination: {
     page: 1,
-    size: 20,
+    size: 10, 
     totalCount: 0,
     hasMore: true,
   },
   followersPagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
   followingPagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
   reviewsPagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
@@ -134,7 +134,7 @@ export const fetchUsersAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('users/fetchUsers', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
+>('users/fetchUsers', async ({ page = 1, size = 10, search, filter }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getUsers(page, size, search, filter);
     return response as Collection<HALResource<User>>;
@@ -198,7 +198,7 @@ export const fetchFollowersAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { userId: number; page?: number; size?: number },
   { rejectValue: string }
->('users/fetchFollowers', async ({ userId, page = 1, size = 20 }, { rejectWithValue }) => {
+>('users/fetchFollowers', async ({ userId, page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getFollowers(userId, page, size);
     return response as Collection<HALResource<User>>;
@@ -214,7 +214,7 @@ export const fetchMoreFollowersAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { userId: number; page: number; size?: number },
   { rejectValue: string }
->('users/fetchMoreFollowers', async ({ userId, page, size = 20 }, { rejectWithValue }) => {
+>('users/fetchMoreFollowers', async ({ userId, page, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getFollowers(userId, page, size);
     return response as Collection<HALResource<User>>;
@@ -230,7 +230,7 @@ export const fetchFollowingAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { userId: number; page?: number; size?: number },
   { rejectValue: string }
->('users/fetchFollowing', async ({ userId, page = 1, size = 20 }, { rejectWithValue }) => {
+>('users/fetchFollowing', async ({ userId, page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getFollowing(userId, page, size);
     return response as Collection<HALResource<User>>;
@@ -246,7 +246,7 @@ export const fetchMoreFollowingAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { userId: number; page: number; size?: number },
   { rejectValue: string }
->('users/fetchMoreFollowing', async ({ userId, page, size = 20 }, { rejectWithValue }) => {
+>('users/fetchMoreFollowing', async ({ userId, page, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getFollowing(userId, page, size);
     return response as Collection<HALResource<User>>;
@@ -342,7 +342,7 @@ export const fetchUserReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { userId: number; page?: number; size?: number; filter?: string },
   { rejectValue: string }
->('users/fetchUserReviews', async ({ userId, page = 1, size = 20, filter }, { rejectWithValue }) => {
+>('users/fetchUserReviews', async ({ userId, page = 1, size = 10, filter }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getUserReviews(userId, page, size, filter);
     return response as Collection<HALResource<Review>>;
@@ -358,7 +358,7 @@ export const fetchMoreUserReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { userId: number; page: number; size?: number; filter?: string },
   { rejectValue: string }
->('users/fetchMoreUserReviews', async ({ userId, page, size = 20, filter }, { rejectWithValue }) => {
+>('users/fetchMoreUserReviews', async ({ userId, page, size = 10, filter }, { rejectWithValue }) => {
   try {
     const response = await userRepository.getUserReviews(userId, page, size, filter);
     return response as Collection<HALResource<Review>>;

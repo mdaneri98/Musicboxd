@@ -44,7 +44,7 @@ const initialState: NotificationState = {
   unreadCount: 0,
   pagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
@@ -65,7 +65,7 @@ export const fetchNotificationsAsync = createAsyncThunk<
   Collection<HALResource<Notification>>,
   { page?: number; size?: number },
   { rejectValue: string }
->('notifications/fetchNotificationsAsync', async ({ page = 1, size = 20 }, { rejectWithValue }) => {
+>('notifications/fetchNotificationsAsync', async ({ page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await notificationRepository.getNotifications(page, size);
     return response as Collection<HALResource<Notification>>;
@@ -81,7 +81,7 @@ export const fetchMoreNotificationsAsync = createAsyncThunk<
   Collection<HALResource<Notification>>,
   { page: number; size?: number },
   { rejectValue: string }
->('notifications/fetchMoreNotificationsAsync', async ({ page, size = 20 }, { rejectWithValue }) => {
+>('notifications/fetchMoreNotificationsAsync', async ({ page, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await notificationRepository.getNotifications(page, size);
     return response as Collection<HALResource<Notification>>;
@@ -209,7 +209,7 @@ const notificationSlice = createSlice({
       state.unreadCount = 0;
       state.pagination = {
         page: 1,
-        size: 20,
+        size: 10,
         totalCount: 0,
         hasMore: true,
       };

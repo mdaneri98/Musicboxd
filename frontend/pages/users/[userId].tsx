@@ -73,7 +73,7 @@ const UserProfilePage = () => {
     dispatch(fetchFavoriteArtistsAsync(userIdNum));
     dispatch(fetchFavoriteAlbumsAsync(userIdNum));
     dispatch(fetchFavoriteSongsAsync(userIdNum));
-    dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: 1, size: 20 }));
+    dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: 1, size: 10 }));
   }, [userId, dispatch, loggedUser, router, activeTab]);
 
   // Update isFollowing when user data is loaded

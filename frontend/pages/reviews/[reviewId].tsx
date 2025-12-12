@@ -80,8 +80,8 @@ const ReviewDetailPage = () => {
     if (!reviewId) return;
     const reviewIdNum = parseInt(reviewId as string);
     if (!review) dispatch(fetchReviewByIdAsync(reviewIdNum));
-    dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page: 1, size: 20 }));
-    dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page: 1, size: 20 }));
+    dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page: 1, size: 10 }));
+    dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page: 1, size: 10 }));
   }, [reviewId, dispatch, review]);
 
   // Load more comments

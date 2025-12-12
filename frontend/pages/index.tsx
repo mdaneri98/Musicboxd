@@ -49,7 +49,7 @@ const HomePage = () => {
     
     // Clear existing reviews and fetch fresh data
     dispatch(clearReviews());
-    dispatch(fetchReviewsAsync({ page: 1, size: 20, filter }));
+    dispatch(fetchReviewsAsync({ page: 1, size: 10, filter }));
   }, [isAuthenticated, filter, dispatch]);
 
   // Load more callback for infinite scroll

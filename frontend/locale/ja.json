@@ -475,5 +475,154 @@
     "moderator": {
       "title": "モデレーターダッシュボード"
     }
+  },
+  "moderator": {
+    "title": "モデレーターダッシュボード",
+    "musicEditor": "音楽エディター",
+    "addArtist": "アーティストを追加",
+    "editArtist": "アーティストを編集",
+    "artistInfo": "アーティスト情報",
+    "artistName": "アーティスト名",
+    "artistImage": "アーティスト画像",
+    "enterArtistName": "アーティスト名を入力",
+    "bio": "経歴",
+    "enterBio": "アーティストの経歴を入力...",
+    "albums": "アルバム",
+    "addAlbum": "アルバムを追加",
+    "newAlbum": "新しいアルバム",
+    "albumTitle": "アルバムタイトル",
+    "enterAlbumTitle": "アルバムタイトルを入力",
+    "albumImage": "アルバム画像",
+    "genre": "ジャンル",
+    "enterGenre": "ジャンルを入力",
+    "releaseDate": "リリース日",
+    "removeAlbum": "アルバムを削除",
+    "songs": "曲",
+    "addSong": "曲を追加",
+    "songTitle": "曲名",
+    "removeSong": "曲を削除",
+    "noSongsYet": "まだ曲が追加されていません",
+    "noAlbumsYet": "まだアルバムが追加されていません",
+    "clickAddAlbumHint": "「アルバムを追加」をクリックしてアルバムと曲を追加",
+    "clickToUploadImage": "クリックして画像をアップロード",
+    "createArtist": "アーティストを作成",
+    "saveChanges": "変更を保存",
+    "failedToLoadArtist": "アーティストデータの読み込みに失敗しました",
+    "failedToSaveArtist": "アーティストの保存に失敗しました。再試行してください。",
+    "validation": {
+      "nameRequired": "アーティスト名は必須です",
+      "nameLength": "名前は2〜50文字である必要があります",
+      "bioLength": "経歴は最大2048文字です",
+      "albumTitleRequired": "アルバムタイトルは必須です",
+      "albumTitleLength": "アルバムタイトルは1〜100文字である必要があります",
+      "genreLength": "ジャンルは最大50文字です",
+      "songTitleRequired": "曲名は必須です",
+      "songTitleLength": "曲名は1〜100文字である必要があります",
+      "songDurationRequired": "再生時間は必須です",
+      "songDurationFormat": "再生時間はMM:SS形式である必要があります",
+      "trackNumberPositive": "トラック番号は正の数である必要があります",
+      "trackNumberMax": "トラック番号は最大500です"
+    }
+  },
+  "validation": {
+    "username": {
+      "required": "ユーザー名は必須です",
+      "minLength": "ユーザー名は3文字以上である必要があります",
+      "minLengthRegister": "ユーザー名は4文字以上である必要があります",
+      "maxLength": "ユーザー名は50文字以下である必要があります",
+      "format": "ユーザー名は文字で始まり、文字と数字のみを含む必要があります",
+      "formatProfile": "ユーザー名には文字、数字、アンダースコア、ハイフンのみ使用できます"
+    },
+    "password": {
+      "required": "パスワードは必須です",
+      "minLength": "パスワードは6文字以上である必要があります",
+      "minLengthRegister": "パスワードは8文字以上である必要があります",
+      "maxLength": "パスワードは100文字以下である必要があります",
+      "confirmRequired": "パスワードを確認してください",
+      "mismatch": "パスワードが一致しません",
+      "currentRequired": "現在のパスワードは必須です",
+      "newRequired": "新しいパスワードは必須です",
+      "confirmNewRequired": "新しいパスワードを確認してください",
+      "requiredForDelete": "アカウントを削除するにはパスワードが必要です"
+    },
+    "email": {
+      "required": "メールアドレスは必須です",
+      "invalid": "無効なメールアドレスです",
+      "maxLength": "メールアドレスは100文字以下である必要があります"
+    },
+    "name": {
+      "maxLength": "名前は100文字以下である必要があります"
+    },
+    "bio": {
+      "maxLength": "自己紹介は500文字以下である必要があります",
+      "maxLengthLong": "自己紹介は2000文字以下である必要があります"
+    },
+    "title": {
+      "required": "タイトルは必須です",
+      "minLength": "タイトルは3文字以上である必要があります",
+      "maxLength": "タイトルは100文字以下である必要があります"
+    },
+    "description": {
+      "required": "説明は必須です",
+      "minLength": "説明は10文字以上である必要があります",
+      "maxLength": "説明は2000文字以下である必要があります"
+    },
+    "rating": {
+      "required": "評価は必須です",
+      "min": "評価は1以上である必要があります",
+      "max": "評価は5以下である必要があります"
+    },
+    "comment": {
+      "required": "コメントは必須です",
+      "minLength": "コメントは2文字以上である必要があります",
+      "maxLength": "コメントは500文字以下である必要があります"
+    },
+    "artistName": {
+      "required": "アーティスト名は必須です",
+      "minLength": "アーティスト名は1文字以上である必要があります",
+      "maxLength": "アーティスト名は100文字以下である必要があります"
+    },
+    "albumTitle": {
+      "required": "アルバムタイトルは必須です",
+      "minLength": "アルバムタイトルは1文字以上である必要があります",
+      "maxLength": "アルバムタイトルは100文字以下である必要があります"
+    },
+    "songTitle": {
+      "required": "曲名は必須です",
+      "minLength": "曲名は1文字以上である必要があります",
+      "maxLength": "曲名は100文字以下である必要があります"
+    },
+    "artist": {
+      "required": "アーティストは必須です",
+      "select": "アーティストを選択してください"
+    },
+    "album": {
+      "required": "アルバムは必須です",
+      "select": "アルバムを選択してください"
+    },
+    "releaseDate": {
+      "future": "リリース日は未来の日付にできません"
+    },
+    "genre": {
+      "maxLength": "ジャンルは50文字以下である必要があります"
+    },
+    "duration": {
+      "required": "再生時間は必須です",
+      "format": "再生時間はMM:SS形式である必要があります"
+    },
+    "trackNumber": {
+      "positive": "トラック番号は正の数である必要があります",
+      "max": "トラック番号は999以下である必要があります"
+    },
+    "search": {
+      "required": "検索クエリは必須です",
+      "minLength": "検索クエリは1文字以上である必要があります",
+      "maxLength": "検索クエリは100文字以下である必要があります",
+      "invalidType": "無効な検索タイプです"
+    },
+    "deleteConfirmation": {
+      "required": "確認のためDELETEと入力してください",
+      "invalid": "確認のためDELETEと入力してください"
+    }
   }
 }

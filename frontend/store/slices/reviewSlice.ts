@@ -65,19 +65,19 @@ const initialState: ReviewState = {
   reviewLikes: [],
   pagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
   commentsPagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
   likesPagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
@@ -102,7 +102,7 @@ export const fetchReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('reviews/fetchReviews', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
+>('reviews/fetchReviews', async ({ page = 1, size = 10, search, filter }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviews(page, size, search, filter);
     return response as Collection<HALResource<Review>>;
@@ -118,7 +118,7 @@ export const fetchMoreReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { page: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('reviews/fetchMoreReviews', async ({ page, size = 20, search, filter }, { rejectWithValue }) => {
+>('reviews/fetchMoreReviews', async ({ page, size = 10, search, filter }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviews(page, size, search, filter);
     return response as Collection<HALResource<Review>>;
@@ -198,7 +198,7 @@ export const fetchReviewLikesAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { reviewId: number; page?: number; size?: number },
   { rejectValue: string }
->('reviews/fetchReviewLikes', async ({ reviewId, page = 1, size = 20 }, { rejectWithValue }) => {
+>('reviews/fetchReviewLikes', async ({ reviewId, page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviewLikes(reviewId, page, size);
     return response as Collection<HALResource<User>>;
@@ -214,7 +214,7 @@ export const fetchMoreReviewLikesAsync = createAsyncThunk<
   Collection<HALResource<User>>,
   { reviewId: number; page: number; size?: number },
   { rejectValue: string }
->('reviews/fetchMoreReviewLikes', async ({ reviewId, page, size = 20 }, { rejectWithValue }) => {
+>('reviews/fetchMoreReviewLikes', async ({ reviewId, page, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviewLikes(reviewId, page, size);
     return response as Collection<HALResource<User>>;
@@ -262,7 +262,7 @@ export const fetchReviewCommentsAsync = createAsyncThunk<
   Collection<HALResource<Comment>>,
   { reviewId: number; page?: number; size?: number },
   { rejectValue: string }
->('reviews/fetchReviewComments', async ({ reviewId, page = 1, size = 20 }, { rejectWithValue }) => {
+>('reviews/fetchReviewComments', async ({ reviewId, page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviewComments(reviewId, page, size);
     return response as Collection<HALResource<Comment>>;
@@ -278,7 +278,7 @@ export const fetchMoreReviewCommentsAsync = createAsyncThunk<
   Collection<HALResource<Comment>>,
   { reviewId: number; page: number; size?: number },
   { rejectValue: string }
->('reviews/fetchMoreReviewComments', async ({ reviewId, page, size = 20 }, { rejectWithValue }) => {
+>('reviews/fetchMoreReviewComments', async ({ reviewId, page, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await reviewRepository.getReviewComments(reviewId, page, size);
     return response as Collection<HALResource<Comment>>;
@@ -373,8 +373,8 @@ const reviewSlice = createSlice({
       state.currentReview = null;
       state.reviewComments = [];
       state.reviewLikes = [];
-      state.commentsPagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
-      state.likesPagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+      state.commentsPagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
+      state.likesPagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
 
     /**
@@ -383,7 +383,7 @@ const reviewSlice = createSlice({
     clearReviews: (state) => {
       state.reviews = {};
       state.orderedReviewsIds = [];
-      state.pagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+      state.pagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
 
     /**

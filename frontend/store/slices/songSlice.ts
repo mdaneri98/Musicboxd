@@ -57,13 +57,13 @@ const initialState: SongState = {
   songReviews: [],
   pagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
   reviewsPagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
@@ -83,7 +83,7 @@ export const fetchSongsAsync = createAsyncThunk<
   Collection<HALResource<Song>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('songs/fetchSongs', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
+>('songs/fetchSongs', async ({ page = 1, size = 10, search, filter }, { rejectWithValue }) => {
   try {
     const response = await songRepository.getSongs(page, size, search, filter);
     return response as Collection<HALResource<Song>>;
@@ -96,7 +96,7 @@ export const fetchMoreSongsAsync = createAsyncThunk<
   Collection<HALResource<Song>>,
   { page: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('songs/fetchMoreSongs', async ({ page, size = 20, search, filter }, { rejectWithValue }) => {
+>('songs/fetchMoreSongs', async ({ page, size = 10, search, filter }, { rejectWithValue }) => {
   try {
     const response = await songRepository.getSongs(page, size, search, filter);
     return response as Collection<HALResource<Song>>;
@@ -161,7 +161,7 @@ export const fetchSongReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { songId: number; page?: number; size?: number; filter?: string },
   { rejectValue: string }
->('songs/fetchSongReviews', async ({ songId, page = 1, size = 20, filter }, { rejectWithValue }) => {
+>('songs/fetchSongReviews', async ({ songId, page = 1, size = 10, filter }, { rejectWithValue }) => {
   try {
     const response = await songRepository.getSongReviews(songId, page, size, filter);
     return response as Collection<HALResource<Review>>;
@@ -174,7 +174,7 @@ export const fetchMoreSongReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { songId: number; page: number; size?: number; filter?: string },
   { rejectValue: string }
->('songs/fetchMoreSongReviews', async ({ songId, page, size = 20, filter }, { rejectWithValue }) => {
+>('songs/fetchMoreSongReviews', async ({ songId, page, size = 10, filter }, { rejectWithValue }) => {
   try {
     const response = await songRepository.getSongReviews(songId, page, size, filter);
     return response as Collection<HALResource<Review>>;
@@ -236,12 +236,12 @@ const songSlice = createSlice({
     clearCurrentSong: (state) => {
       state.currentSong = null;
       state.songReviews = [];
-      state.reviewsPagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+      state.reviewsPagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
     clearSongs: (state) => {
       state.songs = {};
       state.orderedSongsIds = [];
-      state.pagination = { page: 1, size: 20, totalCount: 0, hasMore: true };
+      state.pagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
     addSong: (state, action: PayloadAction<Song>) => {
       state.songs[action.payload.id] = action.payload;

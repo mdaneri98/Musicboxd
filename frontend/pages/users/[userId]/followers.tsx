@@ -56,7 +56,7 @@ const FollowersPage = () => {
     
     const userIdNum = parseInt(userId as string);
     dispatch(fetchUserByIdAsync(userIdNum));
-    dispatch(fetchFollowersAsync({ userId: userIdNum, page: 1, size: 20 }));
+    dispatch(fetchFollowersAsync({ userId: userIdNum, page: 1, size: 10 }));
   }, [userId, dispatch]);
 
   // Update isFollowing when user data is loaded

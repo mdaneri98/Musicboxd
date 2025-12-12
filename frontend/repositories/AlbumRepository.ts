@@ -45,7 +45,7 @@ class AlbumRepository {
    */
   async getAlbums(
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     search?: string,
     filter?: string
   ): Promise<Collection<HALResource<Album>>> {
@@ -161,7 +161,7 @@ class AlbumRepository {
   async getAlbumReviews(
     id: number,
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     filter?: string
   ): Promise<Collection<HALResource<Review>>> {
     try {

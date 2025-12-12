@@ -75,7 +75,7 @@ const SongDetailPage = () => {
       .catch((err) => console.error(t('common.error'), err));
 
     // Fetch reviews (initial load)
-    dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 20 }));
+    dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 10 }));
   }, [songId, dispatch, t]);
 
   // Set user rating when reviews and user data are available

@@ -35,7 +35,7 @@ class NotificationRepository {
    */
   async getNotifications(
     page: number = 1,
-    size: number = 20
+    size: number = 10
   ): Promise<Collection<HALResource<Notification>>> {
     try {
       const params: PaginationParams = { page, size };
