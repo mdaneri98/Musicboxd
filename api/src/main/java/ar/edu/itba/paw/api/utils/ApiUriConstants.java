@@ -17,6 +17,11 @@ public class ApiUriConstants {
     public static final String REFRESH = "/refresh";
     public static final String ME = "/me";
 
+    /* EMAIL */
+    public static final String EMAIL_BASE = API_BASE + "/email";
+    public static final String EMAIL_VERIFICATION = "/verification";
+    public static final String RESEND_VERIFICATION = "/resend";
+
     /* USERS */
     public static final String USERS_BASE = API_BASE + "/users";
     public static final String USER_REVIEWS = ID + "/reviews";

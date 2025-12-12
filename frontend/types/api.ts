@@ -106,6 +106,33 @@ export interface RefreshTokenResponse {
 }
 
 // ============================================================================
+// Email Verification Types
+// ============================================================================
+
+/**
+ * Email verification request
+ */
+export interface EmailVerificationRequest {
+  code: string;
+}
+
+/**
+ * Email verification response
+ */
+export interface EmailVerificationResponse {
+  userId: number;
+  message: string;
+  verified: boolean;
+}
+
+/**
+ * Resend verification email request
+ */
+export interface ResendVerificationRequest {
+  email: string;
+}
+
+// ============================================================================
 // Error Types
 // ============================================================================
 

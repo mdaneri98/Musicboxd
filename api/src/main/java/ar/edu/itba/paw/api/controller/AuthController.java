@@ -100,7 +100,7 @@ public class AuthController extends BaseController {
         User user = authService.getCurrentUser(accessToken);
         UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
-        
+
         return Response.ok(userResource).build();
     }
 }

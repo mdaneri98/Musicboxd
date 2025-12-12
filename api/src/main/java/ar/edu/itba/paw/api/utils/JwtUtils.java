@@ -26,6 +26,9 @@ public class JwtUtils {
      * @return true if path should be excluded
      */
     public static boolean isExcludedPath(String path) {
-        return path != null && path.startsWith(ApiUriConstants.AUTH_BASE);
+        return path != null && (
+            path.startsWith(ApiUriConstants.AUTH_BASE) ||
+            path.startsWith(ApiUriConstants.EMAIL_BASE)
+        );
     }
 }

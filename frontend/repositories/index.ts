@@ -11,4 +11,5 @@ export { reviewRepository } from './ReviewRepository';
 export { commentRepository } from './CommentRepository';
 export { notificationRepository } from './NotificationRepository';
 export { imageRepository } from './ImageRepository';
+export { emailRepository } from './EmailRepository';
 

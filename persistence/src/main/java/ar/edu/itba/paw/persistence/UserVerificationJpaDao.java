@@ -60,7 +60,7 @@ public class UserVerificationJpaDao implements UserVerificationDao {
                 return user.getId();
             }
         } catch (NoResultException e) {
-            // TODO: Manejar exception
+            return 0L;
         }
         return 0L;
     }

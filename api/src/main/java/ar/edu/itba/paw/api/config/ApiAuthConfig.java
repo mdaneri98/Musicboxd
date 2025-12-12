@@ -65,6 +65,7 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
                 // Public endpoints
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/images/**").permitAll()
+                .antMatchers("/api/email/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/**").permitAll()
                 
                 // ROLE_MODERATOR-only endpoints - Content Management

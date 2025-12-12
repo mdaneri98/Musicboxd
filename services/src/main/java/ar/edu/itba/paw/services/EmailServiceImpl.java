@@ -72,31 +72,30 @@ public class EmailServiceImpl implements EmailService {
 
         Locale currentLocale = new Locale.Builder().setLanguage(to.getPreferredLanguage()).build();
 
-        String baseUrl = environment.getProperty("app.url.base");
+        String frontendUrl = environment.getProperty("app.frontend");
         String verificationURL = "";
         String template = "";
         String emailSubject = "";
 
         switch (type) {
             case VERIFY_EMAIL -> {
-                verificationURL = baseUrl + "/user/email-verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                verificationURL = frontendUrl + "/verify-email?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
                 template = "user_verification";
                 emailSubject = "verification.email";
             }
             case VERIFY_FORGOT_PASSWORD -> {
-                verificationURL = baseUrl + "/user/reset-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                verificationURL = frontendUrl + "/reset-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
                 template = "create_password";
                 emailSubject = "verification.password";
             }
             case VERIFY_GENERAL -> {
-                verificationURL = baseUrl + "/general-verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                verificationURL = frontendUrl + "/general-verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
                 template = "general_verification";
                 emailSubject = "verification.general";
             }
         }
 
-        LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, to
-.getEmail());
+        LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, to.getEmail());
         LOGGER.debug("Verification URL: {}", verificationURL);
 
         params.put("verificationURL", verificationURL);
