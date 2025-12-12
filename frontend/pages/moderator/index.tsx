@@ -222,11 +222,6 @@ export default function ModeratorDashboardPage() {
     }
   };
 
-  // Handle edit artist (redirect to music editor with artist ID)
-  const handleEditArtist = (artistId: number) => {
-    router.push(`/moderator/music?artistId=${artistId}`);
-  };
-
   if (!isAuthenticated || (currentUser && !currentUser.moderator)) {
     return null; // Will redirect in useEffect
   }

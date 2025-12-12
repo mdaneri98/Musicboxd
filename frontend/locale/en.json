@@ -293,6 +293,8 @@
     "goToPage": "Go to page",
     "page": "Page",
     "of": "of",
+    "noMoreContent": "You've reached the end",
+    "loadingMore": "Loading more...",
     "rateThis": {
       "artist": "Rate this artist",
       "album": "Rate this album",
@@ -303,7 +305,10 @@
     "averageRating": "Average Rating",
     "yourRating": "Your Rating",
     "failedToToggleLike": "Failed to toggle like",
-    "failedToToggleFollow": "Failed to toggle follow"
+    "failedToToggleFollow": "Failed to toggle follow",
+    "noFavoritesYet": "No favorites yet",
+    "removeImage": "Remove image",
+    "uploadImage": "Upload image"
   },
   "errors": {
     "required": "This field is required",
@@ -462,10 +467,12 @@
     "enterGenre": "Enter genre",
     "releaseDate": "Release Date",
     "removeAlbum": "Remove Album",
+    "confirmRemoveAlbum": "Are you sure you want to remove this album? All songs in this album will also be removed.",
     "songs": "songs",
     "addSong": "Add Song",
     "songTitle": "Song title",
     "removeSong": "Remove Song",
+    "confirmRemoveSong": "Are you sure you want to remove this song?",
     "noSongsYet": "No songs added yet",
     "noAlbumsYet": "No albums added yet",
     "clickAddAlbumHint": "Click 'Add Album' to add albums and songs",
@@ -479,10 +486,14 @@
       "nameLength": "Name must be between 2 and 50 characters",
       "bioLength": "Biography must be at most 2048 characters",
       "albumTitleRequired": "Album title is required",
-      "albumTitleLength": "Album title must be between 2 and 100 characters",
+      "albumTitleLength": "Album title must be between 1 and 100 characters",
+      "genreLength": "Genre must be at most 50 characters",
       "songTitleRequired": "Song title is required",
       "songTitleLength": "Song title must be between 1 and 100 characters",
-      "songDurationFormat": "Duration must be in MM:SS format"
+      "songDurationRequired": "Duration is required",
+      "songDurationFormat": "Duration must be in MM:SS format",
+      "trackNumberPositive": "Track number must be positive",
+      "trackNumberMax": "Track number must be at most 500"
     }
   },
   "time": {
@@ -513,6 +524,107 @@
     },
     "moderator": {
       "title": "Moderator Dashboard"
+    }
+  },
+  "validation": {
+    "username": {
+      "required": "Username is required",
+      "minLength": "Username must be at least 3 characters",
+      "minLengthRegister": "Username must be at least 4 characters",
+      "maxLength": "Username must be at most 50 characters",
+      "format": "Username must start with a letter and contain only letters and numbers",
+      "formatProfile": "Username can only contain letters, numbers, underscores and dashes"
+    },
+    "password": {
+      "required": "Password is required",
+      "minLength": "Password must be at least 6 characters",
+      "minLengthRegister": "Password must be at least 8 characters",
+      "maxLength": "Password must be at most 100 characters",
+      "confirmRequired": "Please confirm your password",
+      "mismatch": "Passwords must match",
+      "currentRequired": "Current password is required",
+      "newRequired": "New password is required",
+      "confirmNewRequired": "Please confirm your new password",
+      "requiredForDelete": "Password is required to delete your account"
+    },
+    "email": {
+      "required": "Email is required",
+      "invalid": "Invalid email address",
+      "maxLength": "Email must be at most 100 characters"
+    },
+    "name": {
+      "maxLength": "Name must be at most 100 characters"
+    },
+    "bio": {
+      "maxLength": "Bio must be at most 500 characters",
+      "maxLengthLong": "Bio must be at most 2000 characters"
+    },
+    "title": {
+      "required": "Title is required",
+      "minLength": "Title must be at least 3 characters",
+      "maxLength": "Title must be at most 100 characters"
+    },
+    "description": {
+      "required": "Description is required",
+      "minLength": "Description must be at least 10 characters",
+      "maxLength": "Description must be at most 2000 characters"
+    },
+    "rating": {
+      "required": "Rating is required",
+      "min": "Rating must be at least 1",
+      "max": "Rating must be at most 5"
+    },
+    "comment": {
+      "required": "Comment is required",
+      "minLength": "Comment must be at least 2 characters",
+      "maxLength": "Comment must be at most 500 characters"
+    },
+    "artistName": {
+      "required": "Artist name is required",
+      "minLength": "Artist name must be at least 1 character",
+      "maxLength": "Artist name must be at most 100 characters"
+    },
+    "albumTitle": {
+      "required": "Album title is required",
+      "minLength": "Album title must be at least 1 character",
+      "maxLength": "Album title must be at most 100 characters"
+    },
+    "songTitle": {
+      "required": "Song title is required",
+      "minLength": "Song title must be at least 1 character",
+      "maxLength": "Song title must be at most 100 characters"
+    },
+    "artist": {
+      "required": "Artist is required",
+      "select": "Please select an artist"
+    },
+    "album": {
+      "required": "Album is required",
+      "select": "Please select an album"
+    },
+    "releaseDate": {
+      "future": "Release date cannot be in the future"
+    },
+    "genre": {
+      "maxLength": "Genre must be at most 50 characters"
+    },
+    "duration": {
+      "required": "Duration is required",
+      "format": "Duration must be in format MM:SS"
+    },
+    "trackNumber": {
+      "positive": "Track number must be positive",
+      "max": "Track number must be at most 999"
+    },
+    "search": {
+      "required": "Search query is required",
+      "minLength": "Search query must be at least 1 character",
+      "maxLength": "Search query must be at most 100 characters",
+      "invalidType": "Invalid search type"
+    },
+    "deleteConfirmation": {
+      "required": "Please type DELETE to confirm",
+      "invalid": "Please type DELETE to confirm"
     }
   }
 }

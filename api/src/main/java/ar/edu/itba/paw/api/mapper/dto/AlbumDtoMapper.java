@@ -30,16 +30,9 @@ public class AlbumDtoMapper {
         dto.setAvgRating(album.getAvgRating());
         dto.setCreatedAt(album.getCreatedAt());
         dto.setUpdatedAt(album.getUpdatedAt());
+        dto.setIsReviewed(album.getIsReviewed());
+        dto.setIsFavorite(album.getIsFavorite());
 
-        return dto;
-    }
-
-    public AlbumDTO toDTO(Album album, Boolean isReviewed, Boolean isFavorite) {
-        AlbumDTO dto = toDTO(album);
-        if (dto != null) {
-            dto.setIsReviewed(isReviewed);
-            dto.setIsFavorite(isFavorite);
-        }
         return dto;
     }
 

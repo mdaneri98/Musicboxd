@@ -293,6 +293,8 @@
     "goToPage": "Ir para a página",
     "page": "Página",
     "of": "de",
+    "noMoreContent": "Você chegou ao final",
+    "loadingMore": "Carregando mais...",
     "rateThis": {
       "artist": "Avaliar este artista",
       "album": "Avaliar este álbum",
@@ -303,7 +305,10 @@
     "averageRating": "Avaliação média",
     "yourRating": "Sua avaliação",
     "failedToToggleLike": "Falha ao alternar curtida",
-    "failedToToggleFollow": "Falha ao alternar seguir"
+    "failedToToggleFollow": "Falha ao alternar seguir",
+    "noFavoritesYet": "Ainda não tem favoritos",
+    "removeImage": "Remover imagem",
+    "uploadImage": "Carregar imagem"
   },
   "errors": {
     "required": "Este campo é obrigatório",
@@ -469,6 +474,157 @@
     },
     "moderator": {
       "title": "Painel do moderador"
+    }
+  },
+  "moderator": {
+    "title": "Painel do moderador",
+    "musicEditor": "Editor de música",
+    "addArtist": "Adicionar artista",
+    "editArtist": "Editar artista",
+    "artistInfo": "Informações do artista",
+    "artistName": "Nome do artista",
+    "artistImage": "Imagem do artista",
+    "enterArtistName": "Digite o nome do artista",
+    "bio": "Biografia",
+    "enterBio": "Digite a biografia do artista...",
+    "albums": "Álbuns",
+    "addAlbum": "Adicionar álbum",
+    "newAlbum": "Novo álbum",
+    "albumTitle": "Título do álbum",
+    "enterAlbumTitle": "Digite o título do álbum",
+    "albumImage": "Imagem do álbum",
+    "genre": "Gênero",
+    "enterGenre": "Digite o gênero",
+    "releaseDate": "Data de lançamento",
+    "removeAlbum": "Remover álbum",
+    "confirmRemoveAlbum": "Tem certeza de que deseja remover este álbum? Todas as músicas deste álbum também serão removidas.",
+    "songs": "músicas",
+    "addSong": "Adicionar música",
+    "songTitle": "Título da música",
+    "removeSong": "Remover música",
+    "confirmRemoveSong": "Tem certeza de que deseja remover esta música?",
+    "noSongsYet": "Nenhuma música adicionada ainda",
+    "noAlbumsYet": "Nenhum álbum adicionado ainda",
+    "clickAddAlbumHint": "Clique em 'Adicionar álbum' para adicionar álbuns e músicas",
+    "clickToUploadImage": "Clique para enviar imagem",
+    "createArtist": "Criar artista",
+    "saveChanges": "Salvar alterações",
+    "failedToLoadArtist": "Falha ao carregar dados do artista",
+    "failedToSaveArtist": "Falha ao salvar artista. Tente novamente.",
+    "validation": {
+      "nameRequired": "O nome do artista é obrigatório",
+      "nameLength": "O nome deve ter entre 2 e 50 caracteres",
+      "bioLength": "A biografia deve ter no máximo 2048 caracteres",
+      "albumTitleRequired": "O título do álbum é obrigatório",
+      "albumTitleLength": "O título do álbum deve ter entre 1 e 100 caracteres",
+      "genreLength": "O gênero deve ter no máximo 50 caracteres",
+      "songTitleRequired": "O título da música é obrigatório",
+      "songTitleLength": "O título da música deve ter entre 1 e 100 caracteres",
+      "songDurationRequired": "A duração é obrigatória",
+      "songDurationFormat": "A duração deve estar no formato MM:SS",
+      "trackNumberPositive": "O número da faixa deve ser positivo",
+      "trackNumberMax": "O número da faixa deve ser no máximo 500"
+    }
+  },
+  "validation": {
+    "username": {
+      "required": "O nome de usuário é obrigatório",
+      "minLength": "O nome de usuário deve ter pelo menos 3 caracteres",
+      "minLengthRegister": "O nome de usuário deve ter pelo menos 4 caracteres",
+      "maxLength": "O nome de usuário deve ter no máximo 50 caracteres",
+      "format": "O nome de usuário deve começar com uma letra e conter apenas letras e números",
+      "formatProfile": "O nome de usuário só pode conter letras, números, sublinhados e hífens"
+    },
+    "password": {
+      "required": "A senha é obrigatória",
+      "minLength": "A senha deve ter pelo menos 6 caracteres",
+      "minLengthRegister": "A senha deve ter pelo menos 8 caracteres",
+      "maxLength": "A senha deve ter no máximo 100 caracteres",
+      "confirmRequired": "Por favor, confirme sua senha",
+      "mismatch": "As senhas devem corresponder",
+      "currentRequired": "A senha atual é obrigatória",
+      "newRequired": "A nova senha é obrigatória",
+      "confirmNewRequired": "Por favor, confirme sua nova senha",
+      "requiredForDelete": "A senha é obrigatória para excluir sua conta"
+    },
+    "email": {
+      "required": "O email é obrigatório",
+      "invalid": "Endereço de email inválido",
+      "maxLength": "O email deve ter no máximo 100 caracteres"
+    },
+    "name": {
+      "maxLength": "O nome deve ter no máximo 100 caracteres"
+    },
+    "bio": {
+      "maxLength": "A bio deve ter no máximo 500 caracteres",
+      "maxLengthLong": "A bio deve ter no máximo 2000 caracteres"
+    },
+    "title": {
+      "required": "O título é obrigatório",
+      "minLength": "O título deve ter pelo menos 3 caracteres",
+      "maxLength": "O título deve ter no máximo 100 caracteres"
+    },
+    "description": {
+      "required": "A descrição é obrigatória",
+      "minLength": "A descrição deve ter pelo menos 10 caracteres",
+      "maxLength": "A descrição deve ter no máximo 2000 caracteres"
+    },
+    "rating": {
+      "required": "A avaliação é obrigatória",
+      "min": "A avaliação deve ser pelo menos 1",
+      "max": "A avaliação deve ser no máximo 5"
+    },
+    "comment": {
+      "required": "O comentário é obrigatório",
+      "minLength": "O comentário deve ter pelo menos 2 caracteres",
+      "maxLength": "O comentário deve ter no máximo 500 caracteres"
+    },
+    "artistName": {
+      "required": "O nome do artista é obrigatório",
+      "minLength": "O nome do artista deve ter pelo menos 1 caractere",
+      "maxLength": "O nome do artista deve ter no máximo 100 caracteres"
+    },
+    "albumTitle": {
+      "required": "O título do álbum é obrigatório",
+      "minLength": "O título do álbum deve ter pelo menos 1 caractere",
+      "maxLength": "O título do álbum deve ter no máximo 100 caracteres"
+    },
+    "songTitle": {
+      "required": "O título da música é obrigatório",
+      "minLength": "O título da música deve ter pelo menos 1 caractere",
+      "maxLength": "O título da música deve ter no máximo 100 caracteres"
+    },
+    "artist": {
+      "required": "O artista é obrigatório",
+      "select": "Por favor, selecione um artista"
+    },
+    "album": {
+      "required": "O álbum é obrigatório",
+      "select": "Por favor, selecione um álbum"
+    },
+    "releaseDate": {
+      "future": "A data de lançamento não pode ser no futuro"
+    },
+    "genre": {
+      "maxLength": "O gênero deve ter no máximo 50 caracteres"
+    },
+    "duration": {
+      "required": "A duração é obrigatória",
+      "format": "A duração deve estar no formato MM:SS"
+    },
+    "trackNumber": {
+      "positive": "O número da faixa deve ser positivo",
+      "max": "O número da faixa deve ser no máximo 999"
+    },
+    "search": {
+      "required": "A pesquisa é obrigatória",
+      "minLength": "A pesquisa deve ter pelo menos 1 caractere",
+      "maxLength": "A pesquisa deve ter no máximo 100 caracteres",
+      "invalidType": "Tipo de pesquisa inválido"
+    },
+    "deleteConfirmation": {
+      "required": "Por favor, digite DELETE para confirmar",
+      "invalid": "Por favor, digite DELETE para confirmar"
     }
   }
 }

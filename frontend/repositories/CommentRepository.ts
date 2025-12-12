@@ -37,7 +37,7 @@ class CommentRepository {
    */
   async getComments(
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     search?: string,
     filter?: string
   ): Promise<Collection<HALResource<Comment>>> {

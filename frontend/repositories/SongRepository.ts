@@ -41,8 +41,8 @@ class SongRepository {
    * @returns Collection of songs with pagination metadata
    */
   async getSongs(
-    page: number = 1,
-    size: number = 20,
+    page: number = 1, 
+    size: number = 10,
     search?: string,
     filter?: string
   ): Promise<Collection<HALResource<Song>>> {
@@ -158,7 +158,7 @@ class SongRepository {
   async getSongReviews(
     id: number,
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     filter?: string
   ): Promise<Collection<HALResource<Review>>> {
     try {

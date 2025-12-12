@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
+import { LoadingSpinner } from '@/components/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistLoading, selectAlbumLoading, selectSongLoading } from '@/store/slices';
 import { Artist, Album, Song, FilterTypeEnum, MusicTabEnum, ReviewItemTypeEnum } from '@/types';
@@ -16,7 +17,7 @@ const MusicDiscoveryPage = () => {
   const artistLoading = useAppSelector(selectArtistLoading);
   const albumLoading = useAppSelector(selectAlbumLoading);
   const songLoading = useAppSelector(selectSongLoading);
-  const loading = artistLoading && albumLoading && songLoading;
+  const loading = artistLoading || albumLoading || songLoading;
   
   const [artistTab, setArtistTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
   const [albumTab, setAlbumTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
@@ -75,7 +76,7 @@ const MusicDiscoveryPage = () => {
         </div>
 
         {loading ? (
-          <div className="loading">{t('music.loadingMusic')}</div>
+          <LoadingSpinner size="large" centered />
         ) : (
           <>
             {/* Artists Section */}

@@ -18,6 +18,7 @@ import {
 import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
 import { ReviewItemType } from '@/types/enums';
+import { LoadingSpinner } from '@/components/ui';
 
 const ArtistReviewPage = () => {
   const { t } = useTranslation();
@@ -100,13 +101,13 @@ const ArtistReviewPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">{t('common.loading')}</div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );
   }
 
-  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
+  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/image-placeholder.png';
 
   return (
     <Layout title={`Musicboxd - ${t('artist.reviewArtist')} ${artist.name}`}>

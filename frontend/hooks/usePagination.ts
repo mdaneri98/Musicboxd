@@ -28,7 +28,7 @@ interface UsePaginationOptions {
 export function usePagination(options: UsePaginationOptions = {}) {
   const {
     initialPage = 1,
-    pageSize: initialPageSize = 20,
+    pageSize: initialPageSize = 10,
     syncWithUrl = false,
     paramName = 'page',
   } = options;

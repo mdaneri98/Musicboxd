@@ -1,9 +1,41 @@
-import { useEffect, useState } from 'react';
+/**
+ * View All Music Page
+ * Browse artists, albums, and songs with infinite scroll
+ */
+
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
+import { LoadingSpinner } from '@/components/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistPagination, selectAlbumPagination, selectSongPagination, selectOrderedArtists, selectOrderedAlbums, selectOrderedSongs } from '@/store/slices';
+import { useInfiniteScroll } from '@/hooks';
+import { 
+  fetchArtistsAsync, 
+  fetchMoreArtistsAsync,
+  fetchAlbumsAsync, 
+  fetchMoreAlbumsAsync,
+  fetchSongsAsync, 
+  fetchMoreSongsAsync,
+  clearArtists,
+  clearAlbums,
+  clearSongs,
+  selectArtistPagination,
+  selectArtistLoading,
+  selectArtistLoadingMore,
+  selectArtistsHasMore,
+  selectAlbumPagination, 
+  selectAlbumLoading,
+  selectAlbumLoadingMore,
+  selectAlbumsHasMore,
+  selectSongPagination,
+  selectSongLoading,
+  selectSongLoadingMore,
+  selectSongsHasMore,
+  selectOrderedArtists, 
+  selectOrderedAlbums, 
+  selectOrderedSongs 
+} from '@/store/slices';
 import { Artist, Album, Song, FilterTypeEnum, ReviewItemTypeEnum } from '@/types';
 import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
 
@@ -11,7 +43,7 @@ const ViewAllMusicPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { tab: queryTab, filter: queryFilter, page: queryPage } = router.query;
+  const { tab: queryTab, filter: queryFilter } = router.query;
   
   const artists = useAppSelector(selectOrderedArtists);
   const albums = useAppSelector(selectOrderedAlbums);
@@ -21,50 +53,91 @@ const ViewAllMusicPage = () => {
   const albumPagination = useAppSelector(selectAlbumPagination);
   const songPagination = useAppSelector(selectSongPagination);
 
-  const [page, setPage] = useState<number>(queryPage ? parseInt(queryPage as string) : 1);
+  const artistLoading = useAppSelector(selectArtistLoading);
+  const albumLoading = useAppSelector(selectAlbumLoading);
+  const songLoading = useAppSelector(selectSongLoading);
+
+  const artistLoadingMore = useAppSelector(selectArtistLoadingMore);
+  const albumLoadingMore = useAppSelector(selectAlbumLoadingMore);
+  const songLoadingMore = useAppSelector(selectSongLoadingMore);
+
+  const artistHasMore = useAppSelector(selectArtistsHasMore);
+  const albumHasMore = useAppSelector(selectAlbumsHasMore);
+  const songHasMore = useAppSelector(selectSongsHasMore);
+
   const [filter, setFilter] = useState<FilterTypeEnum>(queryFilter ? queryFilter as FilterTypeEnum : FilterTypeEnum.POPULAR);
   const [activeTab, setActiveTab] = useState<ReviewItemTypeEnum>(queryTab ? queryTab as ReviewItemTypeEnum : ReviewItemTypeEnum.ARTIST);
 
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(true);
+  // Get current tab's loading, loadingMore, hasMore, and pagination
+  const loading = activeTab === ReviewItemTypeEnum.ARTIST 
+    ? artistLoading 
+    : activeTab === ReviewItemTypeEnum.ALBUM 
+      ? albumLoading 
+      : songLoading;
 
+  const loadingMore = activeTab === ReviewItemTypeEnum.ARTIST 
+    ? artistLoadingMore 
+    : activeTab === ReviewItemTypeEnum.ALBUM 
+      ? albumLoadingMore 
+      : songLoadingMore;
 
-  // Fetch data based on active tab and filter
+  const hasMore = activeTab === ReviewItemTypeEnum.ARTIST 
+    ? artistHasMore 
+    : activeTab === ReviewItemTypeEnum.ALBUM 
+      ? albumHasMore 
+      : songHasMore;
+
+  const pagination = activeTab === ReviewItemTypeEnum.ARTIST 
+    ? artistPagination 
+    : activeTab === ReviewItemTypeEnum.ALBUM 
+      ? albumPagination 
+      : songPagination;
+
+  // Fetch initial data when tab or filter changes
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        setLoading(true);
-        if (activeTab === ReviewItemTypeEnum.ARTIST) {
-          await dispatch(fetchArtistsAsync({ 
-            page: page, 
-            filter: filter 
-          })).unwrap();
-          setHasMore(page*artistPagination.size < artistPagination.totalCount);
-        } else if (activeTab === ReviewItemTypeEnum.ALBUM) {
-          await dispatch(fetchAlbumsAsync({ 
-            page: page,  
-            filter: filter 
-          })).unwrap();
-          setHasMore(page*albumPagination.size < albumPagination.totalCount);
-        } else if (activeTab === ReviewItemTypeEnum.SONG) {
-          await dispatch(fetchSongsAsync({ 
-            page: page, 
-            filter: filter 
-          })).unwrap();
-          setHasMore(page*songPagination.size < songPagination.totalCount);
-        }
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
+      if (activeTab === ReviewItemTypeEnum.ARTIST) {
+        dispatch(clearArtists());
+        await dispatch(fetchArtistsAsync({ page: 1, filter })).unwrap();
+      } else if (activeTab === ReviewItemTypeEnum.ALBUM) {
+        dispatch(clearAlbums());
+        await dispatch(fetchAlbumsAsync({ page: 1, filter })).unwrap();
+      } else if (activeTab === ReviewItemTypeEnum.SONG) {
+        dispatch(clearSongs());
+        await dispatch(fetchSongsAsync({ page: 1, filter })).unwrap();
       }
     };
 
     fetchData();
-  }, [activeTab, filter, page, dispatch]);
+  }, [activeTab, filter, dispatch]);
+
+  // Load more callback for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    if (!hasMore || loadingMore) return;
+    
+    const nextPage = pagination.page + 1;
+    
+    if (activeTab === ReviewItemTypeEnum.ARTIST) {
+      await dispatch(fetchMoreArtistsAsync({ page: nextPage, filter }));
+    } else if (activeTab === ReviewItemTypeEnum.ALBUM) {
+      await dispatch(fetchMoreAlbumsAsync({ page: nextPage, filter }));
+    } else if (activeTab === ReviewItemTypeEnum.SONG) {
+      await dispatch(fetchMoreSongsAsync({ page: nextPage, filter }));
+    }
+  }, [dispatch, activeTab, pagination.page, filter, hasMore, loadingMore]);
+
+  // Infinite scroll hook
+  const { sentinelRef, isFetchingMore } = useInfiniteScroll({
+    onLoadMore: handleLoadMore,
+    hasMore,
+    isLoading: loading || loadingMore,
+    enabled: !loading,
+  });
 
   const handleTabChange = (tab: ReviewItemTypeEnum) => {
-    setActiveTab(tab);
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+    }
   };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -72,9 +145,12 @@ const ViewAllMusicPage = () => {
     setFilter(newFilter);
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
+  // Get current data based on active tab
+  const currentData = activeTab === ReviewItemTypeEnum.ARTIST 
+    ? artists 
+    : activeTab === ReviewItemTypeEnum.ALBUM 
+      ? albums 
+      : songs;
 
   return (
     <Layout title="Musicboxd - Browse Music">
@@ -133,31 +209,27 @@ const ViewAllMusicPage = () => {
                   )}
                 </select>
               </div>
-
-              {/* <button type="submit" className="btn btn-primary">
-                Apply
-              </button> */}
             </form>
           </div>
         </div>
 
         {/* Content Grid */}
         <div className="view-all-content">
-          {loading ? (
-            <div className="loading">{t('common.loading')}</div>
+          {loading && currentData.length === 0 ? (
+            <LoadingSpinner size="large" />
           ) : (
             <>
               {activeTab === ReviewItemTypeEnum.ARTIST && (
                 <div className="music-grid">
-                  {Object.values(artists).map((artist: Artist) => (
+                  {artists.map((artist: Artist) => (
                     <ArtistCard key={artist.id} artist={artist} />
                   ))}
                 </div>
               )}
 
-                {activeTab === ReviewItemTypeEnum.ALBUM && (
+              {activeTab === ReviewItemTypeEnum.ALBUM && (
                 <div className="music-grid">
-                  {Object.values(albums).map((album: Album) => (
+                  {albums.map((album: Album) => (
                     <AlbumCard key={album.id} album={album} />
                   ))}
                 </div>
@@ -165,31 +237,28 @@ const ViewAllMusicPage = () => {
 
               {activeTab === ReviewItemTypeEnum.SONG && (
                 <ul className="song-list">
-                  {Object.values(songs).map((song: Song, index: number) => (
+                  {songs.map((song: Song, index: number) => (
                     <SongCard key={song.id} song={song} index={index} />
                   ))}
                 </ul>
               )}
 
-              {/* Pagination */}
-              <div className="pagination">
-                {page > 1 && (
-                  <button
-                    onClick={() => handlePageChange(page - 1)}
-                    className="btn btn-secondary"
-                  >
-                    {t('common.previous')} {t('music.page')}
-                  </button>
-                )}
-                {hasMore && (
-                  <button
-                    onClick={() => handlePageChange(page + 1)}
-                    className="btn btn-secondary"
-                  >
-                    {t('common.next')} {t('music.page')}
-                  </button>
-                )}
-              </div>
+              {/* Sentinel element for infinite scroll */}
+              <div ref={sentinelRef} className="infinite-scroll-sentinel" />
+
+              {/* Loading indicator for more content */}
+              {(loadingMore || isFetchingMore) && (
+                <div className="loading-more">
+                  <LoadingSpinner size="small" />
+                </div>
+              )}
+
+              {/* End of content message */}
+              {!hasMore && currentData.length > 0 && (
+                <div className="end-of-content">
+                  <p>{t('common.noMoreContent')}</p>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -199,4 +268,3 @@ const ViewAllMusicPage = () => {
 };
 
 export default ViewAllMusicPage;
-

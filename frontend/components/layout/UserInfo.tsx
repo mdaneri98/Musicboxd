@@ -13,7 +13,7 @@ interface UserInfoProps {
 }
 
 export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthenticated, isFollowing, followLoading, onFollowToggle }) => {
-  const userImgUrl = user.image_id ? imageRepository.getImageUrl(user.image_id) : '/assets/default-user.png';
+  const userImgUrl = user.image_id ? imageRepository.getImageUrl(user.image_id) : '/assets/default-avatar.png';
   const { t } = useTranslation();
 
   const renderActionButton = () => {

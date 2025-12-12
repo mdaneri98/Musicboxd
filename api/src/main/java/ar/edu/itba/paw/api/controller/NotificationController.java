@@ -45,10 +45,8 @@ public class NotificationController extends BaseController {
         List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications);
         List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
         Integer totalCount = notificationService.countByUserId(loggedUserId).intValue();
-        
         CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
                 notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, ControllerUtils.notificationsCollectionLinks);
-        
         return buildResponse(collection);
     }
 
@@ -92,8 +90,7 @@ public class NotificationController extends BaseController {
     @PATCH
     @Path(ApiUriConstants.ID)
     public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid NotificationDTO notificationDTO) {
-        Boolean isRead = notificationDTO.getIsRead();
-        if (isRead != null && isRead) notificationService.markAsRead(id);
+        if (notificationDTO.getIsRead()) notificationService.markAsRead(id);
         else return buildNoContentResponse();
         NotificationDTO responseDTO = notificationDtoMapper.toDTO(notificationService.findById(id));
         NotificationResource notificationResource = notificationResourceMapper.toResource(responseDTO, getBaseUrl());
@@ -103,7 +100,7 @@ public class NotificationController extends BaseController {
     @PATCH
     public Response markAllAsRead(@Valid NotificationDTO notificationDTO) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        if (notificationDTO.getIsRead() != null && notificationDTO.getIsRead()) notificationService.markAllAsRead(loggedUserId);
+        if (notificationDTO.getIsRead()) notificationService.markAllAsRead(loggedUserId);
         return buildNoContentResponse();
     }
 

@@ -142,7 +142,7 @@ public class SongJpaDaoTest {
         // 1. Pre-conditions - song with substring exists
 
         // 2. Execute
-        List<Song> songList = songDao.findByTitleContaining(PRE_EXISTING_SONG_TITLE.substring(3,7),10,1); // mySo
+        List<Song> songList = songDao.findByTitleContaining(PRE_EXISTING_SONG_TITLE.substring(3,7), 1, 10); // mySo - page=1, size=10
 
         // 3. Post-conditions
         assertEquals(4, songList.size());
@@ -156,7 +156,7 @@ public class SongJpaDaoTest {
         // 1. Pre-conditions - song does not exist with substring
 
         // 2. Execute
-        List<Song> songList = songDao.findByTitleContaining("Nothing",10,1);
+        List<Song> songList = songDao.findByTitleContaining("Nothing", 1, 10); // page=1, size=10
 
         // 3. Post-conditions
         assertEquals(0, songList.size());

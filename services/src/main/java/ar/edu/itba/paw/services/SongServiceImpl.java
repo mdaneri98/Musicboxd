@@ -44,8 +44,8 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Song> findByTitleContaining(String sub, Integer pageSize, Integer pageNum) {
-        return songDao.findByTitleContaining(sub, pageSize, pageNum);
+    public List<Song> findByTitleContaining(String sub, Integer page, Integer size) {
+        return songDao.findByTitleContaining(sub, page, size);
     }
 
     @Override
@@ -196,5 +196,16 @@ public class SongServiceImpl implements SongService {
         if (updated) LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
         else LOGGER.error("Song rating not updated. average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
         return updated;
+    }
+
+    @Override
+    public void setContextDependentFields(Song song, Long loggedUserId) {
+        if (loggedUserId == null) {
+            song.setIsReviewed(false);
+            song.setIsFavorite(false);
+        } else {
+            song.setIsReviewed(hasUserReviewed(loggedUserId, song.getId()));
+            song.setIsFavorite(userService.isSongFavorite(loggedUserId, song.getId()));
+        }
     }
 }

@@ -18,4 +18,6 @@ public interface ArtistService extends CrudService<Artist> {
     Boolean hasUserReviewed(Long userId, Long artistId);
 
     Long countAll();
+
+    void setContextDependentFields(Artist artist, Long loggedUserId);
 }

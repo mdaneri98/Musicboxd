@@ -16,7 +16,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const dispatch = useAppDispatch();
-  const { i18n, t  } = useTranslation();
+  const { i18n } = useTranslation();
   const initializing = useAppSelector(selectAuthInitializing);
   const currentUser = useAppSelector(selectCurrentUser);
 
@@ -37,7 +37,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <LoadingSpinner size="large" />
-          <p className="mt-4 text-gray-600">{t("common.loading")}</p>
         </div>
       </div>
     );

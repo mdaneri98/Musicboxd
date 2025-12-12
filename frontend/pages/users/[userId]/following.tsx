@@ -1,16 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout, UserInfo } from '@/components/layout';
 import { UserCard } from '@/components/cards';
+import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useInfiniteScroll } from '@/hooks';
 import {
   fetchUserByIdAsync,
   fetchFollowingAsync,
+  fetchMoreFollowingAsync,
   selectCurrentProfile,
   selectFollowing,
   selectLoadingProfile,
   selectLoadingFollowing,
+  selectLoadingMoreFollowing,
+  selectFollowingPagination,
+  selectFollowingHasMore,
   clearCurrentProfile,
   selectCurrentUser,
   selectIsAuthenticated,
@@ -29,12 +35,14 @@ const FollowingPage = () => {
   const following = useAppSelector(selectFollowing);
   const loadingProfile = useAppSelector(selectLoadingProfile);
   const loadingFollowing = useAppSelector(selectLoadingFollowing);
-  const [isFollowing, setIsFollowing] = useState(user?.followed ?? false);
-  const [followLoading, setFollowLoading] = useState(false);
-  const loading = loadingProfile || loadingFollowing;
+  const loadingMoreFollowing = useAppSelector(selectLoadingMoreFollowing);
+  const pagination = useAppSelector(selectFollowingPagination);
+  const hasMore = useAppSelector(selectFollowingHasMore);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  
+  const loading = loadingProfile || loadingFollowing;
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
   const isOwnProfile = loggedUser?.id === parseInt(userId as string);
 
   useEffect(() => {
@@ -48,14 +56,8 @@ const FollowingPage = () => {
     
     const userIdNum = parseInt(userId as string);
     dispatch(fetchUserByIdAsync(userIdNum));
-    
-    dispatch(fetchFollowingAsync({ userId: userIdNum, page, size: 20 }))
-      .unwrap()
-      .then((followingData) => {
-        setHasMore(followingData.items.length === 20);
-      })
-      .catch((err) => console.error('Failed to fetch following:', err));
-  }, [userId, page, dispatch]);
+    dispatch(fetchFollowingAsync({ userId: userIdNum, page: 1, size: 10 }));
+  }, [userId, dispatch]);
 
   // Update isFollowing when user data is loaded
   useEffect(() => {
@@ -64,15 +66,25 @@ const FollowingPage = () => {
     }
   }, [user]);
 
-  if (loading || !user) {
-    return (
-      <Layout title={t('common.loading')}>
-        <div className="content-wrapper">
-          <div className="loading">{t('common.loading')}</div>
-        </div>
-      </Layout>
-    );
-  }
+  // Load more callback for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    if (!userId || !hasMore || loadingMoreFollowing) return;
+    
+    const nextPage = pagination.page + 1;
+    await dispatch(fetchMoreFollowingAsync({ 
+      userId: parseInt(userId as string), 
+      page: nextPage, 
+      size: pagination.size 
+    }));
+  }, [dispatch, userId, pagination.page, pagination.size, hasMore, loadingMoreFollowing]);
+
+  // Infinite scroll hook
+  const { sentinelRef, isFetchingMore } = useInfiniteScroll({
+    onLoadMore: handleLoadMore,
+    hasMore,
+    isLoading: loading || loadingMoreFollowing,
+    enabled: !!user && !loading,
+  });
 
   const handleFollowToggle = async () => {
     if (!user) return;
@@ -93,6 +105,16 @@ const FollowingPage = () => {
     }
   };
 
+  if (loading || !user) {
+    return (
+      <Layout title={t('common.loading')}>
+        <div className="content-wrapper">
+          <LoadingSpinner size="large" />
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout title={`Musicboxd - @${user.username} ${t('following.title')}`}>
       <div className="content-wrapper">
@@ -100,7 +122,7 @@ const FollowingPage = () => {
 
         <h1 className="page-title">{t('following.title')}</h1>
 
-        {following.length === 0 ? (
+        {following.length === 0 && !loadingFollowing ? (
           <p className="no-results">{t('following.notFollowing')}</p>
         ) : (
           <>
@@ -110,24 +132,22 @@ const FollowingPage = () => {
               ))}
             </div>
 
-            <div className="pagination">
-              {page > 1 && (
-                <button
-                  onClick={() => setPage(page - 1)}
-                  className="btn btn-secondary"
-                >
-                  {t('following.previousPage')}
-                </button>
-              )}
-              {hasMore && (
-                <button
-                  onClick={() => setPage(page + 1)}
-                  className="btn btn-secondary"
-                >
-                  {t('following.nextPage')}
-                </button>
-              )}
-            </div>
+            {/* Sentinel element for infinite scroll */}
+            <div ref={sentinelRef} className="infinite-scroll-sentinel" />
+
+            {/* Loading indicator for more content */}
+            {(loadingMoreFollowing || isFetchingMore) && (
+              <div className="loading-more">
+                <LoadingSpinner size="small" />
+              </div>
+            )}
+
+            {/* End of content message */}
+            {!hasMore && following.length > 0 && (
+              <div className="end-of-content">
+                <p>{t('common.noMoreContent')}</p>
+              </div>
+            )}
           </>
         )}
       </div>

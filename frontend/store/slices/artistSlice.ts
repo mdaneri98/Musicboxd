@@ -29,13 +29,22 @@ export interface ArtistState {
     page: number;
     size: number;
     totalCount: number;
+    hasMore: boolean;
+  };
+  reviewsPagination: {
+    page: number;
+    size: number;
+    totalCount: number;
+    hasMore: boolean;
   };
   // Loading states
   loading: boolean;
+  loadingMore: boolean;
   loadingArtist: boolean;
   loadingAlbums: boolean;
   loadingSongs: boolean;
   loadingReviews: boolean;
+  loadingMoreReviews: boolean;
   // Error state
   error: string | null;
 }
@@ -45,7 +54,7 @@ export interface ArtistState {
 // ============================================================================
 
 const initialState: ArtistState = {
-  artists: [],
+  artists: {},
   orderedArtistsIds: [],
   currentArtist: null,
   artistAlbums: [],
@@ -53,14 +62,23 @@ const initialState: ArtistState = {
   artistReviews: [],
   pagination: {
     page: 1,
-    size: 20,
+    size: 10,
     totalCount: 0,
+    hasMore: true,
+  },
+  reviewsPagination: {
+    page: 1,
+    size: 10,
+    totalCount: 0,
+    hasMore: true,
   },
   loading: false,
+  loadingMore: false,
   loadingArtist: false,
   loadingAlbums: false,
   loadingSongs: false,
   loadingReviews: false,
+  loadingMoreReviews: false,
   error: null,
 };
 
@@ -69,18 +87,34 @@ const initialState: ArtistState = {
 // ============================================================================
 
 /**
- * Fetch paginated artists list
+ * Fetch paginated artists list (initial load - replaces data)
  */
 export const fetchArtistsAsync = createAsyncThunk<
   Collection<HALResource<Artist>>,
   { page?: number; size?: number; search?: string; filter?: string },
   { rejectValue: string }
->('artists/fetchArtists', async ({ page = 1, size = 20, search, filter }, { rejectWithValue }) => {
+>('artists/fetchArtists', async ({ page = 1, size = 10, search, filter }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtists(page, size, search, filter);
     return response as Collection<HALResource<Artist>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch artists');
+  }
+});
+
+/**
+ * Fetch more artists (infinite scroll - appends data)
+ */
+export const fetchMoreArtistsAsync = createAsyncThunk<
+  Collection<HALResource<Artist>>,
+  { page: number; size?: number; search?: string; filter?: string },
+  { rejectValue: string }
+>('artists/fetchMoreArtists', async ({ page, size = 10, search, filter }, { rejectWithValue }) => {
+  try {
+    const response = await artistRepository.getArtists(page, size, search, filter);
+    return response as Collection<HALResource<Artist>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more artists');
   }
 });
 
@@ -155,7 +189,7 @@ export const fetchArtistAlbumsAsync = createAsyncThunk<
   Collection<HALResource<Album>>,
   { artistId: number; page?: number; size?: number },
   { rejectValue: string }
->('artists/fetchArtistAlbums', async ({ artistId, page = 1, size = 20 }, { rejectWithValue }) => {
+>('artists/fetchArtistAlbums', async ({ artistId, page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistAlbums(artistId, page, size);
     return response as Collection<HALResource<Album>>;
@@ -171,7 +205,7 @@ export const fetchArtistSongsAsync = createAsyncThunk<
   Collection<HALResource<Song>>,
   { artistId: number; page?: number; size?: number },
   { rejectValue: string }
->('artists/fetchArtistSongs', async ({ artistId, page = 1, size = 20 }, { rejectWithValue }) => {
+>('artists/fetchArtistSongs', async ({ artistId, page = 1, size = 10 }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistSongs(artistId, page, size);
     return response as Collection<HALResource<Song>>;
@@ -181,18 +215,34 @@ export const fetchArtistSongsAsync = createAsyncThunk<
 });
 
 /**
- * Fetch artist's reviews
+ * Fetch artist's reviews (initial load - replaces data)
  */
 export const fetchArtistReviewsAsync = createAsyncThunk<
   Collection<HALResource<Review>>,
   { artistId: number; page?: number; size?: number; filter?: string },
   { rejectValue: string }
->('artists/fetchArtistReviews', async ({ artistId, page = 1, size = 20, filter }, { rejectWithValue }) => {
+>('artists/fetchArtistReviews', async ({ artistId, page = 1, size = 10, filter }, { rejectWithValue }) => {
   try {
     const response = await artistRepository.getArtistReviews(artistId, page, size, filter);
     return response as Collection<HALResource<Review>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch artist reviews');
+  }
+});
+
+/**
+ * Fetch more artist reviews (infinite scroll - appends data)
+ */
+export const fetchMoreArtistReviewsAsync = createAsyncThunk<
+  Collection<HALResource<Review>>,
+  { artistId: number; page: number; size?: number; filter?: string },
+  { rejectValue: string }
+>('artists/fetchMoreArtistReviews', async ({ artistId, page, size = 10, filter }, { rejectWithValue }) => {
+  try {
+    const response = await artistRepository.getArtistReviews(artistId, page, size, filter);
+    return response as Collection<HALResource<Review>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more artist reviews');
   }
 });
 
@@ -264,6 +314,16 @@ const artistSlice = createSlice({
       state.artistAlbums = [];
       state.artistSongs = [];
       state.artistReviews = [];
+      state.reviewsPagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
+    },
+
+    /**
+     * Clear artists list (for filter change)
+     */
+    clearArtists: (state) => {
+      state.artists = {};
+      state.orderedArtistsIds = [];
+      state.pagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
 
     /**
@@ -285,7 +345,7 @@ const artistSlice = createSlice({
       },
   },
   extraReducers: (builder) => {
-    // Fetch Artists
+    // Fetch Artists (initial load - replaces data)
     builder
       .addCase(fetchArtistsAsync.pending, (state) => {
         state.loading = true;
@@ -293,20 +353,51 @@ const artistSlice = createSlice({
       })
       .addCase(fetchArtistsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        // Add artists to normalized state
+        // Clear and replace data
+        state.artists = {};
+        state.orderedArtistsIds = [];
         action.payload.items.forEach((artist) => {
           state.artists[artist.data.id] = artist.data as Artist;
+          state.orderedArtistsIds.push(artist.data.id);
         });
-        state.orderedArtistsIds = action.payload.items.map((artist) => artist.data.id);
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
           page: action.payload.currentPage,
           size: action.payload.pageSize,
           totalCount: action.payload.totalCount,
+          hasMore,
         };
       })
       .addCase(fetchArtistsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch artists';
+      });
+
+    // Fetch More Artists (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreArtistsAsync.pending, (state) => {
+        state.loadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreArtistsAsync.fulfilled, (state, action) => {
+        state.loadingMore = false;
+        action.payload.items.forEach((artist) => {
+          if (!state.artists[artist.data.id]) {
+            state.artists[artist.data.id] = artist.data as Artist;
+            state.orderedArtistsIds.push(artist.data.id);
+          }
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.pagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreArtistsAsync.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.error = action.payload || 'Failed to fetch more artists';
       });
 
     // Fetch Artist By ID
@@ -410,7 +501,7 @@ const artistSlice = createSlice({
         state.error = action.payload || 'Failed to fetch artist songs';
       });
 
-    // Fetch Artist Reviews
+    // Fetch Artist Reviews (initial load - replaces data)
     builder
       .addCase(fetchArtistReviewsAsync.pending, (state) => {
         state.loadingReviews = true;
@@ -418,12 +509,44 @@ const artistSlice = createSlice({
       })
       .addCase(fetchArtistReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        // Sobrescribir el array completo en lugar de acumular
         state.artistReviews = action.payload.items.map((review) => review.data as Review);
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.reviewsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
       })
       .addCase(fetchArtistReviewsAsync.rejected, (state, action) => {
         state.loadingReviews = false;
         state.error = action.payload || 'Failed to fetch artist reviews';
+      });
+
+    // Fetch More Artist Reviews (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreArtistReviewsAsync.pending, (state) => {
+        state.loadingMoreReviews = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreArtistReviewsAsync.fulfilled, (state, action) => {
+        state.loadingMoreReviews = false;
+        const existingIds = new Set(state.artistReviews.map(r => r.id));
+        const newReviews = action.payload.items
+          .map((review) => review.data as Review)
+          .filter(r => !existingIds.has(r.id));
+        state.artistReviews = [...state.artistReviews, ...newReviews];
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.reviewsPagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreArtistReviewsAsync.rejected, (state, action) => {
+        state.loadingMoreReviews = false;
+        state.error = action.payload || 'Failed to fetch more artist reviews';
       });
 
     // Add/Remove Favorite
@@ -467,7 +590,7 @@ const artistSlice = createSlice({
 // Actions
 // ============================================================================
 
-export const { clearError, clearCurrentArtist, addArtist, removeArtist } = artistSlice.actions;
+export const { clearError, clearCurrentArtist, clearArtists, addArtist, removeArtist } = artistSlice.actions;
 
 // ============================================================================
 // Selectors
@@ -486,12 +609,17 @@ export const selectArtistAlbums = (state: RootState) => state.artists.artistAlbu
 export const selectArtistSongs = (state: RootState) => state.artists.artistSongs;
 export const selectArtistReviews = (state: RootState) => state.artists.artistReviews;
 export const selectArtistPagination = (state: RootState) => state.artists.pagination;
+export const selectArtistReviewsPagination = (state: RootState) => state.artists.reviewsPagination;
 export const selectArtistLoading = (state: RootState) => state.artists.loading;
+export const selectArtistLoadingMore = (state: RootState) => state.artists.loadingMore;
 export const selectArtistError = (state: RootState) => state.artists.error;
 export const selectLoadingArtist = (state: RootState) => state.artists.loadingArtist;
 export const selectLoadingAlbums = (state: RootState) => state.artists.loadingAlbums;
 export const selectLoadingSongs = (state: RootState) => state.artists.loadingSongs;
 export const selectLoadingReviews = (state: RootState) => state.artists.loadingReviews;
+export const selectLoadingMoreArtistReviews = (state: RootState) => state.artists.loadingMoreReviews;
+export const selectArtistsHasMore = (state: RootState) => state.artists.pagination.hasMore;
+export const selectArtistReviewsHasMore = (state: RootState) => state.artists.reviewsPagination.hasMore;
 
 // ============================================================================
 // Reducer Export

@@ -190,4 +190,15 @@ public class AlbumServiceImpl implements AlbumService {
         
         return updated;
     }
+
+    @Override
+    public void setContextDependentFields(Album album, Long loggedUserId) {
+        if (loggedUserId == null) {
+            album.setIsReviewed(false);
+            album.setIsFavorite(false);
+        } else {
+            album.setIsReviewed(hasUserReviewed(loggedUserId, album.getId()));
+            album.setIsFavorite(userService.isAlbumFavorite(loggedUserId, album.getId()));
+        }
+    }
 }

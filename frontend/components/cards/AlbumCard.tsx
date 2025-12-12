@@ -15,7 +15,7 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
 
   const albumImageUrl = album.image_id
     ? imageRepository.getImageUrl(album.image_id)
-    : '/assets/default-album.png';
+    : '/assets/image-placeholder.png';
 
   return (
     <div key={album.id} className="music-item album-item">

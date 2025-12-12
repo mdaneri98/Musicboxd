@@ -2,13 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
-import { LoadingSpinner } from '@/components/ui';
+import { LoadingSpinner, ConfirmationModal } from '@/components/ui';
 import { useAppSelector } from '@/store/hooks';
 import {
   selectIsAuthenticated,
   selectCurrentUser,
 } from '@/store/slices';
 import { imageRepository, artistRepository, albumRepository } from '@/repositories';
+import { validateMusicEditorForm } from '@/utils/validationSchemas';
 import type { ModArtistFormData, ModAlbumFormData, ModSongFormData } from '@/types/forms';
 import type { Song, Album, Artist, HALResource } from '@/types';
 
@@ -55,6 +56,17 @@ export default function MusicEditorPage() {
   const [loadingData, setLoadingData] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Confirmation modal state
+  const [deleteAlbumModal, setDeleteAlbumModal] = useState<{ isOpen: boolean; albumIndex: number | null }>({
+    isOpen: false,
+    albumIndex: null,
+  });
+  const [deleteSongModal, setDeleteSongModal] = useState<{ isOpen: boolean; albumIndex: number | null; songIndex: number | null }>({
+    isOpen: false,
+    albumIndex: null,
+    songIndex: null,
+  });
 
   // Redirect if not authenticated or not moderator
   useEffect(() => {
@@ -260,13 +272,20 @@ export default function MusicEditorPage() {
     }));
   };
 
-  const removeAlbum = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      albums: prev.albums.map((album, i) =>
-        i === index ? { ...album, deleted: true } : album
-      ),
-    }));
+  const handleRemoveAlbumClick = (index: number) => {
+    setDeleteAlbumModal({ isOpen: true, albumIndex: index });
+  };
+
+  const confirmRemoveAlbum = () => {
+    if (deleteAlbumModal.albumIndex !== null) {
+      setFormData(prev => ({
+        ...prev,
+        albums: prev.albums.map((album, i) =>
+          i === deleteAlbumModal.albumIndex ? { ...album, deleted: true } : album
+        ),
+      }));
+    }
+    setDeleteAlbumModal({ isOpen: false, albumIndex: null });
   };
 
   const toggleAlbumCollapse = (index: number) => {
@@ -313,64 +332,35 @@ export default function MusicEditorPage() {
     });
   };
 
-  const removeSong = (albumIndex: number, songIndex: number) => {
-    const album = formData.albums[albumIndex];
-    updateAlbum(albumIndex, {
-      songs: album.songs.map((song, i) =>
-        i === songIndex ? { ...song, deleted: true } : song
-      ),
-    });
+  const handleRemoveSongClick = (albumIndex: number, songIndex: number) => {
+    setDeleteSongModal({ isOpen: true, albumIndex, songIndex });
   };
 
-  // Validation
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = t('moderator.validation.nameRequired');
-    } else if (formData.name.length < 2 || formData.name.length > 50) {
-      newErrors.name = t('moderator.validation.nameLength');
-    }
-
-    if (formData.bio && formData.bio.length > 2048) {
-      newErrors.bio = t('moderator.validation.bioLength');
-    }
-
-    // Validate albums
-    formData.albums.forEach((album, albumIndex) => {
-      if (album.deleted) return;
-
-      if (!album.title.trim()) {
-        newErrors[`album_${albumIndex}_title`] = t('moderator.validation.albumTitleRequired');
-      } else if (album.title.length < 2 || album.title.length > 100) {
-        newErrors[`album_${albumIndex}_title`] = t('moderator.validation.albumTitleLength');
-      }
-
-      // Validate songs
-      album.songs.forEach((song, songIndex) => {
-        if (song.deleted) return;
-
-        if (!song.title.trim()) {
-          newErrors[`album_${albumIndex}_song_${songIndex}_title`] = t('moderator.validation.songTitleRequired');
-        } else if (song.title.length < 1 || song.title.length > 100) {
-          newErrors[`album_${albumIndex}_song_${songIndex}_title`] = t('moderator.validation.songTitleLength');
-        }
-
-        if (!song.duration || !/^(?:(?:([0-9]{1,2}):)?([0-5]?[0-9]):)?([0-5][0-9])$/.test(song.duration)) {
-          newErrors[`album_${albumIndex}_song_${songIndex}_duration`] = t('moderator.validation.songDurationFormat');
-        }
+  const confirmRemoveSong = () => {
+    if (deleteSongModal.albumIndex !== null && deleteSongModal.songIndex !== null) {
+      const album = formData.albums[deleteSongModal.albumIndex];
+      updateAlbum(deleteSongModal.albumIndex, {
+        songs: album.songs.map((song, i) =>
+          i === deleteSongModal.songIndex ? { ...song, deleted: true } : song
+        ),
       });
-    });
+    }
+    setDeleteSongModal({ isOpen: false, albumIndex: null, songIndex: null });
+  };
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  // Validation using Yup schemas
+  const validateForm = async (): Promise<boolean> => {
+    const validationErrors = await validateMusicEditorForm(formData, t);
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
   };
 
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    const isValid = await validateForm();
+    if (!isValid) {
       return;
     }
 
@@ -478,7 +468,7 @@ export default function MusicEditorPage() {
               {/* Artist Image */}
               <div className="image-upload-container">
                 <img
-                  src={formData._imagePreview || '/images/default-artist.png'}
+                  src={formData._imagePreview || '/assets/image-placeholder.png'}
                   alt={t('moderator.artistImage')}
                   className="entity-image mod-editable-image"
                   onClick={() => document.getElementById('artistImageInput')?.click()}
@@ -553,7 +543,7 @@ export default function MusicEditorPage() {
                     <div className="album-header" onClick={() => toggleAlbumCollapse(albumIndex)}>
                       <div className="album-header-info">
                         <img
-                          src={album._imagePreview || '/images/default-album.png'}
+                          src={album._imagePreview || '/assets/image-placeholder.png'}
                           alt={album.title || t('moderator.newAlbum')}
                           className="album-thumbnail"
                         />
@@ -570,7 +560,7 @@ export default function MusicEditorPage() {
                         <button
                           type="button"
                           className="btn-icon btn-delete"
-                          onClick={(e) => { e.stopPropagation(); removeAlbum(albumIndex); }}
+                          onClick={(e) => { e.stopPropagation(); handleRemoveAlbumClick(albumIndex); }}
                           title={t('moderator.removeAlbum')}
                         >
                           <i className="fa-solid fa-trash"></i>
@@ -586,7 +576,7 @@ export default function MusicEditorPage() {
                           {/* Album Image */}
                           <div className="image-upload-container image-upload-small">
                             <img
-                              src={album._imagePreview || '/images/default-album.png'}
+                              src={album._imagePreview || '/assets/image-placeholder.png'}
                               alt={t('moderator.albumImage')}
                               className="sub-element-image-preview mod-editable-image"
                               onClick={() => document.getElementById(`albumImageInput_${albumIndex}`)?.click()}
@@ -710,7 +700,7 @@ export default function MusicEditorPage() {
                                   <button
                                     type="button"
                                     className="btn-icon btn-delete"
-                                    onClick={() => removeSong(albumIndex, songIndex)}
+                                    onClick={() => handleRemoveSongClick(albumIndex, songIndex)}
                                     title={t('moderator.removeSong')}
                                   >
                                     <i className="fa-solid fa-times"></i>
@@ -759,6 +749,26 @@ export default function MusicEditorPage() {
           </div>
         </form>
       </div>
+
+      {/* Delete Album Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteAlbumModal.isOpen}
+        message={t('moderator.confirmRemoveAlbum')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        onConfirm={confirmRemoveAlbum}
+        onCancel={() => setDeleteAlbumModal({ isOpen: false, albumIndex: null })}
+      />
+
+      {/* Delete Song Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteSongModal.isOpen}
+        message={t('moderator.confirmRemoveSong')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        onConfirm={confirmRemoveSong}
+        onCancel={() => setDeleteSongModal({ isOpen: false, albumIndex: null, songIndex: null })}
+      />
     </Layout>
   );
 }

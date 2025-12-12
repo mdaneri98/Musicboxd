@@ -1,17 +1,26 @@
-/**
- * Home Page (Authenticated)
- * Main feed page for authenticated users with For You / Following tabs
- * Migrated from: home.jsp
- */
 
-import { useEffect, useState } from 'react';
+
+import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
+import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, fetchReviewsAsync, selectOrderedReviews, selectLoadingReviews, selectReviewPagination } from '@/store/slices';
-import { FilterTypeEnum, HomeTabEnum  } from '@/types';
+import { useInfiniteScroll } from '@/hooks';
+import { 
+  selectIsAuthenticated, 
+  fetchReviewsAsync, 
+  fetchMoreReviewsAsync,
+  clearReviews,
+  selectOrderedReviews, 
+  selectReviewLoading,
+  selectReviewLoadingMore,
+  selectReviewPagination,
+  selectReviewsHasMore,
+} from '@/store/slices';
+import { FilterTypeEnum, HomeTabEnum } from '@/types';
+import { useState } from 'react';
 
 const HomePage = () => {
   const { t } = useTranslation();
@@ -19,37 +28,58 @@ const HomePage = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const reviews = useAppSelector(selectOrderedReviews);
-  const loadingReviews = useAppSelector(selectLoadingReviews);
+  const loading = useAppSelector(selectReviewLoading);
+  const loadingMore = useAppSelector(selectReviewLoadingMore);
   const pagination = useAppSelector(selectReviewPagination);
+  const hasMore = useAppSelector(selectReviewsHasMore);
+  
   const [activeTab, setActiveTab] = useState<HomeTabEnum>(HomeTabEnum.FOR_YOU);
-  const [filter, setFilter] = useState<FilterTypeEnum>(activeTab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING);
+  const filter = activeTab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING;
 
+  // Redirect to landing page if not authenticated
   useEffect(() => {
-    // Redirect to landing page if not authenticated
     if (!isAuthenticated) {
       router.push('/landing');
     }
   }, [isAuthenticated, router]);
 
+  // Initial data fetch when tab/filter changes
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        await dispatch(fetchReviewsAsync({ page:1, size: pagination.size, filter: filter })).unwrap();
-      } catch (error) {
-        console.error('Failed to fetch reviews:', error);
-      }
-    };
+    if (!isAuthenticated) return;
+    
+    // Clear existing reviews and fetch fresh data
+    dispatch(clearReviews());
+    dispatch(fetchReviewsAsync({ page: 1, size: 10, filter }));
+  }, [isAuthenticated, filter, dispatch]);
 
-    fetchReviews();
-  }, [isAuthenticated, activeTab, filter, dispatch]);
+  // Load more callback for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    if (!hasMore || loadingMore) return;
+    
+    const nextPage = pagination.page + 1;
+    await dispatch(fetchMoreReviewsAsync({ 
+      page: nextPage, 
+      size: pagination.size, 
+      filter 
+    }));
+  }, [dispatch, pagination.page, pagination.size, filter, hasMore, loadingMore]);
+
+  // Infinite scroll hook
+  const { sentinelRef, isFetchingMore } = useInfiniteScroll({
+    onLoadMore: handleLoadMore,
+    hasMore,
+    isLoading: loading || loadingMore,
+    enabled: isAuthenticated && !loading,
+  });
 
   const handleTabChange = (tab: HomeTabEnum) => {
-    setActiveTab(tab);
-    setFilter(tab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING);
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+    }
   };
 
   if (!isAuthenticated) {
-    return null; // Will redirect
+    return null;
   }
 
   return (
@@ -77,9 +107,9 @@ const HomePage = () => {
 
         {/* Contenido principal */}
         <section className="reviews-section">
-          {loadingReviews ? (
-            <div className="loading">{t('home.loadingReviews')}</div>
-          ) : Object.values(reviews).length === 0 ? (
+          {loading && reviews.length === 0 ? (
+            <LoadingSpinner size="large" />
+          ) : reviews.length === 0 ? (
             <div className="empty-state">
               <h3>{t('home.noReviews')}</h3>
               <h4>{t('home.noReviewsHint')}</h4>
@@ -87,30 +117,27 @@ const HomePage = () => {
           ) : (
             <>
               <div className="reviews-grid">
-                {Object.values(reviews).map((review) => (
+                {reviews.map((review) => (
                   <ReviewCard key={review.id} review={review} />
                 ))}
               </div>
 
-              {/* Paginación */}
-              <div className="pagination">
-                {pagination.page > 1 && (
-                  <button
-                    onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page - 1, size: pagination.size, filter: filter }))}
-                    className="btn btn-secondary"
-                  >
-                    {t('common.previous')} {t('home.page')}
-                  </button>
-                )}
-                {pagination.totalCount > pagination.page * pagination.size && (
-                  <button
-                    onClick={() => dispatch(fetchReviewsAsync({ page: pagination.page + 1, size: pagination.size, filter: filter }))}
-                    className="btn btn-primary"
-                  >
-                    {t('common.next')} {t('home.page')}
-                  </button>
-                )}
-              </div>
+              {/* Sentinel element for infinite scroll */}
+              <div ref={sentinelRef} className="infinite-scroll-sentinel" />
+
+              {/* Loading indicator for more content */}
+              {(loadingMore || isFetchingMore) && (
+                <div className="loading-more">
+                  <LoadingSpinner size="small" />
+                </div>
+              )}
+
+              {/* End of content message */}
+              {!hasMore && reviews.length > 0 && (
+                <div className="end-of-content">
+                  <p>{t('common.noMoreContent')}</p>
+                </div>
+              )}
             </>
           )}
         </section>
@@ -120,4 +147,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-

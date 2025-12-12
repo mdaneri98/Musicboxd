@@ -106,10 +106,8 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-
         List<User> users = new ArrayList<>();
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-
         if (search != null && !search.isEmpty()) users = userService.findByUsernameContaining(search, page, size);
         else users = userService.findPaginated(filter, page, size, loggedUserId);
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
@@ -124,8 +122,8 @@ public class UserController extends BaseController {
     public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         User user = userService.findUserById(id, loggedUserId);
-        Boolean isFollowed = loggedUserId != null ? userService.isFollowing(loggedUserId, id) : false;
-        UserDTO userDTO = userDtoMapper.toDTO(user, isFollowed);
+        userService.setContextDependentFields(user, loggedUserId);
+        UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
         
         return buildResponse(userResource);
@@ -215,8 +213,8 @@ public class UserController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         userService.createFollowing(loggedUserId, id);
         User user = userService.findUserById(id, loggedUserId);
-        Boolean isFollowed = userService.isFollowing(loggedUserId, id);
-        UserDTO userDTO = userDtoMapper.toDTO(user, isFollowed);
+        userService.setContextDependentFields(user, loggedUserId);
+        UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
         return buildCreatedResponse(userResource);
     }

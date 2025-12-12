@@ -1,26 +1,32 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewCard, UserCard, CommentCard } from '@/components/cards';
 import { CommentForm } from '@/components/forms';
-import { ConfirmationModal } from '@/components/ui';
+import { ConfirmationModal, LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import {
   selectIsAuthenticated,
   selectCurrentUser,
   fetchReviewByIdAsync,
   fetchReviewCommentsAsync,
+  fetchMoreReviewCommentsAsync,
   fetchReviewLikesAsync,
+  fetchMoreReviewLikesAsync,
   postCommentAsync,
   deleteCommentAsync,
   selectReviewComments,
   selectReviewLikes,
   selectLoadingReview,
   selectLoadingComments,
+  selectLoadingMoreComments,
   selectLoadingLikes,
+  selectLoadingMoreLikes,
   selectCommentsPagination,
   selectLikesPagination,
+  selectCommentsHasMore,
+  selectLikesHasMore,
   clearCurrentReview,
   selectReviewById
 } from '@/store/slices';
@@ -31,7 +37,7 @@ import Link from 'next/link';
 const ReviewDetailPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { reviewId, tab: queryTab, pageNum: queryPage } = router.query;
+  const { reviewId, tab: queryTab } = router.query;
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
@@ -41,26 +47,28 @@ const ReviewDetailPage = () => {
   const likedUsers = useAppSelector(selectReviewLikes);
   const loadingReview = useAppSelector(selectLoadingReview);
   const loadingComments = useAppSelector(selectLoadingComments);
+  const loadingMoreComments = useAppSelector(selectLoadingMoreComments);
   const loadingLikes = useAppSelector(selectLoadingLikes);
+  const loadingMoreLikes = useAppSelector(selectLoadingMoreLikes);
   const commentsPagination = useAppSelector(selectCommentsPagination);
   const likesPagination = useAppSelector(selectLikesPagination);
+  const commentsHasMore = useAppSelector(selectCommentsHasMore);
+  const likesHasMore = useAppSelector(selectLikesHasMore);
 
-  const [activeTab, setActiveTab] = useState<ReviewTab>(queryTab as ReviewTab);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [activeTab, setActiveTab] = useState<ReviewTab>(queryTab as ReviewTab || ReviewTab.COMMENTS);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  const loading = loadingReview || (activeTab === ReviewTab.COMMENTS ? loadingComments : loadingLikes);
+  // Refs for infinite scroll
+  const commentsSentinelRef = useRef<HTMLDivElement>(null);
+  const likesSentinelRef = useRef<HTMLDivElement>(null);
+  const isLoadingMoreRef = useRef(false);
 
   useEffect(() => {
     if (queryTab) {
       setActiveTab(queryTab as ReviewTab);
     }
-    if (queryPage) {
-      setPage(parseInt(queryPage as string));
-    }
-  }, [queryTab, queryPage]);
+  }, [queryTab]);
 
   useEffect(() => {
     return () => {
@@ -72,44 +80,90 @@ const ReviewDetailPage = () => {
     if (!reviewId) return;
     const reviewIdNum = parseInt(reviewId as string);
     if (!review) dispatch(fetchReviewByIdAsync(reviewIdNum));
-    dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
-    dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
-    if (activeTab === ReviewTab.COMMENTS) {
-      setHasMore(commentsPagination.page * commentsPagination.size < commentsPagination.totalCount);
-    } else if (activeTab === ReviewTab.LIKES) {
-      setHasMore(likesPagination.page * likesPagination.size < likesPagination.totalCount);
-    }
-  }, [reviewId, dispatch]);
+    dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page: 1, size: 10 }));
+    dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page: 1, size: 10 }));
+  }, [reviewId, dispatch, review]);
 
-  useEffect(() => {
-    if (!reviewId || !review) return;
+  // Load more comments
+  const handleLoadMoreComments = useCallback(async () => {
+    if (!reviewId || !commentsHasMore || loadingMoreComments || isLoadingMoreRef.current) return;
+    
+    isLoadingMoreRef.current = true;
     const reviewIdNum = parseInt(reviewId as string);
-    if (activeTab === ReviewTab.COMMENTS) {
-      dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
-      setHasMore(commentsPagination.page * commentsPagination.size < commentsPagination.totalCount);
-    } else if (activeTab === ReviewTab.LIKES) {
-      dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
-      setHasMore(likesPagination.page * likesPagination.size < likesPagination.totalCount);
+    const nextPage = commentsPagination.page + 1;
+    
+    try {
+      await dispatch(fetchMoreReviewCommentsAsync({ 
+        reviewId: reviewIdNum, 
+        page: nextPage, 
+        size: commentsPagination.size 
+      })).unwrap();
+    } finally {
+      isLoadingMoreRef.current = false;
     }
-  }, [reviewId, page, dispatch]);
+  }, [dispatch, reviewId, commentsPagination.page, commentsPagination.size, commentsHasMore, loadingMoreComments]);
 
-  useEffect(() => {
-    if (!reviewId || !review) return;
+  // Load more likes
+  const handleLoadMoreLikes = useCallback(async () => {
+    if (!reviewId || !likesHasMore || loadingMoreLikes || isLoadingMoreRef.current) return;
+    
+    isLoadingMoreRef.current = true;
     const reviewIdNum = parseInt(reviewId as string);
-    if (activeTab === ReviewTab.LIKES) {
-      dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page, size: 20 })).unwrap()
-      setHasMore(likesPagination.page * likesPagination.size < likesPagination.totalCount);
+    const nextPage = likesPagination.page + 1;
+    
+    try {
+      await dispatch(fetchMoreReviewLikesAsync({ 
+        reviewId: reviewIdNum, 
+        page: nextPage, 
+        size: likesPagination.size 
+      })).unwrap();
+    } finally {
+      isLoadingMoreRef.current = false;
     }
-  }, [review?.likes]);
+  }, [dispatch, reviewId, likesPagination.page, likesPagination.size, likesHasMore, loadingMoreLikes]);
 
+  // Intersection Observer for comments
+  useEffect(() => {
+    if (activeTab !== ReviewTab.COMMENTS || !commentsHasMore || comments.length === 0) return;
+
+    const sentinel = commentsSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMoreRef.current) {
+          handleLoadMoreComments();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [activeTab, commentsHasMore, comments.length, handleLoadMoreComments]);
+
+  // Intersection Observer for likes
+  useEffect(() => {
+    if (activeTab !== ReviewTab.LIKES || !likesHasMore || likedUsers.length === 0) return;
+
+    const sentinel = likesSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMoreRef.current) {
+          handleLoadMoreLikes();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [activeTab, likesHasMore, likedUsers.length, handleLoadMoreLikes]);
 
   const handleTabChange = useCallback((tab: ReviewTab) => {
     setActiveTab(tab);
-    setPage(1);
-  }, []);
-
-  const handlePageChange = useCallback((newPage: number) => {
-    setPage(newPage);
   }, []);
 
   const handleCommentSubmit = async (data: CommentFormData) => {
@@ -145,7 +199,7 @@ const ReviewDetailPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">{t('reviewDetail.loadingReview')}</div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );
@@ -179,14 +233,33 @@ const ReviewDetailPage = () => {
 
         {activeTab === ReviewTab.LIKES ? (
           <>
-            {likedUsers.length === 0 ? (
+            {loadingLikes && likedUsers.length === 0 ? (
+              <LoadingSpinner size="medium" />
+            ) : likedUsers.length === 0 ? (
               <p className="no-results">{t('reviewDetail.noLikes')}</p>
             ) : (
-              <div className="users-grid">
-                {likedUsers.map((user) => (
-                  <UserCard key={user.id} user={user} />
-                ))}
-              </div>
+              <>
+                <div className="users-grid">
+                  {likedUsers.map((user) => (
+                    <UserCard key={user.id} user={user} />
+                  ))}
+                </div>
+
+                {/* Sentinel for infinite scroll */}
+                <div ref={likesSentinelRef} className="infinite-scroll-sentinel" />
+
+                {loadingMoreLikes && (
+                  <div className="loading-more">
+                    <LoadingSpinner size="small" />
+                  </div>
+                )}
+
+                {!likesHasMore && likedUsers.length > 0 && (
+                  <div className="end-of-content">
+                    <p>{t('common.noMoreContent')}</p>
+                  </div>
+                )}
+              </>
             )}
           </>
         ) : (
@@ -210,43 +283,39 @@ const ReviewDetailPage = () => {
               </div>
             )}
 
-            {loading ? (
-              <div className="loading">{t('reviewDetail.loadingComments')}</div>
+            {loadingComments && comments.length === 0 ? (
+              <LoadingSpinner size="medium" message={t('reviewDetail.loadingComments')} />
             ) : comments.length === 0 ? (
               <p className="no-results">{t('reviewDetail.noComments')}</p>
             ) : (
-              <div className="comments-list">
-                {comments.map((comment) => (
-                  <CommentCard 
-                    key={comment.id} 
-                    comment={comment}
-                    onDelete={canDeleteComment(comment) ? () => setCommentToDelete(comment.id) : undefined}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="comments-list">
+                  {comments.map((comment) => (
+                    <CommentCard 
+                      key={comment.id} 
+                      comment={comment}
+                      onDelete={canDeleteComment(comment) ? () => setCommentToDelete(comment.id) : undefined}
+                    />
+                  ))}
+                </div>
+
+                {/* Sentinel for infinite scroll */}
+                <div ref={commentsSentinelRef} className="infinite-scroll-sentinel" />
+
+                {loadingMoreComments && (
+                  <div className="loading-more">
+                    <LoadingSpinner size="small" />
+                  </div>
+                )}
+
+                {!commentsHasMore && comments.length > 0 && (
+                  <div className="end-of-content">
+                    <p>{t('common.noMoreContent')}</p>
+                  </div>
+                )}
+              </>
             )}
           </>
-        )}
-
-        {!loading && (
-          <div className="pagination">
-            {page > 1 && (
-              <button
-                onClick={() => handlePageChange(page - 1)}
-                className="btn btn-secondary"
-              >
-                {t('reviewDetail.previousPage')}
-              </button>
-            )}
-            {hasMore && (
-              <button
-                onClick={() => handlePageChange(page + 1)}
-                className="btn btn-secondary"
-              >
-                {t('reviewDetail.nextPage')}
-              </button>
-            )}
-          </div>
         )}
       </div>
 

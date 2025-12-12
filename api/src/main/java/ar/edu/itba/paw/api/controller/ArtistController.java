@@ -131,11 +131,8 @@ public class ArtistController extends BaseController {
     public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Artist artist = artistService.findById(id);
-        
-        Boolean isReviewed = loggedUserId != null ? artistService.hasUserReviewed(loggedUserId, id) : false;
-        Boolean isFavorite = loggedUserId != null ? userService.isArtistFavorite(loggedUserId, id) : false;
-        
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist, isReviewed, isFavorite);
+        artistService.setContextDependentFields(artist, loggedUserId);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
         return buildResponse(artistResource);
     }
@@ -235,10 +232,10 @@ public class ArtistController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         userService.addFavoriteArtist(loggedUserId, id);
         Artist artist = artistService.findById(id);
-        Boolean isReviewed = loggedUserId != null ? artistService.hasUserReviewed(loggedUserId, id) : false;
-        Boolean isFavorite = loggedUserId != null ? userService.isArtistFavorite(loggedUserId, id) : false;
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist, isReviewed, isFavorite);
-        return buildCreatedResponse(artistResourceMapper.toResource(artistDTO, getBaseUrl()));
+        artistService.setContextDependentFields(artist, loggedUserId);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
+        ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
+        return buildCreatedResponse(artistResource);
     }
 
     @DELETE

@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout, ArtistInfo } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
+import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useInfiniteScroll } from '@/hooks';
 import { 
   selectIsAuthenticated, 
   selectCurrentUser, 
@@ -11,6 +13,7 @@ import {
   fetchArtistAlbumsAsync, 
   fetchArtistSongsAsync, 
   fetchArtistReviewsAsync, 
+  fetchMoreArtistReviewsAsync,
   addArtistFavoriteAsync, 
   removeArtistFavoriteAsync,
   selectCurrentArtist,
@@ -18,6 +21,9 @@ import {
   selectArtistSongs,
   selectArtistReviews,
   selectLoadingArtist,
+  selectLoadingMoreArtistReviews,
+  selectArtistReviewsPagination,
+  selectArtistReviewsHasMore,
   selectArtistError,
   clearCurrentArtist
 } from '@/store/slices';
@@ -32,19 +38,19 @@ const ArtistDetailPage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   
-  // Use Redux selectors instead of useState
+  // Use Redux selectors
   const artist = useAppSelector(selectCurrentArtist);
   const albums = useAppSelector(selectArtistAlbums);
   const songs = useAppSelector(selectArtistSongs);
   const reviews = useAppSelector(selectArtistReviews);
   const loading = useAppSelector(selectLoadingArtist);
+  const loadingMoreReviews = useAppSelector(selectLoadingMoreArtistReviews);
+  const reviewsPagination = useAppSelector(selectArtistReviewsPagination);
+  const hasMoreReviews = useAppSelector(selectArtistReviewsHasMore);
   const error = useAppSelector(selectArtistError);
   
-  const [reviewsPage, setReviewsPage] = useState(1);
-  const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [userRating, setUserRating] = useState<number | undefined>();
-
 
   // Clear artist data when component unmounts or id changes
   useEffect(() => {
@@ -61,28 +67,40 @@ const ArtistDetailPage = () => {
     dispatch(fetchArtistByIdAsync(artistIdNum));
     dispatch(fetchArtistAlbumsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
     dispatch(fetchArtistSongsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
-    if(artist?.reviewed && isAuthenticated && currentUser) {
+    dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
+  }, [artistId, dispatch]);
+
+  // Set user rating when reviews and user data are available
+  useEffect(() => {
+    if (artist?.reviewed && isAuthenticated && currentUser && reviews.length > 0) {
       const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
       if (userReview) {
         setUserRating(userReview.rating);
       }
     }
-  }, [artistId, dispatch]);
+  }, [artist?.reviewed, isAuthenticated, currentUser, reviews]);
 
-  // Fetch reviews with pagination
-  useEffect(() => {
-    if (!artistId) return;
+  // Load more callback for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    if (!artistId || !hasMoreReviews || loadingMoreReviews) return;
     
     const artistIdNum = parseInt(artistId as string);
-    dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: reviewsPage, size: 20 }))
-      .unwrap()
-      .then((reviewsData) => {
-        setHasMoreReviews(reviewsData.items.length === 20);
-      })
-      .catch((err) => {
-        console.error('Failed to fetch reviews:', err);
-      });
-  }, [artistId, reviewsPage, isAuthenticated, currentUser, dispatch]);
+    const nextPage = reviewsPagination.page + 1;
+    
+    await dispatch(fetchMoreArtistReviewsAsync({ 
+      artistId: artistIdNum, 
+      page: nextPage, 
+      size: reviewsPagination.size 
+    }));
+  }, [dispatch, artistId, reviewsPagination.page, reviewsPagination.size, hasMoreReviews, loadingMoreReviews]);
+
+  // Infinite scroll hook
+  const { sentinelRef, isFetchingMore } = useInfiniteScroll({
+    onLoadMore: handleLoadMore,
+    hasMore: hasMoreReviews,
+    isLoading: loading || loadingMoreReviews,
+    enabled: !!artist && !loading,
+  });
 
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated) {
@@ -110,7 +128,7 @@ const ArtistDetailPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">{t('artist.loadingArtist')}</div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );
@@ -127,8 +145,6 @@ const ArtistDetailPage = () => {
       </Layout>
     );
   }
-
-
 
   return (
     <Layout title={`Musicboxd - ${artist.name}`}>
@@ -180,25 +196,22 @@ const ArtistDetailPage = () => {
               ))}
             </div>
 
-            {/* Pagination */}
-            <div className="pagination">
-              {reviewsPage > 1 && (
-                <button
-                  onClick={() => setReviewsPage(reviewsPage - 1)}
-                  className="btn btn-secondary"
-                >
-                  {t('artist.previousPage')}
-                </button>
-              )}
-              {hasMoreReviews && (
-                <button
-                  onClick={() => setReviewsPage(reviewsPage + 1)}
-                  className="btn btn-secondary"
-                >
-                  {t('artist.nextPage')}
-                </button>
-              )}
-            </div>
+            {/* Sentinel element for infinite scroll */}
+            <div ref={sentinelRef} className="infinite-scroll-sentinel" />
+
+            {/* Loading indicator for more content */}
+            {(loadingMoreReviews || isFetchingMore) && (
+              <div className="loading-more">
+                <LoadingSpinner size="small" />
+              </div>
+            )}
+
+            {/* End of content message */}
+            {!hasMoreReviews && reviews.length > 0 && (
+              <div className="end-of-content">
+                <p>{t('common.noMoreContent')}</p>
+              </div>
+            )}
           </section>
         )}
       </div>

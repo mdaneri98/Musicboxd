@@ -71,7 +71,7 @@ public class SongJpaDao implements SongDao {
     }
 
     @Override
-    public List<Song> findByTitleContaining(String sub, Integer pageSize, Integer pageNum) {
+    public List<Song> findByTitleContaining(String sub, Integer page, Integer size) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT s.id FROM song s " +
@@ -79,26 +79,31 @@ public class SongJpaDao implements SongDao {
                 "ORDER BY s.title"
         );
         nativeQuery.setParameter("sub", "%" + sub + "%");
-        nativeQuery.setMaxResults(pageSize); // Límite de resultados
-        nativeQuery.setFirstResult((pageNum - 1) * pageSize);
+        nativeQuery.setMaxResults(size); // Límite de resultados
+        nativeQuery.setFirstResult((page - 1) * size);
+        
+        // #region agent log
+        int offset = (page - 1) * size;
+        System.out.println("[DEBUG-H4] Pagination calc - offset: " + offset + " (from page=" + page + ", size=" + size + ")");
+        // #endregion
         
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
+        
         List<Long> songIds = rawResults.stream()
                 .map(n -> ((Number)n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (songIds.isEmpty()) {
-            return Collections.emptyList();
+           return Collections.emptyList();
         }
-        
         // Query 2: JPQL para obtener entidades completas
         TypedQuery<Song> query = em.createQuery(
                 "FROM Song s WHERE s.id IN :ids ORDER BY s.title", 
                 Song.class);
         query.setParameter("ids", songIds);
-        
-        return query.getResultList();
+        List<Song> result = query.getResultList();
+        return result;
     }
 
     @Override
@@ -124,7 +129,6 @@ public class SongJpaDao implements SongDao {
         if (songIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
         // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
         String entityQuery = "SELECT s FROM Song s WHERE s.id IN :ids " + filterType.getFilter();
         TypedQuery<Song> query = em.createQuery(entityQuery, Song.class)

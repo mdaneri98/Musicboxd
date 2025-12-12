@@ -47,7 +47,7 @@ class ArtistRepository {
    */
   async getArtists(
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     search?: string,
     filter?: string
   ): Promise<Collection<HALResource<Artist>>> {
@@ -164,7 +164,7 @@ class ArtistRepository {
   async getArtistReviews(
     id: number,
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     filter?: string
   ): Promise<Collection<HALResource<Review>>> {
     try {
@@ -195,7 +195,7 @@ class ArtistRepository {
   async getArtistAlbums(
     id: number,
     page: number = 1,
-    size: number = 20
+    size: number = 10
   ): Promise<Collection<HALResource<Album>>> {
     try {
       const params = { page, size };
@@ -247,7 +247,7 @@ class ArtistRepository {
   async getArtistSongs(
     id: number,
     page: number = 1,
-    size: number = 20
+    size: number = 10
   ): Promise<Collection<HALResource<Song>>> {
     try {
       const params = { page, size };

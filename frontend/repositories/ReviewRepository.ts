@@ -159,7 +159,7 @@ class ReviewRepository {
   async getReviewLikes(
     reviewId: number,
     page: number = 1,
-    size: number = 20
+    size: number = 10
   ): Promise<Collection<HALResource<User>>> {
     try {
       const params: PaginationParams = { page, size };
@@ -213,7 +213,7 @@ class ReviewRepository {
   async getReviewComments(
     reviewId: number,
     page: number = 1,
-    size: number = 20
+    size: number = 10
   ): Promise<Collection<HALResource<Comment>>> {
     try {
       const params: PaginationParams = { page, size };

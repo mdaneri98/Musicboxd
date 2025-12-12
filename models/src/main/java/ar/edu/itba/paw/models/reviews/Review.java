@@ -64,6 +64,9 @@ public abstract class Review {
     public abstract Image getItemImage();
     public abstract ReviewType getItemType();
 
+    @Transient
+    private Boolean isLiked;
+
 
     public Review() {
         // Constructor vacío necesario para JPA
@@ -181,5 +184,13 @@ public abstract class Review {
 
     public void setLikes(Integer likes) {
         this.likes = likes;
+    }
+
+    public Boolean getIsLiked() {
+        return isLiked;
+    }
+
+    public void setIsLiked(Boolean isLiked) {
+        this.isLiked = isLiked;
     }
 }

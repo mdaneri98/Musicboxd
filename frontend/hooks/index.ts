@@ -9,6 +9,7 @@ export { useOwnershipCheck } from './useOwnershipCheck';
 
 // Theme Hook
 export { useTheme } from './useTheme';
+export { useInfiniteScroll } from './useInfiniteScroll';
 
 // Utility Hooks
 export { useDebounce } from './useDebounce';

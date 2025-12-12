@@ -27,16 +27,9 @@ public class ArtistDtoMapper {
         dto.setAvgRating(artist.getAvgRating());
         dto.setCreatedAt(artist.getCreatedAt());
         dto.setUpdatedAt(artist.getUpdatedAt());
-
-        return dto;
-    }
-
-    public ArtistDTO toDTO(Artist artist, Boolean isReviewed, Boolean isFavorite) {
-        ArtistDTO dto = toDTO(artist);
-        if (dto != null) {
-            dto.setIsReviewed(isReviewed);
-            dto.setIsFavorite(isFavorite);
-        }
+        dto.setIsReviewed(artist.getIsReviewed());
+        dto.setIsFavorite(artist.getIsFavorite());
+        
         return dto;
     }
 

@@ -50,7 +50,7 @@ class UserRepository {
    */
   async getUsers(
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     search?: string,
     filter?: string
   ): Promise<Collection<HALResource<User>>> {
@@ -166,7 +166,7 @@ class UserRepository {
   async getUserReviews(
     id: number,
     page: number = 1,
-    size: number = 20,
+    size: number = 10,
     filter?: string
   ): Promise<Collection<HALResource<Review>>> {
     try {
@@ -197,7 +197,7 @@ class UserRepository {
   async getFollowers(
     id: number,
     page: number = 1,
-    size: number = 20
+    size: number = 10
   ): Promise<Collection<HALResource<User>>> {
     try {
       const params: PaginationParams = { page, size };
@@ -225,7 +225,7 @@ class UserRepository {
   async getFollowing(
     id: number,
     page: number = 1,
-    size: number = 20
+    size: number = 10
   ): Promise<Collection<HALResource<User>>> {
     try {
       const params: PaginationParams = { page, size };

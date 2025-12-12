@@ -37,15 +37,7 @@ public class ReviewDtoMapper {
         dto.setItemImageId(review.getItemImage() != null ? review.getItemImage().getId() : null);
         dto.setUserModerator(review.getUser() != null ? review.getUser().getModerator() : null);
         dto.setUserVerified(review.getUser() != null ? review.getUser().getVerified() : null);
-        
-        return dto;
-    }
-
-    public ReviewDTO toDTO(Review review, Boolean isLiked) {
-        ReviewDTO dto = toDTO(review);
-        if (dto != null) {
-            dto.setIsLiked(isLiked);
-        }
+        dto.setIsLiked(review.getIsLiked());
         return dto;
     }
 
