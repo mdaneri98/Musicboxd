@@ -32,11 +32,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Path(ApiUriConstants.REVIEWS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
