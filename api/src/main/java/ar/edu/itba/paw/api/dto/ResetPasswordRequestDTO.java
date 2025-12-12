@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.api.form;
+package ar.edu.itba.paw.api.dto;
 
 import ar.edu.itba.paw.api.form.validation.passwords.PasswordConfirmation;
 import ar.edu.itba.paw.api.form.validation.passwords.PasswordMatch;
@@ -6,8 +6,12 @@ import ar.edu.itba.paw.api.form.validation.passwords.PasswordMatch;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+/**
+ * DTO for reset password request.
+ * Used when user submits a new password with verification code.
+ */
 @PasswordMatch(message = "{validation.user.password.match}")
-public class ResetPasswordForm implements PasswordConfirmation {
+public class ResetPasswordRequestDTO implements PasswordConfirmation {
 
     @NotBlank(message = "{validation.resetpassword.code.notblank}")
     private String code;
@@ -20,27 +24,11 @@ public class ResetPasswordForm implements PasswordConfirmation {
     @Size(min = 8, message = "{validation.user.password.size}")
     private String repeatPassword;
 
-    public ResetPasswordForm() {}
+    public ResetPasswordRequestDTO() {}
 
-    public ResetPasswordForm(String code, String password, String repeatPassword) {
-        this.password = password;
-        this.repeatPassword = repeatPassword;
+    public ResetPasswordRequestDTO(String code, String password, String repeatPassword) {
         this.code = code;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRepeatPassword() {
-        return repeatPassword;
-    }
-
-    public void setRepeatPassword(String repeatPassword) {
         this.repeatPassword = repeatPassword;
     }
 
@@ -50,5 +38,23 @@ public class ResetPasswordForm implements PasswordConfirmation {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String getRepeatPassword() {
+        return repeatPassword;
+    }
+
+    public void setRepeatPassword(String repeatPassword) {
+        this.repeatPassword = repeatPassword;
     }
 }

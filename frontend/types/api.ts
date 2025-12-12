@@ -133,6 +133,26 @@ export interface ResendVerificationRequest {
 }
 
 // ============================================================================
+// Password Recovery Types
+// ============================================================================
+
+/**
+ * Forgot password request
+ */
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+/**
+ * Reset password request
+ */
+export interface ResetPasswordRequest {
+  code: string;
+  password: string;
+  repeat_password: string;
+}
+
+// ============================================================================
 // Error Types
 // ============================================================================
 

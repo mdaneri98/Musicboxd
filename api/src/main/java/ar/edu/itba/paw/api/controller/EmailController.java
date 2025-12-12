@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.api.controller;
 
 import ar.edu.itba.paw.api.dto.EmailVerificationRequestDTO;
+import ar.edu.itba.paw.api.dto.ForgotPasswordRequestDTO;
 import ar.edu.itba.paw.api.dto.ResendVerificationRequestDTO;
+import ar.edu.itba.paw.api.dto.ResetPasswordRequestDTO;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.VerificationType;
@@ -25,28 +27,14 @@ public class EmailController extends BaseController {
     @Autowired
     private UserService userService;
 
-    /**
-     * Verify user email with verification code
-     * POST /api/email/verification
-     */
     @POST
     @Path(ApiUriConstants.EMAIL_VERIFICATION)
     public Response verifyEmail(@Valid EmailVerificationRequestDTO verificationRequest) {
         LOGGER.info("Email verification request received");
-
-        Long userId = userService.verify(VerificationType.VERIFY_EMAIL, verificationRequest.getCode());
-
-        if (userId == null) {
-            throw new NotFoundException("Invalid or expired verification code");
-        }
-
+        userService.verify(VerificationType.VERIFY_EMAIL, verificationRequest.getCode());
         return Response.noContent().build();
     }
 
-    /**
-     * Resend verification email
-     * POST /api/email/verification/resend
-     */
     @POST
     @Path(ApiUriConstants.EMAIL_VERIFICATION + ApiUriConstants.RESEND_VERIFICATION)
     public Response resendVerificationEmail(@Valid ResendVerificationRequestDTO resendRequest) {
@@ -54,6 +42,28 @@ public class EmailController extends BaseController {
 
         User user = userService.findByEmail(resendRequest.getEmail());
         userService.createVerification(VerificationType.VERIFY_EMAIL, user);
+
+        return Response.noContent().build();
+    }
+
+    @POST
+    @Path(ApiUriConstants.PASSWORD_FORGOT)
+    public Response forgotPassword(@Valid ForgotPasswordRequestDTO forgotPasswordRequest) {
+        LOGGER.info("Forgot password request received");
+
+        User user = userService.findByEmail(forgotPasswordRequest.getEmail());
+        userService.createVerification(VerificationType.VERIFY_FORGOT_PASSWORD, user);
+
+        return Response.noContent().build();
+    }
+
+    @POST
+    @Path(ApiUriConstants.PASSWORD_RESET)
+    public Response resetPassword(@Valid ResetPasswordRequestDTO resetPasswordRequest) {
+        LOGGER.info("Reset password request received");
+
+        long userId = userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, resetPasswordRequest.getCode());
+        userService.changePassword(userId, resetPasswordRequest.getPassword());
 
         return Response.noContent().build();
     }

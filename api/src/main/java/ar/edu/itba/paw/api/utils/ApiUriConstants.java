@@ -21,6 +21,8 @@ public class ApiUriConstants {
     public static final String EMAIL_BASE = API_BASE + "/email";
     public static final String EMAIL_VERIFICATION = "/verification";
     public static final String RESEND_VERIFICATION = "/resend";
+    public static final String PASSWORD_FORGOT = "/password/forgot";
+    public static final String PASSWORD_RESET = "/password/reset";
 
     /* USERS */
     public static final String USERS_BASE = API_BASE + "/users";
