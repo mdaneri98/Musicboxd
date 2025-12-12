@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
-import { LoadingSpinner } from '@/components/ui';
+import { LoadingSpinner, ConfirmationModal } from '@/components/ui';
 import { useAppSelector } from '@/store/hooks';
 import {
   selectIsAuthenticated,
@@ -56,6 +56,17 @@ export default function MusicEditorPage() {
   const [loadingData, setLoadingData] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Confirmation modal state
+  const [deleteAlbumModal, setDeleteAlbumModal] = useState<{ isOpen: boolean; albumIndex: number | null }>({
+    isOpen: false,
+    albumIndex: null,
+  });
+  const [deleteSongModal, setDeleteSongModal] = useState<{ isOpen: boolean; albumIndex: number | null; songIndex: number | null }>({
+    isOpen: false,
+    albumIndex: null,
+    songIndex: null,
+  });
 
   // Redirect if not authenticated or not moderator
   useEffect(() => {
@@ -261,13 +272,20 @@ export default function MusicEditorPage() {
     }));
   };
 
-  const removeAlbum = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      albums: prev.albums.map((album, i) =>
-        i === index ? { ...album, deleted: true } : album
-      ),
-    }));
+  const handleRemoveAlbumClick = (index: number) => {
+    setDeleteAlbumModal({ isOpen: true, albumIndex: index });
+  };
+
+  const confirmRemoveAlbum = () => {
+    if (deleteAlbumModal.albumIndex !== null) {
+      setFormData(prev => ({
+        ...prev,
+        albums: prev.albums.map((album, i) =>
+          i === deleteAlbumModal.albumIndex ? { ...album, deleted: true } : album
+        ),
+      }));
+    }
+    setDeleteAlbumModal({ isOpen: false, albumIndex: null });
   };
 
   const toggleAlbumCollapse = (index: number) => {
@@ -314,13 +332,20 @@ export default function MusicEditorPage() {
     });
   };
 
-  const removeSong = (albumIndex: number, songIndex: number) => {
-    const album = formData.albums[albumIndex];
-    updateAlbum(albumIndex, {
-      songs: album.songs.map((song, i) =>
-        i === songIndex ? { ...song, deleted: true } : song
-      ),
-    });
+  const handleRemoveSongClick = (albumIndex: number, songIndex: number) => {
+    setDeleteSongModal({ isOpen: true, albumIndex, songIndex });
+  };
+
+  const confirmRemoveSong = () => {
+    if (deleteSongModal.albumIndex !== null && deleteSongModal.songIndex !== null) {
+      const album = formData.albums[deleteSongModal.albumIndex];
+      updateAlbum(deleteSongModal.albumIndex, {
+        songs: album.songs.map((song, i) =>
+          i === deleteSongModal.songIndex ? { ...song, deleted: true } : song
+        ),
+      });
+    }
+    setDeleteSongModal({ isOpen: false, albumIndex: null, songIndex: null });
   };
 
   // Validation using Yup schemas
@@ -535,7 +560,7 @@ export default function MusicEditorPage() {
                         <button
                           type="button"
                           className="btn-icon btn-delete"
-                          onClick={(e) => { e.stopPropagation(); removeAlbum(albumIndex); }}
+                          onClick={(e) => { e.stopPropagation(); handleRemoveAlbumClick(albumIndex); }}
                           title={t('moderator.removeAlbum')}
                         >
                           <i className="fa-solid fa-trash"></i>
@@ -675,7 +700,7 @@ export default function MusicEditorPage() {
                                   <button
                                     type="button"
                                     className="btn-icon btn-delete"
-                                    onClick={() => removeSong(albumIndex, songIndex)}
+                                    onClick={() => handleRemoveSongClick(albumIndex, songIndex)}
                                     title={t('moderator.removeSong')}
                                   >
                                     <i className="fa-solid fa-times"></i>
@@ -724,6 +749,26 @@ export default function MusicEditorPage() {
           </div>
         </form>
       </div>
+
+      {/* Delete Album Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteAlbumModal.isOpen}
+        message={t('moderator.confirmRemoveAlbum')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        onConfirm={confirmRemoveAlbum}
+        onCancel={() => setDeleteAlbumModal({ isOpen: false, albumIndex: null })}
+      />
+
+      {/* Delete Song Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteSongModal.isOpen}
+        message={t('moderator.confirmRemoveSong')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        onConfirm={confirmRemoveSong}
+        onCancel={() => setDeleteSongModal({ isOpen: false, albumIndex: null, songIndex: null })}
+      />
     </Layout>
   );
 }
