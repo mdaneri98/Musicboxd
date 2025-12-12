@@ -101,7 +101,7 @@ export default function NotificationsPage() {
         </div>
 
         {loading && notifications.length === 0 ? (
-          <LoadingSpinner size="large" message={t('notifications.loading')} />
+          <LoadingSpinner size="large" />
         ) : notifications.length === 0 ? (
           <p className="no-results">{t('notifications.noNotifications')}</p>
         ) : (
