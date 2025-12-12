@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { UserCard } from '@/components/cards';
+import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectIsAuthenticated, fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, fetchUsersAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
@@ -27,6 +28,7 @@ export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [recommendedUsers, setRecommendedUsers] = useState<User[]>([]);
+  const [loadingRecommended, setLoadingRecommended] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [currentFocus, setCurrentFocus] = useState(-1);
   const [error, setError] = useState<string | null>(null);
@@ -37,11 +39,14 @@ export default function SearchPage() {
   // Fetch recommended users on mount
   useEffect(() => {
     const fetchRecommendedUsers = async () => {
+      setLoadingRecommended(true);
       try { 
         const usersData = await dispatch(fetchUsersAsync({ page: 1, size: 6, filter: FilterTypeEnum.RECOMMENDED })).unwrap();
         setRecommendedUsers(usersData.items.map((user: HALResource<User>) => user.data as User));
       } catch (error) {
         console.error('Failed to fetch recommended users:', error);
+      } finally {
+        setLoadingRecommended(false);
       }
     };
 
@@ -284,14 +289,18 @@ export default function SearchPage() {
       </div>
 
       {/* Recommended Users */}
-      {!searchQuery && recommendedUsers.length > 0 && (
+      {!searchQuery && (
         <>
           <h1 className="page-title">{t('search.recommendedUsers')}</h1>
-          <div className="users-grid">
-            {recommendedUsers.map((user) => (
-              <UserCard key={user.id} user={user} />
-            ))}
-          </div>
+          {loadingRecommended ? (
+            <LoadingSpinner centered />
+          ) : recommendedUsers.length > 0 ? (
+            <div className="users-grid">
+              {recommendedUsers.map((user) => (
+                <UserCard key={user.id} user={user} />
+              ))}
+            </div>
+          ) : null}
         </>
       )}
     </Layout>

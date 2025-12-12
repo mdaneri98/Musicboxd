@@ -16,7 +16,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const dispatch = useAppDispatch();
-  const { i18n, t  } = useTranslation();
+  const { i18n } = useTranslation();
   const initializing = useAppSelector(selectAuthInitializing);
   const currentUser = useAppSelector(selectCurrentUser);
 
