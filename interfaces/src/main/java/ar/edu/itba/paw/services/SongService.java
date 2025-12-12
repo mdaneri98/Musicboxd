@@ -13,7 +13,7 @@ public interface SongService extends CrudService<Song> {
 
     List<Song> findByAlbumId(Long id);
 
-    List<Song> findByTitleContaining(String sub, Integer pageSize, Integer pageNum);
+    List<Song> findByTitleContaining(String sub, Integer page, Integer size);
 
     List<Review> findReviewsBySongId(Long songId);
 

@@ -23,7 +23,12 @@ export default function SettingsPage() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   const { theme, setTheme } = useThemeContext();
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>();
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
+    has_follow_notifications_enabled: false,
+    has_like_notifications_enabled: false,
+    has_comments_notifications_enabled: false,
+    has_reviews_notifications_enabled: false,
+  });
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -160,7 +165,7 @@ export default function SettingsPage() {
                     type="checkbox"
                     id="followNotif"
                     className="toggle-input"
-                    checked={notificationSettings?.has_follow_notifications_enabled}
+                    checked={notificationSettings.has_follow_notifications_enabled ?? false}
                     onChange={() => handleNotificationToggle('has_follow_notifications_enabled')}
                     disabled={saving}
                   />
@@ -178,7 +183,7 @@ export default function SettingsPage() {
                     type="checkbox"
                     id="likeNotif"
                     className="toggle-input"
-                    checked={notificationSettings?.has_like_notifications_enabled}
+                    checked={notificationSettings.has_like_notifications_enabled ?? false}
                     onChange={() => handleNotificationToggle('has_like_notifications_enabled')}
                     disabled={saving}
                   />
@@ -196,7 +201,7 @@ export default function SettingsPage() {
                     type="checkbox"
                     id="commentNotif"
                     className="toggle-input"
-                    checked={notificationSettings?.has_comments_notifications_enabled}
+                    checked={notificationSettings.has_comments_notifications_enabled ?? false}
                     onChange={() => handleNotificationToggle('has_comments_notifications_enabled')}
                     disabled={saving}
                   />
@@ -214,7 +219,7 @@ export default function SettingsPage() {
                     type="checkbox"
                     id="reviewNotif"
                     className="toggle-input"
-                    checked={notificationSettings?.has_reviews_notifications_enabled}
+                    checked={notificationSettings.has_reviews_notifications_enabled ?? false}
                     onChange={() => handleNotificationToggle('has_reviews_notifications_enabled')}
                     disabled={saving}
                   />

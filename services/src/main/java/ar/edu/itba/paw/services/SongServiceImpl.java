@@ -44,8 +44,8 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Song> findByTitleContaining(String sub, Integer pageSize, Integer pageNum) {
-        return songDao.findByTitleContaining(sub, pageSize, pageNum);
+    public List<Song> findByTitleContaining(String sub, Integer page, Integer size) {
+        return songDao.findByTitleContaining(sub, page, size);
     }
 
     @Override
