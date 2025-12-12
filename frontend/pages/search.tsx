@@ -209,10 +209,6 @@ export default function SearchPage() {
     }
   };
 
-  if (!isAuthenticated) {
-    return null; // Will redirect in useEffect
-  }
-
   return (
     <Layout title="Search - Musicboxd">
 
@@ -291,15 +287,17 @@ export default function SearchPage() {
       {/* Recommended Users */}
       {!searchQuery && (
         <>
-          <h1 className="page-title">{t('search.recommendedUsers')}</h1>
-          {loadingRecommended ? (
+          {loadingRecommended && recommendedUsers.length > 0 ? (
             <LoadingSpinner centered />
           ) : recommendedUsers.length > 0 ? (
+            <>
+              <h1 className="page-title">{t('search.recommendedUsers')}</h1>
             <div className="users-grid">
               {recommendedUsers.map((user) => (
                 <UserCard key={user.id} user={user} />
               ))}
             </div>
+            </>
           ) : null}
         </>
       )}
