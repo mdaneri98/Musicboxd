@@ -306,7 +306,9 @@
     "yourRating": "Votre note",
     "failedToToggleLike": "Échec du changement de j'aime",
     "failedToToggleFollow": "Échec du changement d'abonnement",
-    "noFavoritesYet": "Vous n'avez pas encore de favoris"
+    "noFavoritesYet": "Vous n'avez pas encore de favoris",
+    "removeImage": "Supprimer l'image",
+    "uploadImage": "Télécharger l'image"
   },
   "errors": {
     "required": "Ce champ est obligatoire",

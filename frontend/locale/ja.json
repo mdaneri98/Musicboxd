@@ -306,7 +306,9 @@
     "yourRating": "あなたの評価",
     "failedToToggleLike": "いいねの切り替えに失敗しました",
     "failedToToggleFollow": "フォローの切り替えに失敗しました",
-    "noFavoritesYet": "まだお気に入りがありません"
+    "noFavoritesYet": "まだお気に入りがありません",
+    "removeImage": "画像を削除",
+    "uploadImage": "画像をアップロード"
   },
   "errors": {
     "required": "このフィールドは必須です",

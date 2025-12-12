@@ -306,7 +306,9 @@
     "yourRating": "Sua avaliação",
     "failedToToggleLike": "Falha ao alternar curtida",
     "failedToToggleFollow": "Falha ao alternar seguir",
-    "noFavoritesYet": "Ainda não tem favoritos"
+    "noFavoritesYet": "Ainda não tem favoritos",
+    "removeImage": "Remover imagem",
+    "uploadImage": "Carregar imagem"
   },
   "errors": {
     "required": "Este campo é obrigatório",

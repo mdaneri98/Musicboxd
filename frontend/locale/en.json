@@ -306,7 +306,9 @@
     "yourRating": "Your Rating",
     "failedToToggleLike": "Failed to toggle like",
     "failedToToggleFollow": "Failed to toggle follow",
-    "noFavoritesYet": "No favorites yet"
+    "noFavoritesYet": "No favorites yet",
+    "removeImage": "Remove image",
+    "uploadImage": "Upload image"
   },
   "errors": {
     "required": "This field is required",

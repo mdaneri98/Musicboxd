@@ -306,7 +306,9 @@
     "yourRating": "Deine Bewertung",
     "failedToToggleLike": "Like konnte nicht geändert werden",
     "failedToToggleFollow": "Folgen konnte nicht geändert werden",
-    "noFavoritesYet": "Noch keine Favoriten"
+    "noFavoritesYet": "Noch keine Favoriten",
+    "removeImage": "Bild entfernen",
+    "uploadImage": "Bild hochladen"
   },
   "errors": {
     "required": "Dieses Feld ist erforderlich",

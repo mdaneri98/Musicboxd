@@ -295,7 +295,9 @@
     "failedToToggleLike": "No se pudo cambiar el like",
     "yourRating": "Tu Calificación",
     "failedToToggleFollow": "No se pudo cambiar el seguimiento",
-    "noFavoritesYet": "No hay favoritos aún"
+    "noFavoritesYet": "No hay favoritos aún",
+    "removeImage": "Eliminar imagen",
+    "uploadImage": "Subir imagen"
   },
   "errors": {
     "required": "Este campo es obligatorio",

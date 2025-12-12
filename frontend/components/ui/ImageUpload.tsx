@@ -63,7 +63,7 @@ export function ImageUpload({
             className="btn btn-danger btn-small"
             type="button"
           >
-            Remove
+            {t('common.removeImage')}
           </button>
         </div>
       )}
@@ -82,7 +82,7 @@ export function ImageUpload({
           <div className="upload-placeholder">
             <span className="upload-icon">📷</span>
             <p className="upload-text">
-              {loading ? 'Loading...' : 'Click to upload or drag and drop'}
+              {loading ? t('common.loading') : t('common.uploadImage')}
             </p>
             <p className="upload-hint">
               {t("common.maxSize")}: {maxSizeMB}MB

@@ -306,7 +306,9 @@
     "yourRating": "La tua valutazione",
     "failedToToggleLike": "Impossibile cambiare mi piace",
     "failedToToggleFollow": "Impossibile cambiare segui",
-    "noFavoritesYet": "Non hai ancora preferiti"
+    "noFavoritesYet": "Non hai ancora preferiti",
+    "removeImage": "Rimuovi immagine",
+    "uploadImage": "Carica immagine"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
