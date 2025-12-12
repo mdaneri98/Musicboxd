@@ -24,7 +24,7 @@ export const ArtistInfo: React.FC<ArtistInfoProps> = ({
   isReviewed,
   onFavoriteToggle,
 }) => {
-  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
+  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/image-placeholder.png';
   const { t } = useTranslation();
   return (
     <>

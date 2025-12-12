@@ -117,7 +117,7 @@ const EditArtistReviewPage = () => {
     );
   }
 
-  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
+  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/image-placeholder.png';
 
   return (
     <Layout title={`Musicboxd - ${t('artist.editReviewFor')} ${artist.name}`}>

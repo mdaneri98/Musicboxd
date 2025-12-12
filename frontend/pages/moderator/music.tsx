@@ -468,7 +468,7 @@ export default function MusicEditorPage() {
               {/* Artist Image */}
               <div className="image-upload-container">
                 <img
-                  src={formData._imagePreview || '/images/default-artist.png'}
+                  src={formData._imagePreview || '/assets/image-placeholder.png'}
                   alt={t('moderator.artistImage')}
                   className="entity-image mod-editable-image"
                   onClick={() => document.getElementById('artistImageInput')?.click()}
@@ -543,7 +543,7 @@ export default function MusicEditorPage() {
                     <div className="album-header" onClick={() => toggleAlbumCollapse(albumIndex)}>
                       <div className="album-header-info">
                         <img
-                          src={album._imagePreview || '/images/default-album.png'}
+                          src={album._imagePreview || '/assets/image-placeholder.png'}
                           alt={album.title || t('moderator.newAlbum')}
                           className="album-thumbnail"
                         />
@@ -576,7 +576,7 @@ export default function MusicEditorPage() {
                           {/* Album Image */}
                           <div className="image-upload-container image-upload-small">
                             <img
-                              src={album._imagePreview || '/images/default-album.png'}
+                              src={album._imagePreview || '/assets/image-placeholder.png'}
                               alt={t('moderator.albumImage')}
                               className="sub-element-image-preview mod-editable-image"
                               onClick={() => document.getElementById(`albumImageInput_${albumIndex}`)?.click()}

@@ -53,7 +53,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
 
   const itemImageUrl = review.item_image_id
     ? imageRepository.getImageUrl(review.item_image_id)
-    : '/assets/default-album.png';
+    : '/assets/image-placeholder.png';
 
   const userImageUrl = review.user_image_id
     ? imageRepository.getImageUrl(review.user_image_id)

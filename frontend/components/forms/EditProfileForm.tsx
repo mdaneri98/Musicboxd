@@ -58,7 +58,7 @@ const EditProfileForm = ({
           />
           <img
             id="imagePreview"
-            src={imagePreview || '/assets/default-user.png'}
+            src={imagePreview || '/assets/default-avatar.png'}
             className="entity-image mod-editable-image"
             style={{ cursor: 'pointer' }}
             onClick={() => document.getElementById('userImageInput')?.click()}

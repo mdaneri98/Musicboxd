@@ -117,7 +117,7 @@ const SongReviewPage = () => {
     );
   }
 
-  const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
+  const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/image-placeholder.png';
 
   return (
     <Layout title={`Musicboxd - ${t('song.reviewSong')} ${song.title}`}>

@@ -25,7 +25,7 @@ const LandingPage = () => {
         const reviews = response.items.map((item) => item.data);
         setReviews(reviews);
       } catch (error) {
-        console.error('Failed to fetch popular reviews:', error);
+        console.error(error);
       } finally {
         setLoading(false);
       }

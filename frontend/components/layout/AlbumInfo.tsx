@@ -27,8 +27,8 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
   isReviewed,
   onFavoriteToggle,
 }) => {
-  const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/default-album.png';
-  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/default-artist.png';
+  const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/image-placeholder.png';
+  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/image-placeholder.png';
   const { t } = useTranslation();
   return (
     <>
