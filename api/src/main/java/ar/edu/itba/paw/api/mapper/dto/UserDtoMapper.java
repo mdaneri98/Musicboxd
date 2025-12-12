@@ -39,15 +39,8 @@ public class UserDtoMapper {
         dto.setHasLikeNotificationsEnabled(user.getLikeNotificationsEnabled());
         dto.setHasCommentsNotificationsEnabled(user.getCommentNotificationsEnabled());
         dto.setHasReviewsNotificationsEnabled(user.getReviewNotificationsEnabled());
-
-        return dto;
-    }
-
-    public UserDTO toDTO(User user, Boolean isFollowed) {
-        UserDTO dto = toDTO(user);
-        if (dto != null) {
-            dto.setFollowed(isFollowed);
-        }
+        dto.setFollowed(user.getIsFollowed());
+        
         return dto;
     }
 

@@ -117,9 +117,8 @@ public class AlbumController extends BaseController {
     public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Album album = albumService.findById(id);
-        Boolean isReviewed = loggedUserId != null ? albumService.hasUserReviewed(loggedUserId, id) : false;
-        Boolean isFavorite = loggedUserId != null ? userService.isAlbumFavorite(loggedUserId, id) : false;
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, isReviewed, isFavorite);
+        albumService.setContextDependentFields(album, loggedUserId);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
         AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
         return buildResponse(albumResource);
     }
@@ -193,10 +192,10 @@ public class AlbumController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         userService.addFavoriteAlbum(loggedUserId, id);
         Album album = albumService.findById(id);
-        Boolean isReviewed = loggedUserId != null ? albumService.hasUserReviewed(loggedUserId, id) : false;
-        Boolean isFavorite = loggedUserId != null ? userService.isAlbumFavorite(loggedUserId, id) : false;
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, isReviewed, isFavorite);
-        return buildCreatedResponse(albumResourceMapper.toResource(albumDTO, getBaseUrl()));
+        albumService.setContextDependentFields(album, loggedUserId);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
+        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
+        return buildCreatedResponse(albumResource);
     }
 
     @DELETE

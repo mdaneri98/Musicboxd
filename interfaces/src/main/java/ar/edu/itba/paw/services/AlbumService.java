@@ -23,4 +23,6 @@ public interface AlbumService extends CrudService<Album> {
     Boolean updateRating(Long albumId);
     
     Long countAll();
+
+    void setContextDependentFields(Album album, Long loggedUserId);
 }

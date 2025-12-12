@@ -46,6 +46,12 @@ public class Song {
     )
     private List<Artist> artists = new ArrayList<>();
 
+    @Transient
+    private Boolean isReviewed;
+
+    @Transient
+    private Boolean isFavorite;
+
     public Song() {
         // Constructor vacío necesario para JPA
     }
@@ -198,5 +204,21 @@ public class Song {
 
     public void setArtists(List<Artist> artists) {
         this.artists = artists;
+    }
+
+    public Boolean getIsReviewed() {
+        return isReviewed;
+    }
+
+    public void setIsReviewed(Boolean isReviewed) {
+        this.isReviewed = isReviewed;
+    }
+
+    public Boolean getIsFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(Boolean isFavorite) {
+        this.isFavorite = isFavorite;
     }
 }

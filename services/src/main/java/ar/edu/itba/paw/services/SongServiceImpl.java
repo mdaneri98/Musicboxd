@@ -197,4 +197,15 @@ public class SongServiceImpl implements SongService {
         else LOGGER.error("Song rating not updated. average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
         return updated;
     }
+
+    @Override
+    public void setContextDependentFields(Song song, Long loggedUserId) {
+        if (loggedUserId == null) {
+            song.setIsReviewed(false);
+            song.setIsFavorite(false);
+        } else {
+            song.setIsReviewed(hasUserReviewed(loggedUserId, song.getId()));
+            song.setIsFavorite(userService.isSongFavorite(loggedUserId, song.getId()));
+        }
+    }
 }

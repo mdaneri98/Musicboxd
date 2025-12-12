@@ -42,6 +42,12 @@ public class Artist {
     @ManyToMany(mappedBy = "artists")
     private List<Song> songs = new ArrayList<>();
 
+    @Transient
+    private Boolean isReviewed;
+
+    @Transient
+    private Boolean isFavorite;
+
     public Artist() {
         // Constructor vacío necesario para JPA
     }
@@ -202,4 +208,19 @@ public class Artist {
         return songs;
     }
 
+    public Boolean getIsReviewed() {
+        return isReviewed;
+    }
+
+    public void setIsReviewed(Boolean isReviewed) {
+        this.isReviewed = isReviewed;
+    }
+
+    public Boolean getIsFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(Boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
 }

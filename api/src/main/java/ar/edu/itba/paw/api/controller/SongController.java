@@ -68,17 +68,14 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-
         List<Song> songs = new ArrayList<>();
         if (search != null && !search.isEmpty()) songs = songService.findByTitleContaining(search, page, size);
         else songs = songService.findPaginated(filter, page, size);
         List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs);
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         Integer totalCount = songService.countAll().intValue();
-        
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                 songResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, ControllerUtils.songsCollectionLinks);
-        
         return buildResponse(collection);
     }
 
@@ -97,9 +94,8 @@ public class SongController extends BaseController {
     public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Song song = songService.findById(id);
-        Boolean isReviewed = loggedUserId != null ? songService.hasUserReviewed(loggedUserId, id) : false;
-        Boolean isFavorite = loggedUserId != null ? userService.isSongFavorite(loggedUserId, id) : false;
-        SongDTO songDTO = songDtoMapper.toDTO(song, isReviewed, isFavorite);
+        songService.setContextDependentFields(song, loggedUserId);
+        SongDTO songDTO = songDtoMapper.toDTO(song);
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
         return buildResponse(songResource);
     }
@@ -132,17 +128,13 @@ public class SongController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
-
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-
         List<Review> reviews = reviewService.findSongReviewsPaginated(id, page, size, loggedUserId);
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, loggedUserId, reviewService);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
-        Integer totalCount = reviewService.countAll().intValue();
-                
+        Integer totalCount = reviewService.countAll().intValue();    
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE + ApiUriConstants.SONG_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
-        
         return buildResponse(collection);
     }
 
@@ -152,9 +144,8 @@ public class SongController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         userService.addFavoriteSong(loggedUserId, id);
         Song song = songService.findById(id);
-        Boolean isReviewed = loggedUserId != null ? songService.hasUserReviewed(loggedUserId, id) : false;
-        Boolean isFavorite = loggedUserId != null ? userService.isSongFavorite(loggedUserId, id) : false;
-        SongDTO songDTO = songDtoMapper.toDTO(song, isReviewed, isFavorite);
+        songService.setContextDependentFields(song, loggedUserId);
+        SongDTO songDTO = songDtoMapper.toDTO(song);
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
         return buildCreatedResponse(songResource);
     }

@@ -376,4 +376,13 @@ public class UserServiceImpl implements UserService {
     private User saveUser(User user) {
         return userDao.updateUser(user.getId(), user).orElseThrow(() -> new UserNotFoundException(user.getId()));
     }
+
+    @Override
+    public void setContextDependentFields(User user, Long loggedUserId) {
+        if (loggedUserId == null) {
+            user.setIsFollowed(false);
+        } else {
+            user.setIsFollowed(isFollowing(loggedUserId, user.getId()));
+        }
+    }
 }

@@ -80,8 +80,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
-        if (filterType == FilterType.FOLLOWING) return getReviewsFromFollowedUsersPaginated(page, pageSize, loggedUserId);
-        return findPaginated(filterType, page, pageSize);
+        List<Review> reviews = new ArrayList<>();
+        if (filterType == FilterType.FOLLOWING) reviews = getReviewsFromFollowedUsersPaginated(page, pageSize, loggedUserId);
+        else reviews = findPaginated(filterType, page, pageSize);
+        for (Review review : reviews) {
+            setContextDependentFields(review, loggedUserId);
+        }
+        return reviews;
     }
 
     @Override
@@ -418,5 +423,14 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public Long countReviewsFromFollowedUsers(Long loggedUserId) {
         return reviewDao.countReviewsFromFollowedUsers(loggedUserId);
+    }
+
+    @Override
+    public void setContextDependentFields(Review review, Long loggedUserId) {
+        if (loggedUserId == null) {
+            review.setIsLiked(false);
+        } else {
+            review.setIsLiked(isLiked(loggedUserId, review.getId()));
+        }
     }
 }

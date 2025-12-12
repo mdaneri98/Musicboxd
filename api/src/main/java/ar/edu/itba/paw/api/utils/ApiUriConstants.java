@@ -49,8 +49,6 @@ public class ApiUriConstants {
     public static final String REVIEWS_BASE = API_BASE + "/reviews";
     public static final String REVIEW_COMMENTS = ID + "/comments";
     public static final String REVIEW_LIKES = ID + "/likes";
-    public static final String REVIEW_BLOCK = ID + "/block";
-    public static final String REVIEW_UNBLOCK = ID + "/unblock";
 
     /* COMMENTS */
     public static final String COMMENTS_BASE = API_BASE + "/comments";
@@ -60,8 +58,6 @@ public class ApiUriConstants {
 
     /* NOTIFICATIONS */
     public static final String NOTIFICATIONS_BASE = API_BASE + "/notifications";
-    public static final String NOTIFICATION_READ = ID + "/read";
-    public static final String NOTIFICATIONS_READ_ALL = "/read-all";
     public static final String NOTIFICATIONS_UNREAD_COUNT = "/unread-count";
 
 }

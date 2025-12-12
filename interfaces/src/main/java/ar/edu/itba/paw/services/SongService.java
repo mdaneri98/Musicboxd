@@ -26,4 +26,6 @@ public interface SongService extends CrudService<Song> {
     Boolean updateRating(Long songId);
 
     Long countAll();
+
+    void setContextDependentFields(Song song, Long loggedUserId);
 }

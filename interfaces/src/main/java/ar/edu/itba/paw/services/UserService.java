@@ -58,4 +58,6 @@ public interface UserService {
     Integer getFavoriteSongsCount(Long userId);
     
     List<User> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize);
+
+    void setContextDependentFields(User user, Long loggedUserId);
 }
