@@ -216,7 +216,7 @@ const ViewAllMusicPage = () => {
         {/* Content Grid */}
         <div className="view-all-content">
           {loading && currentData.length === 0 ? (
-            <LoadingSpinner size="large" message={t('common.loading')} />
+            <LoadingSpinner size="large" />
           ) : (
             <>
               {activeTab === ReviewItemTypeEnum.ARTIST && (

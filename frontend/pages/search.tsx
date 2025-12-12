@@ -34,13 +34,6 @@ export default function SearchPage() {
   const searchWrapperRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Redirect to landing if not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/landing');
-    }
-  }, [isAuthenticated, router]);
-
   // Fetch recommended users on mount
   useEffect(() => {
     const fetchRecommendedUsers = async () => {
@@ -109,8 +102,8 @@ export default function SearchPage() {
         id: song.data.id,
         name: song.data.title,
         type: SearchTypeEnum.SONGS,
-        imgId: undefined, // Song model doesn't include album image
-        imageUrl: undefined,
+        imgId: song.data.album_image_id,
+        imageUrl: song.data.album_image_id ? imageRepository.getImageUrl(song.data.album_image_id) : undefined,
       }));
 
       const userResults: SearchResultItem[] = usersData.items.map((user: HALResource<User>) => ({

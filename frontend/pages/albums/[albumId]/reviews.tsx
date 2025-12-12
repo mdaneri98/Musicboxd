@@ -19,6 +19,7 @@ import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
 import { ReviewItemType } from '@/types/enums';
 import { formatDate } from '@/utils/timeUtils';
+import { LoadingSpinner } from '@/components/ui';
 
 const AlbumReviewPage = () => {
   const { t } = useTranslation();
@@ -100,7 +101,7 @@ const AlbumReviewPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">{t('common.loading')}</div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );

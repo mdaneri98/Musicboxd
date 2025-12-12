@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
-import { ConfirmationModal } from '@/components/ui';
+import { ConfirmationModal, LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { 
   selectIsAuthenticated, 
@@ -111,7 +111,7 @@ const EditArtistReviewPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">{t('common.loading')}</div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );

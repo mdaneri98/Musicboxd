@@ -182,7 +182,7 @@ const ProfilePage = () => {
         {activeTab === ProfileTabEnum.REVIEWS && (
           <section className="reviews-section">
             {loadingReviews && reviews.length === 0 ? (
-              <LoadingSpinner size="large" message={t('profile.loadingReviews')} />
+              <LoadingSpinner size="large" />
             ) : reviews.length === 0 ? (
               <div className="empty-state">
                 <h3>{t('profile.noReviews')}</h3>

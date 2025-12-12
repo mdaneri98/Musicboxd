@@ -128,7 +128,7 @@ const ArtistDetailPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <LoadingSpinner size="large" message={t('artist.loadingArtist')} />
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );

@@ -137,7 +137,7 @@ const UserProfilePage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <LoadingSpinner size="large" message={t('userProfile.loadingProfile')} />
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );
@@ -245,7 +245,7 @@ const UserProfilePage = () => {
 
           <section className="reviews-section">
             {loadingReviews && reviews.length === 0 ? (
-              <LoadingSpinner size="large" message={t('profile.loadingReviews')} />
+              <LoadingSpinner size="large" />
             ) : reviews.length === 0 ? (
               <div className="empty-state">
                 <h3>{t('profile.noReviews')}</h3>

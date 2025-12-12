@@ -108,7 +108,7 @@ const HomePage = () => {
         {/* Contenido principal */}
         <section className="reviews-section">
           {loading && reviews.length === 0 ? (
-            <LoadingSpinner size="large" message={t('home.loadingReviews')} />
+            <LoadingSpinner size="large" />
           ) : reviews.length === 0 ? (
             <div className="empty-state">
               <h3>{t('home.noReviews')}</h3>

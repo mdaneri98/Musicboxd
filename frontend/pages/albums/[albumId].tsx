@@ -144,7 +144,7 @@ const AlbumDetailPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <LoadingSpinner size="large" message={t('album.loadingAlbum')} />
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );

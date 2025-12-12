@@ -19,6 +19,7 @@ import {
 import { imageRepository } from '@/repositories';
 import type { Album, ReviewFormData, HALResource, Review } from '@/types';
 import { ReviewItemType } from '@/types/enums';
+import { LoadingSpinner } from '@/components/ui';
 
 const SongReviewPage = () => {
   const { t } = useTranslation();
@@ -110,7 +111,7 @@ const SongReviewPage = () => {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="loading">{t('common.loading')}</div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );
