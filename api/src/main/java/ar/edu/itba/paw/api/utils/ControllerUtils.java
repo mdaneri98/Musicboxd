@@ -2,10 +2,18 @@ package ar.edu.itba.paw.api.utils;
 
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.models.reviews.ReviewType;
+
+import javax.ws.rs.core.*;
+import java.util.function.Supplier;
+
 /**
  * Utility class for controller methods
  */
 public final class ControllerUtils {
+
+    // Cache max-age constants (in seconds)
+    public static final int IMAGE_MAX_AGE = 2592000; // 30 days
+    public static final int DATA_MAX_AGE = 3600; // 1 hour
 
     // Constants
     public static final Long FAVORITE_COUNT = 5L;
@@ -106,5 +114,30 @@ public final class ControllerUtils {
     // Notification endpoints
     public static final CollectionLinkManager notificationsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
 
+    // https://howtodoinjava.com/resteasy/jax-rs-resteasy-cache-control-with-etag-example/
+    public static <T> Response buildResponseUsingEtag(Request request, int hashCode, Supplier<T> dtoSupplier) {
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setNoCache(true);
+
+        final EntityTag eTag = new EntityTag(String.valueOf(hashCode));
+        Response.ResponseBuilder response = request.evaluatePreconditions(eTag);
+
+        if (response == null) {
+            response = Response.ok(dtoSupplier.get()).tag(eTag);
+            cacheControl.setNoStore(false);
+        }
+
+        return response.header(HttpHeaders.VARY, "Accept, Content-Type").cacheControl(cacheControl).build();
+    }
+
+    /**
+     * Cache control
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+     */
+    public static Response.ResponseBuilder setMaxAge(Response.ResponseBuilder responseBuilder, int maxAge) {
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setMaxAge(maxAge);
+        return responseBuilder.cacheControl(cacheControl);
+    }
 
 }
