@@ -2,8 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout, UserInfo } from '@/components/layout';
-import { ReviewCard, ArtistCard, AlbumCard, SongCard } from '@/components/cards';
-import { LoadingSpinner } from '@/components/ui';
+import { FavoritesSection, ReviewsSection } from '@/components/profile';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
 import { 
@@ -121,99 +120,26 @@ const ProfilePage = () => {
           </span>
         </div>
 
-        {/* Favorites Section */}
-        {loadingFavorites ? (
-          <div className="loading">
-            {t('profile.loadingFavorites')}
-            <LoadingSpinner size="large" />
-          </div>
-        ) : (
-          activeTab === ProfileTabEnum.FAVORITES && (
-          <section className="favorites-section">
-            {/* Favorite Artists */}
-            <h2>{t('profile.favoriteArtists')}</h2>
-            {Object.values(favoriteArtists).length === 0 ? (
-              <div className="empty-state">
-                <p className="add-favorites">{t('profile.addFavoriteArtists')}</p>
-              </div>
-            ) : (
-              <div className="carousel-container">
-                <div className="carousel">
-                  {Object.values(favoriteArtists).map((artist) => (
-                    <ArtistCard key={artist.id} artist={artist} />
-                  ))}
-                </div>
-              </div>
-            )}
+        {/* Favorites Section - Lazy loaded */}
+        {activeTab === ProfileTabEnum.FAVORITES && (
+          <FavoritesSection
+            favoriteArtists={Object.values(favoriteArtists)}
+            favoriteAlbums={Object.values(favoriteAlbums)}
+            favoriteSongs={Object.values(favoriteSongs)}
+            loading={loadingFavorites}
+          />
+        )}
 
-            {/* Favorite Albums */}
-            <h2>{t('profile.favoriteAlbums')}</h2>
-            {Object.values(favoriteAlbums).length === 0 ? (
-              <div className="empty-state">
-                <p className="add-favorites">{t('profile.addFavoriteAlbums')}</p>
-              </div>
-            ) : (
-              <div className="carousel-container">
-                <div className="carousel">
-                  {Object.values(favoriteAlbums).map((album) => (
-                    <AlbumCard key={album.id} album={album} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Favorite Songs */}
-            <h2>{t('profile.favoriteSongs')}</h2>
-            {Object.values(favoriteSongs).length === 0 ? (
-              <div className="empty-state">
-                <p className="add-favorites">{t('profile.addFavoriteSongs')}</p>
-              </div>
-            ) : (
-              <ul className="song-list">
-                {Object.values(favoriteSongs).map((song, index) => (
-                  <SongCard key={song.id} song={song} index={index} />
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
-
-        {/* Reviews Section */}
+        {/* Reviews Section - Lazy loaded */}
         {activeTab === ProfileTabEnum.REVIEWS && (
-          <section className="reviews-section">
-            {loadingReviews && reviews.length === 0 ? (
-              <LoadingSpinner size="large" />
-            ) : reviews.length === 0 ? (
-              <div className="empty-state">
-                <h3>{t('profile.noReviews')}</h3>
-              </div>
-            ) : (
-              <>
-                <div className="reviews-grid">
-                  {reviews.map((review) => (
-                    <ReviewCard key={review.id} review={review} />
-                  ))}
-                </div>
-
-                {/* Sentinel element for infinite scroll */}
-                <div ref={sentinelRef} className="infinite-scroll-sentinel" />
-
-                {/* Loading indicator for more content */}
-                {(loadingMoreReviews || isFetchingMore) && (
-                  <div className="loading-more">
-                    <LoadingSpinner size="small" />
-                  </div>
-                )}
-
-                {/* End of content message */}
-                {!hasMoreReviews && reviews.length > 0 && (
-                  <div className="end-of-content">
-                    <p>{t('common.noMoreContent')}</p>
-                  </div>
-                )}
-              </>
-            )}
-          </section>
+          <ReviewsSection
+            reviews={reviews}
+            loading={loadingReviews}
+            loadingMore={loadingMoreReviews}
+            isFetchingMore={isFetchingMore}
+            hasMore={hasMoreReviews}
+            sentinelRef={sentinelRef}
+          />
         )}
       </div>
     </Layout>
