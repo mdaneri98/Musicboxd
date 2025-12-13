@@ -206,6 +206,23 @@
 
     <build>
         <finalName>api</finalName>
+        <plugins>
+            <!-- Maven WAR plugin to include frontend build -->
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>../frontend/out</directory>
+                            <excludes>
+                                <exclude>dev/**</exclude>
+                            </excludes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
