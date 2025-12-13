@@ -27,7 +27,9 @@ import {
   clearCurrentProfile,
   selectLoadingReviews,
   selectLoadingMoreReviews,
-  selectLoadingFavorites
+  selectLoadingFavorites,
+  selectUserError,
+  selectLoadingProfile
 } from '@/store/slices';
 import { ProfileTabEnum } from '@/types';
 
@@ -50,6 +52,8 @@ const UserProfilePage = () => {
   const loadingMoreReviews = useAppSelector(selectLoadingMoreReviews);
   const reviewsPagination = useAppSelector(selectUserReviewsPagination);
   const hasMoreReviews = useAppSelector(selectUserReviewsHasMore);
+  const error = useAppSelector(selectUserError);
+  const loadingProfile = useAppSelector(selectLoadingProfile);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
@@ -133,17 +137,23 @@ const UserProfilePage = () => {
     setActiveTab(tab);
   };
 
-  if (loadingFavorites || (loadingReviews && !user)) {
+  if (error) {
     return (
-      <Layout title={t('common.loading')}>
+      <Layout title={t('errors.user.title')}>
         <div className="content-wrapper">
-          <LoadingSpinner size="large" />
+          <div className="not-found-container">
+            <h1>{t('errors.user.title')}</h1>
+            <p>{t('errors.user.message')}</p>
+            <button className="btn btn-primary" onClick={() => router.push('/')}>
+              {t('errors.user.backToHome')}
+            </button>
+          </div>
         </div>
       </Layout>
     );
   }
 
-  if (!user) {
+  if (loadingProfile || loadingFavorites || !user) {
     return (
       <Layout title={t('common.loading')}>
         <div className="content-wrapper">

@@ -138,23 +138,27 @@ const SongDetailPage = () => {
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (loading || !song) {
+  if (error) {
     return (
-      <Layout title={t('common.loading')}>
+      <Layout title={t('errors.song.title')}>
         <div className="content-wrapper">
-          <LoadingSpinner size="large" />
+          <div className="not-found-container">
+            <h1>{t('errors.song.title')}</h1>
+            <p>{t('errors.song.message')}</p>
+            <button className="btn btn-primary" onClick={() => router.push('/music')}>
+              {t('errors.song.backToMusic')}
+            </button>
+          </div>
         </div>
       </Layout>
     );
   }
 
-  if (error) {
+  if (loading || !song) {
     return (
-      <Layout title={t('common.error')}>
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="alert alert-danger" role="alert">
-            <strong>{t('common.error')}:</strong> {error}
-          </div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );

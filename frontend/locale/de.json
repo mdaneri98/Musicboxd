@@ -335,6 +335,31 @@
         "message": "Auf unserer Seite ist etwas schief gelaufen. Wir arbeiten an der Behebung. Bitte versuche es später erneut."
       },
       "backToHome": "Zurück zur Startseite"
+    },
+    "artist": {
+      "title": "Künstler nicht gefunden",
+      "message": "Der gesuchte Künstler existiert nicht oder wurde entfernt.",
+      "backToMusic": "Zurück zur Musik"
+    },
+    "album": {
+      "title": "Album nicht gefunden",
+      "message": "Das gesuchte Album existiert nicht oder wurde entfernt.",
+      "backToMusic": "Zurück zur Musik"
+    },
+    "song": {
+      "title": "Song nicht gefunden",
+      "message": "Der gesuchte Song existiert nicht oder wurde entfernt.",
+      "backToMusic": "Zurück zur Musik"
+    },
+    "user": {
+      "title": "Benutzer nicht gefunden",
+      "message": "Der gesuchte Benutzer existiert nicht oder wurde entfernt.",
+      "backToHome": "Zurück zur Startseite"
+    },
+    "review": {
+      "title": "Rezension nicht gefunden",
+      "message": "Die gesuchte Rezension existiert nicht oder wurde entfernt.",
+      "backToHome": "Zurück zur Startseite"
     }
   },
   "footer": {

@@ -28,7 +28,8 @@ import {
   selectCommentsHasMore,
   selectLikesHasMore,
   clearCurrentReview,
-  selectReviewById
+  selectReviewById,
+  selectReviewError
 } from '@/store/slices';
 import type { Comment, CommentFormData } from '@/types';
 import { ReviewTab } from '@/types/enums';
@@ -54,6 +55,7 @@ const ReviewDetailPage = () => {
   const likesPagination = useAppSelector(selectLikesPagination);
   const commentsHasMore = useAppSelector(selectCommentsHasMore);
   const likesHasMore = useAppSelector(selectLikesHasMore);
+  const error = useAppSelector(selectReviewError);
 
   const [activeTab, setActiveTab] = useState<ReviewTab>(queryTab as ReviewTab || ReviewTab.COMMENTS);
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
@@ -194,6 +196,22 @@ const ReviewDetailPage = () => {
     if (!currentUser) return false;
     return currentUser.id === comment.user_id || currentUser.moderator;
   }, [currentUser]);
+
+  if (error) {
+    return (
+      <Layout title={t('errors.review.title')}>
+        <div className="content-wrapper">
+          <div className="not-found-container">
+            <h1>{t('errors.review.title')}</h1>
+            <p>{t('errors.review.message')}</p>
+            <button className="btn btn-primary" onClick={() => router.push('/')}>
+              {t('errors.review.backToHome')}
+            </button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   if (loadingReview || !review) {
     return (

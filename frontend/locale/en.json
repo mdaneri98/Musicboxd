@@ -335,6 +335,31 @@
         "message": "Something went wrong on our end. We're working to fix the issue. Please try again later."
       },
       "backToHome": "Back to Home"
+    },
+    "artist": {
+      "title": "Artist Not Found",
+      "message": "The artist you are looking for does not exist or has been removed.",
+      "backToMusic": "Back to Music"
+    },
+    "album": {
+      "title": "Album Not Found",
+      "message": "The album you are looking for does not exist or has been removed.",
+      "backToMusic": "Back to Music"
+    },
+    "song": {
+      "title": "Song Not Found",
+      "message": "The song you are looking for does not exist or has been removed.",
+      "backToMusic": "Back to Music"
+    },
+    "user": {
+      "title": "User Not Found",
+      "message": "The user you are looking for does not exist or has been removed.",
+      "backToHome": "Back to Home"
+    },
+    "review": {
+      "title": "Review Not Found",
+      "message": "The review you are looking for does not exist or has been removed.",
+      "backToHome": "Back to Home"
     }
   },
   "footer": {

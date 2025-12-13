@@ -335,6 +335,31 @@
         "message": "Algo salió mal de nuestro lado. Estamos trabajando para solucionar el problema. Por favor, intenta más tarde."
       },
       "backToHome": "Volver al inicio"
+    },
+    "artist": {
+      "title": "Artista no encontrado",
+      "message": "El artista que buscas no existe o ha sido eliminado.",
+      "backToMusic": "Volver a Música"
+    },
+    "album": {
+      "title": "Álbum no encontrado",
+      "message": "El álbum que buscas no existe o ha sido eliminado.",
+      "backToMusic": "Volver a Música"
+    },
+    "song": {
+      "title": "Canción no encontrada",
+      "message": "La canción que buscas no existe o ha sido eliminada.",
+      "backToMusic": "Volver a Música"
+    },
+    "user": {
+      "title": "Usuario no encontrado",
+      "message": "El usuario que buscas no existe o ha sido eliminado.",
+      "backToHome": "Volver al inicio"
+    },
+    "review": {
+      "title": "Reseña no encontrada",
+      "message": "La reseña que buscas no existe o ha sido eliminada.",
+      "backToHome": "Volver al inicio"
     }
   },
   "footer": {
