@@ -142,6 +142,16 @@ public class NotificationJpaDao implements NotificationDao {
     }
 
     @Override
+    public Long countByUserId(Long userId, Boolean read) {
+        Query query = em.createQuery(
+            "SELECT COUNT(n) FROM Notification n WHERE n.recipientUser.id = :userId AND n.read = :read"
+        );
+        query.setParameter("userId", userId);
+        query.setParameter("read", read);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
     public List<Notification> getNotificationsForUser(Long userId, Integer page, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(

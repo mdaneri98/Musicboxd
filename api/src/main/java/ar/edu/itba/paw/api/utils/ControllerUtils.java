@@ -24,6 +24,7 @@ public final class ControllerUtils {
     public static final String SIZE_PARAM_NAME = "size";
     public static final String SEARCH_PARAM_NAME = "search";
     public static final String FILTER_PARAM_NAME = "filter";
+    public static final String STATUS_PARAM_NAME = "status";
     public static final String ID_PARAM_NAME = "id";
 
     // Default values
@@ -33,6 +34,10 @@ public final class ControllerUtils {
     public static final String DEFAULT_SIZE_STRING = "20";
     public static final String FIRST_FILTER_STRING = "FIRST";
     public static final String POPULAR_FILTER_STRING = "POPULAR";
+    public static final String DEFAULT_STATUS_STRING = "ALL";
+    public static final String READ_STATUS_STRING = "READ";
+    public static final String UNREAD_STATUS_STRING = "UNREAD";
+    public static final String ALL_STATUS_STRING = "ALL";
 
     // Item types
     public static final String ITEM_TYPE_SONG = ReviewType.SONG.toString();

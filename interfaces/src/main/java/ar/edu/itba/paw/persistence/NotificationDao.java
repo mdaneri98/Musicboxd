@@ -13,6 +13,7 @@ public interface NotificationDao extends CrudDao<Notification> {
     // Métodos CRUD básicos
     List<Notification> findBySubstring(String substring, Integer page, Integer pageSize);
     Long countAll();
+    Long countByUserId(Long userId, Boolean read);
     Long countByUserId(Long userId);
     
     // Métodos específicos de notificaciones
