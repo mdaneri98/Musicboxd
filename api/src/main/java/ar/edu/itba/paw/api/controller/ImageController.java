@@ -32,10 +32,9 @@ public class ImageController extends BaseController {
     public Response getImage(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Image image = imageService.findById(id);
         byte[] array = image.getBytes();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-type", "image/jpeg");
-        headers.set("Content-Disposition", String.format("inline; filename=\"image_%d.jpg\"", id));
-        return Response.status(Response.Status.OK).entity(array).header(getBaseUrl(), headers).build();
+
+        Response.ResponseBuilder responseBuilder = Response.ok(array).header(HttpHeaders.CONTENT_DISPOSITION, String.format("inline; filename=\"image_%d.jpg\"", id));
+        return ControllerUtils.setMaxAge(responseBuilder, ControllerUtils.IMAGE_MAX_AGE).build();
     }
 
     @POST
