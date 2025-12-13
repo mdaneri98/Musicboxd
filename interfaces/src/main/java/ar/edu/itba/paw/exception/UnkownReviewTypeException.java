@@ -2,10 +2,10 @@ package ar.edu.itba.paw.exception;
 
 public class UnkownReviewTypeException extends RuntimeException {
     public UnkownReviewTypeException(String type) {
-        super("Unknown review type: " + type);
+        super("exception.UnknownReviewType");
     }
 
     public UnkownReviewTypeException(String type, Throwable cause) {
-        super("Unknown review type: " + type, cause);
+        super("exception.UnknownReviewType", cause);
     }
 }

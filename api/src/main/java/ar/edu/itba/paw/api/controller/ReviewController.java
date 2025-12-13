@@ -77,11 +77,14 @@ public class ReviewController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        List<Review> reviews = new ArrayList<>();
-        if (search != null && !search.isEmpty()) reviews = reviewService.findBySubstring(search, page, size);
-        else reviews = reviewService.findPaginated(filter, page, size, loggedUserId);
+
+        List<Review> reviews;
+        if (search != null && !search.isEmpty())
+            reviews = reviewService.findBySubstring(search, page, size);
+        else
+            reviews = reviewService.findPaginated(filter, page, size, loggedUserId);
+
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         Integer totalCount = reviewService.countAll().intValue();

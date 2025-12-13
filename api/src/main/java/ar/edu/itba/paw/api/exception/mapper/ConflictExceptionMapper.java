@@ -38,14 +38,14 @@ public class ConflictExceptionMapper implements ExceptionMapper<ConflictExceptio
 
     @Override 
     public Response toResponse(ConflictException exception) {
-        LOGGER.warn("Conflict exception: {}", exception.getMessage());
-
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.CONFLICT,
                 exception,
                 "exception.BadRequest",
                 uriInfo
         );
+
+        LOGGER.error("Email sending failed: {}", error, exception);
 
         return Response.status(Response.Status.CONFLICT)
                 .type(MediaType.APPLICATION_JSON_TYPE)
