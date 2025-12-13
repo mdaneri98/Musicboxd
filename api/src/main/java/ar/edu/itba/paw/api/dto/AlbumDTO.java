@@ -3,6 +3,7 @@ package ar.edu.itba.paw.api.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class AlbumDTO {
 
@@ -160,6 +161,11 @@ public class AlbumDTO {
 
     public void setFormattedReleaseDate(String formattedReleaseDate) {
         this.formattedReleaseDate = formattedReleaseDate;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, genre, releaseDate, formattedReleaseDate, imageId, artistId, artistName, ratingCount, avgRating, createdAt, updatedAt, songs, isDeleted, isReviewed, isFavorite);
     }
 }
 

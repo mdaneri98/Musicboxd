@@ -122,7 +122,7 @@ public class AlbumController extends BaseController {
         Album album = albumService.findById(id);
         albumService.setContextDependentFields(album, loggedUserId);
 
-        return ControllerUtils.buildResponseUsingEtag(request, album.hashCode(), () -> {
+        return buildResponseUsingEtag(request, () -> {
             AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
             return albumResourceMapper.toResource(albumDTO, getBaseUrl());
         });

@@ -97,7 +97,7 @@ public class SongController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Song song = songService.findById(id);
         songService.setContextDependentFields(song, loggedUserId);
-        return ControllerUtils.buildResponseUsingEtag(request, song.hashCode(), () -> {
+        return buildResponseUsingEtag(request, () -> {
             SongDTO songDTO = songDtoMapper.toDTO(song);
             return songResourceMapper.toResource(songDTO, getBaseUrl());
         });

@@ -134,7 +134,7 @@ public class ArtistController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Artist artist = artistService.findById(id);
         artistService.setContextDependentFields(artist, loggedUserId);
-        return ControllerUtils.buildResponseUsingEtag(request, artist.hashCode(), () -> {
+        return buildResponseUsingEtag(request, () -> {
             ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
             return artistResourceMapper.toResource(artistDTO, getBaseUrl());
         });

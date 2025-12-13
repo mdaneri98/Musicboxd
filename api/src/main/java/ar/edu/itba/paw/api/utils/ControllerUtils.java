@@ -114,30 +114,4 @@ public final class ControllerUtils {
     // Notification endpoints
     public static final CollectionLinkManager notificationsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
 
-    // https://howtodoinjava.com/resteasy/jax-rs-resteasy-cache-control-with-etag-example/
-    public static <T> Response buildResponseUsingEtag(Request request, int hashCode, Supplier<T> dtoSupplier) {
-        final CacheControl cacheControl = new CacheControl();
-        cacheControl.setNoCache(true);
-
-        final EntityTag eTag = new EntityTag(String.valueOf(hashCode));
-        Response.ResponseBuilder response = request.evaluatePreconditions(eTag);
-
-        if (response == null) {
-            response = Response.ok(dtoSupplier.get()).tag(eTag);
-            cacheControl.setNoStore(false);
-        }
-
-        return response.header(HttpHeaders.VARY, "Accept, Content-Type").cacheControl(cacheControl).build();
-    }
-
-    /**
-     * Cache control
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
-     */
-    public static Response.ResponseBuilder setMaxAge(Response.ResponseBuilder responseBuilder, int maxAge) {
-        final CacheControl cacheControl = new CacheControl();
-        cacheControl.setMaxAge(maxAge);
-        return responseBuilder.cacheControl(cacheControl);
-    }
-
 }

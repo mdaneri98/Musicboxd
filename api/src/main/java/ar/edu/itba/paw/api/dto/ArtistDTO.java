@@ -2,6 +2,7 @@ package ar.edu.itba.paw.api.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class ArtistDTO {
 
@@ -111,6 +112,11 @@ public class ArtistDTO {
 
     public void setIsFavorite(Boolean isFavorite) {
         this.isFavorite = isFavorite;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, bio, ratingCount, avgRating, createdAt, updatedAt, albums, imageId, isReviewed, isFavorite);
     }
 }
 
