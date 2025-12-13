@@ -132,7 +132,8 @@ public class AlbumServiceImpl implements AlbumService {
         if (albumInput.getTitle() != null) album.setTitle(albumInput.getTitle());
         if (albumInput.getGenre() != null) album.setGenre(albumInput.getGenre());
         if (albumInput.getReleaseDate() != null) album.setReleaseDate(albumInput.getReleaseDate());
-        
+        if (albumInput.getSongs() != null && !albumInput.getSongs().isEmpty()) songService.updateAll(albumInput.getSongs(), albumInput);
+
         album = albumDao.update(album);
         LOGGER.info("Album updated successfully");
 
@@ -149,11 +150,7 @@ public class AlbumServiceImpl implements AlbumService {
             }
             
             if (albumInput.getId() != null && albumInput.getId() != 0) {
-                Album savedAlbum = update(albumInput);
-                if (albumInput.getSongs() != null && !albumInput.getSongs().isEmpty()) {
-                    LOGGER.info("Updating songs for album: {} (ID: {})", savedAlbum.getTitle(), savedAlbum.getId());
-                    songService.updateAll(albumInput.getSongs(), savedAlbum);
-                }
+                update(albumInput);
             } else {
                 create(albumInput);
             }

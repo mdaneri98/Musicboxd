@@ -144,11 +144,8 @@ public class ArtistController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
     public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModArtistForm modArtistForm) {
-        Artist oldArtist = artistService.findById(id);
-        Artist artistToUpdate = modArtistFormMapper.mergeModel(oldArtist, modArtistForm);
-        Artist updatedArtist = artistService.update(artistToUpdate);
-        List<Album> albumsToUpdate = modArtistFormMapper.toAlbumList(modArtistForm);
-        albumService.updateAll(albumsToUpdate, updatedArtist);
+        Artist form = modArtistFormMapper.toModel(modArtistForm);
+        Artist updatedArtist = artistService.update(form);
         ArtistDTO artistDTO = artistDtoMapper.toDTO(updatedArtist);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
         return buildResponse(artistResource);

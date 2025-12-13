@@ -46,7 +46,7 @@ const ReviewForm = ({
             className="form-control"
           />
           {errors.title && (
-            <p className="form-error">{t(errors.title.message as string)}</p>
+            <p className="form-error">{errors.title.message}</p>
           )}
         </div>
 
@@ -61,7 +61,7 @@ const ReviewForm = ({
             className="form-control"
           />
           {errors.description && (
-            <p className="form-error">{t(errors.description.message as string)}</p>
+            <p className="form-error">{errors.description.message}</p>
           )}
         </div>
 
@@ -93,7 +93,7 @@ const ReviewForm = ({
               )}
             />
             {errors.rating && (
-              <p className="form-error">{t(errors.rating.message as string)}</p>
+              <p className="form-error">{errors.rating.message}</p>
             )}
           </div>
         </div>
