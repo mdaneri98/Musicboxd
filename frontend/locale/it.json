@@ -335,6 +335,31 @@
         "message": "Qualcosa è andato storto da parte nostra. Stiamo lavorando per risolvere il problema. Riprova più tardi."
       },
       "backToHome": "Torna alla home"
+    },
+    "artist": {
+      "title": "Artista non trovato",
+      "message": "L'artista che cerchi non esiste o è stato rimosso.",
+      "backToMusic": "Torna alla musica"
+    },
+    "album": {
+      "title": "Album non trovato",
+      "message": "L'album che cerchi non esiste o è stato rimosso.",
+      "backToMusic": "Torna alla musica"
+    },
+    "song": {
+      "title": "Canzone non trovata",
+      "message": "La canzone che cerchi non esiste o è stata rimossa.",
+      "backToMusic": "Torna alla musica"
+    },
+    "user": {
+      "title": "Utente non trovato",
+      "message": "L'utente che cerchi non esiste o è stato rimosso.",
+      "backToHome": "Torna alla home"
+    },
+    "review": {
+      "title": "Recensione non trovata",
+      "message": "La recensione che cerchi non esiste o è stata rimossa.",
+      "backToHome": "Torna alla home"
     }
   },
   "footer": {

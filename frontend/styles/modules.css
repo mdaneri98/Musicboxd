@@ -3179,3 +3179,35 @@ textarea.form-control {
     width: 100%;
 }
 
+/* ============================================================================
+   Not Found / Error Pages
+   ============================================================================ */
+
+.not-found-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 50vh;
+    padding: var(--space-xl);
+    gap: var(--space-lg);
+}
+
+.not-found-container h1 {
+    font-size: 2rem;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.not-found-container p {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    max-width: 500px;
+    margin: 0;
+}
+
+.not-found-container .btn {
+    margin-top: var(--space-md);
+}
+

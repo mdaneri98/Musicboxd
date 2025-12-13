@@ -124,23 +124,27 @@ const ArtistDetailPage = () => {
     }
   };
 
-  if (loading || !artist) {
+  if (error) {
     return (
-      <Layout title={t('common.loading')}>
+      <Layout title={t('errors.artist.title')}>
         <div className="content-wrapper">
-          <LoadingSpinner size="large" />
+          <div className="not-found-container">
+            <h1>{t('errors.artist.title')}</h1>
+            <p>{t('errors.artist.message')}</p>
+            <button className="btn btn-primary" onClick={() => router.push('/music')}>
+              {t('errors.artist.backToMusic')}
+            </button>
+          </div>
         </div>
       </Layout>
     );
   }
 
-  if (error) {
+  if (loading || !artist) {
     return (
-      <Layout title={t('common.error')}>
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="alert alert-danger" role="alert">
-            <strong>{t('common.error')}:</strong> {error}
-          </div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );

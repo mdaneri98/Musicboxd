@@ -140,23 +140,27 @@ const AlbumDetailPage = () => {
     }
   };
 
-  if (loading || !album) {
+  if (error) {
     return (
-      <Layout title={t('common.loading')}>
+      <Layout title={t('errors.album.title')}>
         <div className="content-wrapper">
-          <LoadingSpinner size="large" />
+          <div className="not-found-container">
+            <h1>{t('errors.album.title')}</h1>
+            <p>{t('errors.album.message')}</p>
+            <button className="btn btn-primary" onClick={() => router.push('/music')}>
+              {t('errors.album.backToMusic')}
+            </button>
+          </div>
         </div>
       </Layout>
     );
   }
 
-  if (error) {
+  if (loading || !album) {
     return (
-      <Layout title={t('common.error')}>
+      <Layout title={t('common.loading')}>
         <div className="content-wrapper">
-          <div className="alert alert-danger" role="alert">
-            <strong>{t('common.error')}:</strong> {error}
-          </div>
+          <LoadingSpinner size="large" />
         </div>
       </Layout>
     );

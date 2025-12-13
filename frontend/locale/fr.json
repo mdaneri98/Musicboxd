@@ -335,6 +335,31 @@
         "message": "Quelque chose s'est mal passé de notre côté. Nous travaillons à résoudre le problème. Veuillez réessayer plus tard."
       },
       "backToHome": "Retour à l'accueil"
+    },
+    "artist": {
+      "title": "Artiste non trouvé",
+      "message": "L'artiste que vous recherchez n'existe pas ou a été supprimé.",
+      "backToMusic": "Retour à la musique"
+    },
+    "album": {
+      "title": "Album non trouvé",
+      "message": "L'album que vous recherchez n'existe pas ou a été supprimé.",
+      "backToMusic": "Retour à la musique"
+    },
+    "song": {
+      "title": "Chanson non trouvée",
+      "message": "La chanson que vous recherchez n'existe pas ou a été supprimée.",
+      "backToMusic": "Retour à la musique"
+    },
+    "user": {
+      "title": "Utilisateur non trouvé",
+      "message": "L'utilisateur que vous recherchez n'existe pas ou a été supprimé.",
+      "backToHome": "Retour à l'accueil"
+    },
+    "review": {
+      "title": "Avis non trouvé",
+      "message": "L'avis que vous recherchez n'existe pas ou a été supprimé.",
+      "backToHome": "Retour à l'accueil"
     }
   },
   "footer": {
