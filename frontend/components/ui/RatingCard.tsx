@@ -1,9 +1,3 @@
-/**
- * RatingCard Component
- * Displays rating statistics and action button
- * Migrated from: components/rating_card.jsp
- */
-
 import Link from 'next/link';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices';

@@ -1,9 +1,5 @@
 import dynamic from 'next/dynamic';
 
-export { default as UserCard } from './UserCard';
-export { default as ArtistCard } from './ArtistCard';
-export { default as AlbumCard } from './AlbumCard';
-export { default as SongCard } from './SongCard';
 
 export const ReviewCard = dynamic(() => import('./ReviewCard'), {
   loading: () => {
@@ -26,3 +22,30 @@ export const NotificationCard = dynamic(() => import('./NotificationCard'), {
   },
 });
 
+export const SongCard = dynamic(() => import('./SongCard'), {
+  loading: () => {
+    const { LoadingSpinner } = require('@/components/ui/LoadingSpinner');
+    return <div className="card-skeleton"><LoadingSpinner size="small" /></div>;
+  },
+});
+
+export const AlbumCard = dynamic(() => import('./AlbumCard'), {
+  loading: () => {
+    const { LoadingSpinner } = require('@/components/ui/LoadingSpinner');
+    return <div className="card-skeleton"><LoadingSpinner size="small" /></div>;
+  },
+});
+
+export const ArtistCard = dynamic(() => import('./ArtistCard'), {
+  loading: () => {
+    const { LoadingSpinner } = require('@/components/ui/LoadingSpinner');
+    return <div className="card-skeleton"><LoadingSpinner size="small" /></div>;
+  },
+});
+
+export const UserCard = dynamic(() => import('./UserCard'), {
+  loading: () => {
+    const { LoadingSpinner } = require('@/components/ui/LoadingSpinner');
+    return <div className="card-skeleton"><LoadingSpinner size="small" /></div>;
+  },
+});
