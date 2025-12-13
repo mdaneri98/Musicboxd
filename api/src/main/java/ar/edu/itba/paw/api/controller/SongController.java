@@ -24,7 +24,9 @@ import ar.edu.itba.paw.api.form.ModSongForm;
 import ar.edu.itba.paw.api.mapper.dto.ModSongFormMapper;
 import javax.validation.Valid;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -91,13 +93,14 @@ public class SongController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+    public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Song song = songService.findById(id);
         songService.setContextDependentFields(song, loggedUserId);
-        SongDTO songDTO = songDtoMapper.toDTO(song);
-        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
-        return buildResponse(songResource);
+        return ControllerUtils.buildResponseUsingEtag(request, song.hashCode(), () -> {
+            SongDTO songDTO = songDtoMapper.toDTO(song);
+            return songResourceMapper.toResource(songDTO, getBaseUrl());
+        });
     }
 
     @PUT

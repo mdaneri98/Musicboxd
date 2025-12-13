@@ -40,7 +40,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -128,13 +130,14 @@ public class ArtistController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+    public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Artist artist = artistService.findById(id);
         artistService.setContextDependentFields(artist, loggedUserId);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
-        ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
-        return buildResponse(artistResource);
+        return ControllerUtils.buildResponseUsingEtag(request, artist.hashCode(), () -> {
+            ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
+            return artistResourceMapper.toResource(artistDTO, getBaseUrl());
+        });
     }
 
     @PUT

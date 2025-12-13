@@ -30,7 +30,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.ArrayList;
 import javax.validation.Valid;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -100,13 +102,14 @@ public class ReviewController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+    public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Review review = reviewService.findById(id);
         reviewService.setContextDependentFields(review, loggedUserId);
-        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review);
-        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
-        return buildResponse(reviewResource);
+        return ControllerUtils.buildResponseUsingEtag(request, review.hashCode(), () -> {
+            ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review);
+            return reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
+        });
     }
 
     @DELETE

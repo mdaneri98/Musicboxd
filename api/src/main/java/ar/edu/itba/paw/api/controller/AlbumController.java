@@ -34,7 +34,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.ArrayList;
@@ -114,13 +116,16 @@ public class AlbumController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+    public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+
         Album album = albumService.findById(id);
         albumService.setContextDependentFields(album, loggedUserId);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
-        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
-        return buildResponse(albumResource);
+
+        return ControllerUtils.buildResponseUsingEtag(request, album.hashCode(), () -> {
+            AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
+            return albumResourceMapper.toResource(albumDTO, getBaseUrl());
+        });
     }
 
     @PUT

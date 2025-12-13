@@ -44,7 +44,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import javax.ws.rs.ForbiddenException;
 import javax.validation.Valid;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,14 +121,14 @@ public class UserController extends BaseController {
 
     @GET
     @Path(ApiUriConstants.ID)
-    public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+    public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         User user = userService.findUserById(id, loggedUserId);
         userService.setContextDependentFields(user, loggedUserId);
-        UserDTO userDTO = userDtoMapper.toDTO(user);
-        UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
-        
-        return buildResponse(userResource);
+        return ControllerUtils.buildResponseUsingEtag(request, user.hashCode(), () -> {
+            UserDTO userDTO = userDtoMapper.toDTO(user);
+            return userResourceMapper.toResource(userDTO, getBaseUrl());
+        });
     }
 
     @POST
