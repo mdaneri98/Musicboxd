@@ -8,6 +8,7 @@
  */
 
 import * as Yup from 'yup';
+import { t } from 'i18next';
 
 // ============================================================================
 // Auth Forms
@@ -15,49 +16,49 @@ import * as Yup from 'yup';
 
 export const loginSchema = Yup.object().shape({
   username: Yup.string()
-    .required('validation.username.required')
-    .min(3, 'validation.username.minLength')
-    .max(50, 'validation.username.maxLength'),
+    .required(t('validation.username.required'))
+    .min(3, t('validation.username.minLength'))
+    .max(50, t('validation.username.maxLength')),
   password: Yup.string()
-    .required('validation.password.required')
-    .min(6, 'validation.password.minLength'),
+    .required(t('validation.password.required'))
+    .min(6, t('validation.password.minLength')),
   rememberMe: Yup.boolean(),
 });
 
 export const registerSchema = Yup.object().shape({
   username: Yup.string()
-    .required('validation.username.required')
-    .min(4, 'validation.username.minLengthRegister')
-    .max(50, 'validation.username.maxLength')
-    .matches(/^[a-zA-Z][a-zA-Z0-9]*$/, 'validation.username.format'),
+    .required(t('validation.username.required'))
+    .min(4, t('validation.username.minLengthRegister'))
+    .max(50, t('validation.username.maxLength'))
+    .matches(/^[a-zA-Z][a-zA-Z0-9]*$/, t('validation.username.format')),
   email: Yup.string()
-    .required('validation.email.required')
-    .email('validation.email.invalid')
-    .max(100, 'validation.email.maxLength'),
+    .required(t('validation.email.required'))
+    .email(t('validation.email.invalid'))
+    .max(100, t('validation.email.maxLength')),
   password: Yup.string()
-    .required('validation.password.required')
-    .min(8, 'validation.password.minLengthRegister')
-    .max(100, 'validation.password.maxLength'),
+    .required(t('validation.password.required'))
+    .min(8, t('validation.password.minLengthRegister'))
+    .max(100, t('validation.password.maxLength')),
   repeatPassword: Yup.string()
-    .required('validation.password.confirmRequired')
-    .min(8, 'validation.password.minLengthRegister')
-    .oneOf([Yup.ref('password')], 'validation.password.mismatch'),
+    .required(t('validation.password.confirmRequired'))
+    .min(8, t('validation.password.minLengthRegister'))
+    .oneOf([Yup.ref('password')], t('validation.password.mismatch')),
 });
 
 export const forgotPasswordSchema = Yup.object().shape({
   email: Yup.string()
-    .required('validation.email.required')
-    .email('validation.email.invalid'),
+    .required(t('validation.email.required'))
+    .email(t('validation.email.invalid')),
 });
 
 export const resetPasswordSchema = Yup.object().shape({
   password: Yup.string()
-    .required('validation.password.required')
-    .min(6, 'validation.password.minLength')
-    .max(100, 'validation.password.maxLength'),
+    .required(t('validation.password.required'))
+    .min(6, t('validation.password.minLength'))
+    .max(100, t('validation.password.maxLength')),
   repeatPassword: Yup.string()
-    .required('validation.password.confirmRequired')
-    .oneOf([Yup.ref('password')], 'validation.password.mismatch'),
+    .required(t('validation.password.confirmRequired'))
+    .oneOf([Yup.ref('password')], t('validation.password.mismatch')),
 });
 
 // ============================================================================
@@ -67,15 +68,15 @@ export const resetPasswordSchema = Yup.object().shape({
 export const editProfileSchema = Yup.object().shape({
   username: Yup.string()
     .optional()
-    .min(3, 'validation.username.minLength')
-    .max(50, 'validation.username.maxLength')
-    .matches(/^[a-zA-Z0-9_-]+$/, 'validation.username.formatProfile'),
+    .min(3, t('validation.username.minLength'))
+    .max(50, t('validation.username.maxLength'))
+    .matches(/^[a-zA-Z0-9_-]+$/, t('validation.username.formatProfile')),
   name: Yup.string()
     .optional()
-    .max(100, 'validation.name.maxLength'),
+    .max(100, t('validation.name.maxLength')),
   bio: Yup.string()
     .optional()
-    .max(500, 'validation.bio.maxLength'),
+    .max(500, t('validation.bio.maxLength')),
   profilePicture: Yup.mixed().optional().nullable(),
 });
 
@@ -85,17 +86,17 @@ export const editProfileSchema = Yup.object().shape({
 
 export const reviewSchema = Yup.object().shape({
   title: Yup.string()
-    .required('validation.title.required')
-    .min(3, 'validation.title.minLength')
-    .max(100, 'validation.title.maxLength'),
+    .required(t('validation.title.required'))
+    .min(3, t('validation.title.minLength'))
+    .max(100, t('validation.title.maxLength')),
   description: Yup.string()
-    .required('validation.description.required')
-    .min(10, 'validation.description.minLength')
-    .max(2000, 'validation.description.maxLength'),
+    .required(t('validation.description.required'))
+    .min(10, t('validation.description.minLength'))
+    .max(2000, t('validation.description.maxLength')),
   rating: Yup.number()
-    .required('validation.rating.required')
-    .min(1, 'validation.rating.min')
-    .max(5, 'validation.rating.max')
+    .required(t('validation.rating.required'))
+    .min(1, t('validation.rating.min'))
+    .max(5, t('validation.rating.max'))
 });
 
 // ============================================================================
@@ -104,9 +105,9 @@ export const reviewSchema = Yup.object().shape({
 
 export const commentSchema = Yup.object().shape({
   content: Yup.string()
-    .required('validation.comment.required')
-    .min(2, 'validation.comment.minLength')
-    .max(500, 'validation.comment.maxLength'),
+    .required(t('validation.comment.required'))
+    .min(2, t('validation.comment.minLength'))
+    .max(500, t('validation.comment.maxLength')),
   review_id: Yup.number().required(),
 });
 
@@ -116,48 +117,48 @@ export const commentSchema = Yup.object().shape({
 
 export const artistSchema = Yup.object().shape({
   name: Yup.string()
-    .required('validation.artistName.required')
-    .min(1, 'validation.artistName.minLength')
-    .max(100, 'validation.artistName.maxLength'),
+    .required(t('validation.artistName.required'))
+    .min(1, t('validation.artistName.minLength'))
+    .max(100, t('validation.artistName.maxLength')),
   bio: Yup.string()
     .optional()
-    .max(2000, 'validation.bio.maxLengthLong'),
+    .max(2000, t('validation.bio.maxLengthLong')),
   artist_img_id: Yup.number().optional().nullable(),
 });
 
 export const albumSchema = Yup.object().shape({
   title: Yup.string()
-    .required('validation.albumTitle.required')
-    .min(1, 'validation.albumTitle.minLength')
-    .max(100, 'validation.albumTitle.maxLength'),
+    .required(t('validation.albumTitle.required'))
+    .min(1, t('validation.albumTitle.minLength'))
+    .max(100, t('validation.albumTitle.maxLength')),
   artist_id: Yup.number()
-    .required('validation.artist.required')
-    .positive('validation.artist.select'),
+    .required(t('validation.artist.required'))
+    .positive(t('validation.artist.select')),
   release_date: Yup.date()
     .optional()
     .nullable()
-    .max(new Date(), 'validation.releaseDate.future'),
+    .max(new Date(), t('validation.releaseDate.future')),
   genre: Yup.string()
     .optional()
-    .max(50, 'validation.genre.maxLength'),
+    .max(50, t('validation.genre.maxLength')),
   album_image_id: Yup.number().optional().nullable(),
 });
 
 export const songSchema = Yup.object().shape({
   title: Yup.string()
-    .required('validation.songTitle.required')
-    .min(1, 'validation.songTitle.minLength')
-    .max(100, 'validation.songTitle.maxLength'),
+    .required(t('validation.songTitle.required'))
+    .min(1, t('validation.songTitle.minLength'))
+    .max(100, t('validation.songTitle.maxLength')),
   album_id: Yup.number()
-    .required('validation.album.required')
-    .positive('validation.album.select'),
+    .required(t('validation.album.required'))
+    .positive(t('validation.album.select')),
   duration: Yup.string()
-    .required('validation.duration.required')
-    .matches(/^\d+:\d{2}$/, 'validation.duration.format'),
+    .required(t('validation.duration.required'))
+    .matches(/^\d+:\d{2}$/, t('validation.duration.format')),
   trackNumber: Yup.number()
     .nullable()
-    .positive('validation.trackNumber.positive')
-    .max(999, 'validation.trackNumber.max'),
+    .positive(t('validation.trackNumber.positive'))
+    .max(999, t('validation.trackNumber.max')),
   song_image_id: Yup.number().optional().nullable(),
 });
 
@@ -169,17 +170,17 @@ export const songSchema = Yup.object().shape({
 export const modSongSchema = Yup.object().shape({
   id: Yup.number().optional().nullable(),
   title: Yup.string()
-    .required('validation.songTitleRequired')
-    .min(1, 'validation.songTitleLength')
-    .max(100, 'validation.songTitleLength'),
+    .required(t('validation.songTitleRequired'))
+    .min(1, t('validation.songTitleLength'))
+    .max(100, t('validation.songTitleLength')),
   duration: Yup.string()
-    .required('validation.songDurationRequired')
-    .matches(/^(?:(?:([0-9]{1,2}):)?([0-5]?[0-9]):)?([0-5][0-9])$/, 'validation.songDurationFormat'),
+    .required(t('validation.songDurationRequired'))
+    .matches(/^(?:(?:([0-9]{1,2}):)?([0-5]?[0-9]):)?([0-5][0-9])$/, t('validation.songDurationFormat')),
   trackNumber: Yup.number()
     .optional()
     .nullable()
-    .positive('validation.trackNumberPositive')
-    .max(500, 'validation.trackNumberMax'),
+    .positive(t('validation.trackNumberPositive'))
+    .max(500, t('validation.trackNumberMax')),
   deleted: Yup.boolean().optional(),
 });
 
@@ -187,13 +188,13 @@ export const modSongSchema = Yup.object().shape({
 export const modAlbumSchema = Yup.object().shape({
   id: Yup.number().optional().nullable(),
   title: Yup.string()
-    .required('validation.albumTitleRequired')
-    .min(1, 'validation.albumTitleLength')
-    .max(100, 'validation.albumTitleLength'),
+    .required(t('validation.albumTitleRequired'))
+    .min(1, t('validation.albumTitleLength'))
+    .max(100, t('validation.albumTitleLength')),
   genre: Yup.string()
     .optional()
     .nullable()
-    .max(50, 'validation.genreLength'),
+    .max(50, t('validation.genreLength')),
   releaseDate: Yup.string().optional().nullable(),
   deleted: Yup.boolean().optional(),
   songs: Yup.array().of(modSongSchema).optional(),
@@ -203,13 +204,13 @@ export const modAlbumSchema = Yup.object().shape({
 export const modArtistSchema = Yup.object().shape({
   id: Yup.number().optional().nullable(),
   name: Yup.string()
-    .required('validation.nameRequired')
-    .min(2, 'validation.nameLength')
-    .max(50, 'validation.nameLength'),
+    .required(t('validation.nameRequired'))
+    .min(2, t('validation.nameLength'))
+    .max(50, t('validation.nameLength')),
   bio: Yup.string()
     .optional()
     .nullable()
-    .max(2048, 'validation.bioLength'),
+    .max(2048, t('validation.bioLength')),
   albums: Yup.array().of(modAlbumSchema).optional(),
 });
 
@@ -316,11 +317,11 @@ export const validateMusicEditorForm = async (
 
 export const searchSchema = Yup.object().shape({
   query: Yup.string()
-    .required('validation.search.required')
-    .min(1, 'validation.search.minLength')
-    .max(100, 'validation.search.maxLength'),
+    .required(t('validation.search.required'))
+    .min(1, t('validation.search.minLength'))
+    .max(100, t('validation.search.maxLength')),
   type: Yup.string()
-    .oneOf(['all', 'users', 'artists', 'albums', 'songs', 'reviews'], 'validation.search.invalidType'),
+    .oneOf(['all', 'users', 'artists', 'albums', 'songs', 'reviews'], t('validation.search.invalidType')),
 });
 
 // ============================================================================
@@ -329,20 +330,20 @@ export const searchSchema = Yup.object().shape({
 
 export const changePasswordSchema = Yup.object().shape({
   currentPassword: Yup.string()
-    .required('validation.password.currentRequired'),
+    .required(t('validation.password.currentRequired')),
   newPassword: Yup.string()
-    .required('validation.password.newRequired')
-    .min(6, 'validation.password.minLength')
-    .max(100, 'validation.password.maxLength'),
+    .required(t('validation.password.newRequired'))
+    .min(6, t('validation.password.minLength'))
+    .max(100, t('validation.password.maxLength')),
   confirmPassword: Yup.string()
-    .required('validation.password.confirmNewRequired')
-    .oneOf([Yup.ref('newPassword')], 'validation.password.mismatch'),
+    .required(t('validation.password.confirmNewRequired'))
+    .oneOf([Yup.ref('newPassword')], t('validation.password.mismatch')),
 });
 
 export const deleteAccountSchema = Yup.object().shape({
   password: Yup.string()
-    .required('validation.password.requiredForDelete'),
+    .required(t('validation.password.requiredForDelete')),
   confirmation: Yup.string()
-    .required('validation.deleteConfirmation.required')
-    .oneOf(['DELETE'], 'validation.deleteConfirmation.invalid'),
+    .required(t('validation.deleteConfirmation.required'))
+    .oneOf(['DELETE'], t('validation.deleteConfirmation.invalid')),
 });
