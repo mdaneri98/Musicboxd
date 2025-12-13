@@ -136,7 +136,7 @@ public class ArtistServiceImpl implements ArtistService {
         
         if (artistInput.getName() != null) artist.setName(artistInput.getName());
         if (artistInput.getBio() != null) artist.setBio(artistInput.getBio());
-
+        if (artistInput.getAlbums() != null && !artistInput.getAlbums().isEmpty()) albumService.updateAll(artistInput.getAlbums(), artist);
         artist = artistDao.update(artist);
         LOGGER.info("Artist updated successfully");
         return artist;
