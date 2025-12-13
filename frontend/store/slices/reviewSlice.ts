@@ -580,12 +580,12 @@ const reviewSlice = createSlice({
       .addCase(likeReviewAsync.fulfilled, (state, action) => {
         // Update like count in current review
         if (state.currentReview?.id === action.meta.arg) {
-          state.currentReview.likes += 1;
+          state.currentReview.likes = (state.currentReview.likes || 0) + 1;
           state.currentReview.liked = true;
         }
         // Update in normalized state
         if (state.reviews[action.meta.arg]) {
-          state.reviews[action.meta.arg].likes += 1;
+          state.reviews[action.meta.arg].likes = (state.reviews[action.meta.arg].likes || 0) + 1;
           state.reviews[action.meta.arg].liked = true;
         }
       })
@@ -598,12 +598,12 @@ const reviewSlice = createSlice({
       .addCase(unlikeReviewAsync.fulfilled, (state, action) => {
         // Update like count in current review
         if (state.currentReview?.id === action.meta.arg) {
-          state.currentReview.likes -= 1;
+          state.currentReview.likes = Math.max(0, (state.currentReview.likes || 0) - 1);
           state.currentReview.liked = false;
         }
         // Update in normalized state
         if (state.reviews[action.meta.arg]) {
-          state.reviews[action.meta.arg].likes -= 1;
+          state.reviews[action.meta.arg].likes = Math.max(0, (state.reviews[action.meta.arg].likes || 0) - 1);
           state.reviews[action.meta.arg].liked = false;
         }
       })

@@ -8,7 +8,7 @@ import { songRepository, reviewRepository } from '@/repositories';
 import { Song, Review, Collection, HALResource, CreateSongFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 import { EditSongFormData } from '@/types/forms';
-import { blockReviewAsync, unblockReviewAsync } from './reviewSlice';
+import { blockReviewAsync, unblockReviewAsync, likeReviewAsync, unlikeReviewAsync } from './reviewSlice';
 
 // ============================================================================
 // State Interface
@@ -447,6 +447,25 @@ const songSlice = createSlice({
         const index = state.songReviews.findIndex((r) => r.id === reviewData.id);
         if (index !== -1) {
           state.songReviews[index] = reviewData;
+        }
+      });
+
+    // Like/Unlike Review - Update songReviews list
+    builder
+      .addCase(likeReviewAsync.fulfilled, (state, action) => {
+        const reviewId = action.meta.arg;
+        const index = state.songReviews.findIndex((r) => r.id === reviewId);
+        if (index !== -1) {
+          state.songReviews[index].likes = (state.songReviews[index].likes || 0) + 1;
+          state.songReviews[index].liked = true;
+        }
+      })
+      .addCase(unlikeReviewAsync.fulfilled, (state, action) => {
+        const reviewId = action.meta.arg;
+        const index = state.songReviews.findIndex((r) => r.id === reviewId);
+        if (index !== -1) {
+          state.songReviews[index].likes = Math.max(0, (state.songReviews[index].likes || 0) - 1);
+          state.songReviews[index].liked = false;
         }
       });
   },

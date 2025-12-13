@@ -7,6 +7,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { userRepository } from '@/repositories';
 import { User, Artist, Album, Song, Review, Collection, HALResource, EditProfileFormData, UserConfigFormData } from '@/types';
 import type { RootState } from '../index';
+import { likeReviewAsync, unlikeReviewAsync } from './reviewSlice';
 
 // ============================================================================
 // State Interface
@@ -751,6 +752,25 @@ const userSlice = createSlice({
       .addCase(updateUserConfigAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to update user config';
+      });
+
+    // Like/Unlike Review - Update userReviews list
+    builder
+      .addCase(likeReviewAsync.fulfilled, (state, action) => {
+        const reviewId = action.meta.arg;
+        const index = state.userReviews.findIndex((r) => r.id === reviewId);
+        if (index !== -1) {
+          state.userReviews[index].likes = (state.userReviews[index].likes || 0) + 1;
+          state.userReviews[index].liked = true;
+        }
+      })
+      .addCase(unlikeReviewAsync.fulfilled, (state, action) => {
+        const reviewId = action.meta.arg;
+        const index = state.userReviews.findIndex((r) => r.id === reviewId);
+        if (index !== -1) {
+          state.userReviews[index].likes = Math.max(0, (state.userReviews[index].likes || 0) - 1);
+          state.userReviews[index].liked = false;
+        }
       });
   },
 });

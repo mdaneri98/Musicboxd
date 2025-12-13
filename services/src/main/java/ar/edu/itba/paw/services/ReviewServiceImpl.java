@@ -247,37 +247,49 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public Review findArtistReviewById(Long id, Long loggedUserId) {
-        return reviewDao.findArtistReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
+        Review review = reviewDao.findArtistReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
+        setContextDependentFields(review, loggedUserId);
+        return review;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findAlbumReviewById(Long id, Long loggedUserId) {
-        return reviewDao.findAlbumReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
+        Review review = reviewDao.findAlbumReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
+        setContextDependentFields(review, loggedUserId);
+        return review;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId) {
-        return reviewDao.findArtistReviewByUserId(userId, artistId).orElseThrow(() -> new ReviewNotFoundException(userId, artistId, ReviewType.ARTIST.toString()));
+        Review review = reviewDao.findArtistReviewByUserId(userId, artistId).orElseThrow(() -> new ReviewNotFoundException(userId, artistId, ReviewType.ARTIST.toString()));
+        setContextDependentFields(review, loggedUserId);
+        return review;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findAlbumReviewByUserId(Long userId, Long albumId, Long loggedUserId) {
-        return reviewDao.findAlbumReviewByUserId(userId, albumId).orElseThrow(() -> new ReviewNotFoundException(userId, albumId, "Album"));
+        Review review = reviewDao.findAlbumReviewByUserId(userId, albumId).orElseThrow(() -> new ReviewNotFoundException(userId, albumId, "Album"));
+        setContextDependentFields(review, loggedUserId);
+        return review;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findSongReviewByUserId(Long userId, Long songId, Long loggedUserId) {
-        return reviewDao.findSongReviewByUserId(userId, songId).orElseThrow(() -> new ReviewNotFoundException(userId, songId, "Song"));
+        Review review = reviewDao.findSongReviewByUserId(userId, songId).orElseThrow(() -> new ReviewNotFoundException(userId, songId, "Song"));
+        setContextDependentFields(review, loggedUserId);
+        return review;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findSongReviewById(Long id, Long loggedUserId) {
-        return reviewDao.findSongReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
+        Review review = reviewDao.findSongReviewById(id).orElseThrow(() -> new ReviewNotFoundException(id));
+        setContextDependentFields(review, loggedUserId);
+        return review;
     }
 
     @Override
@@ -322,19 +334,31 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public List<Review> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId) {
-        return new ArrayList<>(reviewDao.findArtistReviewsPaginated(artistId, page, pageSize));
+        List<Review> reviews = new ArrayList<>(reviewDao.findArtistReviewsPaginated(artistId, page, pageSize));
+        for (Review review : reviews) {
+            setContextDependentFields(review, loggedUserId);
+        }
+        return reviews;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Review> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId) {
-        return new ArrayList<>(reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize));
+        List<Review> reviews = new ArrayList<>(reviewDao.findAlbumReviewsPaginated(albumId, page, pageSize));
+        for (Review review : reviews) {
+            setContextDependentFields(review, loggedUserId);
+        }
+        return reviews;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Review> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId) {
-        return new ArrayList<>(reviewDao.findSongReviewsPaginated(songId, page, pageSize));
+        List<Review> reviews = new ArrayList<>(reviewDao.findSongReviewsPaginated(songId, page, pageSize));
+        for (Review review : reviews) {
+            setContextDependentFields(review, loggedUserId);
+        }
+        return reviews;
     }
 
     @Override
@@ -358,13 +382,21 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId) {
-        return reviewDao.findReviewsByUserPaginated(userId, page, pageSize);
+        List<Review> reviews = reviewDao.findReviewsByUserPaginated(userId, page, pageSize);
+        for (Review review : reviews) {
+            setContextDependentFields(review, loggedUserId);
+        }
+        return reviews; 
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Review> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId) {
-        return reviewDao.getReviewsFromFollowedUsersPaginated(loggedUserId, page, pageSize);
+        List<Review> reviews = reviewDao.getReviewsFromFollowedUsersPaginated(loggedUserId, page, pageSize);
+        for (Review review : reviews) {
+            setContextDependentFields(review, loggedUserId);
+        }
+        return reviews; 
     }
 
     @Override
