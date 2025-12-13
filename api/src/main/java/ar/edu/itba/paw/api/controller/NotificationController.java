@@ -105,14 +105,4 @@ public class NotificationController extends BaseController {
         if (notificationDTO.getIsRead()) notificationService.markAllAsRead(loggedUserId);
         return buildNoContentResponse();
     }
-
-    @GET
-    @Path(ApiUriConstants.NOTIFICATIONS_UNREAD_COUNT)
-    public Response getUnreadCount() {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Integer unreadCount = notificationService.getUnreadCount(loggedUserId);
-        return Response.ok()
-                .entity("{\"unread_count\": " + unreadCount + "}")
-                .build();
-    }
 }
