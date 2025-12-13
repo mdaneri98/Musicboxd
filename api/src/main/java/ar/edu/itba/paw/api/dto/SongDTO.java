@@ -2,6 +2,7 @@ package ar.edu.itba.paw.api.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class SongDTO {
 
@@ -159,6 +160,11 @@ public class SongDTO {
 
     public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, duration, trackNumber, albumId, artistId, albumTitle, albumImageId, ratingCount, avgRating, createdAt, releaseDate, updatedAt, isDeleted, isReviewed, isFavorite);
     }
 }
 

@@ -34,7 +34,7 @@ public class ImageController extends BaseController {
         byte[] array = image.getBytes();
 
         Response.ResponseBuilder responseBuilder = Response.ok(array).header(HttpHeaders.CONTENT_DISPOSITION, String.format("inline; filename=\"image_%d.jpg\"", id));
-        return ControllerUtils.setMaxAge(responseBuilder, ControllerUtils.IMAGE_MAX_AGE).build();
+        return setMaxAge(responseBuilder, ControllerUtils.IMAGE_MAX_AGE).build();
     }
 
     @POST

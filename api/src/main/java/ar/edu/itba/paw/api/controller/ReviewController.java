@@ -106,7 +106,7 @@ public class ReviewController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         Review review = reviewService.findById(id);
         reviewService.setContextDependentFields(review, loggedUserId);
-        return ControllerUtils.buildResponseUsingEtag(request, review.hashCode(), () -> {
+        return buildResponseUsingEtag(request, () -> {
             ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review);
             return reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
         });

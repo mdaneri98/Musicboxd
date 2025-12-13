@@ -2,6 +2,7 @@ package ar.edu.itba.paw.api.dto;
 
 import ar.edu.itba.paw.models.reviews.ReviewType;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class ReviewDTO {
 
@@ -171,6 +172,11 @@ public class ReviewDTO {
 
     public void setUserModerator(Boolean userModerator) {
         this.userModerator = userModerator;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, userId, userImageId, title, description, rating, createdAt, likes, isLiked, isBlocked, commentAmount, itemType, itemId, itemName, itemImageId, userVerified, userModerator);
     }
 }
 

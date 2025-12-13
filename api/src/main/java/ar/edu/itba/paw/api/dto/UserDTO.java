@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.api.dto;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+
 
 public class UserDTO {
 
@@ -188,6 +190,11 @@ public class UserDTO {
 
     public void setFollowed(Boolean isFollowed) {
         this.isFollowed = isFollowed;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, email, name, bio, imageId, followersAmount, followingAmount, reviewAmount, createdAt, updatedAt, isVerified, isModerator, isFollowed, preferredLanguage, preferredTheme, hasFollowNotificationsEnabled, hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled, hasReviewsNotificationsEnabled);
     }
 }
 
