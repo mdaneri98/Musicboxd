@@ -360,6 +360,10 @@
       "title": "Rezension nicht gefunden",
       "message": "Die gesuchte Rezension existiert nicht oder wurde entfernt.",
       "backToHome": "Zurück zur Startseite"
+    },
+    "favorites": {
+      "maxReached": "Du hast das Maximum von 5 Favoriten erreicht. Bitte entferne einen, bevor du einen weiteren hinzufügst.",
+      "failed": "Favoriten konnten nicht aktualisiert werden. Bitte versuche es erneut."
     }
   },
   "footer": {

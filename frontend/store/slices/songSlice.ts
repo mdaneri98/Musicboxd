@@ -428,16 +428,10 @@ const songSlice = createSlice({
         state.currentSong = updatedSong;
         state.songs[updatedSong.id] = updatedSong;
       })
-      .addCase(addSongFavoriteAsync.rejected, (state, action) => {
-        state.error = action.payload || 'Failed to add song to favorites';
-      })
       .addCase(removeSongFavoriteAsync.fulfilled, (state, action) => {
         const updatedSong = action.payload.data as Song;
         state.currentSong = updatedSong;
         state.songs[updatedSong.id] = updatedSong;
-      })
-      .addCase(removeSongFavoriteAsync.rejected, (state, action) => {
-        state.error = action.payload || 'Failed to remove song from favorites';
       });
 
     builder

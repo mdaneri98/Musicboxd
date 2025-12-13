@@ -8,6 +8,7 @@ import { ReactNode } from 'react';
 import Head from './Head';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
+import { ToastContainer } from '@/components/ui';
 
 interface LayoutProps {
   children: ReactNode;
@@ -32,6 +33,7 @@ const Layout = ({
         </main>
       </div>
       {showFooter && <Footer />}
+      <ToastContainer />
     </>
   );
 };

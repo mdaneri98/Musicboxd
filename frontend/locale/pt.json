@@ -360,6 +360,10 @@
       "title": "Avaliação não encontrada",
       "message": "A avaliação que você procura não existe ou foi removida.",
       "backToHome": "Voltar ao início"
+    },
+    "favorites": {
+      "maxReached": "Você atingiu o máximo de 5 favoritos. Remova um antes de adicionar outro.",
+      "failed": "Falha ao atualizar favoritos. Por favor, tente novamente."
     }
   },
   "footer": {

@@ -24,3 +24,7 @@ export const RatingCard = dynamic(() => import('./RatingCard'), {
 export const ConfirmationModal = dynamic(() => import('./ConfirmationModal'), {
   ssr: false,
 });
+
+export const ToastContainer = dynamic(() => import('./ToastContainer'), {
+  ssr: false,
+});

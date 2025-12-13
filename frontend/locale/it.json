@@ -360,6 +360,10 @@
       "title": "Recensione non trovata",
       "message": "La recensione che cerchi non esiste o è stata rimossa.",
       "backToHome": "Torna alla home"
+    },
+    "favorites": {
+      "maxReached": "Hai raggiunto il massimo di 5 preferiti. Rimuovine uno prima di aggiungerne un altro.",
+      "failed": "Impossibile aggiornare i preferiti. Riprova."
     }
   },
   "footer": {

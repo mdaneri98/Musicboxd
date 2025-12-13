@@ -23,10 +23,14 @@ import {
   selectSongReviewsPagination,
   selectSongReviewsHasMore,
   selectSongError,
-  clearCurrentSong
+  clearCurrentSong,
+  showError,
 } from '@/store/slices';
 import type { Album, Artist, Review } from '@/types';
 import { formatDate } from '@/utils/timeUtils';
+
+// Constants
+const MAX_FAVORITES_ERROR_PATTERN = /maximum number of favorites/i;
 
 const SongDetailPage = () => {
   const { t } = useTranslation();
@@ -125,8 +129,14 @@ const SongDetailPage = () => {
       } else {
         await dispatch(addSongFavoriteAsync(song.id)).unwrap();
       }
-    } catch (err) {
-      console.error(t('common.error'), err);
+    } catch (err: any) {
+      // Check if error is due to max favorites limit
+      const errorMessage = err?.message || err || '';
+      if (MAX_FAVORITES_ERROR_PATTERN.test(errorMessage)) {
+        dispatch(showError(t('errors.favorites.maxReached')));
+      } else {
+        dispatch(showError(t('errors.favorites.failed')));
+      }
     } finally {
       setFavoriteLoading(false);
     }

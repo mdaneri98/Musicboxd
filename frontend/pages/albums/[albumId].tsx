@@ -24,9 +24,13 @@ import {
   selectAlbumReviewsPagination,
   selectAlbumReviewsHasMore,
   selectAlbumError,
-  clearCurrentAlbum
+  clearCurrentAlbum,
+  showError,
 } from '@/store/slices';
 import type { Artist, Review } from '@/types';
+
+// Constants
+const MAX_FAVORITES_ERROR_PATTERN = /maximum number of favorites/i;
 
 const AlbumDetailPage = () => {
   const { t } = useTranslation();
@@ -133,8 +137,14 @@ const AlbumDetailPage = () => {
       } else {
         await dispatch(addAlbumFavoriteAsync(album.id)).unwrap();
       }
-    } catch (err) {
-      console.error('Failed to toggle favorite:', err);
+    } catch (err: any) {
+      // Check if error is due to max favorites limit
+      const errorMessage = err?.message || err || '';
+      if (MAX_FAVORITES_ERROR_PATTERN.test(errorMessage)) {
+        dispatch(showError(t('errors.favorites.maxReached')));
+      } else {
+        dispatch(showError(t('errors.favorites.failed')));
+      }
     } finally {
       setFavoriteLoading(false);
     }

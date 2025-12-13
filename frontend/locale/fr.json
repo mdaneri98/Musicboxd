@@ -360,6 +360,10 @@
       "title": "Avis non trouvé",
       "message": "L'avis que vous recherchez n'existe pas ou a été supprimé.",
       "backToHome": "Retour à l'accueil"
+    },
+    "favorites": {
+      "maxReached": "Vous avez atteint le maximum de 5 favoris. Veuillez en supprimer un avant d'en ajouter un autre.",
+      "failed": "Échec de la mise à jour des favoris. Veuillez réessayer."
     }
   },
   "footer": {

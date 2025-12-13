@@ -360,6 +360,10 @@
       "title": "Reseña no encontrada",
       "message": "La reseña que buscas no existe o ha sido eliminada.",
       "backToHome": "Volver al inicio"
+    },
+    "favorites": {
+      "maxReached": "Has alcanzado el máximo de 5 favoritos. Por favor elimina uno antes de agregar otro.",
+      "failed": "Error al actualizar favoritos. Por favor intenta de nuevo."
     }
   },
   "footer": {
