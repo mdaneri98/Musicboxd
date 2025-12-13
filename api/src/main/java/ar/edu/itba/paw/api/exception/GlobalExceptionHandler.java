@@ -49,15 +49,14 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable exception) {
-
-        LOGGER.error("Unhandled exception occurred: {}", exception.getClass().getName(), exception);
-
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 exception,
                 "exception.InternalServerError",
                 uriInfo
         );
+
+        LOGGER.error("Unhandled exception occurred: {}", error, exception);
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .type(MediaType.APPLICATION_JSON_TYPE)

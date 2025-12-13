@@ -2,18 +2,18 @@ package ar.edu.itba.paw.exception.not_found;
 
 public class ReviewNotFoundException extends EntityNotFoundException {
     public ReviewNotFoundException(Long id) {
-        super("Review with id " + id + " not found");
+        super("exception.ReviewNotFound");
     }
 
     public ReviewNotFoundException(Long id, Throwable cause) {
-        super("Review with id " + id + " not found", cause);
+        super("exception.ReviewNotFound", cause);
     }
 
     public ReviewNotFoundException(Long userId, Long itemId, String itemType) {
-        super("Review with user id " + userId + " and " + itemType + " id " + itemId + " not found");
+        super("exception.ReviewNotFound");
     }
 
     public ReviewNotFoundException(Long userId, Long itemId, String itemType, Throwable cause) {
-        super("Review with user id " + userId + " and " + itemType + " id " + itemId + " not found", cause);
+        super("exception.ReviewNotFound", cause);
     }
 }

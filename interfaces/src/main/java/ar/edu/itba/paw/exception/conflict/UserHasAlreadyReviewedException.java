@@ -2,10 +2,10 @@ package ar.edu.itba.paw.exception.conflict;
 
 public class UserHasAlreadyReviewedException extends ConflictException {
     public UserHasAlreadyReviewedException(Long userId, Long itemId, String itemType) {
-        super("User with id " + userId + " has already reviewed " + itemType + " with id " + itemId);
+        super("exception.UserAlreadyReviewed");
     }
 
     public UserHasAlreadyReviewedException(Long userId, Long itemId, String itemType, Throwable cause) {
-        super("User with id " + userId + " has already reviewed " + itemType + " with id " + itemId, cause);
+        super("exception.UserAlreadyReviewed", cause);
     }
 }

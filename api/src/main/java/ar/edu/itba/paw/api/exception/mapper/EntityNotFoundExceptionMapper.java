@@ -43,14 +43,14 @@ public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotF
 
     @Override
     public Response toResponse(EntityNotFoundException exception) {
-        LOGGER.warn("Entity not found: {}", exception.getMessage());
-
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.NOT_FOUND,
                 exception,
                 "exception.EntityNotFound",
                 uriInfo
         );
+
+        LOGGER.warn("Entity not found: {}", error.getMessage());
 
         return Response.status(Response.Status.NOT_FOUND)
                 .type(MediaType.APPLICATION_JSON_TYPE)

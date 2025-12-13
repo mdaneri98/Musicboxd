@@ -36,14 +36,14 @@ public class BadRequestExceptionMapper implements ExceptionMapper<UnkownReviewTy
 
     @Override
     public Response toResponse(UnkownReviewTypeException exception) {
-        LOGGER.warn("Bad request: {}", exception.getMessage());
-
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.BAD_REQUEST,
                 exception,
                 "exception.BadRequest",
                 uriInfo
         );
+
+        LOGGER.error("Email sending failed: {}", error, exception);
 
         return Response.status(Response.Status.BAD_REQUEST)
                 .type(MediaType.APPLICATION_JSON_TYPE)

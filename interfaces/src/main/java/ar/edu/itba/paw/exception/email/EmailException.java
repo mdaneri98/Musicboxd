@@ -2,10 +2,10 @@ package ar.edu.itba.paw.exception.email;
 
 public class EmailException extends RuntimeException {
     public EmailException(String message) {
-        super(message);
+        super("exception.EmailSendFailed");
     }
 
     public EmailException(String message, Throwable cause) {
-        super(message, cause);
+        super("exception.EmailSendFailed", cause);
     }
 }

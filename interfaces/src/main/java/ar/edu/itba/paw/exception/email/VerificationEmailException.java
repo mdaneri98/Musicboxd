@@ -1,12 +1,11 @@
 package ar.edu.itba.paw.exception.email;
 
 public class VerificationEmailException extends EmailException {
-
     public VerificationEmailException(String email) {
-        super("Failed to send verification email to user: " + email);
+        super("exception.VerificationEmailFailed");
     }
 
     public VerificationEmailException(String email, Throwable cause) {
-        super("Failed to send verification email to user: " + email, cause);
+        super("exception.VerificationEmailFailed", cause);
     }
 }

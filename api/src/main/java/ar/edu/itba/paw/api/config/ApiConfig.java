@@ -56,6 +56,8 @@ public class ApiConfig {
         );
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
         messageSource.setDefaultLocale(Locale.ENGLISH);
+        messageSource.setUseCodeAsDefaultMessage(false);
+        messageSource.setFallbackToSystemLocale(false);
         return messageSource;
     }
 

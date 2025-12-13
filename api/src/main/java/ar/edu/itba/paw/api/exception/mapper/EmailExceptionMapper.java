@@ -36,14 +36,14 @@ public class EmailExceptionMapper implements ExceptionMapper<EmailException> {
 
     @Override
     public Response toResponse(EmailException exception) {
-        LOGGER.error("Email sending failed: {}", exception.getMessage(), exception);
-
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 exception,
                 "exception.InternalServerError",
                 uriInfo
         );
+
+        LOGGER.error("Email sending failed: {}", error, exception);
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .type(MediaType.APPLICATION_JSON_TYPE)

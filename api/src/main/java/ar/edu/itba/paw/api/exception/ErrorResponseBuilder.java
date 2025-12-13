@@ -12,8 +12,6 @@ import java.util.List;
 
 /**
  * Builder para construir respuestas de error estandarizadas.
- * Centraliza la lógica de construcción de ErrorResponseDTO siguiendo el principio SRP.
- * 
  * Nota: UriInfo se pasa como parámetro en lugar de inyectarse con @Context
  * porque @Context solo funciona en clases @Provider de JAX-RS, no en @Component de Spring.
  */
@@ -27,19 +25,8 @@ public class ErrorResponseBuilder {
         if (codeOrMessage == null || codeOrMessage.isBlank()) {
             return defaultMessage;
         }
-        try {
-            return messageSource.getMessage(codeOrMessage, null, LocaleContextHolder.getLocale());
-        } catch (Exception ignored) {
-            return codeOrMessage;
-        }
-    }
 
-    private String resolveCode(String code, String defaultMessage) {
-        try {
-            return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
-        } catch (Exception ignored) {
-            return defaultMessage;
-        }
+        return messageSource.getMessage(codeOrMessage, null, defaultMessage, LocaleContextHolder.getLocale());
     }
 
     /**
@@ -116,29 +103,6 @@ public class ErrorResponseBuilder {
             UriInfo uriInfo) {
         final String raw = exception.getMessage() != null ? exception.getMessage() : defaultMessage;
         final String localized = resolveMessage(raw, defaultMessage);
-        return new ErrorResponseDTO(
-                httpStatus.value(),
-                httpStatus.getReasonPhrase(),
-                localized,
-                getPath(uriInfo)
-        );
-    }
-
-    /**
-     * Construye una respuesta de error con un código de mensaje.
-     *
-     * @param httpStatus Estado HTTP
-     * @param messageCode Código de mensaje para localizar
-     * @param defaultMessage Mensaje por defecto si no se encuentra el código
-     * @param uriInfo Información de la URI del request (puede ser null)
-     * @return ErrorResponseDTO construido
-     */
-    public ErrorResponseDTO buildWithCode(
-            HttpStatus httpStatus,
-            String messageCode,
-            String defaultMessage,
-            UriInfo uriInfo) {
-        final String localized = resolveCode(messageCode, defaultMessage);
         return new ErrorResponseDTO(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
