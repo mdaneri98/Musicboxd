@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.models.StatusType;
 
 import java.util.List;
 
@@ -14,9 +15,9 @@ public interface NotificationService extends CrudService<Notification> {
 
     List<Notification> findBySubstring(String substring, Integer page, Integer pageSize);
     Long countAll();
-    Long countByUserId(Long userId);
+    Long countByUserId(Long userId, StatusType statusType);
 
-    List<Notification> getUserNotifications(Long userId, Integer page, Integer pageSize);
+    List<Notification> getUserNotifications(Long userId, Integer page, Integer pageSize, StatusType status);
     Void markAsRead(Long notificationId);
     Void markAllAsRead(Long userId);
     Integer getUnreadCount(Long userId);

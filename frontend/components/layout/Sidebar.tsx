@@ -4,6 +4,7 @@
  * Migrated from: components/sidebar.jsp
  */
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
@@ -13,8 +14,9 @@ import {
   selectIsModerator,
   selectCurrentUser,
   logoutAsync,
+  selectUnreadCount,
+  fetchUnreadCountAsync,
 } from '@/store/slices';
-import { selectUnreadCount } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 
 const Sidebar = () => {
@@ -25,6 +27,13 @@ const Sidebar = () => {
   const isModerator = useAppSelector(selectIsModerator);
   const currentUser = useAppSelector(selectCurrentUser);
   const unreadCount = useAppSelector(selectUnreadCount);
+
+  // Fetch unread notification count when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchUnreadCountAsync());
+    }
+  }, [isAuthenticated, dispatch]);
 
   const handleLogout = async () => {
     await dispatch(logoutAsync());

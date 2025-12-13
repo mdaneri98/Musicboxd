@@ -65,6 +65,5 @@ public class ApiUriConstants {
 
     /* NOTIFICATIONS */
     public static final String NOTIFICATIONS_BASE = API_BASE + "/notifications";
-    public static final String NOTIFICATIONS_UNREAD_COUNT = "/unread-count";
 
 }

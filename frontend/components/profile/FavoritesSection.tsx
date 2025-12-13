@@ -21,7 +21,7 @@ export default function FavoritesSection({
   if (loading) {
     return (
       <div className="loading-container">
-        <LoadingSpinner size="large" message={t('profile.loadingFavorites')} />
+        <LoadingSpinner size="large"  />
       </div>
     );
   }

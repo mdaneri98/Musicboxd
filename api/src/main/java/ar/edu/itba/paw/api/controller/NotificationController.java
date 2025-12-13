@@ -6,6 +6,7 @@ import ar.edu.itba.paw.api.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.api.mapper.resource.NotificationResourceMapper;
 import ar.edu.itba.paw.api.models.resources.CollectionResource;
 import ar.edu.itba.paw.api.models.resources.NotificationResource;
+import ar.edu.itba.paw.models.StatusType;
 import ar.edu.itba.paw.api.utils.ApiUriConstants;
 import ar.edu.itba.paw.api.utils.ControllerUtils;
 import ar.edu.itba.paw.api.utils.SecurityContextUtils;
@@ -39,12 +40,13 @@ public class NotificationController extends BaseController {
     @GET
     public Response getNotifications(
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
-            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.STATUS_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_STATUS_STRING) String status) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size);
+        List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size, StatusType.fromString(status));
         List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications);
         List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-        Integer totalCount = notificationService.countByUserId(loggedUserId).intValue();
+        Integer totalCount = notificationService.countByUserId(loggedUserId, StatusType.fromString(status)).intValue();
         CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
                 notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, ControllerUtils.notificationsCollectionLinks);
         return buildResponse(collection);
@@ -102,15 +104,5 @@ public class NotificationController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         if (notificationDTO.getIsRead()) notificationService.markAllAsRead(loggedUserId);
         return buildNoContentResponse();
-    }
-
-    @GET
-    @Path(ApiUriConstants.NOTIFICATIONS_UNREAD_COUNT)
-    public Response getUnreadCount() {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Integer unreadCount = notificationService.getUnreadCount(loggedUserId);
-        return Response.ok()
-                .entity("{\"unread_count\": " + unreadCount + "}")
-                .build();
     }
 }

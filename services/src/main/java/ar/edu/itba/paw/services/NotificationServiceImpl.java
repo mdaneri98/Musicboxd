@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Notification;
+import ar.edu.itba.paw.models.StatusType;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.FilterType;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -147,14 +149,33 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional(readOnly = true)
     @Override
-    public Long countByUserId(Long userId) {
-        return notificationDao.countByUserId(userId);
+    public Long countByUserId(Long userId, StatusType status) {
+        switch (status) {
+            case READ:
+                return notificationDao.countByUserId(userId, true);
+            case UNREAD:
+                return notificationDao.countByUserId(userId, false);
+            case ALL:
+                return notificationDao.countByUserId(userId);
+            default:
+                throw new IllegalArgumentException("Invalid status: " + status);
+        }
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Notification> getUserNotifications(Long userId, Integer page, Integer pageSize) {
-        return notificationDao.getNotificationsForUser(userId, page, pageSize);
+    public List<Notification> getUserNotifications(Long userId, Integer page, Integer pageSize, StatusType status) {
+        List<Notification> notifications = notificationDao.getNotificationsForUser(userId, page, pageSize);
+        switch (status) {
+            case READ:
+                return notifications.stream().filter(Notification::isRead).collect(Collectors.toList());
+            case UNREAD:
+                return notifications.stream().filter(n -> !n.isRead()).collect(Collectors.toList());
+            case ALL:
+                return notifications;
+            default:
+                throw new IllegalArgumentException("Invalid status: " + status);
+        }
     }
 
     @Transactional

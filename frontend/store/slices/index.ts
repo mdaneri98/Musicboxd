@@ -237,7 +237,7 @@ export {
 export {
   fetchNotificationsAsync,
   fetchMoreNotificationsAsync,
-  // fetchUnreadCountAsync,
+  fetchUnreadCountAsync,
   markAsReadAsync,
   markAllAsReadAsync,
   deleteNotificationAsync,

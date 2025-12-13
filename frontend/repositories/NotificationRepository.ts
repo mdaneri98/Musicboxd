@@ -10,7 +10,16 @@ import {
   Collection,
   HALResource,
   PaginationParams,
+  NotificationStatusEnum,
 } from '@/types';
+
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
+interface NotificationParams extends PaginationParams {
+  status?: NotificationStatusEnum;
+}
 
 // ============================================================================
 // API Endpoints
@@ -19,7 +28,6 @@ import {
 const NOTIFICATION_ENDPOINTS = {
   NOTIFICATIONS: '/notifications',
   NOTIFICATION_BY_ID: (id: number) => `/notifications/${id}`,
-  UNREAD_COUNT: '/notifications/unread-count',
 };
 
 // ============================================================================
@@ -29,20 +37,25 @@ const NOTIFICATION_ENDPOINTS = {
 class NotificationRepository {
   /**
    * Get paginated list of notifications
-   * @param page Page number (0-indexed)
+   * @param page Page number (1-indexed)
    * @param size Page size
+   * @param status Optional status filter (READ, UNREAD, ALL)
    * @returns Collection of notifications with pagination metadata
    */
   async getNotifications(
     page: number = 1,
-    size: number = 10
+    size: number = 10,
+    status?: NotificationStatusEnum
   ): Promise<Collection<HALResource<Notification>>> {
     try {
-      const params: PaginationParams = { page, size };
+      const params: NotificationParams = { page, size };
+      if (status) {
+        params.status = status;
+      }
       const url = buildUrl(NOTIFICATION_ENDPOINTS.NOTIFICATIONS, params as Record<string, string | number | boolean>);
       const response: Collection<HALResource<Notification>> = await apiClient.getCollection<Notification>(url);
 
-        if (!response) {
+      if (!response) {
         throw new Error('Invalid notifications response: missing data');
       }
 
@@ -162,19 +175,14 @@ class NotificationRepository {
 
   /**
    * Get count of unread notifications
+   * Uses the notifications endpoint with status=UNREAD and extracts totalCount
    * @returns Unread count
    */
   async getUnreadCount(): Promise<number> {
     try {
-      const response: { unread_count: number } = await apiClient.get<{ unread_count: number }>(
-        NOTIFICATION_ENDPOINTS.UNREAD_COUNT
-      );
-
-      if (!response) {
-        throw new Error('Invalid unread count response: missing data');
-      }
-
-      return response.unread_count ?? 0;
+      // Fetch notifications with status=UNREAD, only need 1 item to get totalCount
+      const response = await this.getNotifications(1, 1, NotificationStatusEnum.UNREAD);
+      return response.totalCount ?? 0;
     } catch (error) {
       console.error('Get unread count error:', error);
       throw error;
