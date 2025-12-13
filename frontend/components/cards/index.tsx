@@ -2,10 +2,7 @@ import dynamic from 'next/dynamic';
 
 
 export const ReviewCard = dynamic(() => import('./ReviewCard'), {
-  loading: () => {
-    const { LoadingSpinner } = require('@/components/ui/LoadingSpinner');
-    return <div className="card-skeleton"><LoadingSpinner size="small" /></div>;
-  },
+  ssr: false
 });
 
 export const CommentCard = dynamic(() => import('./CommentCard'), {
