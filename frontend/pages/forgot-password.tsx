@@ -4,10 +4,8 @@
  */
 
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
 import { Footer } from '@/components/layout';
 import { passwordRepository } from '@/repositories/PasswordRepository';
 import type { APIError } from '@/types';
@@ -15,8 +13,6 @@ import type { APIError } from '@/types';
 type RequestState = 'idle' | 'loading' | 'success' | 'error';
 
 const ForgotPasswordPage = () => {
-  const { t } = useTranslation();
-  const router = useRouter();
 
   const [email, setEmail] = useState<string>('');
   const [state, setState] = useState<RequestState>('idle');
