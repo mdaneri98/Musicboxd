@@ -13,7 +13,7 @@
 
   <artifactId>frontend</artifactId>
   <packaging>pom</packaging>
-  <name>Musicbox Frontend</name>
+  <name>frontend</name>
 
   <properties>
     <node.version>v20.11.0</node.version>

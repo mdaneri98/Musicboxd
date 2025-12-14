@@ -1,398 +1,274 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.webapp.dto.AlbumDTO;
+import ar.edu.itba.paw.webapp.dto.ArtistDTO;
+import ar.edu.itba.paw.webapp.dto.CreateUserDTO;
+import ar.edu.itba.paw.webapp.dto.ReviewDTO;
+import ar.edu.itba.paw.webapp.dto.SongDTO;
+import ar.edu.itba.paw.webapp.dto.UserDTO;
+import ar.edu.itba.paw.webapp.form.UserForm;
+import ar.edu.itba.paw.webapp.form.UserProfileForm;
+import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.ArtistDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.UserDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.UserFormMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.UserProfileFormMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.AlbumResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.ArtistResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.ReviewResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.SongResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.UserResourceMapper;
+import ar.edu.itba.paw.webapp.models.resources.AlbumResource;
+import ar.edu.itba.paw.webapp.models.resources.ArtistResource;
+import ar.edu.itba.paw.webapp.models.resources.CollectionResource;
+import ar.edu.itba.paw.webapp.models.resources.ReviewResource;
+import ar.edu.itba.paw.webapp.models.resources.SongResource;
+import ar.edu.itba.paw.webapp.models.resources.UserResource;
+import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
+import ar.edu.itba.paw.webapp.utils.ControllerUtils;
+import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
+import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
-import ar.edu.itba.paw.webapp.form.UserForm;
-import ar.edu.itba.paw.webapp.form.UserProfileForm;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.ForbiddenException;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import ar.edu.itba.paw.services.ImageService;
+import java.util.Objects;
 
+@Path(ApiUriConstants.USERS_BASE)
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class UserController extends BaseController {
 
-@RequestMapping("/user")
-@Controller
-public class UserController {
+    @Autowired
+    private UserService userService;
 
-    private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final ReviewService reviewService;
-    private final MessageSource messageSource;
-    private final ImageService imageService;
+    @Autowired
+    private ReviewService reviewService;
 
+    @Autowired
+    private UserResourceMapper userResourceMapper;
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager, ReviewService reviewService, MessageSource messageSource, ImageService imageService) {
-        this.userService = userService;
-        this.authenticationManager = authenticationManager;
-        this.reviewService = reviewService;
-        this.messageSource = messageSource;
-        this.imageService = imageService;
+    @Autowired
+    private ReviewResourceMapper reviewResourceMapper;
+
+    @Autowired
+    private ArtistResourceMapper artistResourceMapper;
+
+    @Autowired
+    private AlbumResourceMapper albumResourceMapper;
+
+    @Autowired
+    private SongResourceMapper songResourceMapper;
+
+    @Autowired
+    private CollectionResourceMapper collectionResourceMapper;
+
+    @Autowired
+    private UserFormMapper userFormMapper;
+
+    @Autowired
+    private UserProfileFormMapper userProfileFormMapper;
+
+    @Autowired
+    private UserDtoMapper userDtoMapper;
+
+    @Autowired
+    private ReviewDtoMapper reviewDtoMapper;
+
+    @Autowired
+    private ArtistDtoMapper artistDtoMapper;
+
+    @Autowired
+    private AlbumDtoMapper albumDtoMapper;
+
+    @Autowired
+    private SongDtoMapper songDtoMapper;
+
+    @GET
+    public Response getAllUsers(
+            @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
+        List<User> users = new ArrayList<>();
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        if (search != null && !search.isEmpty()) users = userService.findByUsernameContaining(search, page, size);
+        else users = userService.findPaginated(filter, page, size, loggedUserId);
+        List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
+        List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, userService.countUsers().intValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
+        return buildResponse(collection);
     }
 
-    @RequestMapping("/profile")
-    public ModelAndView profile(@ModelAttribute("loggedUser") User loggedUser,
-                                @RequestParam(name = "pageNum", required = false) Integer pageNum,
-                                @RequestParam(name = "page", required = false) String page) {
-        if (loggedUser.getId() == 0) { return new ModelAndView("redirect:/"); }
-        if (pageNum == null || pageNum <= 0) {
-            pageNum = 1;
-        }
-        if (page == null || page.isEmpty()) {
-            page = "favorites";
-        }
-        boolean reviewsActive = page.equals("reviews");
-
-        int pageSize = 5;
-
-        final ModelAndView mav = new ModelAndView("users/profile");
-
-        List<Album> favoriteAlbums = userService.getFavoriteAlbums(loggedUser.getId());
-        List<Artist> favoriteArtists = userService.getFavoriteArtists(loggedUser.getId());
-        List<Song> favoriteSongs = userService.getFavoriteSongs(loggedUser.getId());
-        List<Review> reviews = reviewService.findReviewsByUserPaginated(loggedUser.getId(), pageNum, pageSize, loggedUser.getId());
-
-        boolean showNext = reviews.size() == pageSize;
-        boolean showPrevious = pageNum > 1;
-
-        mav.addObject("user", userService.find(loggedUser.getId()).get());
-        mav.addObject("albums", favoriteAlbums);
-        mav.addObject("artists", favoriteArtists);
-        mav.addObject("songs", favoriteSongs);
-        mav.addObject("reviews", reviews);
-        mav.addObject("pageNum", pageNum);
-        mav.addObject("showNext", showNext);
-        mav.addObject("showPrevious", showPrevious);
-        mav.addObject("reviewsActive", reviewsActive);
-
-        return mav;
-    }
-
-
-    @RequestMapping(path = "/edit", method = RequestMethod.GET)
-    public ModelAndView editProfile(@ModelAttribute("userProfileForm") final UserProfileForm userProfileForm,
-                                    @ModelAttribute("loggedUser") User loggedUser) {
-        ModelAndView modelAndView = new ModelAndView("users/edit_profile");
-
-        userProfileForm.setUsername(loggedUser.getUsername());
-        userProfileForm.setName(loggedUser.getName());
-        userProfileForm.setBio(loggedUser.getBio());
-
-        return modelAndView;
-    }
-
-    @RequestMapping(path = "/profile/settings", method = RequestMethod.GET)
-    public ModelAndView settings(@ModelAttribute("loggedUser") User loggedUser) {
-        return new ModelAndView("settings/settings");
-    }
-
-    @RequestMapping(path = "/edit", method = RequestMethod.POST)
-    public ModelAndView submitProfile(@Valid @ModelAttribute("userProfileForm") final UserProfileForm upf,
-                                      final BindingResult errors,
-                                      @ModelAttribute("loggedUser") User loggedUser) {
-        userService.findByUsername(upf.getUsername()).ifPresent(user -> {
-            if (!user.getId().equals(loggedUser.getId())) {
-                errors.rejectValue("username", "validation.user.username.in.use");
-            }
+    @GET
+    @Path(ApiUriConstants.ID)
+    public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        User user = userService.findUserById(id, loggedUserId);
+        userService.setContextDependentFields(user, loggedUserId);
+        return buildResponseUsingEtag(request, () -> {
+            UserDTO userDTO = userDtoMapper.toDTO(user);
+            return userResourceMapper.toResource(userDTO, getBaseUrl());
         });
-
-        // Check if there are any validation errors
-        if (errors.hasErrors())
-            return editProfile(upf, loggedUser);
-
-        loggedUser.setUsername(upf.getUsername());
-        loggedUser.setName(upf.getName());
-        loggedUser.setBio(upf.getBio());
-        loggedUser.setImage(imageService.update(new Image(loggedUser.getImage().getId(), getBytes(upf.getProfilePicture()))).get());
-        userService.update(loggedUser);
-
-        return new ModelAndView("redirect:/user/profile");
     }
 
-    @RequestMapping("/email-verification")
-    public ModelAndView verify(@RequestParam(name = "code", defaultValue = "0") String verificationCode,
-                               @ModelAttribute("loggedUser") User loggedUser){
-        Long userId = userService.verify(VerificationType.VERIFY_EMAIL, verificationCode);
-        if (userId < 1) {
-            //userService.createVerification(VerificationType.VERIFY_EMAIL, loggedUser); //Implica deber estar logueado
-            String errorMessage = messageSource.getMessage("error.user.verification.expired", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
+    @POST
+    public Response createUser(@Valid UserForm userForm) {
+        CreateUserDTO createUserDTO = userFormMapper.toDTO(userForm);
+        User user = userService.create(createUserDTO.getUsername(), createUserDTO.getEmail(), createUserDTO.getPassword());
+        UserDTO userDTO = userDtoMapper.toDTO(user);
+        UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
 
-        String successMessage = messageSource.getMessage("success.user.verification", null, LocaleContextHolder.getLocale());
-        return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
+        return buildCreatedResponse(userResource);
     }
 
-    @RequestMapping("/{userId:\\d+}")
-    public ModelAndView user(@ModelAttribute("loggedUser") User loggedUser,
-                             @PathVariable(name = "userId") long userId,
-                             @RequestParam(name = "pageNum", required = false) Integer pageNum,
-                             @RequestParam(name = "page", required = false) String page) {
-        int pageSize = 5;
-        boolean reviewsActive = false;
+    @PUT
+    @Path(ApiUriConstants.ID)
+    public Response updateUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserProfileForm userProfileForm) {
+        User userUpdate = userProfileFormMapper.toModel(userProfileForm);
+        userUpdate.setId(userId);
         
-        if (pageNum == null || pageNum <= 0) {
-            pageNum = 1;
-        }
-        if (page == null || page.isEmpty()) {
-            page = "favorites";
-        }
-        if (page.equals("reviews")) {
-            reviewsActive = true;
-        }
+        User user = userService.updateUser(userUpdate);
+        UserDTO userDTO = userDtoMapper.toDTO(user);
+        UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
 
-        if (userId == loggedUser.getId()) {
-            return new ModelAndView("redirect:/user/profile?page=" + page);
-        }
-
-        final ModelAndView mav = new ModelAndView("/users/user");
-        Optional<User> userOptional = userService.find(userId);
-        if (userOptional.isEmpty()) {
-            String errorMessage = messageSource.getMessage("error.user.find", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
-
-        List<Review> reviews = reviewService.findReviewsByUserPaginated(userId, pageNum, pageSize, loggedUser.getId());
-
-        boolean showNext = reviews.size() == pageSize;
-        boolean showPrevious = pageNum > 1;
-
-        mav.addObject("user", userOptional.get());
-        mav.addObject("isFollowing", userService.isFollowing(loggedUser.getId(), userId));
-        mav.addObject("albums", userService.getFavoriteAlbums(userId));
-        mav.addObject("artists", userService.getFavoriteArtists(userId));
-        mav.addObject("songs", userService.getFavoriteSongs(userId));
-        mav.addObject("reviews", reviews);
-        mav.addObject("pageNum", pageNum);
-        mav.addObject("showNext", showNext);
-        mav.addObject("showPrevious", showPrevious);
-        mav.addObject("reviewsActive", reviewsActive);
-        return mav;
+        return buildResponse(userResource);
     }
 
-
-    @RequestMapping("/{userId:\\d+}/follow-info")
-    public ModelAndView followInfo(@ModelAttribute("loggedUser") User loggedUser,
-                                   @PathVariable(name = "userId") long userId,
-                                   @RequestParam(name = "pageNum", required = false) Integer pageNum,
-                                   @RequestParam(name = "page", required = false) String activePage) {
-        if (pageNum == null || pageNum <= 0) pageNum = 1;
-        if (activePage == null || activePage.isEmpty()) activePage = "followers";
-        boolean followersActive = activePage.equals("followers");
-        boolean followingActive = activePage.equals("following");
-
-
-        ModelAndView mav = new ModelAndView("/users/follow_info");
-        int pageSize = 20;
-
-        Optional<User> userOptional = userService.find(userId);
-        if (userOptional.isEmpty()) {
-            String errorMessage = messageSource.getMessage("error.user.find", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
-
-        boolean showPrevious = pageNum > 1;
-        Boolean showNext = null;
-
-        List<User> userList = null;
-        if (followersActive){
-            userList = userService.getFollowers(userOptional.get().getId(), pageNum, pageSize);
-            showNext = userList.size() == pageSize;
-        }
-        if (followingActive) {
-            userList = userService.getFollowings(userOptional.get().getId(), pageNum, pageSize);;
-            showNext = userList.size() == pageSize;
-        }
-
-
-        mav.addObject("user", userOptional.get());
-        mav.addObject("userList", userList);
-        mav.addObject("loggedUser", loggedUser);
-        mav.addObject("pageNum", pageNum);
-        mav.addObject("followersActive", followersActive);
-        mav.addObject("showNext", showNext);
-        mav.addObject("showPrevious", showPrevious);
-
-        return mav;
+    @DELETE
+    @Path(ApiUriConstants.ID)
+    public Response deleteUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        if (!id.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
+        userService.deleteById(id);
+        return buildNoContentResponse();
     }
 
-    @RequestMapping(path = "/login", method = RequestMethod.GET)
-    public ModelAndView login(@RequestParam(required = false) String error) {
-        ModelAndView mav = new ModelAndView("users/login");
-        if (error != null) {
-            mav.addObject("error", true);
-        }
-        return mav;
+    @GET
+    @Path(ApiUriConstants.USER_REVIEWS)
+    public Response getUserReviews(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, 
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        User user = userService.findUserById(id, loggedUserId);
+        List<Review> reviews = reviewService.findReviewsByUserPaginated(id, page, size, loggedUserId);
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
+        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
+        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
+                reviewResources, user.getReviewAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_REVIEWS, ControllerUtils.userReviewsCollectionLinks, id);
+        return buildResponse(collection);
     }
 
-    @RequestMapping(path = "/register", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("userForm") final UserForm userForm) {
-        return new ModelAndView("users/register");
+    @GET
+    @Path(ApiUriConstants.USER_FOLLOWERS)
+    public Response getUserFollowers(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, 
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        User user = userService.findUserById(id, loggedUserId);
+        List<User> followers = userService.getFollowers(id, page, size);
+        List<UserDTO> followerDTOs = userDtoMapper.toDTOList(followers);
+        List<UserResource> userResources = userResourceMapper.toResourceList(followerDTOs, getBaseUrl());
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, user.getFollowersAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWERS, ControllerUtils.followersCollectionLinks, id);
+        return buildResponse(collection);
     }
 
-    @RequestMapping(path = "/register", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("userForm") final UserForm userForm,
-                               final BindingResult errors) {
-        if (errors.hasErrors())
-            return createForm(userForm);
-
-        final Optional<User> userOpt = userService.create(userForm.getUsername(), userForm.getEmail(), userForm.getPassword());
-        if (userOpt.isEmpty()) {
-            String errorMessage = messageSource.getMessage("error.user.creation", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
-
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword(), null);
-        SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authenticationToken));
-
-        String errorMessage = messageSource.getMessage("success.user.creation", null, LocaleContextHolder.getLocale());
-        return new ModelAndView("redirect:/?success=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+    @GET
+    @Path(ApiUriConstants.USER_FOLLOWINGS)
+    public Response getUserFollowing(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        User user = userService.findUserById(id, loggedUserId);
+        List<User> following = userService.getFollowings(id, page, size);
+        List<UserDTO> followingDTOs = userDtoMapper.toDTOList(following);
+        List<UserResource> userResources = userResourceMapper.toResourceList(followingDTOs, getBaseUrl());
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, user.getFollowingAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWINGS, ControllerUtils.followingsCollectionLinks, id);
+        return buildResponse(collection);
     }
 
-    @RequestMapping(value = "/forgot-password", method = RequestMethod.GET)
-    public ModelAndView forgotPassword() {
-        return new ModelAndView("users/password/forgot_password");
+    @POST
+    @Path(ApiUriConstants.USER_FOLLOWERS)
+    public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        userService.createFollowing(loggedUserId, id);
+        User user = userService.findUserById(id, loggedUserId);
+        userService.setContextDependentFields(user, loggedUserId);
+        UserDTO userDTO = userDtoMapper.toDTO(user);
+        UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
+        return buildCreatedResponse(userResource);
     }
 
-    @RequestMapping(value = "/forgot-password", method = RequestMethod.POST)
-    public ModelAndView forgotPassword(@RequestParam("email") String email) {
-        Optional<User> userOptional = userService.findByEmail(email);
-
-        if (userOptional.isEmpty()) {
-            return new ModelAndView("redirect:/user/forgot-password");
-        }
-
-        User user = userOptional.get();
-        userService.createVerification(VerificationType.VERIFY_FORGOT_PASSWORD, user);
-
-        return new ModelAndView("redirect:/user/login");
+    @DELETE
+    @Path(ApiUriConstants.USER_FOLLOWERS)
+    public Response unfollowUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        userService.undoFollowing(SecurityContextUtils.getCurrentUserId(), id);
+        return buildNoContentResponse();
     }
 
-    @RequestMapping(value = "/reset-password", method = RequestMethod.GET)
-    public ModelAndView resetPassword(@ModelAttribute(name="resetPasswordForm") ResetPasswordForm resetPasswordForm, @RequestParam("code") String code) {
-        resetPasswordForm.setCode(code);
-        return new ModelAndView("users/password/reset_password");
+    @GET
+    @Path(ApiUriConstants.USER_FAVORITE_ARTISTS)
+    public Response getUserFavoriteArtists(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        List<Artist> artists = userService.getFavoriteArtists(id);
+        List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists);
+        List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
+        CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
+                artistResources, artists.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ARTISTS, ControllerUtils.userFavoriteCollectionLinks, id);
+        return buildResponse(collection);
     }
 
-    @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
-    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm,
-                                 BindingResult errors) {
-        if (errors.hasErrors())
-            return resetPassword(resetPasswordForm, resetPasswordForm.getCode());
-
-        Long userId = userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, resetPasswordForm.getCode());
-        if (userId == null || userId < 1) {
-            String errorMessage = messageSource.getMessage("error.user.verification", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
-
-        Optional<User> userOptional = userService.find(userId);
-        if (userOptional.isEmpty()) {
-            String errorMessage = messageSource.getMessage("error.user.verification", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
-        userService.changePassword(userOptional.get().getId(), resetPasswordForm.getPassword());
-
-        String successMessage = messageSource.getMessage("success.user.change.password", null, LocaleContextHolder.getLocale());
-        return new ModelAndView("redirect:/?success=" + URLEncoder.encode(successMessage, StandardCharsets.UTF_8));
+    @GET
+    @Path(ApiUriConstants.USER_FAVORITE_ALBUMS)
+    public Response getUserFavoriteAlbums(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        List<Album> albums = userService.getFavoriteAlbums(id);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums);
+        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
+        CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
+                albumResources, albums.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ALBUMS, ControllerUtils.userFavoriteCollectionLinks, id);
+        return buildResponse(collection);
     }
 
-    @RequestMapping(path = "/{userId:\\d+}/follow", method = RequestMethod.GET)
-    public ModelAndView follow(@ModelAttribute("loggedUser") User loggedUser,
-                               @PathVariable(name = "userId") long userId) {
-        userService.createFollowing(loggedUser, userId);
-        return new ModelAndView("redirect:/user/" + userId);
+    @GET
+    @Path(ApiUriConstants.USER_FAVORITE_SONGS)
+    public Response getUserFavoriteSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        List<Song> songs = userService.getFavoriteSongs(id);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs);
+        List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
+        CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
+                    songResources, songs.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_SONGS, ControllerUtils.userFavoriteCollectionLinks, id);
+        return buildResponse(collection);
     }
 
-    @RequestMapping(path = "/{userId:\\d+}/unfollow", method = RequestMethod.GET)
-    public ModelAndView unfollow(@ModelAttribute("loggedUser") User loggedUser,
-                                 @PathVariable(name = "userId") long userId) {
-        userService.undoFollowing(loggedUser, userId);
-        return new ModelAndView("redirect:/user/" + userId);
-    }
-
-    @RequestMapping(path = "/language", method = RequestMethod.POST)
-    public ModelAndView updateLanguage(@ModelAttribute("loggedUser") User loggedUser,
-                                       @RequestParam("language") String language) {
-        if (!List.of("en", "es", "fr", "de", "it", "pt", "ja").contains(language)) {
-            String errorMessage = messageSource.getMessage("error.user.language.invalid", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/user/profile/settings?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
-
-        loggedUser.setPreferredLanguage(language);
-        userService.update(loggedUser);
-
-        return new ModelAndView("redirect:/user/profile/settings");
-    }
-
-    @RequestMapping(path = "/settings/theme", method = RequestMethod.POST)
-    public ModelAndView updateTheme(@ModelAttribute("loggedUser") User loggedUser,
-                                   @RequestParam("theme") String theme) {
-        if (!List.of("dark", "kawaii", "forest", "ocean", "sepia").contains(theme)) {
-            return new ModelAndView("redirect:/user/profile/settings");
-        }
-
-        loggedUser.setTheme(theme);
-        userService.update(loggedUser);
-
-        return new ModelAndView("redirect:/user/profile/settings");
-    }
-
-    @RequestMapping(path = "/settings/notifications/follow", method = RequestMethod.POST)
-    public ModelAndView updateFollowNotifications(@ModelAttribute("loggedUser") User loggedUser,
-                                                 @RequestParam("enabled") Boolean enabled) {
-        loggedUser.setFollowNotificationsEnabled(enabled);
-        userService.update(loggedUser);
-        return new ModelAndView("redirect:/user/profile/settings");
-    }
-
-    @RequestMapping(path = "/settings/notifications/like", method = RequestMethod.POST)
-    public ModelAndView updateLikeNotifications(@ModelAttribute("loggedUser") User loggedUser,
-                                               @RequestParam("enabled") Boolean enabled) {
-        loggedUser.setLikeNotificationsEnabled(enabled);
-        userService.update(loggedUser);
-        return new ModelAndView("redirect:/user/profile/settings");
-    }
-
-    @RequestMapping(path = "/settings/notifications/comment", method = RequestMethod.POST)
-    public ModelAndView updateCommentNotifications(@ModelAttribute("loggedUser") User loggedUser,
-                                                  @RequestParam("enabled") Boolean enabled) {
-        loggedUser.setCommentNotificationsEnabled(enabled);
-        userService.update(loggedUser);
-        return new ModelAndView("redirect:/user/profile/settings");
-    }
-
-    @RequestMapping(path = "/settings/notifications/review", method = RequestMethod.POST)
-    public ModelAndView updateReviewNotifications(@ModelAttribute("loggedUser") User loggedUser,
-                                                 @RequestParam("enabled") Boolean enabled) {
-        loggedUser.setReviewNotificationsEnabled(enabled);
-        userService.update(loggedUser);
-        return new ModelAndView("redirect:/user/profile/settings");
-    }
-
-    private byte[] getBytes(MultipartFile imageFile) {
-        if (imageFile == null) { return null; }
-        byte[] bytes;
-        try {
-            bytes = imageFile.getBytes();
-        } catch (IOException e) {
-            bytes = null;
-        }
-        return bytes;
+    @PATCH  
+    @Path(ApiUriConstants.ID)
+    public Response updateUserConfig(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserDTO userDTO) {
+        if(!Objects.equals(SecurityContextUtils.getCurrentUserId(), userId))
+            throw new ForbiddenException("You are not allowed to update this user config");
+        User user = userService.findUserById(userId, SecurityContextUtils.getCurrentUserId());
+        UserDtoMapper.mergeConfigToModel(user, userDTO);
+        User userUpdated = userService.updateUser(user);
+        UserDTO updatedUserDTO = userDtoMapper.toDTO(userUpdated);
+        UserResource userResource = userResourceMapper.toResource(updatedUserDTO, getBaseUrl());
+        return buildResponse(userResource);
     }
 }

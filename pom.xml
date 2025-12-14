@@ -6,7 +6,7 @@
   <artifactId>paw-2024b-02</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Musicbox</name>
+  <name>Musicboxd</name>
   <url>http://pawserver.it.itba.edu.ar/paw-2024b-02</url>
 
   <properties>
@@ -333,7 +333,7 @@
     <module>persistence</module>
     <module>services</module>
     <module>frontend</module>
-    <module>api</module>
+    <module>webapp</module>
     <!--<module>webapp</module>-->
   </modules>
 

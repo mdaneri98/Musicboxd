@@ -1,187 +1,213 @@
 package ar.edu.itba.paw.webapp.controller;
 
-
+import ar.edu.itba.paw.webapp.dto.AlbumDTO;
+import ar.edu.itba.paw.webapp.dto.ReviewDTO;
+import ar.edu.itba.paw.webapp.dto.SongDTO;
+import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.AlbumResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.ReviewResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.SongResourceMapper;
+import ar.edu.itba.paw.webapp.models.resources.AlbumResource;
+import ar.edu.itba.paw.webapp.models.resources.CollectionResource;
+import ar.edu.itba.paw.webapp.models.resources.ReviewResource;
+import ar.edu.itba.paw.webapp.models.resources.SongResource;
+import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
+import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
+import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.reviews.AlbumReview;
-import ar.edu.itba.paw.services.*;
-import ar.edu.itba.paw.webapp.form.ReviewForm;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.services.AlbumService;
+import ar.edu.itba.paw.services.ReviewService;
+import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.webapp.form.ModAlbumForm;
+import ar.edu.itba.paw.webapp.form.ModSongForm;
+import ar.edu.itba.paw.webapp.mapper.dto.ModAlbumFormMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.ModSongFormMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
-@RequestMapping("/album")
-@Controller
-public class AlbumController {
+@Path(ApiUriConstants.ALBUMS_BASE)
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class AlbumController extends BaseController {
 
-    private final UserService userService;
-    private final AlbumService albumService;
-    private final SongService songService;
-    private final ReviewService reviewService;
-    private final MessageSource messageSource;
+    @Autowired
+    private AlbumService albumService;
 
-    public AlbumController(UserService userService, AlbumService albumService, SongService songService, ReviewService reviewService, MessageSource messageSource) {
-        this.userService = userService;
-        this.albumService = albumService;
-        this.songService = songService;
-        this.reviewService = reviewService;
-        this.messageSource = messageSource;
+    @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
+    private SongService songService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private AlbumResourceMapper albumResourceMapper;
+
+    @Autowired
+    private ReviewResourceMapper reviewResourceMapper;
+
+    @Autowired
+    private SongResourceMapper songResourceMapper;
+
+    @Autowired
+    private CollectionResourceMapper collectionResourceMapper;
+
+    @Autowired
+    private ModAlbumFormMapper modAlbumFormMapper;
+
+    @Autowired
+    private ModSongFormMapper modSongFormMapper;
+
+    @Autowired
+    private AlbumDtoMapper albumDtoMapper;
+
+    @Autowired
+    private SongDtoMapper songDtoMapper;
+
+    @Autowired
+    private ReviewDtoMapper reviewDtoMapper;
+
+
+    @GET
+    public Response getAllAlbums(
+            @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
+
+        List<Album> albums = new ArrayList<>();
+        if (search != null && !search.isEmpty()) albums = albumService.findByTitleContaining(search, page, size);
+        else albums = albumService.findPaginated(filter, page, size);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums);
+        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
+        Integer totalCount = albumService.countAll().intValue();
+        CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
+                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, ControllerUtils.albumsCollectionLinks);
+        return buildResponse(collection);
     }
 
-    @RequestMapping("/")
-    public ModelAndView redirect() {
-        return new ModelAndView("redirect:/");
+    @POST
+    @PreAuthorize("hasRole('MODERATOR')")
+    public Response createAlbum(@Valid ModAlbumForm modAlbumForm) {
+        Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
+        Album album = albumService.create(albumInput);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
+        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
+        return buildCreatedResponse(albumResource);
     }
 
-    @RequestMapping("/{albumId:\\d+}")
-    public ModelAndView album(@PathVariable(name = "albumId") long albumId,
-                              @RequestParam(name = "pageNum", required = false) Integer pageNum,
-                              @ModelAttribute("loggedUser") User loggedUser,
-                              @RequestParam(name = "error", required = false) String error) {
+    @GET
+    @Path(ApiUriConstants.ID)
+    public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
 
-        if (pageNum == null || pageNum <= 0) pageNum = 1;
+        Album album = albumService.findById(id);
+        albumService.setContextDependentFields(album, loggedUserId);
 
-        final ModelAndView mav = new ModelAndView("album");
-        int pageSize = 5;
-
-        Optional<Album> albumOptional = albumService.find(albumId);
-        if (albumOptional.isEmpty()) {
-            String errorMessage = messageSource.getMessage("error.album.find", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
-
-        Album album = albumOptional.get();
-        List<Song> songs = songService.findByAlbumId(albumId);
-
-        List<AlbumReview> reviews = reviewService.findAlbumReviewsPaginated(albumId, pageNum, pageSize, loggedUser.getId());
-
-        boolean isReviewed = reviewService.hasUserReviewedAlbum(loggedUser.getId(), albumId);
-        Integer loggedUserRating = isReviewed ? reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId()).get().getRating() : 0;
-        boolean showNext = reviews.size() == pageSize;
-        boolean showPrevious = pageNum > 1;
-
-        mav.addObject("album", album);
-        mav.addObject("songs", songs);
-        mav.addObject("artist", album.getArtist());
-        mav.addObject("reviews", reviews);
-        mav.addObject("isFavorite", userService.isAlbumFavorite(loggedUser.getId(), albumId));
-        mav.addObject("isReviewed", isReviewed);
-        mav.addObject("loggedUserRating", loggedUserRating);
-        mav.addObject("pageNum", pageNum);
-        mav.addObject("error", error);
-
-        mav.addObject("showNext", showNext);
-        mav.addObject("showPrevious", showPrevious);
-
-        return mav;
+        return buildResponseUsingEtag(request, () -> {
+            AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
+            return albumResourceMapper.toResource(albumDTO, getBaseUrl());
+        });
     }
 
-    @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.GET)
-    public ModelAndView createForm(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
-        Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
-        if (reviewOptional.isPresent())
-            return new ModelAndView("redirect:/album/" + albumId);
+    @PUT
+    @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
+    public Response updateAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModAlbumForm modAlbumForm) {
+        Album oldAlbum = albumService.findById(id);
+        Album albumToUpdate = modAlbumFormMapper.mergeModel(oldAlbum, modAlbumForm);
+        Album updatedAlbum = albumService.update(albumToUpdate);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(updatedAlbum);
+        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
+        return buildResponse(albumResource);
+    } 
 
-        Album album = albumService.find(albumId).orElseThrow();
-        ModelAndView mav = new ModelAndView("reviews/album_review");
-        mav.addObject("album", album);
-        mav.addObject("edit", false);
-
-        return mav;
+    @DELETE
+    @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
+    public Response deleteAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        albumService.delete(id);
+        return buildNoContentResponse();
     }
 
-    @RequestMapping(value = "/{albumId:\\d+}/edit-review", method = RequestMethod.GET)
-    public ModelAndView editAlbumReview(@ModelAttribute("loggedUser") User loggedUser, @ModelAttribute("reviewForm") final ReviewForm reviewForm, @PathVariable Long albumId) {
-        Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
-        if (reviewOptional.isEmpty())
-            return createForm(loggedUser, reviewForm, albumId);
-
-        AlbumReview review = reviewOptional.get();
-        reviewForm.setTitle(review.getTitle());
-        reviewForm.setDescription(review.getDescription());
-        reviewForm.setRating(review.getRating());
-
-        ModelAndView mav = new ModelAndView("reviews/album_review");
-        mav.addObject("album", review.getAlbum());
-        mav.addObject("reviewForm", reviewForm);
-        mav.addObject("edit", true);
-
-
-        return mav;
+    @GET
+    @Path(ApiUriConstants.ALBUM_REVIEWS)
+    public Response getAlbumReviews(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
+        List<Review> reviews = new ArrayList<>();
+        if (userId != null) reviews.add(reviewService.findAlbumReviewByUserId(userId, id, SecurityContextUtils.getCurrentUserId()));
+        else reviews = reviewService.findAlbumReviewsPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
+        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
+        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
+                reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
+        
+        return buildResponse(collection);
     }
 
-    @RequestMapping(value = "/{albumId:\\d+}/edit-review", method = RequestMethod.POST)
-    public ModelAndView editAlbumReview(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId, Model model) throws MessagingException {
-        if (errors.hasErrors()) {
-            return createForm(loggedUser, reviewForm, albumId);
-        }
-
-        Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
-        if (reviewOptional.isEmpty()) return new ModelAndView("redirect:/album/" + albumId);
-
-        AlbumReview review = reviewOptional.get();
-        review.setTitle(reviewForm.getTitle());
-        review.setDescription(reviewForm.getDescription());
-        review.setRating(reviewForm.getRating());
-        review.setCreatedAt(LocalDateTime.now());
-        reviewService.updateAlbumReview(review);
-        return new ModelAndView("redirect:/album/" + albumId);
+    @GET
+    @Path(ApiUriConstants.ALBUM_SONGS)
+    public Response getAlbumSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
+        List<Song> songs = songService.findByAlbumId(id);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs);
+        List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
+        
+        CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
+                songResources, songService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_SONGS, ControllerUtils.albumSongsCollectionLinks, id);
+        
+        return buildResponse(collection);
     }
 
-    @RequestMapping(value = "/{albumId:\\d+}/reviews", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
-        if (errors.hasErrors()) {
-            return createForm(loggedUser, reviewForm, albumId);
-        }
-
-        AlbumReview albumReview = new AlbumReview(
-                loggedUser,
-                new Album(albumId),
-                reviewForm.getTitle(),
-                reviewForm.getDescription(),
-                reviewForm.getRating(),
-                LocalDateTime.now(),
-                0,
-                false,
-                0
-        );
-        reviewService.saveAlbumReview(albumReview);
-        return new ModelAndView("redirect:/album/" + albumId);
+    @POST
+    @Path(ApiUriConstants.ALBUM_SONGS)
+    @PreAuthorize("hasRole('MODERATOR')")
+    public Response createAlbumSong(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @Valid ModSongForm modSongForm) {
+        Song songInput = modSongFormMapper.toModel(modSongForm, id);
+        Song song = songService.create(songInput);
+        SongDTO songDTO = songDtoMapper.toDTO(song);
+        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
+        return buildResponse(songResource);
     }
 
-    @RequestMapping(value = "/{albumId:\\d+}/delete-review", method = RequestMethod.GET)
-    public ModelAndView delete(@Valid @ModelAttribute("reviewForm") final ReviewForm reviewForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
-        Optional<AlbumReview> reviewOptional = reviewService.findAlbumReviewByUserId(loggedUser.getId(), albumId, loggedUser.getId());
-        reviewService.delete(reviewOptional.get().getId());
-        return new ModelAndView("redirect:/album/" + albumId);
+    @POST
+    @Path(ApiUriConstants.ALBUM_FAVORITE)
+    public Response addAlbumFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        userService.addFavoriteAlbum(loggedUserId, id);
+        Album album = albumService.findById(id);
+        albumService.setContextDependentFields(album, loggedUserId);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
+        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
+        return buildCreatedResponse(albumResource);
     }
 
-    @RequestMapping(value = "/{albumId:\\d+}/add-favorite", method = RequestMethod.GET)
-    public ModelAndView addFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
-        if (userService.addFavoriteAlbum(loggedUser.getId(), albumId)) {
-            return new ModelAndView("redirect:/album/" + albumId);
-        } else {
-            String errorMessage = messageSource.getMessage("error.too.many.favorites.album", null, LocaleContextHolder.getLocale());
-            return new ModelAndView("redirect:/album/" + albumId + "?error=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
-        }
-    }
-
-    @RequestMapping(value = "/{albumId:\\d+}/remove-favorite", method = RequestMethod.GET)
-    public ModelAndView removeFavorite(@ModelAttribute("loggedUser") User loggedUser, @PathVariable Long albumId) throws MessagingException {
-        userService.removeFavoriteAlbum(loggedUser.getId(), albumId);
-        return new ModelAndView("redirect:/album/" + albumId); 
+    @DELETE
+    @Path(ApiUriConstants.ALBUM_FAVORITE)
+    public Response removeAlbumFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        userService.removeFavoriteAlbum(SecurityContextUtils.getCurrentUserId(), id);
+        return buildNoContentResponse();
     }
 }

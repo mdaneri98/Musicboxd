@@ -1,8 +1,3 @@
-/**
- * Reset Password Page
- * Handles password reset via code from URL parameter
- */
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -10,12 +5,14 @@ import Head from 'next/head';
 import { Footer } from '@/components/layout';
 import { passwordRepository } from '@/repositories/PasswordRepository';
 import type { APIError } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 type ResetState = 'idle' | 'loading' | 'success' | 'error' | 'invalid';
 
 const ResetPasswordPage = () => {
   const router = useRouter();
   const { code } = router.query;
+  const { t } = useTranslation();
 
   const [state, setState] = useState<ResetState>('idle');
   const [password, setPassword] = useState<string>('');

@@ -1,8 +1,3 @@
-/**
- * Forgot Password Page
- * Allows users to request a password reset email
- */
-
 import { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';

@@ -1,112 +1,179 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.webapp.dto.CommentDTO;
+import ar.edu.itba.paw.webapp.dto.ReviewDTO;
+import ar.edu.itba.paw.webapp.dto.UserDTO;
+import ar.edu.itba.paw.webapp.form.ReviewForm;
+import ar.edu.itba.paw.webapp.mapper.dto.CommentDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.ReviewFormMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.UserDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.CollectionResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.CommentResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.ReviewResourceMapper;
+import ar.edu.itba.paw.webapp.mapper.resource.UserResourceMapper;
+import ar.edu.itba.paw.webapp.models.resources.CollectionResource;
+import ar.edu.itba.paw.webapp.models.resources.CommentResource;
+import ar.edu.itba.paw.webapp.models.resources.ReviewResource;
+import ar.edu.itba.paw.webapp.models.resources.UserResource;
+import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
+import ar.edu.itba.paw.webapp.utils.ControllerUtils;
+import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.services.*;
-import ar.edu.itba.paw.webapp.form.CommentForm;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
+import ar.edu.itba.paw.services.CommentService;
+import ar.edu.itba.paw.services.ReviewService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import javax.validation.Valid;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Optional;
 
+@Path(ApiUriConstants.REVIEWS_BASE)
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class ReviewController extends BaseController {
 
-@RequestMapping("/review")
-@Controller
-public class ReviewController {
+    @Autowired
+    private ReviewService reviewService;
 
-    private final ReviewService reviewService;
-    private final CommentService commentService;
-    private static final int PAGE_SIZE = 10;
+    @Autowired
+    private CommentService commentService;
 
-    public ReviewController(ReviewService reviewService, CommentService commentService) {
-        this.reviewService = reviewService;
-        this.commentService = commentService;
+    @Autowired
+    private ReviewResourceMapper reviewResourceMapper;
+
+    @Autowired
+    private CommentResourceMapper commentResourceMapper;
+
+    @Autowired
+    private UserResourceMapper userResourceMapper;
+
+    @Autowired
+    private CollectionResourceMapper collectionResourceMapper;
+
+    @Autowired
+    private ReviewFormMapper reviewFormMapper;
+
+    @Autowired
+    private ReviewDtoMapper reviewDtoMapper;
+
+    @Autowired
+    private UserDtoMapper userDtoMapper;
+
+    @Autowired
+    private CommentDtoMapper commentDtoMapper;
+
+    @GET
+    public Response getAllReviews(
+            @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+
+        List<Review> reviews;
+        if (search != null && !search.isEmpty())
+            reviews = reviewService.findBySubstring(search, page, size);
+        else
+            reviews = reviewService.findPaginated(filter, page, size, loggedUserId);
+
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
+        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
+        Integer totalCount = reviewService.countAll().intValue();
+        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
+                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
+        return buildResponse(collection);
     }
 
-    @RequestMapping("/")
-    public ModelAndView redirect() {
-        return new ModelAndView("redirect:/");
+    @POST
+    public Response createReview(@Valid ReviewForm reviewForm) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, reviewForm.getItemId().longValue());
+        Review review = reviewService.create(reviewInput);
+        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
+        return buildResponse(reviewResource);
     }
 
-    @RequestMapping(value = "/{reviewId:\\d+}", method = RequestMethod.GET)
-    public ModelAndView review(@ModelAttribute("loggedUser") User loggedUser, 
-                               @ModelAttribute("commentForm") CommentForm commentForm,
-                               @PathVariable(value = "reviewId") Long reviewId,
-                             @RequestParam(name = "page", required = false, defaultValue = "comments") String page,
-                             @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum) {
-        ModelAndView mav = new ModelAndView("reviews/review");
-        Optional<Review> reviewOptional = reviewService.find(reviewId);
-        if (reviewOptional.isEmpty()) return new ModelAndView("not_found/review_not_found");
-        Review review = reviewOptional.get();
-        review.setLiked(reviewService.isLiked(loggedUser.getId(), reviewId));
-
-        // Configurar paginación
-        boolean showNext;
-        boolean showPrevious = pageNum > 1;
-        boolean likesActive = "likes".equals(page);
-
-        if (likesActive) {
-            List<User> likedUsers = reviewService.likedBy(reviewId, pageNum, PAGE_SIZE);
-            showNext = likedUsers.size() == PAGE_SIZE;
-            
-            mav.addObject("likedUsers", likedUsers);
-        } else {
-            List<Comment> comments = commentService.findByReviewId(reviewId, PAGE_SIZE, pageNum);
-            showNext = comments.size() == PAGE_SIZE;
-            
-            mav.addObject("comments", comments);
-        }
-
-        mav.addObject("loggedUser", loggedUser);
-        mav.addObject("review", review);
-        mav.addObject("pageNum", pageNum);
-        mav.addObject("showNext", showNext);
-        mav.addObject("showPrevious", showPrevious);
-        mav.addObject("likesActive", likesActive);
-
-        return mav;
+    @GET
+    @Path(ApiUriConstants.ID)
+    public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        Review review = reviewService.findById(id);
+        reviewService.setContextDependentFields(review, loggedUserId);
+        return buildResponseUsingEtag(request, () -> {
+            ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review);
+            return reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
+        });
     }
 
-    @RequestMapping(value = "/like/{reviewId:\\d+}", method = RequestMethod.GET)
-    public ModelAndView createLike(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "reviewId") long reviewId) {
-        if (loggedUser.getId() == 0) return new ModelAndView("redirect:/user/login");
-        reviewService.createLike(loggedUser.getId(), reviewId);
-        return new ModelAndView("redirect:/review/" + reviewId);
+    @DELETE
+    @Path(ApiUriConstants.ID)
+    @PreAuthorize("hasRole('MODERATOR')")
+    public Response deleteReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        reviewService.delete(id);
+        return buildNoContentResponse();
     }
 
-    @RequestMapping(value = "/remove-like/{reviewId:\\d+}", method = RequestMethod.GET)
-    public ModelAndView removeLike(@ModelAttribute("loggedUser") User loggedUser, @PathVariable(name = "reviewId") long reviewId) {
-        if (loggedUser.getId() == 0) return new ModelAndView("redirect:/user/login");
-        reviewService.removeLike(loggedUser.getId(), reviewId);
-        return new ModelAndView("redirect:/review/" + reviewId);
+    @PUT
+    @Path(ApiUriConstants.ID)
+    public Response updateReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ReviewForm reviewForm) {
+        Review reviewToUpdate = reviewFormMapper.toModel(id, reviewForm);
+        Review updatedReview = reviewService.update(reviewToUpdate);
+        ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDtoMapper.toDTO(updatedReview), getBaseUrl());
+        return buildResponse(reviewResource);
     }
 
-    @RequestMapping(value = "/{reviewId:\\d+}/comment", method = RequestMethod.POST)
-    public ModelAndView createComment(@PathVariable long reviewId, @Valid @ModelAttribute("commentForm") CommentForm commentForm, final BindingResult errors, @ModelAttribute("loggedUser") User loggedUser) {
-        if (errors.hasErrors()) {
-            return review(loggedUser, commentForm, reviewId, "1", PAGE_SIZE);
-        }
-        if (loggedUser.getId() == 0) return new ModelAndView("redirect:/user/login");
-        Optional<Review> reviewOptional = reviewService.find(reviewId);
-        Comment comment = new Comment(loggedUser, reviewOptional.get(), commentForm.getContent());
-        commentService.save(comment);
-        return new ModelAndView("redirect:/review/" + reviewId);
+    @GET
+    @Path(ApiUriConstants.REVIEW_COMMENTS)
+    public Response getReviewComments(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
+        List<Comment> comments = commentService.findByReviewId(id, size, page);
+        List<CommentDTO> commentDTOs = commentDtoMapper.toDTOList(comments);
+        List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
+        Integer totalCount = commentService.countByReviewId(id).intValue();
+        CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
+                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks, id);
+        return buildResponse(collection);
     }
 
-    @RequestMapping("/{reviewId:\\d+}/comment/{commentId:\\d+}/delete")
-    public ModelAndView deleteComment(@PathVariable long reviewId, @PathVariable long commentId, @ModelAttribute("loggedUser") User loggedUser) {
-        Comment comment = commentService.findById(commentId).get();
-        if (comment.getUser().getId().equals(loggedUser.getId()) || loggedUser.isModerator()) {
-            commentService.deleteById(commentId);
-        }
-        return new ModelAndView("redirect:/review/" + reviewId);
+    @GET
+    @Path(ApiUriConstants.REVIEW_LIKES)
+    public Response getReviewLikes(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, 
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {  
+        Review review = reviewService.findById(reviewId);
+        List<User> users = reviewService.likedBy(reviewId, page, size);
+        List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
+        List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
+        Integer totalCount = review.getLikes();
+        CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
+                userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE + ApiUriConstants.REVIEW_LIKES, ControllerUtils.likesCollectionLinks, reviewId);
+        return buildResponse(collection);
+    }
+
+    @POST
+    @Path(ApiUriConstants.REVIEW_LIKES)
+    public Response likeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        reviewService.createLike(loggedUserId, reviewId);
+        return buildCreatedResponse(null);
+    }
+
+    @DELETE
+    @Path(ApiUriConstants.REVIEW_LIKES)
+    public Response unlikeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        reviewService.removeLike(loggedUserId, reviewId);
+        return buildNoContentResponse();
     }
 }

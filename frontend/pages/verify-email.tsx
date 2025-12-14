@@ -1,8 +1,3 @@
-/**
- * Email Verification Page
- * Handles email verification via code from URL parameter
- */
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -10,13 +5,15 @@ import Head from 'next/head';
 import { Footer } from '@/components/layout';
 import { emailRepository } from '@/repositories';
 import type { APIError } from '@/types';
+import { useTranslation } from 'react-i18next';
 
-type VerificationState = 'loading' | 'success' | 'error' | 'invalid';
+type VerificationState = 'idle' | 'loading' | 'success' | 'error' | 'invalid';
 
 const VerifyEmailPage = () => {
   const router = useRouter();
   const { code } = router.query;
-
+  const { t } = useTranslation();
+  
   const [state, setState] = useState<VerificationState>('loading');
   const [message, setMessage] = useState<string>('');
   const [email, setEmail] = useState<string>('');

@@ -1,0 +1,53 @@
+package ar.edu.itba.paw.webapp.context;
+
+import org.glassfish.jersey.server.validation.ValidationConfig;
+import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
+import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+
+import javax.validation.MessageInterpolator;
+import javax.validation.Validation;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
+import java.util.Locale;
+
+@Provider
+@Component
+public class ValidationContextResolver implements ContextResolver<ValidationConfig> {
+
+	@Override
+	public ValidationConfig getContext(Class<?> type) {
+		final ValidationConfig config = new ValidationConfig();
+		config.messageInterpolator(new LocaleContextHolderMessageInterpolator());
+		return config;
+	}
+
+	private static class LocaleContextHolderMessageInterpolator implements MessageInterpolator {
+		private final MessageInterpolator defaultInterpolator;
+
+		private LocaleContextHolderMessageInterpolator() {
+			this.defaultInterpolator = Validation.byDefaultProvider()
+					.configure()
+					.messageInterpolator(
+							new ResourceBundleMessageInterpolator(
+									new PlatformResourceBundleLocator("i18n/ValidationMessages")
+							)
+					)
+					.buildValidatorFactory()
+					.getMessageInterpolator();
+		}
+
+		@Override
+		public String interpolate(String messageTemplate, Context context) {
+			return defaultInterpolator.interpolate(messageTemplate, context, LocaleContextHolder.getLocale());
+		}
+
+		@Override
+		public String interpolate(String messageTemplate, Context context, Locale locale) {
+			return defaultInterpolator.interpolate(messageTemplate, context, LocaleContextHolder.getLocale());
+		}
+	}
+}
+
+

@@ -1,198 +1,57 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.webapp.models.links.Link;
+import ar.edu.itba.paw.webapp.models.resources.Resource;
+import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
+import ar.edu.itba.paw.webapp.utils.HATEOASUtils;
 
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.services.*;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.HashMap;
+import java.util.Map;
+import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 
-@Controller
-public class IndexController {
+@Path(ApiUriConstants.API_BASE)
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class IndexController extends BaseController {
+    
+    @GET
+    public Response getApiInfo(@Context HttpServletRequest request, @Context UriInfo uriInfo) {
+        String baseUrl = HATEOASUtils.getBaseUrl(request);
 
-    private final ArtistService artistService;
-    private final ReviewService reviewService;
-    private final UserService userService;
-    private final SongService songService;
-    private final AlbumService albumService;
+        Resource<Map<String, Object>> apiResource = new Resource<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> getData() {
+                Map<String, Object> apiInfo = new HashMap<>();
+                apiInfo.put("name", "Musicbox REST API");
+                apiInfo.put("version", "0.0.1");
+                apiInfo.put("description", "Music discovery and reviews");
+                return apiInfo;
+            }
+        };
 
-    public IndexController(ArtistService artistService, ReviewService reviewService, UserService userService, SongService songService, AlbumService albumService) {
-        this.artistService = artistService;
-        this.reviewService = reviewService;
-        this.userService = userService;
-        this.songService = songService;
-        this.albumService = albumService;
-    }
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.USERS_BASE, ControllerUtils.ITEM_TYPE_USER, ControllerUtils.METHOD_GET));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.ARTISTS_BASE, ControllerUtils.ITEM_TYPE_ARTIST, ControllerUtils.METHOD_GET));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.ALBUMS_BASE, ControllerUtils.ITEM_TYPE_ALBUM, ControllerUtils.METHOD_GET));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.SONGS_BASE, ControllerUtils.ITEM_TYPE_SONG, ControllerUtils.METHOD_GET));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.REVIEWS_BASE, ControllerUtils.ITEM_TYPE_REVIEW, ControllerUtils.METHOD_GET));
 
-    @RequestMapping(value = {"/home", "/"})
-    public ModelAndView home(@ModelAttribute("loggedUser") User loggedUser, 
-                            @RequestParam(name = "pageNum", required = false) Integer pageNum, 
-                            @RequestParam(name = "error", required = false) String error, 
-                            @RequestParam(name = "success", required = false) String success,
-                            @RequestParam(name = "page", required = false) String activePage) {
-                                
-        if (pageNum == null || pageNum < 1) pageNum = 1;
-
-        if (activePage == null || activePage.isEmpty()) activePage = "forYou";
-        boolean forYouActive = activePage.equals("forYou");
-        boolean followingActive = activePage.equals("following");
-
-        int pageSize = 10;
-        long loggedUserId;
-        ModelAndView mav;
-        List<Review> reviews;
-
-        if (User.isAnonymus(loggedUser)) {
-            mav = new ModelAndView("anonymous/home");
-            loggedUserId = 0;
-        } else {
-            mav = new ModelAndView("home");
-            loggedUserId = loggedUser.getId();
-        }
-
-        if (followingActive) {
-            reviews = reviewService.getReviewsFromFollowedUsersPaginated(loggedUserId, pageNum, pageSize, loggedUserId);
-
-        }
-        else {
-            reviews = reviewService.getPopularReviewsPaginated(pageNum, pageSize, loggedUserId);
-        }
-
-        mav.addObject("success", success);
-        mav.addObject("error", error);
-        mav.addObject("showNext", reviews.size() == pageSize);
-        mav.addObject("showPrevious", pageNum > 1);
-        mav.addObject("reviews",reviews);
-        mav.addObject("pageNum", pageNum);
-        mav.addObject("pageSize", pageSize);
-        mav.addObject("forYouActive", forYouActive);
-        mav.addObject("followingActive", followingActive);
-
-        return mav;
-    }
-
-    @RequestMapping("/search")
-    public ModelAndView search(@ModelAttribute("loggedUser") User loggedUser) {
-        ModelAndView mav = new ModelAndView("search");
-        if (loggedUser.getId() != 0) {
-            mav.addObject("recommendedUsers", userService.getRecommendedUsers(loggedUser.getId(), 1, 6));
-        }
-        return mav;
-    }
-
-    @RequestMapping("/music")
-    public ModelAndView music(@ModelAttribute("loggedUser") User loggedUser) {
-        ModelAndView mav = new ModelAndView("music");
-
-        int pageSize = 10;
-
-        List<Album> topRatedAlbums = albumService.findPaginated(FilterType.RATING,1, pageSize);
-        List<Album> mostPopularAlbums = albumService.findPaginated(FilterType.POPULAR,1, pageSize);
-
-        List<Artist> topRatedArtists = artistService.findPaginated(FilterType.RATING,1, pageSize);
-        List<Artist> mostPopularArtists = artistService.findPaginated(FilterType.POPULAR,1, pageSize);
-
-        List<Song> topRatedSongs = songService.findPaginated(FilterType.RATING,1, pageSize);
-        List<Song> mostPopularSongs = songService.findPaginated(FilterType.POPULAR,1, pageSize);
-
-        mav.addObject("topRatedAlbums", topRatedAlbums);
-        mav.addObject("mostPopularAlbums", mostPopularAlbums);
-
-        mav.addObject("topRatedArtists", topRatedArtists);
-        mav.addObject("mostPopularArtists", mostPopularArtists);
-
-        mav.addObject("topRatedSongs", topRatedSongs);
-        mav.addObject("mostPopularSongs", mostPopularSongs);
-
-        return mav;
-    }
-
-    @RequestMapping("/music/view-all")
-    public ModelAndView viewAll(@ModelAttribute("loggedUser") User loggedUser,
-                                @RequestParam(name = "page", required = false) String page,
-                                @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
-                                @RequestParam(name = "filter", required = false) String filter) {
-        ModelAndView mav = new ModelAndView("view_all_music");
-
-        boolean albumsActive = page.equals("albums");
-        boolean artistsActive = page.equals("artists");
-        boolean songsActive = page.equals("songs");
-        if (filter == null || (!filter.equals("POPULAR") && !filter.equals("RATING") && !filter.equals("OLDEST") && !filter.equals("NEWEST") && !filter.equals("RECENT") && !filter.equals("FIRST"))) filter = "POPULAR";
-        FilterType filterType = FilterType.valueOf(filter);
-
-        int pageSize = 20;
-        boolean showNext = false;
-        List<Album> albums = new ArrayList<>();
-        List<Artist> artists = new ArrayList<>();
-        List<Song> songs = new ArrayList<>();
-
-        if (songsActive) {
-            if(filterType == FilterType.OLDEST || filterType == FilterType.NEWEST) return new ModelAndView("redirect:/music/view-all?page=songs&filter=POPULAR");
-            songs = songService.findPaginated(filterType, pageNum, pageSize);
-            showNext = songs.size() == pageSize;
-        } else if (albumsActive) {
-            albums = albumService.findPaginated(filterType, pageNum, pageSize);
-            showNext = albums.size() == pageSize;
-        } else if (artistsActive) {
-            if(filterType == FilterType.OLDEST || filterType == FilterType.NEWEST) return new ModelAndView("redirect:/music/view-all?page=artists&filter=POPULAR");
-            artists = artistService.findPaginated(filterType, pageNum, pageSize);
-            showNext = artists.size() == pageSize;
-        }
-
-        mav.addObject("artists", artists);
-        mav.addObject("albums", albums);
-        mav.addObject("songs", songs);
-        mav.addObject("currentPage", pageNum);
-        mav.addObject("albumsActive", albumsActive);
-        mav.addObject("artistsActive", artistsActive);
-        mav.addObject("songsActive", songsActive);
-        mav.addObject("showNext", showNext);
-        mav.addObject("showPrevious", pageNum > 1);
-        mav.addObject("filter", filter);
-
-        return mav;
-    }
-
-    @RequestMapping(value = "/search/{type}", method = RequestMethod.GET)
-    @ResponseBody
-    public String subSearch(@PathVariable("type") String type, @RequestParam(name = "s", defaultValue = "") String substringSearch) {
-
-        String jsonResult = "";
-        switch (type) {
-            case "song":
-                List<Song> songs = songService.findByTitleContaining(substringSearch);
-                jsonResult = songs.stream()
-                        .map(Song::toJson)
-                        .collect(Collectors.joining(",", "[", "]"));
-                break;
-
-            case "album":
-                List<Album> albums = albumService.findByTitleContaining(substringSearch);
-                jsonResult = albums.stream()
-                        .map(Album::toJson)
-                        .collect(Collectors.joining(",", "[", "]"));
-                break;
-
-            case "artist":
-                List<Artist> artists = artistService.findByNameContaining(substringSearch);
-                jsonResult = artists.stream()
-                        .map(Artist::toJson)
-                        .collect(Collectors.joining(",", "[", "]"));
-                break;
-            case "user":
-                List<User> users = userService.findByUsernameContaining(substringSearch, 1, 100);
-                jsonResult = users.stream()
-                        .map(User::toJson)
-                        .collect(Collectors.joining(",", "[", "]"));
-                break;
-            default:
-                return "{\"error\": \"Tipo de búsqueda no reconocido\"}";
-        }
-        return jsonResult;
+            
+            // Add authentication links
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.LOGIN, ControllerUtils.ACTION_LOGIN, ControllerUtils.METHOD_POST));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.REGISTER, ControllerUtils.ACTION_REGISTER, ControllerUtils.METHOD_POST));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.REFRESH, ControllerUtils.ACTION_REFRESH, ControllerUtils.METHOD_POST));
+            apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.LOGOUT, ControllerUtils.ACTION_LOGOUT, ControllerUtils.METHOD_POST));
+        
+        return buildResponse(apiResource);
     }
 
 }
