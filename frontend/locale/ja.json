@@ -200,7 +200,9 @@
       "FOLLOW": "{{username}}があなたをフォローしました",
       "LIKE": "{{username}}があなたの{{itemName}}のレビューにいいねしました",
       "COMMENT": "{{username}}があなたの{{itemName}}のレビューにコメントしました",
-      "NEW_REVIEW": "{{username}}が{{itemName}}の新しいレビューを投稿しました"
+      "NEW_REVIEW": "{{username}}が{{itemName}}の新しいレビューを投稿しました",
+      "REVIEW_BLOCKED": "あなたの{{itemName}}のレビューがブロックされました",
+      "REVIEW_UNBLOCKED": "あなたの{{itemName}}のレビューがブロック解除されました"
     }
   },
   "settings": {

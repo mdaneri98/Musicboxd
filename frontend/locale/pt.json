@@ -200,7 +200,9 @@
       "FOLLOW": "{{username}} começou a seguir você",
       "LIKE": "{{username}} curtiu sua resenha de {{itemName}}",
       "COMMENT": "{{username}} comentou em sua resenha de {{itemName}}",
-      "NEW_REVIEW": "{{username}} publicou uma nova resenha de {{itemName}}"
+      "NEW_REVIEW": "{{username}} publicou uma nova resenha de {{itemName}}",
+      "REVIEW_BLOCKED": "sua resenha de {{itemName}} foi bloqueada",
+      "REVIEW_UNBLOCKED": "sua resenha de {{itemName}} foi desbloqueada"
     }
   },
   "settings": {

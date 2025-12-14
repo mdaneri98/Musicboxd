@@ -200,7 +200,9 @@
       "FOLLOW": "{{username}} folgt dir jetzt",
       "LIKE": "{{username}} hat deine Rezension von {{itemName}} geliked",
       "COMMENT": "{{username}} hat deine Rezension von {{itemName}} kommentiert",
-      "NEW_REVIEW": "{{username}} hat eine neue Rezension von {{itemName}} gepostet"
+      "NEW_REVIEW": "{{username}} hat eine neue Rezension von {{itemName}} gepostet",
+      "REVIEW_BLOCKED": "deine Rezension von {{itemName}} wurde blockiert",
+      "REVIEW_UNBLOCKED": "deine Rezension von {{itemName}} wurde freigegeben"
     }
   },
   "settings": {

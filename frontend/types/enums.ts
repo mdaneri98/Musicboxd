@@ -57,6 +57,8 @@ export enum NotificationType {
   LIKE = 'LIKE',
   COMMENT = 'COMMENT',
   NEW_REVIEW = 'NEW_REVIEW',
+  REVIEW_BLOCKED = 'REVIEW_BLOCKED',
+  REVIEW_UNBLOCKED = 'REVIEW_UNBLOCKED',
 }
 
 // ============================================================================

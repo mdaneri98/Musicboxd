@@ -37,7 +37,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
     ? imageRepository.getImageUrl(notification.review_item_image_id)
     : null;
 
-  const isReviewRelated = notification.type === NotificationTypeEnum.LIKE || notification.type === NotificationTypeEnum.COMMENT || notification.type === NotificationTypeEnum.NEW_REVIEW;
+  const isReviewRelated = notification.type === NotificationTypeEnum.LIKE || notification.type === NotificationTypeEnum.COMMENT || notification.type === NotificationTypeEnum.NEW_REVIEW || notification.type === NotificationTypeEnum.REVIEW_BLOCKED || notification.type === NotificationTypeEnum.REVIEW_UNBLOCKED;
 
   return (
     <div className={`notification-item ${notification.is_read ? 'read' : 'unread'}`}>

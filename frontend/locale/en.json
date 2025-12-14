@@ -200,7 +200,9 @@
       "FOLLOW": "{{username}} started following you",
       "LIKE": "{{username}} liked your review of {{itemName}}",
       "COMMENT": "{{username}} commented on your review of {{itemName}}",
-      "NEW_REVIEW": "{{username}} posted a new review of {{itemName}}"
+      "NEW_REVIEW": "{{username}} posted a new review of {{itemName}}",
+      "REVIEW_BLOCKED": "your review of {{itemName}} has been blocked",
+      "REVIEW_UNBLOCKED": "your review of {{itemName}} has been unblocked"
     }
   },
   "settings": {
