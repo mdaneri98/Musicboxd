@@ -12,6 +12,7 @@ import {
   fetchAlbumSongsAsync,
   createArtistAsync,
   updateArtistAsync,
+  deleteArtistAsync,
   deleteAlbumAsync,
   deleteSongAsync,
   selectCurrentArtist,
@@ -90,6 +91,8 @@ export default function MusicEditorPage() {
     albumIndex: null,
     songIndex: null,
   });
+  const [deleteArtistModal, setDeleteArtistModal] = useState(false);
+  const [deletingArtist, setDeletingArtist] = useState(false);
 
   // Redirect if not authenticated or not moderator
   useEffect(() => {
@@ -436,6 +439,26 @@ export default function MusicEditorPage() {
     }
     setDeleteSongModal({ isOpen: false, albumIndex: null, songIndex: null });
   }, [deleteSongModal]);
+
+  const handleDeleteArtistClick = useCallback(() => {
+    setDeleteArtistModal(true);
+  }, []);
+
+  const confirmDeleteArtist = useCallback(async () => {
+    if (!formData.id) return;
+    
+    setDeletingArtist(true);
+    try {
+      await dispatch(deleteArtistAsync(formData.id)).unwrap();
+      setDeleteArtistModal(false);
+      router.push('/music');
+    } catch (error) {
+      console.error('Failed to delete artist:', error);
+      dispatch(showError(t('moderator.failedToDeleteArtist')));
+    } finally {
+      setDeletingArtist(false);
+    }
+  }, [formData.id, dispatch, router, t]);
 
   // Validation using Yup schemas
   const validateForm = useCallback(async (): Promise<boolean> => {
@@ -844,14 +867,24 @@ export default function MusicEditorPage() {
               type="button"
               className="btn btn-secondary"
               onClick={() => router.back()}
-              disabled={loading}
+              disabled={loading || deletingArtist}
             >
               {t('common.cancel')}
             </button>
+            {isEditMode && formData.id && (
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleDeleteArtistClick}
+                disabled={loading || deletingArtist}
+              >
+                {deletingArtist ? t('common.loading') : t('moderator.deleteArtist')}
+              </button>
+            )}
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={loading}
+              disabled={loading || deletingArtist}
             >
               {loading ? t('common.loading') : isEditMode ? t('moderator.saveChanges') : t('moderator.createArtist')}
             </button>
@@ -877,6 +910,16 @@ export default function MusicEditorPage() {
         cancelText={t('common.cancel')}
         onConfirm={confirmRemoveSong}
         onCancel={() => setDeleteSongModal({ isOpen: false, albumIndex: null, songIndex: null })}
+      />
+
+      {/* Delete Artist Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteArtistModal}
+        message={t('moderator.confirmDeleteArtist')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        onConfirm={confirmDeleteArtist}
+        onCancel={() => setDeleteArtistModal(false)}
       />
     </Layout>
   );
