@@ -84,62 +84,68 @@ const ResetPasswordPage = () => {
   const renderContent = () => {
     if (state === 'success') {
       return (
-        <div className="reset-content">
-          <div className="reset-icon success">
+        <>
+          <div className="status-icon success">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
               <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h2 className="reset-title">Password Reset!</h2>
-          <p className="reset-message">{message}</p>
-          <p className="reset-redirect">Redirecting to login...</p>
-          <Link href="/login" className="reset-button">
+          <h1 className="auth-title">Password Reset!</h1>
+          <div className="alert alert-success">
+            {message}
+          </div>
+          <p style={{ color: 'var(--color-accent)', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
+            Redirecting to login...
+          </p>
+          <Link href="/login" className="btn btn-primary btn-block">
             Go to Login
           </Link>
-        </div>
+        </>
       );
     }
 
     if (state === 'invalid') {
       return (
-        <div className="reset-content">
-          <div className="reset-icon error">
+        <>
+          <div className="status-icon error">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
               <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </div>
-          <h2 className="reset-title">Invalid Link</h2>
-          <p className="reset-message">{message}</p>
-          <Link href="/forgot-password" className="reset-button">
+          <h1 className="auth-title">Invalid Link</h1>
+          <div className="alert alert-danger">
+            {message}
+          </div>
+          <Link href="/forgot-password" className="btn btn-primary btn-block">
             Request New Link
           </Link>
-        </div>
+        </>
       );
     }
 
     return (
-      <div className="reset-content">
-        <div className="reset-icon">
+      <>
+        <div className="status-icon">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
             <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
-        <h2 className="reset-title">Reset Password</h2>
-        <p className="reset-info">
+        <h1 className="auth-title">Reset Password</h1>
+        <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
           Enter your new password below.
         </p>
 
-        <form onSubmit={handleSubmit} className="reset-form">
+        <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <input
               type="password"
               placeholder="New password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="form-input"
+              className="form-control"
               disabled={state === 'loading'}
               required
               minLength={8}
@@ -152,7 +158,7 @@ const ResetPasswordPage = () => {
               placeholder="Confirm password"
               value={repeatPassword}
               onChange={(e) => setRepeatPassword(e.target.value)}
-              className="form-input"
+              className="form-control"
               disabled={state === 'loading'}
               required
               minLength={8}
@@ -160,22 +166,24 @@ const ResetPasswordPage = () => {
           </div>
 
           {message && state === 'error' && (
-            <p className="error-message">{message}</p>
+            <div className="alert alert-danger">{message}</div>
           )}
 
           <button
             type="submit"
-            className="reset-button"
+            className="btn btn-primary btn-block"
             disabled={state === 'loading'}
           >
             {state === 'loading' ? 'Resetting...' : 'Reset Password'}
           </button>
         </form>
 
-        <Link href="/login" className="reset-link">
-          Back to Login
-        </Link>
-      </div>
+        <div className="auth-links">
+          <Link href="/login" className="auth-link">
+            Back to Login
+          </Link>
+        </div>
+      </>
     );
   };
 
@@ -196,8 +204,8 @@ const ResetPasswordPage = () => {
           </nav>
         </header>
 
-        <div className="reset-container">
-          <div className="reset-card">
+        <div className="auth-container">
+          <div className="auth-card">
             {renderContent()}
           </div>
         </div>
@@ -206,147 +214,24 @@ const ResetPasswordPage = () => {
       </div>
 
       <style jsx>{`
-        .reset-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 60vh;
-          padding: 2rem 1rem;
-        }
-
-        .reset-card {
-          background: var(--card-bg);
-          border-radius: 8px;
-          padding: 3rem 2rem;
-          max-width: 500px;
-          width: 100%;
-          text-align: center;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .reset-content {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 1.5rem;
-        }
-
-        .reset-icon {
+        .status-icon {
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 1rem;
-          color: var(--primary-color, #007bff);
+          width: 80px;
+          height: 80px;
+          margin: 0 auto var(--space-lg);
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-gradient) 100%);
+          color: var(--color-background-primary);
         }
 
-        .reset-icon.success {
-          color: #28a745;
+        .status-icon.success {
+          background: linear-gradient(135deg, var(--color-success) 0%, #28d966 100%);
         }
 
-        .reset-icon.error {
-          color: #dc3545;
-        }
-
-        .reset-title {
-          font-size: 1.75rem;
-          font-weight: 600;
-          margin: 0;
-          color: var(--text-primary);
-        }
-
-        .reset-message {
-          font-size: 1rem;
-          color: var(--text-secondary);
-          margin: 0;
-          line-height: 1.6;
-        }
-
-        .reset-redirect {
-          font-size: 0.875rem;
-          color: var(--text-secondary);
-          margin: 0.5rem 0 0 0;
-        }
-
-        .reset-info {
-          font-size: 0.95rem;
-          color: var(--text-secondary);
-          margin: 0;
-          line-height: 1.6;
-        }
-
-        .reset-form {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .form-group {
-          width: 100%;
-        }
-
-        .form-input {
-          width: 100%;
-          padding: 0.75rem;
-          border: 1px solid var(--border-color, #ddd);
-          border-radius: 4px;
-          font-size: 1rem;
-          background: var(--input-bg, white);
-          color: var(--text-primary);
-          box-sizing: border-box;
-        }
-
-        .form-input:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .form-input:focus {
-          outline: none;
-          border-color: var(--primary-color, #007bff);
-        }
-
-        .error-message {
-          font-size: 0.875rem;
-          color: #dc3545;
-          background: rgba(220, 53, 69, 0.1);
-          padding: 0.75rem;
-          border-radius: 4px;
-          margin: 0;
-        }
-
-        .reset-button {
-          margin-top: 0.5rem;
-          padding: 0.75rem 2rem;
-          background: var(--primary-color, #007bff);
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 1rem;
-          cursor: pointer;
-          text-decoration: none;
-          display: inline-block;
-          transition: background-color 0.2s;
-        }
-
-        .reset-button:hover:not(:disabled) {
-          background: var(--primary-color-dark, #0056b3);
-        }
-
-        .reset-button:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .reset-link {
-          color: var(--primary-color, #007bff);
-          text-decoration: none;
-          font-size: 0.95rem;
-          margin-top: 1rem;
-        }
-
-        .reset-link:hover {
-          text-decoration: underline;
+        .status-icon.error {
+          background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger-hover) 100%);
         }
       `}</style>
     </>

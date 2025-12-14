@@ -1,0 +1,123 @@
+<!-- notification_follow.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" content="text/html" http-equiv="content-type">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[[#{email.notification.follow.title}]]</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498DB;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            color: #2C3E50;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #7F8C8D;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .button {
+            text-decoration: none;
+            display: inline-block;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #3498DB;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin: 20px 0;
+        }
+
+        .button:hover {
+            background-color: #2980B9;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        .divider {
+            border-top: 1px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+                margin: 20px auto;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            .button {
+                padding: 12px 30px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">Musicboxd</div>
+
+    <h1 th:text="#{email.notification.follow.title}">You have a new follower!</h1>
+
+    <p th:text="#{email.notification.follow.greeting(${recipientUsername})}">Hello User</p>
+
+    <p th:text="#{email.notification.follow.message(${triggerUsername})}">
+        User started following you
+    </p>
+
+    <a class="button" th:href="${profileUrl}" th:text="#{email.notification.view.profile}">View Profile</a>
+
+    <div class="divider"></div>
+
+    <p class="footer" th:text="#{email.notification.footer.message}">
+        You're receiving this because you have notifications enabled. You can manage your preferences in Settings.
+    </p>
+</div>
+</body>
+</html>
