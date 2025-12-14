@@ -47,7 +47,6 @@ export default function MusicEditorPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   
-  // Redux selectors
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
   const currentArtist = useAppSelector(selectCurrentArtist);
@@ -55,27 +54,20 @@ export default function MusicEditorPage() {
   const loadingArtist = useAppSelector(selectLoadingArtist);
   const loadingAlbums = useAppSelector(selectLoadingAlbums);
 
-  // Wait for router to be ready before reading query params
   const routerReady = router.isReady;
   const { artistId, albumId, songId } = router.query;
   const isEditMode = routerReady && !!artistId;
   const artistIdNum = routerReady && artistId ? parseInt(artistId as string) : null;
   const focusAlbumId = routerReady && albumId ? parseInt(albumId as string) : null;
   const focusSongId = routerReady && songId ? parseInt(songId as string) : null;
-
-  // Track current artistId to prevent race conditions
   const currentArtistIdRef = useRef<number | null>(null);
-  // Track if we've already processed the loaded data for this specific artist
   const dataProcessedForArtistRef = useRef<number | null>(null);
-  // Track if we've already started loading songs for this artist
   const songsLoadingStartedForRef = useRef<number | null>(null);
-  // Track for which artistId albums have been fetched (to distinguish stale data) - using STATE to trigger re-renders
   const [albumsFetchedForArtist, setAlbumsFetchedForArtist] = useState<number | null>(null);
-  // Track album songs loading state
+  const initialScrollDoneRef = useRef<boolean>(false);
   const [loadingSongs, setLoadingSongs] = useState(false);
   const [albumSongsMap, setAlbumSongsMap] = useState<Record<number, ModSongFormData[]>>({});
 
-  // Form state
   const [formData, setFormData] = useState<ModArtistFormData>({
     name: '',
     bio: '',
@@ -116,16 +108,14 @@ export default function MusicEditorPage() {
 
   // Load artist and albums data using Redux thunks
   useEffect(() => {
-    // Wait for router to be ready before doing anything
     if (!routerReady) return;
     
-    // Reset state when artistId changes
     currentArtistIdRef.current = artistIdNum;
     dataProcessedForArtistRef.current = null;
     songsLoadingStartedForRef.current = null;
+    initialScrollDoneRef.current = false;
     setAlbumsFetchedForArtist(null);
     
-    // Reset form for new artist or create mode
     setFormData({
       name: '',
       bio: '',
@@ -137,61 +127,44 @@ export default function MusicEditorPage() {
     setLoadingSongs(false);
 
     if (!artistIdNum || !isEditMode) {
-      // Create mode - no data to load
       setDataLoaded(true);
       return;
     }
     
-    // Clear previous artist data before loading new one
     dispatch(clearCurrentArtist());
     
-    // Dispatch Redux actions to load data
     dispatch(fetchArtistByIdAsync(artistIdNum));
     dispatch(fetchArtistAlbumsAsync({ artistId: artistIdNum, page: 1, size: 100 }))
       .then(() => {
-        // Mark that albums have been fetched for this artist - use state to trigger re-render
         if (currentArtistIdRef.current === artistIdNum) {
           setAlbumsFetchedForArtist(artistIdNum);
         }
       });
   }, [routerReady, artistIdNum, isEditMode, dispatch]);
 
-  // Load songs for each album when albums are loaded
   useEffect(() => {
     const loadAlbumSongs = async () => {
-      // Wait until router is ready
       if (!routerReady || !isEditMode || !artistIdNum) return;
       
-      // Wait for artist to finish loading first
       if (loadingArtist || !currentArtist) return;
       
-      // Verify the artist matches
       if (currentArtist.id !== artistIdNum) return;
       
-      // Wait for albums to finish loading
       if (loadingAlbums) return;
       
-      // CRITICAL: Wait until albums have actually been fetched for THIS artist
-      // This prevents processing stale/empty album data
       if (albumsFetchedForArtist !== artistIdNum) return;
       
-      // Check if we've already started loading songs for this artist
       if (songsLoadingStartedForRef.current === artistIdNum) return;
       
-      // Check for race condition
       if (currentArtistIdRef.current !== artistIdNum) return;
       
-      // Get albums for current artist
       const albumsForCurrentArtist = artistAlbums.filter(album => album.artist_id === artistIdNum);
       
-      // If there are no albums for this artist, that's fine - they might not have any
       if (albumsForCurrentArtist.length === 0) {
-        // Mark as started so the form build effect knows we're done
         songsLoadingStartedForRef.current = artistIdNum;
         return;
       }
 
-      // Mark that we've started loading songs for this artist
       songsLoadingStartedForRef.current = artistIdNum;
       setLoadingSongs(true);
       const songsMap: Record<number, ModSongFormData[]> = {};
@@ -200,7 +173,6 @@ export default function MusicEditorPage() {
         try {
           const result = await dispatch(fetchAlbumSongsAsync({ albumId: album.id, page: 1, size: 100 })).unwrap();
           
-          // Check for race condition after each fetch
           if (currentArtistIdRef.current !== artistIdNum) return;
 
           const songs: ModSongFormData[] = result.items.map((songRes: any) => ({
@@ -221,7 +193,6 @@ export default function MusicEditorPage() {
         }
       }
 
-      // Final race condition check
       if (currentArtistIdRef.current !== artistIdNum) return;
 
       setAlbumSongsMap(songsMap);
@@ -231,7 +202,6 @@ export default function MusicEditorPage() {
     loadAlbumSongs();
   }, [routerReady, artistAlbums, artistIdNum, isEditMode, dispatch, loadingAlbums, loadingArtist, currentArtist, albumsFetchedForArtist]);
 
-  // Build form data when all data is loaded
   useEffect(() => {
     if (!routerReady || !isEditMode || !artistIdNum) return;
 
@@ -288,9 +258,9 @@ export default function MusicEditorPage() {
     setDataLoaded(true);
   }, [routerReady, currentArtist, artistAlbums, albumSongsMap, loadingArtist, loadingAlbums, loadingSongs, isEditMode, artistIdNum, focusAlbumId, albumsFetchedForArtist]);
 
-  // Scroll to focused album or song after data loads
   useEffect(() => {
     if (!dataLoaded || formData.albums.length === 0) return;
+    if (initialScrollDoneRef.current) return;
     
     let elementId: string | null = null;
     
@@ -310,6 +280,7 @@ export default function MusicEditorPage() {
     }
     
     if (elementId) {
+      initialScrollDoneRef.current = true;
       setTimeout(() => {
         const element = document.getElementById(elementId!);
         if (element) {
@@ -854,7 +825,7 @@ export default function MusicEditorPage() {
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => router.push('/moderator')}
+              onClick={() => router.back()}
               disabled={loading}
             >
               {t('common.cancel')}
