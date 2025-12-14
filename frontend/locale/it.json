@@ -173,7 +173,7 @@
     "comments": "{{count}} commento",
     "comments_other": "{{count}} commenti",
     "blockedByModerator": "Questa recensione è stata bloccata da un moderatore",
-    "tryMakingAnother": "Prova a crearne un'altra",
+    "tryChangingTheContent": "Prova a cambiare il contenuto della recensione",
     "unblock": "Sblocca",
     "block": "Blocca",
     "confirmBlockReview": "Sei sicuro di voler bloccare questa recensione?",
@@ -201,8 +201,8 @@
       "LIKE": "A {{username}} è piaciuta la tua recensione di {{itemName}}",
       "COMMENT": "{{username}} ha commentato la tua recensione di {{itemName}}",
       "NEW_REVIEW": "{{username}} ha pubblicato una nuova recensione di {{itemName}}",
-      "REVIEW_BLOCKED": "la tua recensione di {{itemName}} è stata bloccata",
-      "REVIEW_UNBLOCKED": "la tua recensione di {{itemName}} è stata sbloccata"
+      "REVIEW_BLOCKED": "La tua recensione di {{itemName}} è stata bloccata",
+      "REVIEW_UNBLOCKED": "La tua recensione di {{itemName}} è stata sbloccata"
     }
   },
   "settings": {

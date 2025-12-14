@@ -173,7 +173,7 @@
     "comments": "{{count}} commentaire",
     "comments_other": "{{count}} commentaires",
     "blockedByModerator": "Cette critique a été bloquée par un modérateur",
-    "tryMakingAnother": "Essayez d'en créer une autre",
+    "tryChangingTheContent": "Essayez de changer le contenu de la critique",
     "unblock": "Débloquer",
     "block": "Bloquer",
     "confirmBlockReview": "Êtes-vous sûr de vouloir bloquer cette critique ?",
@@ -201,8 +201,8 @@
       "LIKE": "{{username}} a aimé votre critique de {{itemName}}",
       "COMMENT": "{{username}} a commenté votre critique de {{itemName}}",
       "NEW_REVIEW": "{{username}} a publié une nouvelle critique de {{itemName}}",
-      "REVIEW_BLOCKED": "votre critique de {{itemName}} a été bloquée",
-      "REVIEW_UNBLOCKED": "votre critique de {{itemName}} a été débloquée"
+      "REVIEW_BLOCKED": "Votre critique de {{itemName}} a été bloquée",
+      "REVIEW_UNBLOCKED": "Votre critique de {{itemName}} a été débloquée"
     }
   },
   "settings": {

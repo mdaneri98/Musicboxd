@@ -173,7 +173,7 @@
     "comments": "{{count}} comentario",
     "comments_other": "{{count}} comentarios",
     "blockedByModerator": "Esta reseña fue bloqueada por un moderador",
-    "tryMakingAnother": "Intenta hacer otra",
+    "tryChangingTheContent": "Intenta cambiar el contenido de la reseña",
     "unblock": "Desbloquear",
     "block": "Bloquear",
     "confirmBlockReview": "¿Estás seguro de que quieres bloquear esta reseña?",
@@ -201,8 +201,8 @@
       "LIKE": "A {{username}} le gustó tu reseña",
       "COMMENT": "{{username}} comentó en tu reseña",
       "NEW_REVIEW": "{{username}} publicó una nueva reseña de {{itemName}}",
-      "REVIEW_BLOCKED": "tu reseña de {{itemName}} ha sido bloqueada",
-      "REVIEW_UNBLOCKED": "tu reseña de {{itemName}} ha sido desbloqueada"
+      "REVIEW_BLOCKED": "Tu reseña de {{itemName}} ha sido bloqueada",
+      "REVIEW_UNBLOCKED": "Tu reseña de {{itemName}} ha sido desbloqueada"
     }
   },
   "settings": {

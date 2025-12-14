@@ -97,7 +97,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             {t('review.blockedByModerator')}
           </h4>
           {review.user_id == currentUser?.id && (
-          <p className="review-description">{t('review.tryMakingAnother')}</p>
+          <p className="review-description">{t('review.tryChangingTheContent')}</p>
            )}
           {isModerator && (
             <div>

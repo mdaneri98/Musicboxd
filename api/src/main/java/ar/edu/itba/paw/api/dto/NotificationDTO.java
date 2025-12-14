@@ -34,7 +34,7 @@ public class NotificationDTO {
     }
 
     public void setType(String type) {
-        if(!type.equals(Notification.NotificationType.LIKE.name()) && !type.equals(Notification.NotificationType.COMMENT.name()) && !type.equals(Notification.NotificationType.FOLLOW.name()) && !type.equals(Notification.NotificationType.NEW_REVIEW.name())) {
+        if(!type.equals(Notification.NotificationType.LIKE.name()) && !type.equals(Notification.NotificationType.COMMENT.name()) && !type.equals(Notification.NotificationType.FOLLOW.name()) && !type.equals(Notification.NotificationType.NEW_REVIEW.name()) && !type.equals(Notification.NotificationType.REVIEW_BLOCKED.name()) && !type.equals(Notification.NotificationType.REVIEW_UNBLOCKED.name())) {
             throw new IllegalArgumentException("Invalid notification type");
         }
         this.type = type;

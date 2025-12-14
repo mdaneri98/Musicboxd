@@ -173,7 +173,7 @@
     "comments": "{{count}} Kommentar",
     "comments_other": "{{count}} Kommentare",
     "blockedByModerator": "Diese Rezension wurde von einem Moderator blockiert",
-    "tryMakingAnother": "Versuche eine andere zu erstellen",
+    "tryChangingTheContent": "Versuche den Inhalt der Rezension zu ändern",
     "unblock": "Entsperren",
     "block": "Blockieren",
     "confirmBlockReview": "Bist du sicher, dass du diese Rezension blockieren möchtest?",
@@ -201,8 +201,8 @@
       "LIKE": "{{username}} hat deine Rezension von {{itemName}} geliked",
       "COMMENT": "{{username}} hat deine Rezension von {{itemName}} kommentiert",
       "NEW_REVIEW": "{{username}} hat eine neue Rezension von {{itemName}} gepostet",
-      "REVIEW_BLOCKED": "deine Rezension von {{itemName}} wurde blockiert",
-      "REVIEW_UNBLOCKED": "deine Rezension von {{itemName}} wurde freigegeben"
+      "REVIEW_BLOCKED": "Deine Rezension von {{itemName}} wurde blockiert",
+      "REVIEW_UNBLOCKED": "Deine Rezension von {{itemName}} wurde freigegeben"
     }
   },
   "settings": {

@@ -173,7 +173,7 @@
     "comments": "{{count}}コメント",
     "comments_other": "{{count}}コメント",
     "blockedByModerator": "このレビューはモデレーターによってブロックされました",
-    "tryMakingAnother": "別のレビューを作成してみてください",
+    "tryChangingTheContent": "レビューの内容を変更してみてください",
     "unblock": "ブロック解除",
     "block": "ブロック",
     "confirmBlockReview": "本当にこのレビューをブロックしますか？",

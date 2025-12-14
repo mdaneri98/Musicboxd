@@ -5,8 +5,8 @@
 
 import Link from 'next/link';
 import type { Notification } from '@/types';
-import { useAppDispatch } from '@/store/hooks';
-import { markAsReadAsync } from '@/store/slices';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { markAsReadAsync, selectCurrentUser } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { NotificationTypeEnum } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -19,11 +19,11 @@ interface NotificationCardProps {
 const NotificationCard = ({ notification }: NotificationCardProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const handleMarkAsRead = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const currentUser = useAppSelector(selectCurrentUser);
+  
+  const handleMarkAsRead = () => {
     if (!notification.is_read) {
-      await dispatch(markAsReadAsync(notification.id));
+      dispatch(markAsReadAsync(notification.id));
     }
   };
 
@@ -32,27 +32,39 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
     ? imageRepository.getImageUrl(notification.trigger_user_image_id)
     : '/default-avatar.png';
 
+  const currentUserImageUrl = currentUser?.image_id
+    ? imageRepository.getImageUrl(currentUser?.image_id)
+    : '/default-avatar.png';
+
   // Get review item image URL (for LIKE, COMMENT, NEW_REVIEW)
   const reviewItemImageUrl = notification.review_item_image_id
     ? imageRepository.getImageUrl(notification.review_item_image_id)
     : null;
 
   const isReviewRelated = notification.type === NotificationTypeEnum.LIKE || notification.type === NotificationTypeEnum.COMMENT || notification.type === NotificationTypeEnum.NEW_REVIEW || notification.type === NotificationTypeEnum.REVIEW_BLOCKED || notification.type === NotificationTypeEnum.REVIEW_UNBLOCKED;
+  const isReviewBlockedRelated = notification.type === NotificationTypeEnum.REVIEW_BLOCKED || notification.type === NotificationTypeEnum.REVIEW_UNBLOCKED;
 
   return (
     <div className={`notification-item ${notification.is_read ? 'read' : 'unread'}`}>
       <div className="notification-content-wrapper">
         <div className="user-info">
-          <Link href={`/users/${notification.trigger_user_id}`} className="user-details">
+          <Link 
+            href={isReviewBlockedRelated ? `/users/${currentUser?.id}` : `/users/${notification.trigger_user_id}`} 
+            className="user-details"
+            onClick={handleMarkAsRead}
+          >
             <img
-              src={triggerUserImageUrl}
+              src={isReviewBlockedRelated ? currentUserImageUrl : triggerUserImageUrl}
               alt={notification.trigger_username}
               className="img-avatar"
             />
           </Link>
 
           <div className="notification-content">
-            <Link href={isReviewRelated ? `/reviews/${notification.review_id}` : `/users/${notification.trigger_user_id}`}>
+            <Link 
+              href={isReviewRelated ? `/reviews/${notification.review_id}` : `/users/${notification.trigger_user_id}`}
+              onClick={handleMarkAsRead}
+            >
               <div className="notification-text">
                 <p>{t(`notifications.types.${notification.type}`, { username: notification.trigger_username, itemName: notification.review_item_name })}</p>
                 <span className="notification-time">{formatTimeAgo(notification.created_at)}</span>
@@ -62,7 +74,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
         </div>
 
         {isReviewRelated && reviewItemImageUrl && (
-          <Link href={`/reviews/${notification.review_id}`}>
+          <Link href={`/reviews/${notification.review_id}`} onClick={handleMarkAsRead}>
             <div className="notification-review-image">
               <img src={reviewItemImageUrl} alt={notification.review_item_name || ''} />
             </div>
@@ -70,11 +82,6 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
         )}
       </div>
 
-      {!notification.is_read && (
-        <button onClick={handleMarkAsRead} className="mark-read-btn">
-          {t('notifications.markAsRead')}
-        </button>
-      )}
     </div>
   );
 };
