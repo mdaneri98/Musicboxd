@@ -48,68 +48,72 @@ const ForgotPasswordPage = () => {
   const renderContent = () => {
     if (state === 'success') {
       return (
-        <div className="password-content">
-          <div className="password-icon success">
+        <>
+          <div className="status-icon success">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
               <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h2 className="password-title">Email Sent!</h2>
-          <p className="password-message">{message}</p>
-          <p className="password-info">
+          <h1 className="auth-title">Email Sent!</h1>
+          <div className="alert alert-success">
+            {message}
+          </div>
+          <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
             Please check your email and click on the link to reset your password.
           </p>
-          <Link href="/login" className="password-button">
+          <Link href="/login" className="btn btn-primary btn-block">
             Back to Login
           </Link>
-        </div>
+        </>
       );
     }
 
     return (
-      <div className="password-content">
-        <div className="password-icon">
+      <>
+        <div className="status-icon">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
             <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
-        <h2 className="password-title">Forgot Password?</h2>
-        <p className="password-info">
+        <h1 className="auth-title">Forgot Password?</h1>
+        <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
           Enter your email address and we'll send you a link to reset your password.
         </p>
 
-        <form onSubmit={handleSubmit} className="password-form">
+        <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <input
               type="email"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="form-input"
+              className="form-control"
               disabled={state === 'loading'}
               required
             />
           </div>
 
           {message && state === 'error' && (
-            <p className="error-message">{message}</p>
+            <div className="alert alert-danger">{message}</div>
           )}
 
           <button
             type="submit"
-            className="password-button"
+            className="btn btn-primary btn-block"
             disabled={state === 'loading'}
           >
             {state === 'loading' ? 'Sending...' : 'Send Reset Link'}
           </button>
         </form>
 
-        <Link href="/login" className="password-link">
-          Back to Login
-        </Link>
-      </div>
+        <div className="auth-links">
+          <Link href="/login" className="auth-link">
+            Back to Login
+          </Link>
+        </div>
+      </>
     );
   };
 
@@ -130,8 +134,8 @@ const ForgotPasswordPage = () => {
           </nav>
         </header>
 
-        <div className="password-container">
-          <div className="password-card">
+        <div className="auth-container">
+          <div className="auth-card">
             {renderContent()}
           </div>
         </div>
@@ -140,137 +144,20 @@ const ForgotPasswordPage = () => {
       </div>
 
       <style jsx>{`
-        .password-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 60vh;
-          padding: 2rem 1rem;
-        }
-
-        .password-card {
-          background: var(--card-bg);
-          border-radius: 8px;
-          padding: 3rem 2rem;
-          max-width: 500px;
-          width: 100%;
-          text-align: center;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .password-content {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 1.5rem;
-        }
-
-        .password-icon {
+        .status-icon {
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 1rem;
-          color: var(--primary-color, #007bff);
+          width: 80px;
+          height: 80px;
+          margin: 0 auto var(--space-lg);
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-gradient) 100%);
+          color: var(--color-background-primary);
         }
 
-        .password-icon.success {
-          color: #28a745;
-        }
-
-        .password-title {
-          font-size: 1.75rem;
-          font-weight: 600;
-          margin: 0;
-          color: var(--text-primary);
-        }
-
-        .password-message {
-          font-size: 1rem;
-          color: var(--text-secondary);
-          margin: 0;
-          line-height: 1.6;
-        }
-
-        .password-info {
-          font-size: 0.95rem;
-          color: var(--text-secondary);
-          margin: 0;
-          line-height: 1.6;
-        }
-
-        .password-form {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .form-group {
-          width: 100%;
-        }
-
-        .form-input {
-          width: 100%;
-          padding: 0.75rem;
-          border: 1px solid var(--border-color, #ddd);
-          border-radius: 4px;
-          font-size: 1rem;
-          background: var(--input-bg, white);
-          color: var(--text-primary);
-          box-sizing: border-box;
-        }
-
-        .form-input:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .form-input:focus {
-          outline: none;
-          border-color: var(--primary-color, #007bff);
-        }
-
-        .error-message {
-          font-size: 0.875rem;
-          color: #dc3545;
-          background: rgba(220, 53, 69, 0.1);
-          padding: 0.75rem;
-          border-radius: 4px;
-          margin: 0;
-        }
-
-        .password-button {
-          margin-top: 0.5rem;
-          padding: 0.75rem 2rem;
-          background: var(--primary-color, #007bff);
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 1rem;
-          cursor: pointer;
-          text-decoration: none;
-          display: inline-block;
-          transition: background-color 0.2s;
-        }
-
-        .password-button:hover:not(:disabled) {
-          background: var(--primary-color-dark, #0056b3);
-        }
-
-        .password-button:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .password-link {
-          color: var(--primary-color, #007bff);
-          text-decoration: none;
-          font-size: 0.95rem;
-          margin-top: 1rem;
-        }
-
-        .password-link:hover {
-          text-decoration: underline;
+        .status-icon.success {
+          background: linear-gradient(135deg, var(--color-success) 0%, #28d966 100%);
         }
       `}</style>
     </>
