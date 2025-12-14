@@ -107,7 +107,6 @@
     </filter-mapping>
 
     <!-- Redirect all requests to index.html so that React Router handles routes -->
-    <!-- Exclude JS, CSS, and other non-HTML files stored in /assets from forwarding -->
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/assets/*</url-pattern>
