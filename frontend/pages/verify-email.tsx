@@ -29,14 +29,14 @@ const VerifyEmailPage = () => {
     const verifyEmail = async () => {
       if (!code || typeof code !== 'string') {
         setState('invalid');
-        setMessage('Invalid verification link. Please check your email and try again.');
+        setMessage(t('auth.verifyEmail.errors.invalidLink'));
         return;
       }
 
       try {
         await emailRepository.verifyEmail(code);
         setState('success');
-        setMessage('Your email has been verified successfully!');
+        setMessage(t('auth.verifyEmail.success'));
 
         // Redirect to login after 3 seconds
         setTimeout(() => {
@@ -48,7 +48,7 @@ const VerifyEmailPage = () => {
         const apiError = error as APIError;
         setMessage(
           apiError.message ||
-          'Failed to verify email. The link may be expired or invalid.'
+          t('auth.verifyEmail.errors.verificationFailed')
         );
       }
     };
@@ -56,11 +56,11 @@ const VerifyEmailPage = () => {
     if (router.isReady) {
       verifyEmail();
     }
-  }, [code, router]);
+  }, [code, router, t]);
 
   const handleResendVerification = async () => {
     if (!email) {
-      setResendMessage('Please enter your email address');
+      setResendMessage(t('auth.verifyEmail.errors.emailRequired'));
       return;
     }
 
@@ -69,13 +69,13 @@ const VerifyEmailPage = () => {
 
     try {
       await emailRepository.resendVerification(email);
-      setResendMessage('Verification email has been resent. Please check your inbox.');
+      setResendMessage(t('auth.verifyEmail.resendSuccess'));
     } catch (error) {
       console.error('Resend error:', error);
       const apiError = error as APIError;
       setResendMessage(
         apiError.message ||
-        'Failed to resend verification email. Please try again later.'
+        t('auth.verifyEmail.errors.resendFailed')
       );
     } finally {
       setResendLoading(false);
@@ -94,8 +94,8 @@ const VerifyEmailPage = () => {
                 </circle>
               </svg>
             </div>
-            <h2 className="verification-title">Verifying your email...</h2>
-            <p className="verification-message">Please wait while we verify your email address.</p>
+            <h2 className="verification-title">{t('auth.verifyEmail.verifying')}</h2>
+            <p className="verification-message">{t('auth.verifyEmail.pleaseWait')}</p>
           </div>
         );
 
@@ -108,11 +108,11 @@ const VerifyEmailPage = () => {
                 <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <h2 className="verification-title">Email Verified!</h2>
+            <h2 className="verification-title">{t('auth.verifyEmail.title')}</h2>
             <p className="verification-message">{message}</p>
-            <p className="verification-redirect">Redirecting to login...</p>
+            <p className="verification-redirect">{t('auth.verifyEmail.redirecting')}</p>
             <Link href="/login" className="verification-button">
-              Go to Login
+              {t('auth.verifyEmail.goToLogin')}
             </Link>
           </div>
         );
@@ -127,15 +127,15 @@ const VerifyEmailPage = () => {
                 <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
-            <h2 className="verification-title">Verification Failed</h2>
+            <h2 className="verification-title">{t('auth.verifyEmail.failedTitle')}</h2>
             <p className="verification-message">{message}</p>
 
             <div className="resend-section">
-              <p className="resend-label">Need a new verification link?</p>
+              <p className="resend-label">{t('auth.verifyEmail.needNewLink')}</p>
               <div className="resend-form">
                 <input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.verifyEmail.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="resend-input"
@@ -146,18 +146,18 @@ const VerifyEmailPage = () => {
                   className="resend-button"
                   disabled={resendLoading}
                 >
-                  {resendLoading ? 'Sending...' : 'Resend Email'}
+                  {resendLoading ? t('auth.verifyEmail.sending') : t('auth.verifyEmail.resendEmail')}
                 </button>
               </div>
               {resendMessage && (
-                <p className={`resend-message ${resendMessage.includes('Failed') ? 'error' : 'success'}`}>
+                <p className={`resend-message ${resendMessage.includes('Failed') || resendMessage.includes(t('auth.verifyEmail.errors.resendFailed')) ? 'error' : 'success'}`}>
                   {resendMessage}
                 </p>
               )}
             </div>
 
             <Link href="/login" className="verification-link">
-              Back to Login
+              {t('auth.verifyEmail.backToLogin')}
             </Link>
           </div>
         );
@@ -170,16 +170,16 @@ const VerifyEmailPage = () => {
   return (
     <>
       <Head>
-        <title>Musicboxd - Email Verification</title>
+        <title>{t('auth.verifyEmail.pageTitle')}</title>
       </Head>
       <div className="main-container-no-sidebar">
         <header className="landing-header">
           <nav className="nav-bar">
             <div className="logo">Musicboxd</div>
             <div className="nav-links">
-              <Link href="/" className="nav-link">Home</Link>
-              <Link href="/login" className="nav-link">Login</Link>
-              <Link href="/register" className="nav-link">Register</Link>
+              <Link href="/" className="nav-link">{t('navbar.home')}</Link>
+              <Link href="/login" className="nav-link">{t('navbar.login')}</Link>
+              <Link href="/register" className="nav-link">{t('navbar.register')}</Link>
             </div>
           </nav>
         </header>

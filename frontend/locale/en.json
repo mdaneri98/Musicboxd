@@ -93,6 +93,28 @@
         "emailRequired": "Please enter your email address",
         "sendFailed": "Failed to send password reset email. Please try again later."
       }
+    },
+    "verifyEmail": {
+      "pageTitle": "Musicboxd - Email Verification",
+      "title": "Email Verified!",
+      "verifying": "Verifying your email...",
+      "pleaseWait": "Please wait while we verify your email address.",
+      "success": "Your email has been verified successfully!",
+      "redirecting": "Redirecting to login...",
+      "goToLogin": "Go to Login",
+      "failedTitle": "Verification Failed",
+      "needNewLink": "Need a new verification link?",
+      "emailPlaceholder": "Enter your email",
+      "resendEmail": "Resend Email",
+      "sending": "Sending...",
+      "resendSuccess": "Verification email has been resent. Please check your inbox.",
+      "backToLogin": "Back to Login",
+      "errors": {
+        "invalidLink": "Invalid verification link. Please check your email and try again.",
+        "verificationFailed": "Failed to verify email. The link may be expired or invalid.",
+        "emailRequired": "Please enter your email address",
+        "resendFailed": "Failed to resend verification email. Please try again later."
+      }
     }
   },
   "home": {

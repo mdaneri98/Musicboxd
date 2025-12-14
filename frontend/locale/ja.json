@@ -53,6 +53,28 @@
       "submit": "登録",
       "haveAccount": "すでにアカウントをお持ちですか？",
       "registering": "登録中..."
+    },
+    "verifyEmail": {
+      "pageTitle": "Musicboxd - メール確認",
+      "title": "メールが確認されました！",
+      "verifying": "メールアドレスを確認中...",
+      "pleaseWait": "メールアドレスを確認しておりますので、お待ちください。",
+      "success": "メールアドレスが正常に確認されました！",
+      "redirecting": "ログインページにリダイレクト中...",
+      "goToLogin": "ログインページへ",
+      "failedTitle": "確認に失敗しました",
+      "needNewLink": "新しい確認リンクが必要ですか？",
+      "emailPlaceholder": "メールアドレスを入力",
+      "resendEmail": "メールを再送信",
+      "sending": "送信中...",
+      "resendSuccess": "確認メールが再送信されました。受信トレイをご確認ください。",
+      "backToLogin": "ログインに戻る",
+      "errors": {
+        "invalidLink": "無効な確認リンクです。メールを確認して再度お試しください。",
+        "verificationFailed": "メールの確認に失敗しました。リンクが期限切れか無効である可能性があります。",
+        "emailRequired": "メールアドレスを入力してください",
+        "resendFailed": "確認メールの再送信に失敗しました。後でもう一度お試しください。"
+      }
     }
   },
   "home": {

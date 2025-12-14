@@ -53,6 +53,28 @@
       "submit": "Registrar",
       "haveAccount": "Já tem uma conta?",
       "registering": "Registrando..."
+    },
+    "verifyEmail": {
+      "pageTitle": "Musicboxd - Verificação de Email",
+      "title": "Email verificado!",
+      "verifying": "Verificando seu email...",
+      "pleaseWait": "Por favor, aguarde enquanto verificamos seu endereço de email.",
+      "success": "Seu email foi verificado com sucesso!",
+      "redirecting": "Redirecionando para o login...",
+      "goToLogin": "Ir para o login",
+      "failedTitle": "Verificação falhou",
+      "needNewLink": "Precisa de um novo link de verificação?",
+      "emailPlaceholder": "Digite seu email",
+      "resendEmail": "Reenviar email",
+      "sending": "Enviando...",
+      "resendSuccess": "O email de verificação foi reenviado. Por favor, verifique sua caixa de entrada.",
+      "backToLogin": "Voltar ao login",
+      "errors": {
+        "invalidLink": "Link de verificação inválido. Por favor, verifique seu email e tente novamente.",
+        "verificationFailed": "Falha ao verificar o email. O link pode estar expirado ou inválido.",
+        "emailRequired": "Por favor, digite seu endereço de email",
+        "resendFailed": "Falha ao reenviar o email de verificação. Por favor, tente novamente mais tarde."
+      }
     }
   },
   "home": {

@@ -93,6 +93,28 @@
         "emailRequired": "Por favor ingresa tu dirección de correo electrónico",
         "sendFailed": "Error al enviar el correo de restablecimiento de contraseña. Por favor intenta más tarde."
       }
+    },
+    "verifyEmail": {
+      "pageTitle": "Musicboxd - Verificación de correo electrónico",
+      "title": "¡Correo verificado!",
+      "verifying": "Verificando tu correo electrónico...",
+      "pleaseWait": "Por favor espera mientras verificamos tu dirección de correo electrónico.",
+      "success": "¡Tu correo electrónico ha sido verificado exitosamente!",
+      "redirecting": "Redirigiendo al inicio de sesión...",
+      "goToLogin": "Ir a inicio de sesión",
+      "failedTitle": "Verificación fallida",
+      "needNewLink": "¿Necesitas un nuevo enlace de verificación?",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "resendEmail": "Reenviar correo",
+      "sending": "Enviando...",
+      "resendSuccess": "El correo de verificación ha sido reenviado. Por favor revisa tu bandeja de entrada.",
+      "backToLogin": "Volver a inicio de sesión",
+      "errors": {
+        "invalidLink": "Enlace de verificación inválido. Por favor verifica tu correo e intenta de nuevo.",
+        "verificationFailed": "Error al verificar el correo electrónico. El enlace puede estar vencido o ser inválido.",
+        "emailRequired": "Por favor ingresa tu dirección de correo electrónico",
+        "resendFailed": "Error al reenviar el correo de verificación. Por favor intenta más tarde."
+      }
     }
   },
   "home": {
