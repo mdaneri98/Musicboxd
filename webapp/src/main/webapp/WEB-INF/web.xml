@@ -116,6 +116,10 @@
         <servlet-name>default</servlet-name>
         <url-pattern>/static/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/_next/*</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>index</servlet-name>
         <jsp-file>/index.html</jsp-file>

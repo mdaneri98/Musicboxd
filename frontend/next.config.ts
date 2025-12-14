@@ -1,16 +1,25 @@
 import type { NextConfig } from 'next';
 
+const isProd = process.env.NODE_ENV === 'production';
+const contextPath = isProd ? '/paw-2024b-02' : '';
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: 'export', // For static export
-  distDir: 'out',
+  output: 'export',
+
+  basePath: contextPath,
+  assetPrefix: contextPath,
+  trailingSlash: true,
+
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true,
   },
-  // Environment variables
+
   env: {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api',
   },
 };
 
 export default nextConfig;
+
+

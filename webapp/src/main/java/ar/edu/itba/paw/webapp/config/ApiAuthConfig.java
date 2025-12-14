@@ -44,7 +44,6 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -52,6 +51,11 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Override
+    public void configure(org.springframework.security.config.annotation.web.builders.WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/static/**");
     }
 
     @Override
@@ -106,9 +110,8 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/api/albums/*/favorite").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/api/songs/*/favorite").hasRole("USER")
                 .antMatchers(HttpMethod.DELETE, "/api/songs/*/favorite").hasRole("USER")
-                
-                // Fallback: any other request requires authentication
-                .anyRequest().authenticated()
+
+                .antMatchers("/**").permitAll()
 
                 .and()
                 .exceptionHandling()
