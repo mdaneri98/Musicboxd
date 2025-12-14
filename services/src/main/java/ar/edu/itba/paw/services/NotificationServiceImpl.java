@@ -173,12 +173,12 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (!wasBlocked && isBlocked) {
             notificationType = Notification.NotificationType.REVIEW_BLOCKED;
-            messageKey = "notifications.review.blocked";
+            messageKey = "notification.review.blocked";
             emailType = ReviewAcknowledgementType.BLOCKED;
             LOGGER.info("Review {} was blocked, notifying user {}", review.getId(), targetUser.getEmail());
         } else {
             notificationType = Notification.NotificationType.REVIEW_UNBLOCKED;
-            messageKey = "notifications.review.unblocked";
+            messageKey = "notification.review.unblocked";
             emailType = ReviewAcknowledgementType.UNBLOCKED;
             LOGGER.info("Review {} was unblocked, notifying user {}", review.getId(), targetUser.getEmail());
         }
