@@ -12,6 +12,8 @@ import {
   fetchAlbumSongsAsync,
   createArtistAsync,
   updateArtistAsync,
+  deleteAlbumAsync,
+  deleteSongAsync,
   selectCurrentArtist,
   selectArtistAlbums,
   selectLoadingArtist,
@@ -453,51 +455,67 @@ export default function MusicEditorPage() {
 
     setLoading(true);
     try {
+      // First, delete songs marked as deleted (only existing ones with ID)
+      for (const album of formData.albums) {
+        for (const song of album.songs) {
+          if (song.deleted && song.id) {
+            await dispatch(deleteSongAsync(song.id)).unwrap();
+          }
+        }
+      }
+
+      // Then, delete albums marked as deleted (only existing ones with ID)
+      for (const album of formData.albums) {
+        if (album.deleted && album.id) {
+          await dispatch(deleteAlbumAsync(album.id)).unwrap();
+        }
+      }
+
       // Upload artist image if new
       let artistImgId = formData.artistImgId;
       if (formData._imageFile) {
         artistImgId = await imageRepository.uploadImage(formData._imageFile);
       }
 
-      // Upload album images
+      // Upload album images (only for non-deleted albums)
       const albumsWithImages = await Promise.all(
-        formData.albums.map(async (album) => {
-          let albumImageId = album.albumImageId;
-          if (album._imageFile) {
-            albumImageId = await imageRepository.uploadImage(album._imageFile);
-          }
-          return { ...album, albumImageId };
-        })
+        formData.albums
+          .filter(album => !album.deleted)
+          .map(async (album) => {
+            let albumImageId = album.albumImageId;
+            if (album._imageFile) {
+              albumImageId = await imageRepository.uploadImage(album._imageFile);
+            }
+            return { ...album, albumImageId };
+          })
       );
 
-      // Prepare payload matching ModArtistForm structure
+      // Prepare payload matching ModArtistForm structure (excluding deleted items)
       const payload = {
         id: formData.id,
         name: formData.name.trim(),
         bio: formData.bio?.trim() || null,
         artistImgId,
         deleted: false,
-        albums: albumsWithImages
-          .filter(album => !album.deleted || album.id) // Include deleted albums only if they have an ID (existing)
-          .map(album => ({
-            id: album.id,
-            title: album.title.trim(),
-            genre: album.genre?.trim() || null,
-            releaseDate: album.releaseDate || null,
-            albumImageId: album.albumImageId,
-            artistId: formData.id,
-            deleted: album.deleted || false,
-            songs: album.songs
-              .filter(song => !song.deleted || song.id) // Include deleted songs only if they have an ID
-              .map(song => ({
-                id: song.id,
-                title: song.title.trim(),
-                duration: song.duration,
-                trackNumber: song.trackNumber,
-                albumId: album.id,
-                deleted: song.deleted || false,
-              })),
-          })),
+        albums: albumsWithImages.map(album => ({
+          id: album.id,
+          title: album.title.trim(),
+          genre: album.genre?.trim() || null,
+          releaseDate: album.releaseDate || null,
+          albumImageId: album.albumImageId,
+          artistId: formData.id,
+          deleted: false,
+          songs: album.songs
+            .filter(song => !song.deleted)
+            .map(song => ({
+              id: song.id,
+              title: song.title.trim(),
+              duration: song.duration,
+              trackNumber: song.trackNumber,
+              albumId: album.id,
+              deleted: false,
+            })),
+        })),
       };
 
       // Use Redux thunks for API calls
