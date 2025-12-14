@@ -15,10 +15,10 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            ar.edu.itba.paw.api.config.ApiConfig
-            ar.edu.itba.paw.api.config.ApiAuthConfig
-            ar.edu.itba.paw.api.config.EmailConfig
-            ar.edu.itba.paw.api.config.JacksonConfig
+            ar.edu.itba.paw.webapp.config.ApiConfig
+            ar.edu.itba.paw.webapp.config.ApiAuthConfig
+            ar.edu.itba.paw.webapp.config.EmailConfig
+            ar.edu.itba.paw.webapp.config.JacksonConfig
         </param-value>
     </context-param>
 
