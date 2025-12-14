@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Notification;
-import ar.edu.itba.paw.models.StatusType;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.NotificationDao;
 import ar.edu.itba.paw.exception.not_found.NotificationNotFoundException;
 import org.slf4j.Logger;
@@ -172,17 +169,17 @@ public class NotificationServiceImpl implements NotificationService {
         User targetUser = review.getUser();
         Notification.NotificationType notificationType;
         String messageKey;
-        ar.edu.itba.paw.models.ReviewAcknowledgementType emailType;
+        ReviewAcknowledgementType emailType;
 
         if (!wasBlocked && isBlocked) {
             notificationType = Notification.NotificationType.REVIEW_BLOCKED;
             messageKey = "notification.review.blocked";
-            emailType = ar.edu.itba.paw.models.ReviewAcknowledgementType.BLOCKED;
+            emailType = ReviewAcknowledgementType.BLOCKED;
             LOGGER.info("Review {} was blocked, notifying user {}", review.getId(), targetUser.getEmail());
         } else {
             notificationType = Notification.NotificationType.REVIEW_UNBLOCKED;
             messageKey = "notification.review.unblocked";
-            emailType = ar.edu.itba.paw.models.ReviewAcknowledgementType.UNBLOCKED;
+            emailType = ReviewAcknowledgementType.UNBLOCKED;
             LOGGER.info("Review {} was unblocked, notifying user {}", review.getId(), targetUser.getEmail());
         }
 
