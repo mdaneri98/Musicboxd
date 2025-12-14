@@ -7,27 +7,35 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.NotificationDao;
 import ar.edu.itba.paw.exception.not_found.NotificationNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import javax.mail.MessagingException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
     private final NotificationDao notificationDao;
+    private final EmailService emailService;
 
     @Autowired
-    public NotificationServiceImpl(NotificationDao notificationDao){
+    public NotificationServiceImpl(NotificationDao notificationDao, EmailService emailService){
         this.notificationDao = notificationDao;
+        this.emailService = emailService;
     }
 
-    @Transactional 
+    @Transactional
     @Override
     public Void notifyLike(Review review, User likedByUser) {
         User targetUser = review.getUser();
-        if (targetUser.getId() != likedByUser.getId() && targetUser.getLikeNotificationsEnabled()) {
+        if (!Objects.equals(targetUser.getId(), likedByUser.getId())) {
             notificationDao.create(
                 Notification.NotificationType.LIKE,
                 targetUser,
@@ -35,6 +43,23 @@ public class NotificationServiceImpl implements NotificationService {
                 review,
                 "notification.like"
             );
+
+            if (targetUser.getLikeNotificationsEnabled()) {
+                try {
+                    emailService.sendNotificationEmail(
+                            Notification.NotificationType.LIKE,
+                            targetUser,
+                            likedByUser,
+                            review.getId(),
+                            review.getTitle(),
+                            review.getItemName(),
+                            review.getItemType().toString(),
+                            review.getRating()
+                    );
+                } catch (MessagingException e) {
+                    LOGGER.error("Failed to send like notification email to user: {}", targetUser.getEmail(), e);
+                }
+            }
         }
         return null;
     }
@@ -43,14 +68,31 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public Void notifyComment(Review review, User commentedByUser) {
         User targetUser = review.getUser();
-        if (targetUser.getId() != commentedByUser.getId() && targetUser.getCommentNotificationsEnabled()) {
+        if (!Objects.equals(targetUser.getId(), commentedByUser.getId())) {
             notificationDao.create(
-                Notification.NotificationType.COMMENT,
-                targetUser,
-                commentedByUser,
-                review,
-                "notification.comment"  
+                    Notification.NotificationType.COMMENT,
+                    targetUser,
+                    commentedByUser,
+                    review,
+                    "notification.comment"
             );
+
+            if (targetUser.getCommentNotificationsEnabled()) {
+                try {
+                    emailService.sendNotificationEmail(
+                            Notification.NotificationType.COMMENT,
+                            targetUser,
+                            commentedByUser,
+                            review.getId(),
+                            review.getTitle(),
+                            review.getItemName(),
+                            review.getItemType().toString(),
+                            review.getRating()
+                    );
+                } catch (MessagingException e) {
+                    LOGGER.error("Failed to send comment notification email to user: {}", targetUser.getEmail(), e);
+                }
+            }
         }
         return null;
     }
@@ -58,14 +100,29 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     @Override
     public Void notifyFollow(User followedUser, User follower) {
-        if (followedUser.getFollowNotificationsEnabled()) {
-            notificationDao.create(
+        notificationDao.create(
                 Notification.NotificationType.FOLLOW,
                 followedUser,
                 follower,
                 null,
                 "notification.follow"
-            );
+        );
+
+        if (followedUser.getFollowNotificationsEnabled()) {
+            try {
+                emailService.sendNotificationEmail(
+                    Notification.NotificationType.FOLLOW,
+                    followedUser,
+                    follower,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                );
+            } catch (MessagingException e) {
+                LOGGER.error("Failed to send follow notification email to user: {}", followedUser.getEmail(), e);
+            }
         }
         return null;
     }
@@ -77,14 +134,29 @@ public class NotificationServiceImpl implements NotificationService {
         List<User> followers = reviewer.getFollowers();
 
         for (User follower : followers) {
-            if (follower.getReviewNotificationsEnabled()) {
-                notificationDao.create(
+            notificationDao.create(
                     Notification.NotificationType.NEW_REVIEW,
                     follower,
                     reviewer,
                     review,
                     "notification.new.review"
-                );
+            );
+
+            if (follower.getReviewNotificationsEnabled()) {
+                try {
+                    emailService.sendNotificationEmail(
+                        Notification.NotificationType.NEW_REVIEW,
+                        follower,
+                        reviewer,
+                        review.getId(),
+                        review.getTitle(),
+                        review.getItemName(),
+                        review.getItemType().toString(),
+                        review.getRating()
+                    );
+                } catch (MessagingException e) {
+                    LOGGER.error("Failed to send new review notification email to user: {}", follower.getEmail(), e);
+                }
             }
         }
         return null;

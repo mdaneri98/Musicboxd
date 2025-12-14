@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.ReviewAcknowledgementType;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.VerificationType;
@@ -11,5 +12,6 @@ public interface EmailService {
 
     Void sendVerification(VerificationType type, User to, String code) throws MessagingException;
     Void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, String reviewTitle, String reviewName, String reviewType) throws MessagingException;
+    Void sendNotificationEmail(Notification.NotificationType type, User recipientUser, User triggerUser, Long reviewId, String reviewTitle, String itemName, String itemType, Integer rating) throws MessagingException;
 
 }

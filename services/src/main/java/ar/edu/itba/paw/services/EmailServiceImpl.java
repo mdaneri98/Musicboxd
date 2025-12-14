@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.ReviewAcknowledgementType;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.VerificationType;
@@ -143,6 +144,70 @@ public class EmailServiceImpl implements EmailService {
                 params,
                 currentLocale
         );
+        return null;
+    }
+
+    @Override
+    @Async
+    public Void sendNotificationEmail(Notification.NotificationType type, User recipientUser, User triggerUser, Long reviewId, String reviewTitle, String itemName, String itemType, Integer rating) throws MessagingException {
+        final Map<String, Object> params = new HashMap<>();
+
+        Locale currentLocale = new Locale.Builder().setLanguage(recipientUser.getPreferredLanguage()).build();
+
+        String template = "";
+        String emailSubject = "";
+        String frontendUrl = environment.getProperty("app.frontend");
+
+        // Common parameters
+        params.put("recipientUsername", recipientUser.getUsername());
+        params.put("triggerUsername", triggerUser.getUsername());
+
+        switch (type) {
+            case LIKE:
+                template = "notification_like";
+                emailSubject = "notification.like";
+                params.put("reviewTitle", reviewTitle);
+                params.put("itemName", itemName);
+                params.put("itemType", itemType);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                break;
+
+            case COMMENT:
+                template = "notification_comment";
+                emailSubject = "notification.comment";
+                params.put("reviewTitle", reviewTitle);
+                params.put("itemName", itemName);
+                params.put("itemType", itemType);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                break;
+
+            case FOLLOW:
+                template = "notification_follow";
+                emailSubject = "notification.follow";
+                params.put("profileUrl", frontendUrl + "/users/" + triggerUser.getUsername());
+                break;
+
+            case NEW_REVIEW:
+                template = "notification_new_review";
+                emailSubject = "notification.new.review";
+                params.put("reviewTitle", reviewTitle);
+                params.put("itemName", itemName);
+                params.put("itemType", itemType);
+                params.put("rating", rating);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                break;
+        }
+
+        LOGGER.debug("Sending notification email. Type: {}, Email: {}", type, recipientUser.getEmail());
+
+        this.sendMessageUsingThymeleafTemplate(
+                template,
+                recipientUser.getEmail(),
+                emailSubject,
+                params,
+                currentLocale
+        );
+
         return null;
     }
 
