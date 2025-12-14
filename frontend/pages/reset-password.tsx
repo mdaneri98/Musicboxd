@@ -25,33 +25,33 @@ const ResetPasswordPage = () => {
   useEffect(() => {
     if (router.isReady && (!code || typeof code !== 'string')) {
       setState('invalid');
-      setMessage('Invalid reset link. Please check your email and try again.');
+      setMessage(t('auth.resetPassword.errors.invalidLinkDetailed'));
     }
-  }, [code, router.isReady]);
+  }, [code, router.isReady, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!code || typeof code !== 'string') {
       setState('invalid');
-      setMessage('Invalid reset link.');
+      setMessage(t('auth.resetPassword.errors.invalidLink'));
       return;
     }
 
     if (!password || !repeatPassword) {
-      setMessage('Please fill in all fields');
+      setMessage(t('auth.resetPassword.errors.fillAllFields'));
       setState('error');
       return;
     }
 
     if (password.length < 8) {
-      setMessage('Password must be at least 8 characters long');
+      setMessage(t('auth.resetPassword.errors.passwordMinLength'));
       setState('error');
       return;
     }
 
     if (password !== repeatPassword) {
-      setMessage('Passwords do not match');
+      setMessage(t('auth.resetPassword.errors.passwordMismatch'));
       setState('error');
       return;
     }
@@ -62,7 +62,7 @@ const ResetPasswordPage = () => {
     try {
       await passwordRepository.resetPassword(code, password, repeatPassword);
       setState('success');
-      setMessage('Your password has been reset successfully!');
+      setMessage(t('auth.resetPassword.success'));
 
       // Redirect to login after 3 seconds
       setTimeout(() => {
@@ -74,7 +74,7 @@ const ResetPasswordPage = () => {
       const apiError = error as APIError;
       setMessage(
         apiError.message ||
-        'Failed to reset password. The link may be expired or invalid.'
+        t('auth.resetPassword.errors.resetFailed')
       );
     }
   };
@@ -89,15 +89,15 @@ const ResetPasswordPage = () => {
               <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h1 className="auth-title">Password Reset!</h1>
+          <h1 className="auth-title">{t('auth.resetPassword.title')}</h1>
           <div className="alert alert-success">
             {message}
           </div>
           <p style={{ color: 'var(--color-accent)', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
-            Redirecting to login...
+            {t('auth.resetPassword.redirecting')}
           </p>
           <Link href="/login" className="btn btn-primary btn-block">
-            Go to Login
+            {t('auth.resetPassword.goToLogin')}
           </Link>
         </>
       );
@@ -112,12 +112,12 @@ const ResetPasswordPage = () => {
               <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </div>
-          <h1 className="auth-title">Invalid Link</h1>
+          <h1 className="auth-title">{t('auth.resetPassword.invalidLinkTitle')}</h1>
           <div className="alert alert-danger">
             {message}
           </div>
           <Link href="/forgot-password" className="btn btn-primary btn-block">
-            Request New Link
+            {t('auth.resetPassword.requestNewLink')}
           </Link>
         </>
       );
@@ -131,16 +131,16 @@ const ResetPasswordPage = () => {
             <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
-        <h1 className="auth-title">Reset Password</h1>
+        <h1 className="auth-title">{t('auth.resetPassword.heading')}</h1>
         <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
-          Enter your new password below.
+          {t('auth.resetPassword.subtitle')}
         </p>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <input
               type="password"
-              placeholder="New password"
+              placeholder={t('auth.resetPassword.newPassword')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="form-control"
@@ -153,7 +153,7 @@ const ResetPasswordPage = () => {
           <div className="form-group">
             <input
               type="password"
-              placeholder="Confirm password"
+              placeholder={t('auth.resetPassword.confirmPassword')}
               value={repeatPassword}
               onChange={(e) => setRepeatPassword(e.target.value)}
               className="form-control"
@@ -172,13 +172,13 @@ const ResetPasswordPage = () => {
             className="btn btn-primary btn-block"
             disabled={state === 'loading'}
           >
-            {state === 'loading' ? 'Resetting...' : 'Reset Password'}
+            {state === 'loading' ? t('auth.resetPassword.resetting') : t('auth.resetPassword.submit')}
           </button>
         </form>
 
         <div className="auth-links">
           <Link href="/login" className="auth-link">
-            Back to Login
+            {t('auth.resetPassword.backToLogin')}
           </Link>
         </div>
       </>
@@ -188,16 +188,16 @@ const ResetPasswordPage = () => {
   return (
     <>
       <Head>
-        <title>Musicboxd - Reset Password</title>
+        <title>{t('auth.resetPassword.pageTitle')}</title>
       </Head>
       <div className="main-container-no-sidebar">
         <header className="landing-header">
           <nav className="nav-bar">
             <div className="logo">Musicboxd</div>
             <div className="nav-links">
-              <Link href="/" className="nav-link">Home</Link>
-              <Link href="/login" className="nav-link">Login</Link>
-              <Link href="/register" className="nav-link">Register</Link>
+              <Link href="/" className="nav-link">{t('navbar.home')}</Link>
+              <Link href="/login" className="nav-link">{t('navbar.login')}</Link>
+              <Link href="/register" className="nav-link">{t('navbar.register')}</Link>
             </div>
           </nav>
         </header>
