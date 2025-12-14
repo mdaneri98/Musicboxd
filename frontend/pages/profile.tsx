@@ -127,6 +127,7 @@ const ProfilePage = () => {
             favoriteAlbums={Object.values(favoriteAlbums)}
             favoriteSongs={Object.values(favoriteSongs)}
             loading={loadingFavorites}
+            isOwnProfile={true}
           />
         )}
 

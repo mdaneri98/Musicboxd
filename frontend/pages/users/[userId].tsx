@@ -202,6 +202,7 @@ const UserProfilePage = () => {
             favoriteAlbums={favoriteAlbums}
             favoriteSongs={favoriteSongs}
             loading={loadingFavorites}
+            isOwnProfile={false}
           />
         )}
 

@@ -8,6 +8,7 @@ interface FavoritesSectionProps {
   favoriteAlbums: Album[];
   favoriteSongs: Song[];
   loading?: boolean;
+  isOwnProfile: boolean;
 }
 
 export default function FavoritesSection({
@@ -15,9 +16,9 @@ export default function FavoritesSection({
   favoriteAlbums,
   favoriteSongs,
   loading,
+  isOwnProfile,
 }: FavoritesSectionProps) {
   const { t } = useTranslation();
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -34,13 +35,13 @@ export default function FavoritesSection({
     <section className="favorites-section">
       {hasNoFavorites && (
         <div className="empty-state">
-          <p className="add-favorites">{t('common.noFavoritesYet')}</p>
+          <p>{t('common.noFavoritesYet')}</p>
         </div>
       )}
 
       {/* Favorite Artists */}
-      {favoriteArtists.length > 0 && (
-        <div>
+      {favoriteArtists.length > 0 ? (
+        <div className="favorites-section-item">
           <h2>{t('profile.favoriteArtists')}</h2>
           <div className="carousel-container">
             <div className="carousel">
@@ -50,11 +51,18 @@ export default function FavoritesSection({
             </div>
           </div>
         </div>
+      ) : isOwnProfile && favoriteArtists.length === 0 && (
+        <div className="favorites-section-item">
+          <h2>{t('profile.favoriteArtists')}</h2>
+          <div className="empty-state">
+            <p>{t('profile.addFavoriteArtists')}</p>
+          </div>
+        </div>
       )}
 
       {/* Favorite Albums */}
-      {favoriteAlbums.length > 0 && (
-        <div>
+      {favoriteAlbums.length > 0 ? (
+        <div className="favorites-section-item">
           <h2>{t('profile.favoriteAlbums')}</h2>
           <div className="carousel-container">
             <div className="carousel">
@@ -64,17 +72,31 @@ export default function FavoritesSection({
             </div>
           </div>
         </div>
+      ) : isOwnProfile && favoriteAlbums.length === 0 && (
+        <div className="favorites-section-item">
+          <h2>{t('profile.favoriteAlbums')}</h2>
+          <div className="empty-state">
+            <p>{t('profile.addFavoriteAlbums')}</p>
+          </div>
+        </div>
       )}
 
       {/* Favorite Songs */}
-      {favoriteSongs.length > 0 && (
-        <div>
+      {favoriteSongs.length > 0 ? (
+        <div className="favorites-section-item">
           <h2>{t('profile.favoriteSongs')}</h2>
           <ul className="song-list">
             {favoriteSongs.map((song, index) => (
               <SongCard key={song.id} song={song} index={index} />
             ))}
           </ul>
+        </div>
+      ) : isOwnProfile && favoriteSongs.length === 0 && (
+        <div className="favorites-section-item">
+        <h2>{t('profile.favoriteSongs')}</h2>
+          <div className="empty-state">
+            <p>{t('profile.addFavoriteSongs')}</p>
+          </div>
         </div>
       )}
     </section>

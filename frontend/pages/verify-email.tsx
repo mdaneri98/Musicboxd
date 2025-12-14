@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
 import { Footer } from '@/components/layout';
 import { emailRepository } from '@/repositories';
 import type { APIError } from '@/types';
@@ -15,7 +14,6 @@ import type { APIError } from '@/types';
 type VerificationState = 'loading' | 'success' | 'error' | 'invalid';
 
 const VerifyEmailPage = () => {
-  const { t } = useTranslation();
   const router = useRouter();
   const { code } = router.query;
 
