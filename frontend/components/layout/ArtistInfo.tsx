@@ -34,7 +34,7 @@ export const ArtistInfo: React.FC<ArtistInfoProps> = ({
           <img src={artistImgUrl} alt={artist.name} className="entity-image" />
           <div className="entity-details">
             <div className="entity-type">
-              Artist
+              {t('review.itemType.artist').toUpperCase()}
               {currentUser && currentUser.moderator && (
                 <Link href={`/moderator/music?artistId=${artist.id}`} className="edit-link">
                   <i className="fas fa-pencil-alt"></i>

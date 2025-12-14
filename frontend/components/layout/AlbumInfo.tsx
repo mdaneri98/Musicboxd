@@ -38,7 +38,7 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
           <img src={albumImgUrl} alt={album.title} className="entity-image album-cover" />
           <div className="entity-details">
             <div className="entity-type">
-              Album
+              {t('review.itemType.album').toUpperCase()}
               {currentUser && currentUser.moderator && (
                 <Link href={`/moderator/music?artistId=${album.artist_id}&albumId=${album.id}`} className="edit-link">
                   <i className="fas fa-pencil-alt"></i>

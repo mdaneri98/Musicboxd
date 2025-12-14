@@ -180,7 +180,8 @@
     "itemType": {
       "artist": "アーティスト",
       "album": "アルバム",
-      "song": "曲"
+      "song": "曲",
+      "user": "ユーザー"
     }
   },
   "comment": {

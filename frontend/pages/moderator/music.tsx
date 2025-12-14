@@ -743,7 +743,7 @@ export default function MusicEditorPage() {
 
                               <div className="form-group">
                                 <label className="form-label">
-                                  {t('moderator.genre')} *
+                                  {t('moderator.genre')}
                                 </label>
                                 <input
                                   type="text"
@@ -760,7 +760,7 @@ export default function MusicEditorPage() {
 
                             <div className="form-group">
                               <label className="form-label">
-                                {t('moderator.releaseDate')} *
+                                {t('moderator.releaseDate')}
                               </label>
                               <input
                                 type="date"

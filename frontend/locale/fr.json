@@ -180,7 +180,8 @@
     "itemType": {
       "artist": "Artiste",
       "album": "Album",
-      "song": "Chanson"
+      "song": "Chanson",
+      "user": "Utilisateur"
     }
   },
   "comment": {
