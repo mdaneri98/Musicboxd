@@ -161,23 +161,16 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional
     @Override
-    public Void notifyReviewBlockStatusChange(Review review, Boolean wasBlocked, Boolean isBlocked) {
-        if (wasBlocked == null || isBlocked == null || wasBlocked.equals(isBlocked)) {
-            return null;
-        }
-
+    public Void notifyReviewBlockStatusChange(Review review, Notification.NotificationType notificationType) {
         User targetUser = review.getUser();
-        Notification.NotificationType notificationType;
-        String messageKey;
-        ReviewAcknowledgementType emailType;
+        String messageKey = "";
+        ReviewAcknowledgementType emailType = null;
 
-        if (!wasBlocked && isBlocked) {
-            notificationType = Notification.NotificationType.REVIEW_BLOCKED;
+        if (notificationType.equals(Notification.NotificationType.REVIEW_BLOCKED)) {
             messageKey = "notification.review.blocked";
             emailType = ReviewAcknowledgementType.BLOCKED;
             LOGGER.info("Review {} was blocked, notifying user {}", review.getId(), targetUser.getEmail());
-        } else {
-            notificationType = Notification.NotificationType.REVIEW_UNBLOCKED;
+        } else if (notificationType.equals(Notification.NotificationType.REVIEW_UNBLOCKED)) {
             messageKey = "notification.review.unblocked";
             emailType = ReviewAcknowledgementType.UNBLOCKED;
             LOGGER.info("Review {} was unblocked, notifying user {}", review.getId(), targetUser.getEmail());

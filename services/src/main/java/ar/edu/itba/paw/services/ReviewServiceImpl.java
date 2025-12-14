@@ -214,8 +214,13 @@ public class ReviewServiceImpl implements ReviewService {
         mergeReviewFields(reviewEntity, reviewInput);
         Review updatedReview = reviewDao.update(reviewEntity);
 
-        notificationService.notifyReviewBlockStatusChange(updatedReview, oldBlockedStatus, updatedReview.isBlocked());
-        notificationService.notifyNewReview(updatedReview);
+        Notification.NotificationType notificationType = blockStatusChanged(oldBlockedStatus, updatedReview.isBlocked());
+        if (notificationType != null) {
+            notificationService.notifyReviewBlockStatusChange(updatedReview, notificationType);
+        } else {
+            notificationService.notifyNewReview(updatedReview);
+        }
+
         updateRatingForItem(updatedReview);
         LOGGER.info("Review updated successfully");
         return updatedReview;
@@ -470,4 +475,18 @@ public class ReviewServiceImpl implements ReviewService {
             review.setIsLiked(isLiked(loggedUserId, review.getId()));
         }
     }
+
+    private Notification.NotificationType blockStatusChanged(Boolean wasBlocked, Boolean isBlocked) {
+        if (wasBlocked == null || isBlocked == null || wasBlocked.equals(isBlocked)) {
+            return null;
+        }
+
+        if (wasBlocked == true && isBlocked == false) {
+            return Notification.NotificationType.REVIEW_UNBLOCKED;
+        } else if (wasBlocked == false && isBlocked == true) {
+            return Notification.NotificationType.REVIEW_BLOCKED;
+        }
+        return null;
+    }
+
 }
