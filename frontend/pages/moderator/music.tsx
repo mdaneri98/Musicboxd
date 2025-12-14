@@ -254,7 +254,7 @@ export default function MusicEditorPage() {
       id: currentArtist.id,
       name: currentArtist.name,
       bio: currentArtist.bio || '',
-      artistImgId: currentArtist.image_id,
+      artist_img_id: currentArtist.image_id,
       albums: albumsWithSongs,
       _imagePreview: currentArtist.image_id ? imageRepository.getImageUrl(currentArtist.image_id) : '',
     });
@@ -495,7 +495,7 @@ export default function MusicEditorPage() {
       }
 
       // Upload artist image if new
-      let artistImgId = formData.artistImgId;
+      let artistImgId = formData.artist_img_id;
       if (formData._imageFile) {
         artistImgId = await imageRepository.uploadImage(formData._imageFile);
       }
@@ -518,15 +518,15 @@ export default function MusicEditorPage() {
         id: formData.id,
         name: formData.name.trim(),
         bio: formData.bio?.trim() || null,
-        artistImgId,
+        artist_img_id: artistImgId,
         deleted: false,
         albums: albumsWithImages.map(album => ({
           id: album.id,
           title: album.title.trim(),
           genre: album.genre?.trim() || null,
-          releaseDate: album.releaseDate || null,
-          albumImageId: album.albumImageId,
-          artistId: formData.id,
+          release_date: album.releaseDate || null,
+          album_image_id: album.albumImageId,
+          artist_id: formData.id,
           deleted: false,
           songs: album.songs
             .filter(song => !song.deleted)
@@ -534,8 +534,8 @@ export default function MusicEditorPage() {
               id: song.id,
               title: song.title.trim(),
               duration: song.duration,
-              trackNumber: song.trackNumber,
-              albumId: album.id,
+              track_number: song.trackNumber,
+              album_id: album.id,
               deleted: false,
             })),
         })),
@@ -743,28 +743,34 @@ export default function MusicEditorPage() {
 
                               <div className="form-group">
                                 <label className="form-label">
-                                  {t('moderator.genre')}
+                                  {t('moderator.genre')} *
                                 </label>
                                 <input
                                   type="text"
-                                  className="form-input"
+                                  className={`form-input ${errors[`album_${albumIndex}_genre`] ? 'input-error' : ''}`}
                                   value={album.genre || ''}
                                   onChange={(e) => updateAlbum(albumIndex, { genre: e.target.value })}
                                   placeholder={t('moderator.enterGenre')}
                                 />
+                                {errors[`album_${albumIndex}_genre`] && (
+                                  <span className="error-message">{errors[`album_${albumIndex}_genre`]}</span>
+                                )}
                               </div>
                             </div>
 
                             <div className="form-group">
                               <label className="form-label">
-                                {t('moderator.releaseDate')}
+                                {t('moderator.releaseDate')} *
                               </label>
                               <input
                                 type="date"
-                                className="form-input"
+                                className={`form-input ${errors[`album_${albumIndex}_releaseDate`] ? 'input-error' : ''}`}
                                 value={album.releaseDate || ''}
                                 onChange={(e) => updateAlbum(albumIndex, { releaseDate: e.target.value })}
                               />
+                              {errors[`album_${albumIndex}_releaseDate`] && (
+                                <span className="error-message">{errors[`album_${albumIndex}_releaseDate`]}</span>
+                              )}
                             </div>
                           </div>
                         </div>

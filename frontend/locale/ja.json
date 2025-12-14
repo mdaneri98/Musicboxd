@@ -636,9 +636,11 @@
       "select": "アルバムを選択してください"
     },
     "releaseDate": {
+      "required": "リリース日は必須です",
       "future": "リリース日は未来の日付にできません"
     },
     "genre": {
+      "required": "ジャンルは必須です",
       "maxLength": "ジャンルは50文字以下である必要があります"
     },
     "duration": {

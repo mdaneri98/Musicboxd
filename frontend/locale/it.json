@@ -636,9 +636,11 @@
       "select": "Per favore seleziona un album"
     },
     "releaseDate": {
+      "required": "La data di uscita è richiesta",
       "future": "La data di uscita non può essere nel futuro"
     },
     "genre": {
+      "required": "Il genere è richiesto",
       "maxLength": "Il genere deve avere al massimo 50 caratteri"
     },
     "duration": {

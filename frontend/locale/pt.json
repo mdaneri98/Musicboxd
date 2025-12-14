@@ -636,9 +636,11 @@
       "select": "Por favor, selecione um álbum"
     },
     "releaseDate": {
+      "required": "A data de lançamento é obrigatória",
       "future": "A data de lançamento não pode ser no futuro"
     },
     "genre": {
+      "required": "O gênero é obrigatório",
       "maxLength": "O gênero deve ter no máximo 50 caracteres"
     },
     "duration": {

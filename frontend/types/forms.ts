@@ -205,7 +205,7 @@ export interface ModArtistFormData {
   id?: number;
   name: string;
   bio?: string;
-  artistImgId?: number;
+  artist_img_id?: number;
   albums: ModAlbumFormData[];
   deleted?: boolean;
   // UI state

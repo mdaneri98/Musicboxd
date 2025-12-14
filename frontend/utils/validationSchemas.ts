@@ -192,10 +192,11 @@ export const modAlbumSchema = Yup.object().shape({
     .min(1, t('validation.albumTitleLength'))
     .max(100, t('validation.albumTitleLength')),
   genre: Yup.string()
-    .optional()
-    .nullable()
+    .required(t('validation.genre.required'))
     .max(50, t('validation.genreLength')),
-  releaseDate: Yup.string().optional().nullable(),
+  releaseDate: Yup.string()
+    .required(t('validation.releaseDate.required'))
+    .matches(/^\d{4}-\d{2}-\d{2}$/, t('validation.releaseDate.required')),
   deleted: Yup.boolean().optional(),
   songs: Yup.array().of(modSongSchema).optional(),
 });
