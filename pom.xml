@@ -334,7 +334,6 @@
     <module>services</module>
     <module>frontend</module>
     <module>webapp</module>
-    <!--<module>webapp</module>-->
   </modules>
 
   <build>
