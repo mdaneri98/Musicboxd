@@ -29,7 +29,7 @@ export default function ReviewsSection({
         <LoadingSpinner size="large" />
       ) : reviews.length === 0 ? (
         <div className="empty-state">
-          <h3>{t('profile.noReviews')}</h3>
+          <p>{t('profile.noReviews')}</p>
         </div>
       ) : (
         <>

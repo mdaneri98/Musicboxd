@@ -16,6 +16,8 @@ export type {
 
 // API Types
 export type {
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
   HALLink,
   HALResource,
   Collection,

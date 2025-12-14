@@ -298,7 +298,7 @@ export default function ModeratorDashboardPage() {
                       <div className="search-result-info">
                         <span className="search-result-name">{result.name}</span>
                         <span className="search-result-type">
-                          {t(`review.itemType.${result.type.toLowerCase()}`).toUpperCase()}
+                          {t(`review.itemType.${result.type.toLowerCase()}`)}
                         </span>
                       </div>
                     </div>

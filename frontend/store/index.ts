@@ -43,13 +43,11 @@ export const store = configureStore({
     songs: songReducer,
     reviews: reviewReducer,
     notifications: notificationReducer,
-    // search: searchReducer,
     ui: uiReducer,
   },
   middleware: (getDefaultMiddleware) => {
     const middlewares = getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these action types and paths for serialization checks
         ignoredActions: ['persist/PERSIST'],
         ignoredActionPaths: ['payload.timestamp'],
         ignoredPaths: ['auth.timestamp'],

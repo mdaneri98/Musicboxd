@@ -270,7 +270,7 @@ export default function SearchPage() {
                     <div className="search-result-info">
                       <span className="search-result-name">{result.name}</span>
                       <span className="search-result-type">
-                        {t(`review.itemType.${result.type.replace(/s$/, '').toLowerCase()}`).toUpperCase()}
+                        {t(`review.itemType.${result.type.replace(/s$/, '').toLowerCase()}`)}
                       </span>
                     </div>
                   </div>

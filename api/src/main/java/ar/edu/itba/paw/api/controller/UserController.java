@@ -156,10 +156,9 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        if (!id.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
         userService.deleteById(id);
-        
         return buildNoContentResponse();
     }
 
