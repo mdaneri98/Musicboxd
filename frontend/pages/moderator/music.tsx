@@ -1,17 +1,28 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { LoadingSpinner, ConfirmationModal } from '@/components/ui';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import {
   selectIsAuthenticated,
   selectCurrentUser,
+  fetchArtistByIdAsync,
+  fetchArtistAlbumsAsync,
+  fetchAlbumSongsAsync,
+  createArtistAsync,
+  updateArtistAsync,
+  selectCurrentArtist,
+  selectArtistAlbums,
+  selectLoadingArtist,
+  selectLoadingAlbums,
+  clearCurrentArtist,
+  clearCurrentAlbum,
+  showError,
 } from '@/store/slices';
-import { imageRepository, artistRepository, albumRepository } from '@/repositories';
+import { imageRepository } from '@/repositories';
 import { validateMusicEditorForm } from '@/utils/validationSchemas';
 import type { ModArtistFormData, ModAlbumFormData, ModSongFormData } from '@/types/forms';
-import type { Song, Album, Artist, HALResource } from '@/types';
 
 // Generate unique temporary IDs for new items
 const generateTempId = () => `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -34,16 +45,35 @@ const formatDurationForDisplay = (duration: string): string => {
 export default function MusicEditorPage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  
+  // Redux selectors
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
+  const currentArtist = useAppSelector(selectCurrentArtist);
+  const artistAlbums = useAppSelector(selectArtistAlbums);
+  const loadingArtist = useAppSelector(selectLoadingArtist);
+  const loadingAlbums = useAppSelector(selectLoadingAlbums);
 
+  // Wait for router to be ready before reading query params
+  const routerReady = router.isReady;
   const { artistId, albumId, songId } = router.query;
-  const isEditMode = !!artistId;
-  const focusAlbumId = albumId ? parseInt(albumId as string) : null;
-  const focusSongId = songId ? parseInt(songId as string) : null;
+  const isEditMode = routerReady && !!artistId;
+  const artistIdNum = routerReady && artistId ? parseInt(artistId as string) : null;
+  const focusAlbumId = routerReady && albumId ? parseInt(albumId as string) : null;
+  const focusSongId = routerReady && songId ? parseInt(songId as string) : null;
 
   // Track current artistId to prevent race conditions
-  const currentArtistIdRef = useRef<string | null>(null);
+  const currentArtistIdRef = useRef<number | null>(null);
+  // Track if we've already processed the loaded data for this specific artist
+  const dataProcessedForArtistRef = useRef<number | null>(null);
+  // Track if we've already started loading songs for this artist
+  const songsLoadingStartedForRef = useRef<number | null>(null);
+  // Track for which artistId albums have been fetched (to distinguish stale data) - using STATE to trigger re-renders
+  const [albumsFetchedForArtist, setAlbumsFetchedForArtist] = useState<number | null>(null);
+  // Track album songs loading state
+  const [loadingSongs, setLoadingSongs] = useState(false);
+  const [albumSongsMap, setAlbumSongsMap] = useState<Record<number, ModSongFormData[]>>({});
 
   // Form state
   const [formData, setFormData] = useState<ModArtistFormData>({
@@ -53,7 +83,6 @@ export default function MusicEditorPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [loadingData, setLoadingData] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
@@ -77,161 +106,223 @@ export default function MusicEditorPage() {
     }
   }, [isAuthenticated, currentUser, router]);
 
-  // Load all artist data in a single effect - no Redux dependency
+  // Cleanup on unmount
   useEffect(() => {
-    const loadArtistData = async () => {
-      // Reset state when artistId changes
-      const currentId = artistId as string | undefined;
-      currentArtistIdRef.current = currentId || null;
-      
-      // Reset form for new artist or create mode
-      setFormData({
-        name: '',
-        bio: '',
-        albums: [],
-      });
-      setErrors({});
-      setDataLoaded(false);
+    return () => {
+      dispatch(clearCurrentArtist());
+      dispatch(clearCurrentAlbum());
+    };
+  }, [dispatch]);
 
-      if (!currentId || !isEditMode) {
-        // Create mode - no data to load
-        setDataLoaded(true);
+  // Load artist and albums data using Redux thunks
+  useEffect(() => {
+    // Wait for router to be ready before doing anything
+    if (!routerReady) return;
+    
+    // Reset state when artistId changes
+    currentArtistIdRef.current = artistIdNum;
+    dataProcessedForArtistRef.current = null;
+    songsLoadingStartedForRef.current = null;
+    setAlbumsFetchedForArtist(null);
+    
+    // Reset form for new artist or create mode
+    setFormData({
+      name: '',
+      bio: '',
+      albums: [],
+    });
+    setErrors({});
+    setDataLoaded(false);
+    setAlbumSongsMap({});
+    setLoadingSongs(false);
+
+    if (!artistIdNum || !isEditMode) {
+      // Create mode - no data to load
+      setDataLoaded(true);
+      return;
+    }
+    
+    // Clear previous artist data before loading new one
+    dispatch(clearCurrentArtist());
+    
+    // Dispatch Redux actions to load data
+    dispatch(fetchArtistByIdAsync(artistIdNum));
+    dispatch(fetchArtistAlbumsAsync({ artistId: artistIdNum, page: 1, size: 100 }))
+      .then(() => {
+        // Mark that albums have been fetched for this artist - use state to trigger re-render
+        if (currentArtistIdRef.current === artistIdNum) {
+          setAlbumsFetchedForArtist(artistIdNum);
+        }
+      });
+  }, [routerReady, artistIdNum, isEditMode, dispatch]);
+
+  // Load songs for each album when albums are loaded
+  useEffect(() => {
+    const loadAlbumSongs = async () => {
+      // Wait until router is ready
+      if (!routerReady || !isEditMode || !artistIdNum) return;
+      
+      // Wait for artist to finish loading first
+      if (loadingArtist || !currentArtist) return;
+      
+      // Verify the artist matches
+      if (currentArtist.id !== artistIdNum) return;
+      
+      // Wait for albums to finish loading
+      if (loadingAlbums) return;
+      
+      // CRITICAL: Wait until albums have actually been fetched for THIS artist
+      // This prevents processing stale/empty album data
+      if (albumsFetchedForArtist !== artistIdNum) return;
+      
+      // Check if we've already started loading songs for this artist
+      if (songsLoadingStartedForRef.current === artistIdNum) return;
+      
+      // Check for race condition
+      if (currentArtistIdRef.current !== artistIdNum) return;
+      
+      // Get albums for current artist
+      const albumsForCurrentArtist = artistAlbums.filter(album => album.artist_id === artistIdNum);
+      
+      // If there are no albums for this artist, that's fine - they might not have any
+      if (albumsForCurrentArtist.length === 0) {
+        // Mark as started so the form build effect knows we're done
+        songsLoadingStartedForRef.current = artistIdNum;
         return;
       }
 
-      setLoadingData(true);
-      try {
-        const artistIdNum = parseInt(currentId);
-        
-        // Fetch artist directly from repository (not Redux)
-        const artistResponse = await artistRepository.getArtistById(artistIdNum);
-        const artist: Artist = artistResponse.data;
-        
-        // Check if artistId changed during fetch (race condition prevention)
-        if (currentArtistIdRef.current !== currentId) {
-          return; // Abort - a new artistId was requested
-        }
-        
-        // Fetch albums directly from repository
-        const albumsResponse = await artistRepository.getArtistAlbums(artistIdNum, 1, 100);
-        const albums: Album[] = albumsResponse.items.map((item: HALResource<Album>) => item.data);
-        
-        // Check again for race condition
-        if (currentArtistIdRef.current !== currentId) {
-          return;
-        }
+      // Mark that we've started loading songs for this artist
+      songsLoadingStartedForRef.current = artistIdNum;
+      setLoadingSongs(true);
+      const songsMap: Record<number, ModSongFormData[]> = {};
 
-        // Now fetch songs for each album
-        const albumsWithSongs: ModAlbumFormData[] = [];
-        
-        for (const album of albums) {
-          let songs: ModSongFormData[] = [];
+      for (const album of albumsForCurrentArtist) {
+        try {
+          const result = await dispatch(fetchAlbumSongsAsync({ albumId: album.id, page: 1, size: 100 })).unwrap();
           
-          try {
-            const songsData = await albumRepository.getAlbumSongs(album.id, 1, 100);
-            const songItems = songsData.items || [];
-            songs = songItems.map((songRes: HALResource<Song>) => ({
-              id: songRes.data.id,
-              title: songRes.data.title,
-              duration: formatDurationForDisplay(songRes.data.duration),
-              trackNumber: songRes.data.track_number,
-              albumId: songRes.data.album_id,
-              deleted: false,
-              _tempId: generateTempId(),
-              _isCollapsed: true,
-            }));
-          } catch (songError) {
-            console.error(`Failed to load songs for album ${album.id}:`, songError);
-          }
+          // Check for race condition after each fetch
+          if (currentArtistIdRef.current !== artistIdNum) return;
 
-          // Check for race condition after each album fetch
-          if (currentArtistIdRef.current !== currentId) {
-            return;
-          }
-
-          const shouldExpand = focusAlbumId === album.id;
-          
-          albumsWithSongs.push({
-            id: album.id,
-            title: album.title,
-            genre: album.genre || '',
-            releaseDate: album.release_date ? new Date(album.release_date).toISOString().split('T')[0] : '',
-            albumImageId: album.image_id,
-            artistId: album.artist_id,
-            songs,
+          const songs: ModSongFormData[] = result.items.map((songRes: any) => ({
+            id: songRes.data.id,
+            title: songRes.data.title,
+            duration: formatDurationForDisplay(songRes.data.duration),
+            trackNumber: songRes.data.track_number,
+            albumId: songRes.data.album_id,
             deleted: false,
             _tempId: generateTempId(),
-            _isCollapsed: !shouldExpand,
-            _imagePreview: album.image_id ? imageRepository.getImageUrl(album.image_id) : '',
-          });
-        }
-
-        // Final race condition check before setting state
-        if (currentArtistIdRef.current !== currentId) {
-          return;
-        }
-
-        // Set form data only when ALL data is ready
-        setFormData({
-          id: artist.id,
-          name: artist.name,
-          bio: artist.bio || '',
-          artistImgId: artist.image_id,
-          albums: albumsWithSongs,
-          _imagePreview: artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '',
-        });
-        setDataLoaded(true);
-      } catch (error) {
-        console.error('Failed to load artist data:', error);
-        if (currentArtistIdRef.current === currentId) {
-          setErrors({ general: t('moderator.failedToLoadArtist') });
-        }
-      } finally {
-        if (currentArtistIdRef.current === currentId) {
-          setLoadingData(false);
+            _isCollapsed: true,
+          }));
+          
+          songsMap[album.id] = songs;
+        } catch (error) {
+          console.error(`Failed to load songs for album ${album.id}:`, error);
+          songsMap[album.id] = [];
         }
       }
+
+      // Final race condition check
+      if (currentArtistIdRef.current !== artistIdNum) return;
+
+      setAlbumSongsMap(songsMap);
+      setLoadingSongs(false);
     };
 
-    loadArtistData();
-  }, [artistId, isEditMode, focusAlbumId, t]);
+    loadAlbumSongs();
+  }, [routerReady, artistAlbums, artistIdNum, isEditMode, dispatch, loadingAlbums, loadingArtist, currentArtist, albumsFetchedForArtist]);
+
+  // Build form data when all data is loaded
+  useEffect(() => {
+    if (!routerReady || !isEditMode || !artistIdNum) return;
+
+    if (loadingArtist || !currentArtist) return;
+    
+    if (currentArtist.id !== artistIdNum) return;
+    
+    if (loadingAlbums) return;
+    
+    if (albumsFetchedForArtist !== artistIdNum) return;
+    
+    if (loadingSongs) return;
+    
+    if (dataProcessedForArtistRef.current === artistIdNum) return;
+    
+    const albumsForCurrentArtist = artistAlbums.filter(album => album.artist_id === artistIdNum);
+    
+    if (albumsForCurrentArtist.length > 0 && songsLoadingStartedForRef.current !== artistIdNum) {
+      return;
+    }
+    
+    const allAlbumsHaveSongs = albumsForCurrentArtist.every(album => albumSongsMap[album.id] !== undefined);
+    if (!allAlbumsHaveSongs && albumsForCurrentArtist.length > 0) return;
+
+    const albumsWithSongs: ModAlbumFormData[] = albumsForCurrentArtist.map(album => {
+      const shouldExpand = focusAlbumId === album.id;
+      const songs = albumSongsMap[album.id] || [];
+
+      return {
+        id: album.id,
+        title: album.title,
+        genre: album.genre || '',
+        releaseDate: album.release_date ? new Date(album.release_date).toISOString().split('T')[0] : '',
+        albumImageId: album.image_id,
+        artistId: album.artist_id,
+        songs,
+        deleted: false,
+        _tempId: generateTempId(),
+        _isCollapsed: !shouldExpand,
+        _imagePreview: album.image_id ? imageRepository.getImageUrl(album.image_id) : '',
+      };
+    });
+
+    setFormData({
+      id: currentArtist.id,
+      name: currentArtist.name,
+      bio: currentArtist.bio || '',
+      artistImgId: currentArtist.image_id,
+      albums: albumsWithSongs,
+      _imagePreview: currentArtist.image_id ? imageRepository.getImageUrl(currentArtist.image_id) : '',
+    });
+    
+    dataProcessedForArtistRef.current = artistIdNum;
+    setDataLoaded(true);
+  }, [routerReady, currentArtist, artistAlbums, albumSongsMap, loadingArtist, loadingAlbums, loadingSongs, isEditMode, artistIdNum, focusAlbumId, albumsFetchedForArtist]);
 
   // Scroll to focused album or song after data loads
   useEffect(() => {
-    if (!loadingData && formData.albums.length > 0) {
-      let elementId: string | null = null;
-      
-      if (focusSongId && focusAlbumId) {
-        // Find the album index and song index
-        const albumIndex = formData.albums.findIndex(a => a.id === focusAlbumId);
-        if (albumIndex !== -1) {
-          const songIndex = formData.albums[albumIndex].songs.findIndex(s => s.id === focusSongId);
-          if (songIndex !== -1) {
-            elementId = `song_${albumIndex}_${songIndex}`;
-          }
-        }
-      } else if (focusAlbumId) {
-        const albumIndex = formData.albums.findIndex(a => a.id === focusAlbumId);
-        if (albumIndex !== -1) {
-          elementId = `album_${albumIndex}`;
+    if (!dataLoaded || formData.albums.length === 0) return;
+    
+    let elementId: string | null = null;
+    
+    if (focusSongId && focusAlbumId) {
+      const albumIndex = formData.albums.findIndex(a => a.id === focusAlbumId);
+      if (albumIndex !== -1) {
+        const songIndex = formData.albums[albumIndex].songs.findIndex(s => s.id === focusSongId);
+        if (songIndex !== -1) {
+          elementId = `song_${albumIndex}_${songIndex}`;
         }
       }
-      
-      if (elementId) {
-        setTimeout(() => {
-          const element = document.getElementById(elementId!);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            element.classList.add('highlight-focus');
-            setTimeout(() => element.classList.remove('highlight-focus'), 2000);
-          }
-        }, 300);
+    } else if (focusAlbumId) {
+      const albumIndex = formData.albums.findIndex(a => a.id === focusAlbumId);
+      if (albumIndex !== -1) {
+        elementId = `album_${albumIndex}`;
       }
     }
-  }, [loadingData, formData.albums, focusAlbumId, focusSongId]);
+    
+    if (elementId) {
+      setTimeout(() => {
+        const element = document.getElementById(elementId!);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('highlight-focus');
+          setTimeout(() => element.classList.remove('highlight-focus'), 2000);
+        }
+      }, 300);
+    }
+  }, [dataLoaded, formData.albums, focusAlbumId, focusSongId]);
 
   // Artist image handling
-  const handleArtistImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleArtistImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -244,10 +335,10 @@ export default function MusicEditorPage() {
       };
       reader.readAsDataURL(file);
     }
-  };
+  }, []);
 
   // Album management
-  const addAlbum = () => {
+  const addAlbum = useCallback(() => {
     const newAlbum: ModAlbumFormData = {
       title: '',
       genre: '',
@@ -261,22 +352,22 @@ export default function MusicEditorPage() {
       ...prev,
       albums: [...prev.albums, newAlbum],
     }));
-  };
+  }, []);
 
-  const updateAlbum = (index: number, updates: Partial<ModAlbumFormData>) => {
+  const updateAlbum = useCallback((index: number, updates: Partial<ModAlbumFormData>) => {
     setFormData(prev => ({
       ...prev,
       albums: prev.albums.map((album, i) => 
         i === index ? { ...album, ...updates } : album
       ),
     }));
-  };
+  }, []);
 
-  const handleRemoveAlbumClick = (index: number) => {
+  const handleRemoveAlbumClick = useCallback((index: number) => {
     setDeleteAlbumModal({ isOpen: true, albumIndex: index });
-  };
+  }, []);
 
-  const confirmRemoveAlbum = () => {
+  const confirmRemoveAlbum = useCallback(() => {
     if (deleteAlbumModal.albumIndex !== null) {
       setFormData(prev => ({
         ...prev,
@@ -286,14 +377,19 @@ export default function MusicEditorPage() {
       }));
     }
     setDeleteAlbumModal({ isOpen: false, albumIndex: null });
-  };
+  }, [deleteAlbumModal.albumIndex]);
 
-  const toggleAlbumCollapse = (index: number) => {
-    updateAlbum(index, { _isCollapsed: !formData.albums[index]._isCollapsed });
-  };
+  const toggleAlbumCollapse = useCallback((index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      albums: prev.albums.map((album, i) => 
+        i === index ? { ...album, _isCollapsed: !album._isCollapsed } : album
+      ),
+    }));
+  }, []);
 
   // Album image handling
-  const handleAlbumImageChange = (albumIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAlbumImageChange = useCallback((albumIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -305,58 +401,78 @@ export default function MusicEditorPage() {
       };
       reader.readAsDataURL(file);
     }
-  };
+  }, [updateAlbum]);
 
   // Song management
-  const addSong = (albumIndex: number) => {
-    const album = formData.albums[albumIndex];
-    const newSong: ModSongFormData = {
-      title: '',
-      duration: '',
-      trackNumber: album.songs.filter(s => !s.deleted).length + 1,
-      deleted: false,
-      _tempId: generateTempId(),
-      _isCollapsed: false,
-    };
-    updateAlbum(albumIndex, {
-      songs: [...album.songs, newSong],
-    });
-  };
-
-  const updateSong = (albumIndex: number, songIndex: number, updates: Partial<ModSongFormData>) => {
-    const album = formData.albums[albumIndex];
-    updateAlbum(albumIndex, {
-      songs: album.songs.map((song, i) =>
-        i === songIndex ? { ...song, ...updates } : song
-      ),
-    });
-  };
-
-  const handleRemoveSongClick = (albumIndex: number, songIndex: number) => {
-    setDeleteSongModal({ isOpen: true, albumIndex, songIndex });
-  };
-
-  const confirmRemoveSong = () => {
-    if (deleteSongModal.albumIndex !== null && deleteSongModal.songIndex !== null) {
-      const album = formData.albums[deleteSongModal.albumIndex];
-      updateAlbum(deleteSongModal.albumIndex, {
-        songs: album.songs.map((song, i) =>
-          i === deleteSongModal.songIndex ? { ...song, deleted: true } : song
+  const addSong = useCallback((albumIndex: number) => {
+    setFormData(prev => {
+      const album = prev.albums[albumIndex];
+      const newSong: ModSongFormData = {
+        title: '',
+        duration: '',
+        trackNumber: album.songs.filter(s => !s.deleted).length + 1,
+        deleted: false,
+        _tempId: generateTempId(),
+        _isCollapsed: false,
+      };
+      return {
+        ...prev,
+        albums: prev.albums.map((a, i) => 
+          i === albumIndex ? { ...a, songs: [...a.songs, newSong] } : a
         ),
-      });
+      };
+    });
+  }, []);
+
+  const updateSong = useCallback((albumIndex: number, songIndex: number, updates: Partial<ModSongFormData>) => {
+    setFormData(prev => ({
+      ...prev,
+      albums: prev.albums.map((album, aIdx) =>
+        aIdx === albumIndex
+          ? {
+              ...album,
+              songs: album.songs.map((song, sIdx) =>
+                sIdx === songIndex ? { ...song, ...updates } : song
+              ),
+            }
+          : album
+      ),
+    }));
+  }, []);
+
+  const handleRemoveSongClick = useCallback((albumIndex: number, songIndex: number) => {
+    setDeleteSongModal({ isOpen: true, albumIndex, songIndex });
+  }, []);
+
+  const confirmRemoveSong = useCallback(() => {
+    if (deleteSongModal.albumIndex !== null && deleteSongModal.songIndex !== null) {
+      const { albumIndex, songIndex } = deleteSongModal;
+      setFormData(prev => ({
+        ...prev,
+        albums: prev.albums.map((album, aIdx) =>
+          aIdx === albumIndex
+            ? {
+                ...album,
+                songs: album.songs.map((song, sIdx) =>
+                  sIdx === songIndex ? { ...song, deleted: true } : song
+                ),
+              }
+            : album
+        ),
+      }));
     }
     setDeleteSongModal({ isOpen: false, albumIndex: null, songIndex: null });
-  };
+  }, [deleteSongModal]);
 
   // Validation using Yup schemas
-  const validateForm = async (): Promise<boolean> => {
+  const validateForm = useCallback(async (): Promise<boolean> => {
     const validationErrors = await validateMusicEditorForm(formData, t);
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
-  };
+  }, [formData, t]);
 
-  // Form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Form submission using Redux thunks
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     const isValid = await validateForm();
@@ -413,28 +529,32 @@ export default function MusicEditorPage() {
           })),
       };
 
-      // Make API call
+      // Use Redux thunks for API calls
       if (isEditMode && formData.id) {
-        await artistRepository.updateArtist(formData.id, payload as any);
+        await dispatch(updateArtistAsync({ id: formData.id, artistData: payload as any })).unwrap();
         router.push(`/artists/${formData.id}`);
       } else {
-        const newArtist = await artistRepository.createArtist(payload as any);
-        router.push(`/artists/${newArtist.data.id}`);
+        const result = await dispatch(createArtistAsync(payload as any)).unwrap();
+        router.push(`/artists/${result.data.id}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save artist:', error);
+      dispatch(showError(t('moderator.failedToSaveArtist')));
       setErrors({ general: t('moderator.failedToSaveArtist') });
     } finally {
       setLoading(false);
     }
-  };
+  }, [formData, isEditMode, validateForm, dispatch, router, t]);
 
   if (!isAuthenticated || (currentUser && !currentUser.moderator)) {
     return null;
   }
 
+  // Determine if we're still loading (include waiting for router)
+  const isLoading = !routerReady || loadingArtist || loadingAlbums || loadingSongs || (isEditMode && !dataLoaded);
+
   // Show spinner while loading data in edit mode
-  if (loadingData || (isEditMode && !dataLoaded)) {
+  if (isLoading) {
     return (
       <Layout title={t('moderator.musicEditor')}>
         <div className="content-wrapper">
