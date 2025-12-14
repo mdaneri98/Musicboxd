@@ -53,6 +53,46 @@
       "submit": "Sign Up",
       "haveAccount": "Already have an account?",
       "registering": "Registering..."
+    },
+    "resetPassword": {
+      "pageTitle": "Musicboxd - Reset Password",
+      "heading": "Reset Password",
+      "title": "Password Reset!",
+      "subtitle": "Enter your new password below.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "submit": "Reset Password",
+      "resetting": "Resetting...",
+      "success": "Your password has been reset successfully!",
+      "redirecting": "Redirecting to login...",
+      "goToLogin": "Go to Login",
+      "backToLogin": "Back to Login",
+      "invalidLinkTitle": "Invalid Link",
+      "requestNewLink": "Request New Link",
+      "errors": {
+        "invalidLink": "Invalid reset link.",
+        "invalidLinkDetailed": "Invalid reset link. Please check your email and try again.",
+        "fillAllFields": "Please fill in all fields",
+        "passwordMinLength": "Password must be at least 8 characters long",
+        "passwordMismatch": "Passwords do not match",
+        "resetFailed": "Failed to reset password. The link may be expired or invalid."
+      }
+    },
+    "forgotPassword": {
+      "pageTitle": "Musicboxd - Forgot Password",
+      "title": "Forgot Password?",
+      "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+      "emailPlaceholder": "Email address",
+      "submit": "Send Reset Link",
+      "sending": "Sending...",
+      "emailSentTitle": "Email Sent!",
+      "success": "Password reset instructions have been sent to your email.",
+      "checkEmail": "Please check your email and click on the link to reset your password.",
+      "backToLogin": "Back to Login",
+      "errors": {
+        "emailRequired": "Please enter your email address",
+        "sendFailed": "Failed to send password reset email. Please try again later."
+      }
     }
   },
   "home": {

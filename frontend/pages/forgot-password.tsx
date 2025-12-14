@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import { useTranslation } from 'react-i18next';
 import { Footer } from '@/components/layout';
 import { passwordRepository } from '@/repositories/PasswordRepository';
 import type { APIError } from '@/types';
@@ -13,6 +14,7 @@ import type { APIError } from '@/types';
 type RequestState = 'idle' | 'loading' | 'success' | 'error';
 
 const ForgotPasswordPage = () => {
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState<string>('');
   const [state, setState] = useState<RequestState>('idle');
@@ -22,7 +24,7 @@ const ForgotPasswordPage = () => {
     e.preventDefault();
 
     if (!email) {
-      setMessage('Please enter your email address');
+      setMessage(t('auth.forgotPassword.errors.emailRequired'));
       setState('error');
       return;
     }
@@ -33,14 +35,14 @@ const ForgotPasswordPage = () => {
     try {
       await passwordRepository.forgotPassword(email);
       setState('success');
-      setMessage('Password reset instructions have been sent to your email.');
+      setMessage(t('auth.forgotPassword.success'));
     } catch (error) {
       console.error('Forgot password error:', error);
       setState('error');
       const apiError = error as APIError;
       setMessage(
         apiError.message ||
-        'Failed to send password reset email. Please try again later.'
+        t('auth.forgotPassword.errors.sendFailed')
       );
     }
   };
@@ -55,15 +57,15 @@ const ForgotPasswordPage = () => {
               <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h1 className="auth-title">Email Sent!</h1>
+          <h1 className="auth-title">{t('auth.forgotPassword.emailSentTitle')}</h1>
           <div className="alert alert-success">
             {message}
           </div>
           <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
-            Please check your email and click on the link to reset your password.
+            {t('auth.forgotPassword.checkEmail')}
           </p>
           <Link href="/login" className="btn btn-primary btn-block">
-            Back to Login
+            {t('auth.forgotPassword.backToLogin')}
           </Link>
         </>
       );
@@ -77,16 +79,16 @@ const ForgotPasswordPage = () => {
             <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
-        <h1 className="auth-title">Forgot Password?</h1>
+        <h1 className="auth-title">{t('auth.forgotPassword.title')}</h1>
         <p style={{ color: 'var(--color-text-secondary)', textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
-          Enter your email address and we'll send you a link to reset your password.
+          {t('auth.forgotPassword.subtitle')}
         </p>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <input
               type="email"
-              placeholder="Email address"
+              placeholder={t('auth.forgotPassword.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="form-control"
@@ -104,13 +106,13 @@ const ForgotPasswordPage = () => {
             className="btn btn-primary btn-block"
             disabled={state === 'loading'}
           >
-            {state === 'loading' ? 'Sending...' : 'Send Reset Link'}
+            {state === 'loading' ? t('auth.forgotPassword.sending') : t('auth.forgotPassword.submit')}
           </button>
         </form>
 
         <div className="auth-links">
           <Link href="/login" className="auth-link">
-            Back to Login
+            {t('auth.forgotPassword.backToLogin')}
           </Link>
         </div>
       </>
@@ -120,16 +122,16 @@ const ForgotPasswordPage = () => {
   return (
     <>
       <Head>
-        <title>Musicboxd - Forgot Password</title>
+        <title>{t('auth.forgotPassword.pageTitle')}</title>
       </Head>
       <div className="main-container-no-sidebar">
         <header className="landing-header">
           <nav className="nav-bar">
             <div className="logo">Musicboxd</div>
             <div className="nav-links">
-              <Link href="/" className="nav-link">Home</Link>
-              <Link href="/login" className="nav-link">Login</Link>
-              <Link href="/register" className="nav-link">Register</Link>
+              <Link href="/" className="nav-link">{t('navbar.home')}</Link>
+              <Link href="/login" className="nav-link">{t('navbar.login')}</Link>
+              <Link href="/register" className="nav-link">{t('navbar.register')}</Link>
             </div>
           </nav>
         </header>
