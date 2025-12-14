@@ -208,8 +208,13 @@ public class ReviewServiceImpl implements ReviewService {
     public Review update(Review reviewInput) {
         LOGGER.info("Updating review with ID: {}", reviewInput.getId());
         Review reviewEntity = reviewDao.findById(reviewInput.getId()).orElseThrow(() -> new ReviewNotFoundException(reviewInput.getId()));
+
+        Boolean oldBlockedStatus = reviewEntity.isBlocked();
+
         mergeReviewFields(reviewEntity, reviewInput);
         Review updatedReview = reviewDao.update(reviewEntity);
+
+        notificationService.notifyReviewBlockStatusChange(updatedReview, oldBlockedStatus, updatedReview.isBlocked());
         notificationService.notifyNewReview(updatedReview);
         updateRatingForItem(updatedReview);
         LOGGER.info("Review updated successfully");

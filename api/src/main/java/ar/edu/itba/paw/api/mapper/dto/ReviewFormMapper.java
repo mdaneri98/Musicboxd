@@ -14,22 +14,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReviewFormMapper {
 
+    public Review toModel(Long id, ReviewForm form) {
+        Review review = toModel(form);
+        review.setId(id);
+        return review;
+    }
+
     public Review toModel(ReviewForm form) {
         if (form == null) {
             return null;
         }
-        
+
         ReviewType type = ReviewType.valueOf(form.getItemType());
         Review review = switch (type) {
             case ARTIST -> new ArtistReview();
             case ALBUM -> new AlbumReview();
             case SONG -> new SongReview();
         };
-        
+
         review.setTitle(form.getTitle());
         review.setDescription(form.getDescription());
         review.setRating(form.getRating());
-        
+
+        if (form.isBlocked() != null) {
+            review.setBlocked(form.isBlocked());
+        }
         return review;
     }
 
@@ -66,23 +75,4 @@ public class ReviewFormMapper {
         }
     }
 
-    public Review mergeModel(Review review, ReviewForm form) {
-        if (form == null) {
-            return review;
-        }
-        
-        if (form.getTitle() != null) {
-            review.setTitle(form.getTitle());
-        }
-        if (form.getDescription() != null) {
-            review.setDescription(form.getDescription());
-        }
-        if (form.getRating() != null) {
-            review.setRating(form.getRating());
-        }
-        if (form.isBlocked() != null) {
-            review.setBlocked(form.isBlocked());
-        }
-        return review;
-    }
 }

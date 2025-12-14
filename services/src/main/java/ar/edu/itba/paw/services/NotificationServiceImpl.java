@@ -162,6 +162,53 @@ public class NotificationServiceImpl implements NotificationService {
         return null;
     }
 
+    @Transactional
+    @Override
+    public Void notifyReviewBlockStatusChange(Review review, Boolean wasBlocked, Boolean isBlocked) {
+        if (wasBlocked == null || isBlocked == null || wasBlocked.equals(isBlocked)) {
+            return null;
+        }
+
+        User targetUser = review.getUser();
+        Notification.NotificationType notificationType;
+        String messageKey;
+        ar.edu.itba.paw.models.ReviewAcknowledgementType emailType;
+
+        if (!wasBlocked && isBlocked) {
+            notificationType = Notification.NotificationType.REVIEW_BLOCKED;
+            messageKey = "notification.review.blocked";
+            emailType = ar.edu.itba.paw.models.ReviewAcknowledgementType.BLOCKED;
+            LOGGER.info("Review {} was blocked, notifying user {}", review.getId(), targetUser.getEmail());
+        } else {
+            notificationType = Notification.NotificationType.REVIEW_UNBLOCKED;
+            messageKey = "notification.review.unblocked";
+            emailType = ar.edu.itba.paw.models.ReviewAcknowledgementType.UNBLOCKED;
+            LOGGER.info("Review {} was unblocked, notifying user {}", review.getId(), targetUser.getEmail());
+        }
+
+        notificationDao.create(
+                notificationType,
+                targetUser,
+                null,
+                review,
+                messageKey
+        );
+
+        try {
+            emailService.sendReviewAcknowledgement(
+                    emailType,
+                    targetUser,
+                    review.getTitle(),
+                    review.getItemName(),
+                    review.getItemType().toString()
+            );
+            LOGGER.info("Acknowledgement email sent successfully to user: {}", targetUser.getEmail());
+        } catch (MessagingException e) {
+            LOGGER.error("Failed to send acknowledgement email to user: {}", targetUser.getEmail(), e);
+        }
+        return null;
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Notification findById(Long id) {

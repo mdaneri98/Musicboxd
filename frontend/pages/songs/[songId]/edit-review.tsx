@@ -20,6 +20,7 @@ import {
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import type { Album, ReviewFormData, HALResource, Review } from '@/types';
+import { ReviewItemType } from '@/types/enums';
 
 const EditSongReviewPage = () => {
   const { t } = useTranslation();
@@ -93,6 +94,7 @@ const EditSongReviewPage = () => {
 
     try {
       setSubmitLoading(true);
+      data.item_type = ReviewItemType.SONG;
       await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       router.push(`/songs/${song.id}`);
     } catch (error) {

@@ -1,8 +1,3 @@
-/**
- * ReviewCard Component
- * Displays review information with rating, likes, and comments
- */
-
 import Link from 'next/link';
 import { Review, ReviewItemTypeEnum } from '@/types';
 import { imageRepository } from '@/repositories';
@@ -41,11 +36,20 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   };
 
   const handleBlock = async (reviewId: number) => {
+    const reviewData = {
+      id: reviewId,
+      title: review.title,
+      description: review.description,
+      rating: review.rating,
+      item_id: review.item_id,
+      item_type: review.item_type,
+    };
+
     if (isBlocked) {
-      await dispatch(unblockReviewAsync(reviewId));
+      await dispatch(unblockReviewAsync({ id: reviewId, reviewData: reviewData }));
       setIsBlocked(false);
     } else {
-      await dispatch(blockReviewAsync(reviewId));
+      await dispatch(blockReviewAsync({ id: reviewId, reviewData: reviewData }));
       setIsBlocked(true);
     }
     setReviewToBlock(false);

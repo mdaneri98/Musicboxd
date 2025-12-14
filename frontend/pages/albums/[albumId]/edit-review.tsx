@@ -21,6 +21,7 @@ import {
 import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
 import { formatDate } from '@/utils/timeUtils';
+import { ReviewItemType } from '@/types/enums';
 
 const EditAlbumReviewPage = () => {
   const { t } = useTranslation();
@@ -84,6 +85,7 @@ const EditAlbumReviewPage = () => {
     
     try {
       setSubmitLoading(true);
+      data.item_type = ReviewItemType.ALBUM;
       await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       router.push(`/albums/${album.id}`);
     } catch (error) {

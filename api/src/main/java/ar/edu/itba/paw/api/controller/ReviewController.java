@@ -125,8 +125,7 @@ public class ReviewController extends BaseController {
     @PUT
     @Path(ApiUriConstants.ID)
     public Response updateReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ReviewForm reviewForm) {
-        Review oldReview = reviewService.findById(id);
-        Review reviewToUpdate = reviewFormMapper.mergeModel(oldReview, reviewForm);
+        Review reviewToUpdate = reviewFormMapper.toModel(id, reviewForm);
         Review updatedReview = reviewService.update(reviewToUpdate);
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDtoMapper.toDTO(updatedReview), getBaseUrl());
         return buildResponse(reviewResource);

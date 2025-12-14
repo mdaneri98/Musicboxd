@@ -12,6 +12,7 @@ public interface NotificationService extends CrudService<Notification> {
     Void notifyComment(Review review, User commentedByUser);
     Void notifyFollow(User followedUser, User follower);
     Void notifyNewReview(Review review);
+    Void notifyReviewBlockStatusChange(Review review, Boolean wasBlocked, Boolean isBlocked);
 
     List<Notification> findBySubstring(String substring, Integer page, Integer pageSize);
     Long countAll();

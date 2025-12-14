@@ -19,6 +19,7 @@ import {
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
+import { ReviewItemType } from '@/types/enums';
 
 const EditArtistReviewPage = () => {
   const { t } = useTranslation();
@@ -83,6 +84,7 @@ const EditArtistReviewPage = () => {
 
     try {
       setSubmitLoading(true);
+      data.item_type = ReviewItemType.ARTIST;
       await dispatch(updateReviewAsync({ id: existingReview.id, reviewData: data })).unwrap();
       router.push(`/artists/${artist.id}`);
     } catch (error) {

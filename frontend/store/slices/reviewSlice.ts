@@ -324,11 +324,11 @@ export const deleteCommentAsync = createAsyncThunk<
  */
 export const blockReviewAsync = createAsyncThunk<
   HALResource<Review>,
-  number,
+  { id: number; reviewData: ReviewFormData },
   { rejectValue: string }
->('reviews/blockReview', async (reviewId, { rejectWithValue }) => {
+>('reviews/blockReview', async ({ id, reviewData }, { rejectWithValue }) => {
   try {
-    const review = await reviewRepository.updateReview(reviewId, { blocked: true });
+    const review = await reviewRepository.updateReview(id, { ...reviewData, blocked: true });
     return review as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to block review');
@@ -340,11 +340,11 @@ export const blockReviewAsync = createAsyncThunk<
  */
 export const unblockReviewAsync = createAsyncThunk<
   HALResource<Review>,
-  number,
+  { id: number; reviewData: ReviewFormData },
   { rejectValue: string }
->('reviews/unblockReview', async (reviewId, { rejectWithValue }) => {
+>('reviews/unblockReview', async ({ id, reviewData }, { rejectWithValue }) => {
   try {
-    const review = await reviewRepository.updateReview(reviewId, { blocked: false });
+    const review = await reviewRepository.updateReview(id, { ...reviewData, blocked: false });
     return review as HALResource<Review>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to unblock review');

@@ -42,7 +42,9 @@ public class Notification {
         LIKE,
         COMMENT,
         FOLLOW,
-        NEW_REVIEW
+        NEW_REVIEW,
+        REVIEW_BLOCKED,
+        REVIEW_UNBLOCKED
     }
 
     public Notification() {

@@ -136,7 +136,6 @@ public class EmailServiceImpl implements EmailService {
         params.put("item_name", reviewName);
         params.put("item_type", reviewType);
 
-        //params.put("verificationURL", verificationURL);
         this.sendMessageUsingThymeleafTemplate(
                 template,
                 to.getEmail(),
