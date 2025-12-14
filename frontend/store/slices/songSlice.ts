@@ -23,6 +23,8 @@ export interface SongState {
   currentSong: Song | null;
   // Related data for current song
   songReviews: Review[];
+  // Current user's review for the song
+  currentUserReview: Review | null;
   // Pagination info
   pagination: {
     page: number;
@@ -55,6 +57,7 @@ const initialState: SongState = {
   orderedSongsIds: [],
   currentSong: null,
   songReviews: [],
+  currentUserReview: null,
   pagination: {
     page: 1,
     size: 10,
@@ -183,6 +186,22 @@ export const fetchMoreSongReviewsAsync = createAsyncThunk<
   }
 });
 
+/**
+ * Fetch the current user's review for a song
+ */
+export const fetchUserSongReviewAsync = createAsyncThunk<
+  Review | null,
+  { songId: number; userId: number },
+  { rejectValue: string }
+>('songs/fetchUserSongReview', async ({ songId, userId }, { rejectWithValue }) => {
+  try {
+    const review = await songRepository.getUserReviewForSong(songId, userId);
+    return review;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch user song review');
+  }
+});
+
 export const createSongReviewAsync = createAsyncThunk<
   HALResource<Review>,
   ReviewFormData,
@@ -236,6 +255,7 @@ const songSlice = createSlice({
     clearCurrentSong: (state) => {
       state.currentSong = null;
       state.songReviews = [];
+      state.currentUserReview = null;
       state.reviewsPagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
     clearSongs: (state) => {
@@ -422,6 +442,15 @@ const songSlice = createSlice({
         state.error = action.payload || 'Failed to fetch more song reviews';
       });
 
+    // Fetch User's Song Review
+    builder
+      .addCase(fetchUserSongReviewAsync.fulfilled, (state, action) => {
+        state.currentUserReview = action.payload;
+      })
+      .addCase(fetchUserSongReviewAsync.rejected, (state) => {
+        state.currentUserReview = null;
+      });
+
     builder
       .addCase(addSongFavoriteAsync.fulfilled, (state, action) => {
         const updatedSong = action.payload.data as Song;
@@ -496,6 +525,7 @@ export const selectLoadingSongReviews = (state: RootState) => state.songs.loadin
 export const selectLoadingMoreSongReviews = (state: RootState) => state.songs.loadingMoreReviews;
 export const selectSongsHasMore = (state: RootState) => state.songs.pagination.hasMore;
 export const selectSongReviewsHasMore = (state: RootState) => state.songs.reviewsPagination.hasMore;
+export const selectCurrentUserSongReview = (state: RootState) => state.songs.currentUserReview;
 
 export default songSlice.reducer;
 

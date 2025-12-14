@@ -180,6 +180,31 @@ class SongRepository {
   }
 
   /**
+   * Get a specific user's review for a song
+   * @param songId Song ID
+   * @param userId User ID
+   * @returns The user's review or null if not found
+   */
+  async getUserReviewForSong(
+    songId: number,
+    userId: number
+  ): Promise<Review | null> {
+    try {
+      const url = buildUrl(SONG_ENDPOINTS.SONG_REVIEWS(songId), { userId } as Record<string, string | number | boolean>);
+      const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
+
+      if (response && response.items && response.items.length > 0) {
+        return response.items[0].data;
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`Get user ${userId} review for song ${songId} error:`, error);
+      return null;
+    }
+  }
+
+  /**
    * Add song to user's favorites
    * @param id Song ID
    */

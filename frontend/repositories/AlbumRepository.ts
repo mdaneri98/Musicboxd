@@ -183,6 +183,31 @@ class AlbumRepository {
   }
 
   /**
+   * Get a specific user's review for an album
+   * @param albumId Album ID
+   * @param userId User ID
+   * @returns The user's review or null if not found
+   */
+  async getUserReviewForAlbum(
+    albumId: number,
+    userId: number
+  ): Promise<Review | null> {
+    try {
+      const url = buildUrl(ALBUM_ENDPOINTS.ALBUM_REVIEWS(albumId), { userId } as Record<string, string | number | boolean>);
+      const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
+
+      if (response && response.items && response.items.length > 0) {
+        return response.items[0].data;
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`Get user ${userId} review for album ${albumId} error:`, error);
+      return null;
+    }
+  }
+
+  /**
    * Get album's songs
    * @param id Album ID
    * @param page Page number
@@ -192,7 +217,7 @@ class AlbumRepository {
   async getAlbumSongs(
     id: number,
     page: number = 1,
-    size: number = 20
+    size: number = 10
   ): Promise<Collection<HALResource<Song>>> {
     try {
       const params = { page, size };

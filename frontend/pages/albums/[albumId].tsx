@@ -14,6 +14,7 @@ import {
   fetchAlbumSongsAsync,
   fetchAlbumReviewsAsync,
   fetchMoreAlbumReviewsAsync,
+  fetchUserAlbumReviewAsync,
   addAlbumFavoriteAsync,
   removeAlbumFavoriteAsync,
   selectCurrentAlbum,
@@ -24,10 +25,11 @@ import {
   selectAlbumReviewsPagination,
   selectAlbumReviewsHasMore,
   selectAlbumError,
+  selectCurrentUserAlbumReview,
   clearCurrentAlbum,
   showError,
 } from '@/store/slices';
-import type { Artist, Review } from '@/types';
+import type { Artist } from '@/types';
 
 // Constants
 const MAX_FAVORITES_ERROR_PATTERN = /maximum number of favorites/i;
@@ -49,10 +51,10 @@ const AlbumDetailPage = () => {
   const reviewsPagination = useAppSelector(selectAlbumReviewsPagination);
   const hasMoreReviews = useAppSelector(selectAlbumReviewsHasMore);
   const error = useAppSelector(selectAlbumError);
+  const currentUserReview = useAppSelector(selectCurrentUserAlbumReview);
   
   const [artist, setArtist] = useState<Artist | null>(null);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [userRating, setUserRating] = useState<number | undefined>();
 
   // Clear on unmount
   useEffect(() => {
@@ -90,15 +92,13 @@ const AlbumDetailPage = () => {
     dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 10 }));
   }, [albumId, dispatch]);
 
-  // Set user rating when reviews and user data are available
+  // Fetch current user's review if authenticated and has reviewed
   useEffect(() => {
-    if (album?.reviewed && isAuthenticated && currentUser && reviews.length > 0) {
-      const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
-      if (userReview) {
-        setUserRating(userReview.rating);
-      }
-    }
-  }, [album?.reviewed, isAuthenticated, currentUser, reviews]);
+    if (!albumId || !isAuthenticated || !currentUser || !album?.reviewed) return;
+    
+    const albumIdNum = parseInt(albumId as string);
+    dispatch(fetchUserAlbumReviewAsync({ albumId: albumIdNum, userId: currentUser.id }));
+  }, [albumId, isAuthenticated, currentUser, album?.reviewed, dispatch]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
@@ -186,7 +186,7 @@ const AlbumDetailPage = () => {
           isAuthenticated={isAuthenticated}
           isFavorite={album.favorite || false}
           favoriteLoading={favoriteLoading}
-          userRating={userRating}
+          userRating={currentUserReview?.rating}
           isReviewed={album.reviewed || false}
           onFavoriteToggle={handleFavoriteToggle}
         />

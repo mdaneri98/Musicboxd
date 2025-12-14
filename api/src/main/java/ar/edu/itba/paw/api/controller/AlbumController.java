@@ -153,11 +153,12 @@ public class AlbumController extends BaseController {
     public Response getAlbumReviews(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
-            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
-
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        List<Review> reviews = reviewService.findAlbumReviewsPaginated(id, page, size, loggedUserId);
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, loggedUserId, reviewService);
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
+        List<Review> reviews = new ArrayList<>();
+        if (userId != null) reviews.add(reviewService.findAlbumReviewByUserId(userId, id, SecurityContextUtils.getCurrentUserId()));
+        else reviews = reviewService.findAlbumReviewsPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);

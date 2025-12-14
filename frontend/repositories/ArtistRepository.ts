@@ -186,6 +186,31 @@ class ArtistRepository {
   }
 
   /**
+   * Get a specific user's review for an artist
+   * @param artistId Artist ID
+   * @param userId User ID
+   * @returns The user's review or null if not found
+   */
+  async getUserReviewForArtist(
+    artistId: number,
+    userId: number
+  ): Promise<Review | null> {
+    try {
+      const url = buildUrl(ARTIST_ENDPOINTS.ARTIST_REVIEWS(artistId), { userId } as Record<string, string | number | boolean>);
+      const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
+
+      if (response && response.items && response.items.length > 0) {
+        return response.items[0].data;
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`Get user ${userId} review for artist ${artistId} error:`, error);
+      return null;
+    }
+  }
+
+  /**
    * Get artist's albums
    * @param id Artist ID
    * @param page Page number

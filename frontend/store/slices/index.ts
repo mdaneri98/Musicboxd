@@ -86,6 +86,7 @@ export {
   fetchArtistSongsAsync,
   fetchArtistReviewsAsync,
   fetchMoreArtistReviewsAsync,
+  fetchUserArtistReviewAsync,
   createArtistReviewAsync,
   addArtistFavoriteAsync,
   removeArtistFavoriteAsync,
@@ -113,6 +114,7 @@ export {
   selectLoadingMoreArtistReviews,
   selectArtistsHasMore,
   selectArtistReviewsHasMore,
+  selectCurrentUserArtistReview,
 } from './artistSlice';
 
 // Album Slice
@@ -126,6 +128,7 @@ export {
   fetchAlbumSongsAsync,
   fetchAlbumReviewsAsync,
   fetchMoreAlbumReviewsAsync,
+  fetchUserAlbumReviewAsync,
   createAlbumReviewAsync,
   addAlbumFavoriteAsync,
   removeAlbumFavoriteAsync,
@@ -151,6 +154,7 @@ export {
   selectLoadingMoreAlbumReviews,
   selectAlbumsHasMore,
   selectAlbumReviewsHasMore,
+  selectCurrentUserAlbumReview,
 } from './albumSlice';
 
 // Song Slice
@@ -163,6 +167,7 @@ export {
   deleteSongAsync,
   fetchSongReviewsAsync,
   fetchMoreSongReviewsAsync,
+  fetchUserSongReviewAsync,
   createSongReviewAsync,
   addSongFavoriteAsync,
   removeSongFavoriteAsync,
@@ -186,6 +191,7 @@ export {
   selectLoadingMoreSongReviews,
   selectSongsHasMore,
   selectSongReviewsHasMore,
+  selectCurrentUserSongReview,
 } from './songSlice';
 
 // Review Slice

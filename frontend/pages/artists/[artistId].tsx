@@ -14,6 +14,7 @@ import {
   fetchArtistSongsAsync, 
   fetchArtistReviewsAsync, 
   fetchMoreArtistReviewsAsync,
+  fetchUserArtistReviewAsync,
   addArtistFavoriteAsync, 
   removeArtistFavoriteAsync,
   selectCurrentArtist,
@@ -25,10 +26,10 @@ import {
   selectArtistReviewsPagination,
   selectArtistReviewsHasMore,
   selectArtistError,
+  selectCurrentUserArtistReview,
   clearCurrentArtist,
   showError,
 } from '@/store/slices';
-import type { Review } from '@/types';
 import { AlbumCard, SongCard } from '@/components/cards';
 
 // Constants
@@ -52,9 +53,9 @@ const ArtistDetailPage = () => {
   const reviewsPagination = useAppSelector(selectArtistReviewsPagination);
   const hasMoreReviews = useAppSelector(selectArtistReviewsHasMore);
   const error = useAppSelector(selectArtistError);
+  const currentUserReview = useAppSelector(selectCurrentUserArtistReview);
   
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [userRating, setUserRating] = useState<number | undefined>();
 
   // Clear artist data when component unmounts or id changes
   useEffect(() => {
@@ -74,15 +75,13 @@ const ArtistDetailPage = () => {
     dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
   }, [artistId, dispatch]);
 
-  // Set user rating when reviews and user data are available
+  // Fetch current user's review if authenticated and has reviewed
   useEffect(() => {
-    if (artist?.reviewed && isAuthenticated && currentUser && reviews.length > 0) {
-      const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
-      if (userReview) {
-        setUserRating(userReview.rating);
-      }
-    }
-  }, [artist?.reviewed, isAuthenticated, currentUser, reviews]);
+    if (!artistId || !isAuthenticated || !currentUser || !artist?.reviewed) return;
+    
+    const artistIdNum = parseInt(artistId as string);
+    dispatch(fetchUserArtistReviewAsync({ artistId: artistIdNum, userId: currentUser.id }));
+  }, [artistId, isAuthenticated, currentUser, artist?.reviewed, dispatch]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
@@ -169,7 +168,7 @@ const ArtistDetailPage = () => {
           isAuthenticated={isAuthenticated}
           isFavorite={artist.favorite || false}
           favoriteLoading={favoriteLoading}
-          userRating={userRating}
+          userRating={currentUserReview?.rating}
           isReviewed={artist.reviewed || false}
           onFavoriteToggle={handleFavoriteToggle}
         />

@@ -45,6 +45,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.ArrayList;
 
 @Path(ApiUriConstants.ARTISTS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -164,18 +165,16 @@ public class ArtistController extends BaseController {
     public Response getArtistReviews(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
-            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
-
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-
-        List<Review> reviews = reviewService.findArtistReviewsPaginated(id, page, size, loggedUserId);
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, loggedUserId, reviewService);
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
+        List<Review> reviews = new ArrayList<>();
+        if (userId != null) reviews.add(reviewService.findArtistReviewByUserId(userId, id, SecurityContextUtils.getCurrentUserId()));
+        else reviews = reviewService.findArtistReviewsPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
-        Integer totalCount = reviewService.countAll().intValue();
-        
+        Integer totalCount = reviewService.countAll().intValue();    
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
-        
         return buildResponse(collection);
     }
 

@@ -24,6 +24,8 @@ export interface ArtistState {
   artistAlbums: Album[];
   artistSongs: Song[];
   artistReviews: Review[];
+  // Current user's review for the artist
+  currentUserReview: Review | null;
   // Pagination info
   pagination: {
     page: number;
@@ -60,6 +62,7 @@ const initialState: ArtistState = {
   artistAlbums: [],
   artistSongs: [],
   artistReviews: [],
+  currentUserReview: null,
   pagination: {
     page: 1,
     size: 10,
@@ -246,6 +249,22 @@ export const fetchMoreArtistReviewsAsync = createAsyncThunk<
   }
 });
 
+/**
+ * Fetch the current user's review for an artist
+ */
+export const fetchUserArtistReviewAsync = createAsyncThunk<
+  Review | null,
+  { artistId: number; userId: number },
+  { rejectValue: string }
+>('artists/fetchUserArtistReview', async ({ artistId, userId }, { rejectWithValue }) => {
+  try {
+    const review = await artistRepository.getUserReviewForArtist(artistId, userId);
+    return review;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch user artist review');
+  }
+});
+
 export const createArtistReviewAsync = createAsyncThunk<
   HALResource<Review>,
   ReviewFormData,
@@ -314,6 +333,7 @@ const artistSlice = createSlice({
       state.artistAlbums = [];
       state.artistSongs = [];
       state.artistReviews = [];
+      state.currentUserReview = null;
       state.reviewsPagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
 
@@ -549,6 +569,15 @@ const artistSlice = createSlice({
         state.error = action.payload || 'Failed to fetch more artist reviews';
       });
 
+    // Fetch User's Artist Review
+    builder
+      .addCase(fetchUserArtistReviewAsync.fulfilled, (state, action) => {
+        state.currentUserReview = action.payload;
+      })
+      .addCase(fetchUserArtistReviewAsync.rejected, (state) => {
+        state.currentUserReview = null;
+      });
+
     // Add/Remove Favorite
     builder
       .addCase(addArtistFavoriteAsync.fulfilled, (state, action) => {
@@ -633,6 +662,7 @@ export const selectLoadingReviews = (state: RootState) => state.artists.loadingR
 export const selectLoadingMoreArtistReviews = (state: RootState) => state.artists.loadingMoreReviews;
 export const selectArtistsHasMore = (state: RootState) => state.artists.pagination.hasMore;
 export const selectArtistReviewsHasMore = (state: RootState) => state.artists.reviewsPagination.hasMore;
+export const selectCurrentUserArtistReview = (state: RootState) => state.artists.currentUserReview;
 
 // ============================================================================
 // Reducer Export

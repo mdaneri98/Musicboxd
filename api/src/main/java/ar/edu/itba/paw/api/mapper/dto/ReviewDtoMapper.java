@@ -2,7 +2,6 @@ package ar.edu.itba.paw.api.mapper.dto;
 
 import ar.edu.itba.paw.api.dto.ReviewDTO;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -48,22 +47,6 @@ public class ReviewDtoMapper {
 
         return reviews.stream()
                 .map(this::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<ReviewDTO> toDTOList(List<Review> reviews, Long loggedUserId, ReviewService reviewService) {
-        if (reviews == null) {
-            return null;
-        }
-
-        return reviews.stream()
-                .map(review -> {
-                    ReviewDTO dto = toDTO(review);
-                    if (loggedUserId != null && dto != null) {
-                        dto.setIsLiked(reviewService.isLiked(loggedUserId, review.getId()));
-                    }
-                    return dto;
-                })
                 .collect(Collectors.toList());
     }
 }

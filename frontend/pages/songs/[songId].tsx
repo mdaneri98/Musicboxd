@@ -14,6 +14,7 @@ import {
   fetchArtistByIdAsync,
   fetchSongReviewsAsync,
   fetchMoreSongReviewsAsync,
+  fetchUserSongReviewAsync,
   addSongFavoriteAsync,
   removeSongFavoriteAsync,
   selectCurrentSong,
@@ -23,10 +24,11 @@ import {
   selectSongReviewsPagination,
   selectSongReviewsHasMore,
   selectSongError,
+  selectCurrentUserSongReview,
   clearCurrentSong,
   showError,
 } from '@/store/slices';
-import type { Album, Artist, Review } from '@/types';
+import type { Album, Artist } from '@/types';
 import { formatDate } from '@/utils/timeUtils';
 
 // Constants
@@ -47,11 +49,11 @@ const SongDetailPage = () => {
   const reviewsPagination = useAppSelector(selectSongReviewsPagination);
   const hasMoreReviews = useAppSelector(selectSongReviewsHasMore);
   const error = useAppSelector(selectSongError);
+  const currentUserReview = useAppSelector(selectCurrentUserSongReview);
   
   const [album, setAlbum] = useState<Album | null>(null);
   const [artist, setArtist] = useState<Artist | null>(null);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [userRating, setUserRating] = useState<number | undefined>();
 
   useEffect(() => {
     return () => {
@@ -82,15 +84,13 @@ const SongDetailPage = () => {
     dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 10 }));
   }, [songId, dispatch, t]);
 
-  // Set user rating when reviews and user data are available
+  // Fetch current user's review if authenticated and has reviewed
   useEffect(() => {
-    if (song?.reviewed && isAuthenticated && currentUser && reviews.length > 0) {
-      const userReview = reviews.find((r: Review) => r.user_id === currentUser.id);
-      if (userReview) {
-        setUserRating(userReview.rating);
-      }
-    }
-  }, [song?.reviewed, isAuthenticated, currentUser, reviews]);
+    if (!songId || !isAuthenticated || !currentUser || !song?.reviewed) return;
+    
+    const songIdNum = parseInt(songId as string);
+    dispatch(fetchUserSongReviewAsync({ songId: songIdNum, userId: currentUser.id }));
+  }, [songId, isAuthenticated, currentUser, song?.reviewed, dispatch]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
@@ -185,7 +185,7 @@ const SongDetailPage = () => {
           isAuthenticated={isAuthenticated}
           isFavorite={song.favorite || false}
           favoriteLoading={favoriteLoading}
-          userRating={userRating}
+          userRating={currentUserReview?.rating}
           isReviewed={song.reviewed || false}
           onFavoriteToggle={handleFavoriteToggle}
         />

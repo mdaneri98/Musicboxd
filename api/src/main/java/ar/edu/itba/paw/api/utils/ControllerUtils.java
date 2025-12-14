@@ -3,9 +3,6 @@ package ar.edu.itba.paw.api.utils;
 import ar.edu.itba.paw.api.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.models.reviews.ReviewType;
 
-import javax.ws.rs.core.*;
-import java.util.function.Supplier;
-
 /**
  * Utility class for controller methods
  */
@@ -26,6 +23,11 @@ public final class ControllerUtils {
     public static final String FILTER_PARAM_NAME = "filter";
     public static final String STATUS_PARAM_NAME = "status";
     public static final String ID_PARAM_NAME = "id";
+    public static final String ARTIST_ID_PARAM_NAME = "artistId";
+    public static final String ALBUM_ID_PARAM_NAME = "albumId";
+    public static final String SONG_ID_PARAM_NAME = "songId";
+    public static final String USER_ID_PARAM_NAME = "userId";
+
 
     // Default values
     public static final Integer FIRST_PAGE = 1;

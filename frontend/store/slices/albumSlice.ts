@@ -23,6 +23,8 @@ export interface AlbumState {
   // Related data for current album
   albumSongs: Song[];
   albumReviews: Review[];
+  // Current user's review for the album
+  currentUserReview: Review | null;
   // Pagination info
   pagination: {
     page: number;
@@ -57,6 +59,7 @@ const initialState: AlbumState = {
   currentAlbum: null,
   albumSongs: [],
   albumReviews: [],
+  currentUserReview: null,
   pagination: {
     page: 1,
     size: 10,
@@ -199,6 +202,22 @@ export const fetchMoreAlbumReviewsAsync = createAsyncThunk<
   }
 });
 
+/**
+ * Fetch the current user's review for an album
+ */
+export const fetchUserAlbumReviewAsync = createAsyncThunk<
+  Review | null,
+  { albumId: number; userId: number },
+  { rejectValue: string }
+>('albums/fetchUserAlbumReview', async ({ albumId, userId }, { rejectWithValue }) => {
+  try {
+    const review = await albumRepository.getUserReviewForAlbum(albumId, userId);
+    return review;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch user album review');
+  }
+});
+
 export const createAlbumReviewAsync = createAsyncThunk<
   HALResource<Review>,
   ReviewFormData,
@@ -253,6 +272,7 @@ const albumSlice = createSlice({
       state.currentAlbum = null;
       state.albumSongs = [];
       state.albumReviews = [];
+      state.currentUserReview = null;
       state.reviewsPagination = { page: 1, size: 10, totalCount: 0, hasMore: true };
     },
     clearAlbums: (state) => {
@@ -450,6 +470,15 @@ const albumSlice = createSlice({
         state.error = action.payload || 'Failed to fetch more album reviews';
       });
 
+    // Fetch User's Album Review
+    builder
+      .addCase(fetchUserAlbumReviewAsync.fulfilled, (state, action) => {
+        state.currentUserReview = action.payload;
+      })
+      .addCase(fetchUserAlbumReviewAsync.rejected, (state) => {
+        state.currentUserReview = null;
+      });
+
     builder
       .addCase(addAlbumFavoriteAsync.fulfilled, (state, action) => {
         const updatedAlbum = action.payload.data as Album;
@@ -527,6 +556,7 @@ export const selectAlbumsHasMore = (state: RootState) => state.albums.pagination
 export const selectAlbumReviewsHasMore = (state: RootState) => state.albums.reviewsPagination.hasMore;
 export const selectLoadingAlbumSongs = (state: RootState) => state.albums.loadingSongs;
 export const selectLoadingAlbumReviews = (state: RootState) => state.albums.loadingReviews;
+export const selectCurrentUserAlbumReview = (state: RootState) => state.albums.currentUserReview;
 
 export default albumSlice.reducer;
 
