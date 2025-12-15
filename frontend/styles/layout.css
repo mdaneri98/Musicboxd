@@ -181,16 +181,23 @@
     .sidebar-nav {
         flex-direction: row;
         justify-content: space-around;
+        align-items: center;
         padding: var(--space-xs) var(--space-md);
+        height: 100%;
     }
 
     .sidebar-icon {
         width: calc(var(--sidebar-width) - var(--space-lg));
         height: calc(var(--sidebar-width) - var(--space-lg));
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .profile-icon {
         margin-top: 0;
+        margin: 0;
     }
 
     .main-container {

@@ -167,7 +167,6 @@ public class EmailServiceImpl implements EmailService {
                 emailSubject = "notification.like";
                 params.put("reviewTitle", reviewTitle);
                 params.put("itemName", itemName);
-                params.put("itemType", itemType);
                 params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
                 break;
 
@@ -176,7 +175,6 @@ public class EmailServiceImpl implements EmailService {
                 emailSubject = "notification.comment";
                 params.put("reviewTitle", reviewTitle);
                 params.put("itemName", itemName);
-                params.put("itemType", itemType);
                 params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
                 break;
 
@@ -191,8 +189,21 @@ public class EmailServiceImpl implements EmailService {
                 emailSubject = "notification.new.review";
                 params.put("reviewTitle", reviewTitle);
                 params.put("itemName", itemName);
-                params.put("itemType", itemType);
                 params.put("rating", rating);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                break;
+            case REVIEW_BLOCKED:
+                template = "blocked_review";
+                emailSubject = "notification.review.blocked";
+                params.put("reviewTitle", reviewTitle);
+                params.put("itemName", itemName);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                break;
+            case REVIEW_UNBLOCKED:
+                template = "unblocked_review";
+                emailSubject = "notification.review.unblocked";
+                params.put("reviewTitle", reviewTitle);
+                params.put("itemName", itemName);
                 params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
                 break;
         }

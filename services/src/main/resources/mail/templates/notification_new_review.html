@@ -135,8 +135,6 @@
            <span th:text="${rating} + '/5'">5/5</span></p>
         <p><strong th:text="#{email.review.details.item}">Item:</strong>
            <span th:text="${itemName}">Item Name</span></p>
-        <p><strong th:text="#{email.review.details.type}">Type:</strong>
-           <span th:text="${itemType}">Type</span></p>
     </div>
 
     <a class="button" th:href="${reviewUrl}" th:text="#{email.notification.read.review}">Read Review</a>
