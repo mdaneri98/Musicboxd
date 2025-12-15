@@ -113,6 +113,19 @@ body {
   .main-container {
     margin-left: 0;
   }
+
+  .main-container-no-sidebar {
+    overflow-x: hidden;
+  }
+
+  .landing-header {
+    padding: 0;
+  }
+
+  .content-wrapper {
+    padding: var(--space-sm);
+    overflow-x: hidden;
+  }
 }
 
 /* Typography */
