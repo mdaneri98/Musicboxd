@@ -20,7 +20,7 @@ import { imageRepository } from '@/repositories';
 import type { Album, ReviewFormData, HALResource, Review } from '@/types';
 import { ReviewItemType } from '@/types/enums';
 import { LoadingSpinner } from '@/components/ui';
-
+import { ASSETS } from '@/utils';
 const SongReviewPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -117,7 +117,7 @@ const SongReviewPage = () => {
     );
   }
 
-  const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/image-placeholder.png';
+  const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : ASSETS.IMAGE_PLACEHOLDER;
 
   return (
     <Layout title={`Musicboxd - ${t('song.reviewSong')} ${song.title}`}>

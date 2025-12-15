@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { User } from '@/types';
 import { imageRepository } from '@/repositories';
 import { useTranslation } from 'react-i18next';
+import { ASSETS } from '@/utils';
 
 interface UserInfoProps {
   user: User;
@@ -13,7 +14,7 @@ interface UserInfoProps {
 }
 
 export const UserInfo: React.FC<UserInfoProps> = ({ user, isOwnProfile, isAuthenticated, isFollowing, followLoading, onFollowToggle }) => {
-  const userImgUrl = user.image_id ? imageRepository.getImageUrl(user.image_id) : '/assets/default-avatar.png';
+  const userImgUrl = user.image_id ? imageRepository.getImageUrl(user.image_id) : ASSETS.DEFAULT_AVATAR;
   const { t } = useTranslation();
 
   const renderActionButton = () => {

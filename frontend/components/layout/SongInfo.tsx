@@ -3,6 +3,7 @@ import { Song, Album, Artist, User } from '@/types';
 import { RatingCard } from '@/components/ui';
 import { imageRepository } from '@/repositories';
 import { useTranslation } from 'react-i18next';
+import { ASSETS } from '@/utils';
 interface SongInfoProps {
   song: Song;
   album: Album | null;
@@ -28,8 +29,8 @@ export const SongInfo: React.FC<SongInfoProps> = ({
   isReviewed,
   onFavoriteToggle,
 }) => {
-  const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/image-placeholder.png';
-  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/image-placeholder.png';
+  const albumImgUrl = album?.image_id ? imageRepository.getImageUrl(album.image_id) : ASSETS.IMAGE_PLACEHOLDER;
+  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : ASSETS.IMAGE_PLACEHOLDER;
   const { t } = useTranslation();
   return (
     <>

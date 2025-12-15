@@ -8,6 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { editProfileSchema } from '@/utils/validationSchemas';
 import { EditProfileFormData } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { ASSETS } from '@/utils';
 
 interface EditProfileFormProps {
   onSubmit: (data: EditProfileFormData) => void;
@@ -58,7 +59,7 @@ const EditProfileForm = ({
           />
           <img
             id="imagePreview"
-            src={imagePreview || '/assets/default-avatar.png'}
+            src={imagePreview || ASSETS.DEFAULT_AVATAR}
             className="entity-image mod-editable-image"
             style={{ cursor: 'pointer' }}
             onClick={() => document.getElementById('userImageInput')?.click()}

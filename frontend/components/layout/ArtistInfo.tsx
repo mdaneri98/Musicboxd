@@ -3,6 +3,7 @@ import { Artist, User } from '@/types';
 import { RatingCard } from '@/components/ui';
 import { imageRepository } from '@/repositories';
 import { useTranslation } from 'react-i18next';
+import { ASSETS } from '@/utils';
 interface ArtistInfoProps {
   artist: Artist;
   currentUser: User | null;
@@ -24,7 +25,7 @@ export const ArtistInfo: React.FC<ArtistInfoProps> = ({
   isReviewed,
   onFavoriteToggle,
 }) => {
-  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/image-placeholder.png';
+  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : ASSETS.IMAGE_PLACEHOLDER;
   const { t } = useTranslation();
   return (
     <>

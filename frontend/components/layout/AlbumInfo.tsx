@@ -4,6 +4,7 @@ import { RatingCard } from '@/components/ui';
 import { imageRepository } from '@/repositories';
 import { formatDate } from '@/utils/timeUtils';
 import { useTranslation } from 'react-i18next';
+import { ASSETS } from '@/utils';
 interface AlbumInfoProps {
   album: Album;
   artist: Artist | null;
@@ -27,8 +28,8 @@ export const AlbumInfo: React.FC<AlbumInfoProps> = ({
   isReviewed,
   onFavoriteToggle,
 }) => {
-  const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : '/assets/image-placeholder.png';
-  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/image-placeholder.png';
+  const albumImgUrl = album.image_id ? imageRepository.getImageUrl(album.image_id) : ASSETS.IMAGE_PLACEHOLDER;
+  const artistImgUrl = artist?.image_id ? imageRepository.getImageUrl(artist.image_id) : ASSETS.IMAGE_PLACEHOLDER;
   const { t } = useTranslation();
   return (
     <>

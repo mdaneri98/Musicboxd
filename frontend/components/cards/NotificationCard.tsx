@@ -11,6 +11,7 @@ import { imageRepository } from '@/repositories';
 import { NotificationTypeEnum } from '@/types';
 import { useTranslation } from 'react-i18next';
 import { formatTimeAgo } from '@/utils/timeUtils';
+import { ASSETS } from '@/utils';
 
 interface NotificationCardProps {
   notification: Notification;
@@ -30,11 +31,11 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
   // Get user image URL
   const triggerUserImageUrl = notification.trigger_user_image_id
     ? imageRepository.getImageUrl(notification.trigger_user_image_id)
-    : '/default-avatar.png';
+    : ASSETS.DEFAULT_AVATAR;
 
   const currentUserImageUrl = currentUser?.image_id
     ? imageRepository.getImageUrl(currentUser?.image_id)
-    : '/default-avatar.png';
+    : ASSETS.DEFAULT_AVATAR;
 
   // Get review item image URL (for LIKE, COMMENT, NEW_REVIEW)
   const reviewItemImageUrl = notification.review_item_image_id

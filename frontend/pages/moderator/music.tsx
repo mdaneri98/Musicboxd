@@ -26,16 +26,14 @@ import {
 import { imageRepository } from '@/repositories';
 import { validateMusicEditorForm } from '@/utils/validationSchemas';
 import type { ModArtistFormData, ModAlbumFormData, ModSongFormData } from '@/types/forms';
+import { ASSETS } from '@/utils';
 
-// Generate unique temporary IDs for new items
 const generateTempId = () => `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-// Convert duration string (MM:SS or HH:MM:SS) to display format
+
 const formatDurationForDisplay = (duration: string): string => {
   if (!duration) return '';
-  // If already in MM:SS format, return as is
   if (/^\d{1,2}:\d{2}$/.test(duration)) return duration;
-  // If in seconds, convert to MM:SS
   const seconds = parseInt(duration);
   if (!isNaN(seconds)) {
     const mins = Math.floor(seconds / 60);
@@ -600,7 +598,7 @@ export default function MusicEditorPage() {
               {/* Artist Image */}
               <div className="image-upload-container">
                 <img
-                  src={formData._imagePreview || '/assets/image-placeholder.png'}
+                  src={formData._imagePreview || ASSETS.IMAGE_PLACEHOLDER}
                   alt={t('moderator.artistImage')}
                   className="entity-image mod-editable-image"
                   onClick={() => document.getElementById('artistImageInput')?.click()}
@@ -675,7 +673,7 @@ export default function MusicEditorPage() {
                     <div className="album-header" onClick={() => toggleAlbumCollapse(albumIndex)}>
                       <div className="album-header-info">
                         <img
-                          src={album._imagePreview || '/assets/image-placeholder.png'}
+                          src={album._imagePreview || ASSETS.IMAGE_PLACEHOLDER}
                           alt={album.title || t('moderator.newAlbum')}
                           className="album-thumbnail"
                         />
@@ -708,7 +706,7 @@ export default function MusicEditorPage() {
                           {/* Album Image */}
                           <div className="image-upload-container image-upload-small">
                             <img
-                              src={album._imagePreview || '/assets/image-placeholder.png'}
+                              src={album._imagePreview || ASSETS.IMAGE_PLACEHOLDER}
                               alt={t('moderator.albumImage')}
                               className="sub-element-image-preview mod-editable-image"
                               onClick={() => document.getElementById(`albumImageInput_${albumIndex}`)?.click()}

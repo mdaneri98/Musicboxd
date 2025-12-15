@@ -19,7 +19,7 @@ import { imageRepository } from '@/repositories';
 import type { ReviewFormData } from '@/types';
 import { ReviewItemType } from '@/types/enums';
 import { LoadingSpinner } from '@/components/ui';
-
+import { ASSETS } from '@/utils';
 const ArtistReviewPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -107,7 +107,7 @@ const ArtistReviewPage = () => {
     );
   }
 
-  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : '/assets/image-placeholder.png';
+  const artistImgUrl = artist.image_id ? imageRepository.getImageUrl(artist.image_id) : ASSETS.IMAGE_PLACEHOLDER;
 
   return (
     <Layout title={`Musicboxd - ${t('artist.reviewArtist')} ${artist.name}`}>
