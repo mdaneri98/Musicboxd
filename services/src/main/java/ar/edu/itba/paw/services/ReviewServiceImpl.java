@@ -476,6 +476,14 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Review findAndSetContextDependentFields(Long id, Long loggedUserId) {
+        Review review = findById(id);
+        setContextDependentFields(review, loggedUserId);
+        return review;
+    }
+
     private Notification.NotificationType blockStatusChanged(Boolean wasBlocked, Boolean isBlocked) {
         if (wasBlocked == null || isBlocked == null || wasBlocked.equals(isBlocked)) {
             return null;

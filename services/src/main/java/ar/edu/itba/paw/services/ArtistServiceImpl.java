@@ -155,6 +155,13 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    public Artist findAndSetContextDependentFields(Long id, Long loggedUserId) {
+        Artist artist = findById(id);
+        setContextDependentFields(artist, loggedUserId);
+        return artist;
+    }
+
+    @Override
     public void setContextDependentFields(Artist artist, Long loggedUserId) {
         if (loggedUserId == null) {
             artist.setIsReviewed(false);

@@ -86,9 +86,8 @@ public class ReviewController extends BaseController {
 
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
-        Integer totalCount = reviewService.countAll().intValue();
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
+                reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
         return buildResponse(collection);
     }
 
@@ -106,8 +105,7 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Review review = reviewService.findById(id);
-        reviewService.setContextDependentFields(review, loggedUserId);
+        Review review = reviewService.findAndSetContextDependentFields(id, loggedUserId);
         return buildResponseUsingEtag(request, () -> {
             ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review);
             return reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
@@ -140,9 +138,8 @@ public class ReviewController extends BaseController {
         List<Comment> comments = commentService.findByReviewId(id, size, page);
         List<CommentDTO> commentDTOs = commentDtoMapper.toDTOList(comments);
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
-        Integer totalCount = commentService.countByReviewId(id).intValue();
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
-                commentResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks, id);
+                commentResources, commentService.countByReviewId(id).intValue(), page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks, id);
         return buildResponse(collection);
     }
 

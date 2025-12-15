@@ -46,9 +46,8 @@ public class NotificationController extends BaseController {
         List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size, StatusType.fromString(status));
         List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications);
         List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-        Integer totalCount = notificationService.countByUserId(loggedUserId, StatusType.fromString(status)).intValue();
         CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
-                notificationResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, ControllerUtils.notificationsCollectionLinks);
+                notificationResources, notificationService.countByUserId(loggedUserId, StatusType.fromString(status)).intValue(), page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, ControllerUtils.notificationsCollectionLinks);
         return buildResponse(collection);
     }
 

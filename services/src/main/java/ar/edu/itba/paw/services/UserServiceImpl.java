@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public User findUserById(Long id, Long loggedUserId) {
         User user = userDao.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        // Note: isFollowed will be computed in the controller/mapper layer
+        setContextDependentFields(user, loggedUserId);
         return user;
     }
 

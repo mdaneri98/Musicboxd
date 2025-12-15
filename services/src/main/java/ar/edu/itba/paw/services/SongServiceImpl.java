@@ -199,6 +199,13 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    public Song findAndSetContextDependentFields(Long id, Long loggedUserId) {
+        Song song = findById(id);
+        setContextDependentFields(song, loggedUserId);
+        return song;
+    }
+
+    @Override
     public void setContextDependentFields(Song song, Long loggedUserId) {
         if (loggedUserId == null) {
             song.setIsReviewed(false);

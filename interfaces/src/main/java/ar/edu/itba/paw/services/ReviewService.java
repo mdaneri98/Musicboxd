@@ -47,4 +47,5 @@ public interface ReviewService extends CrudService<Review> {
     Long countAll();
     Long countReviewsFromFollowedUsers(Long loggedUserId);
     void setContextDependentFields(Review review, Long loggedUserId);
+    Review findAndSetContextDependentFields(Long id, Long loggedUserId);
 }

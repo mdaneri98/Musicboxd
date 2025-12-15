@@ -28,4 +28,6 @@ public interface SongService extends CrudService<Song> {
     Long countAll();
 
     void setContextDependentFields(Song song, Long loggedUserId);
+
+    Song findAndSetContextDependentFields(Long id, Long loggedUserId);
 }

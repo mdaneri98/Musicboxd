@@ -123,7 +123,6 @@ public class UserController extends BaseController {
     public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         User user = userService.findUserById(id, loggedUserId);
-        userService.setContextDependentFields(user, loggedUserId);
         return buildResponseUsingEtag(request, () -> {
             UserDTO userDTO = userDtoMapper.toDTO(user);
             return userResourceMapper.toResource(userDTO, getBaseUrl());
@@ -213,7 +212,6 @@ public class UserController extends BaseController {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         userService.createFollowing(loggedUserId, id);
         User user = userService.findUserById(id, loggedUserId);
-        userService.setContextDependentFields(user, loggedUserId);
         UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
         return buildCreatedResponse(userResource);

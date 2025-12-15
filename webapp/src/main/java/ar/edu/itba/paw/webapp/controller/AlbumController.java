@@ -98,9 +98,8 @@ public class AlbumController extends BaseController {
         else albums = albumService.findPaginated(filter, page, size);
         List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums);
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
-        Integer totalCount = albumService.countAll().intValue();
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, ControllerUtils.albumsCollectionLinks);
+                albumResources, albumService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, ControllerUtils.albumsCollectionLinks);
         return buildResponse(collection);
     }
 
@@ -118,10 +117,7 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-
-        Album album = albumService.findById(id);
-        albumService.setContextDependentFields(album, loggedUserId);
-
+        Album album = albumService.findAndSetContextDependentFields(id, loggedUserId);
         return buildResponseUsingEtag(request, () -> {
             AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
             return albumResourceMapper.toResource(albumDTO, getBaseUrl());
@@ -197,8 +193,7 @@ public class AlbumController extends BaseController {
     public Response addAlbumFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         userService.addFavoriteAlbum(loggedUserId, id);
-        Album album = albumService.findById(id);
-        albumService.setContextDependentFields(album, loggedUserId);
+        Album album = albumService.findAndSetContextDependentFields(id, loggedUserId);
         AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
         AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
         return buildCreatedResponse(albumResource);

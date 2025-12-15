@@ -189,6 +189,13 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
+    public Album findAndSetContextDependentFields(Long id, Long loggedUserId) {
+        Album album = findById(id);
+        setContextDependentFields(album, loggedUserId);
+        return album;
+    }
+
+    @Override
     public void setContextDependentFields(Album album, Long loggedUserId) {
         if (loggedUserId == null) {
             album.setIsReviewed(false);
