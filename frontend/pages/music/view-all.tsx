@@ -98,13 +98,13 @@ const ViewAllMusicPage = () => {
     const fetchData = async () => {
       if (activeTab === ReviewItemTypeEnum.ARTIST) {
         dispatch(clearArtists());
-        await dispatch(fetchArtistsAsync({ page: 1, filter })).unwrap();
+        await dispatch(fetchArtistsAsync({ page: 1, size: 12, filter })).unwrap();
       } else if (activeTab === ReviewItemTypeEnum.ALBUM) {
         dispatch(clearAlbums());
-        await dispatch(fetchAlbumsAsync({ page: 1, filter })).unwrap();
+        await dispatch(fetchAlbumsAsync({ page: 1, size: 12, filter })).unwrap();
       } else if (activeTab === ReviewItemTypeEnum.SONG) {
         dispatch(clearSongs());
-        await dispatch(fetchSongsAsync({ page: 1, filter })).unwrap();
+        await dispatch(fetchSongsAsync({ page: 1, size: 12, filter })).unwrap();
       }
     };
 
