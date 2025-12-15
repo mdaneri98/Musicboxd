@@ -101,6 +101,7 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/api/comments/*").hasRole("USER")
 
                 // ROLE_USER-only endpoints - User Profile and Social
+                .antMatchers(HttpMethod.DELETE, "/api/users/*").hasRole("USER")
                 .antMatchers(HttpMethod.PUT, "/api/users/*").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/api/users/*/followers").hasRole("USER")
                 .antMatchers(HttpMethod.DELETE, "/api/users/*/followers").hasRole("USER")

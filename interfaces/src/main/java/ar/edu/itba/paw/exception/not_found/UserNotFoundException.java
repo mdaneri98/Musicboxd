@@ -5,6 +5,10 @@ public class UserNotFoundException extends EntityNotFoundException {
         super("exception.UserNotFound");
     }
 
+    public UserNotFoundException(String username) {
+        super("exception.UserNotFound");
+    }
+
     public UserNotFoundException(Long id, Throwable cause) {
         super("exception.UserNotFound", cause);
     }

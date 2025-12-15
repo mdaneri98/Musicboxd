@@ -23,10 +23,11 @@ public class ErrorResponseBuilder {
 
     private String resolveMessage(String codeOrMessage, String defaultMessage) {
         if (codeOrMessage == null || codeOrMessage.isBlank()) {
-            return defaultMessage;
+            return messageSource.getMessage(defaultMessage, null, defaultMessage, LocaleContextHolder.getLocale());
+
         }
 
-        return messageSource.getMessage(codeOrMessage, null, defaultMessage, LocaleContextHolder.getLocale());
+        return messageSource.getMessage(codeOrMessage, null, codeOrMessage, LocaleContextHolder.getLocale());
     }
 
     /**

@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.RefreshTokenDao;
 import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
+import ar.edu.itba.paw.exception.InvalidTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
             Optional<User> userOpt = userDao.findByUsername(username);
             if (userOpt.isEmpty()) {
                 LOGGER.warn("User not found: {}", username);
-                throw new RuntimeException("Invalid credentials");
+                throw new UserNotFoundException(username);
             }
             
             User user = userOpt.get();
@@ -55,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
             // Verify password
             if (!passwordEncoder.matches(password, user.getPassword())) {
                 LOGGER.warn("Invalid password for username: {}", username);
-                throw new RuntimeException("Invalid credentials");
+                throw new RuntimeException("exception.IncorrectPassword");
             }
             
             // Generate tokens
@@ -76,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
             
         } catch (UserNotFoundException e) {
             LOGGER.warn("User not found: {}", username);
-            throw new RuntimeException("Invalid credentials");
+            throw new UserNotFoundException(username);
         }
     }
 
@@ -88,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
         // Validate refresh token
         if (!jwtService.validateRefreshToken(refreshToken)) {
             LOGGER.warn("Invalid refresh token format");
-            throw new RuntimeException("Invalid refresh token");
+            throw new InvalidTokenException("exception.InvalidRefreshToken");
         }
         
         // Hash the token to check against database
@@ -98,7 +99,7 @@ public class AuthServiceImpl implements AuthService {
         Optional<RefreshToken> tokenEntity = refreshTokenDao.findByToken(hashedToken);
         if (tokenEntity.isEmpty() || !tokenEntity.get().isValid()) {
             LOGGER.warn("Refresh token not found or invalid");
-            throw new RuntimeException("Invalid refresh token");
+            throw new InvalidTokenException("exception.InvalidRefreshToken");
         }
         
         // Extract user info from token
@@ -112,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> userOpt = userDao.findById(userId);
         if (userOpt.isEmpty()) {
             LOGGER.warn("User not found for refresh token: {}", userId);
-            throw new RuntimeException("Invalid refresh token");
+            throw new InvalidTokenException("exception.InvalidRefreshToken");
         }
         User user = userOpt.get();
         
@@ -176,7 +177,7 @@ public class AuthServiceImpl implements AuthService {
     public User getCurrentUser(String accessToken) {
         try {
             if (!jwtService.validateAccessToken(accessToken)) {
-                throw new RuntimeException("Invalid access token");
+                throw new InvalidTokenException("exception.InvalidAccessToken");
             }
             
             Long userId = jwtService.extractUserId(accessToken);
@@ -184,7 +185,7 @@ public class AuthServiceImpl implements AuthService {
             
         } catch (Exception e) {
             LOGGER.error("Error getting current user", e);
-            throw new RuntimeException("Invalid access token");
+            throw new InvalidTokenException("exception.InvalidAccessToken");
         }
     }
 
@@ -207,7 +208,7 @@ public class AuthServiceImpl implements AuthService {
             
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing token", e);
+            throw new InvalidTokenException("Error hashing token", e);
         }
     }
 }

@@ -33,7 +33,7 @@ export default function FavoritesSection({
 
   return (
     <section className="favorites-section">
-      {hasNoFavorites && (
+      {hasNoFavorites && !isOwnProfile && (
         <div className="empty-state">
           <p>{t('common.noFavoritesYet')}</p>
         </div>

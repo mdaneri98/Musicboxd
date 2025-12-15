@@ -148,7 +148,7 @@ class UserRepository {
    */
   async deleteUser(id: number): Promise<void> {
     try {
-      await apiClient.deleteResource<User>(USER_ENDPOINTS.USER_BY_ID(id));
+      await apiClient.delete<User>(USER_ENDPOINTS.USER_BY_ID(id));
     } catch (error) {
       console.error(`Delete user ${id} error:`, error);
       throw error;
