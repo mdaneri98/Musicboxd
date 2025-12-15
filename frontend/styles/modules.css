@@ -2107,7 +2107,11 @@ textarea.form-control {
 
 @media (max-width: 48rem) { /* 768px */
     .search-container {
-        margin: var(--space-lg) var(--space-md);
+        margin: var(--space-lg) 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 }
 
