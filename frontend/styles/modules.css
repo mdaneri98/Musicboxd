@@ -2398,11 +2398,19 @@ textarea.form-control {
     .carousel {
         gap: var(--space-sm);
     }
+
+    /* Carousel items should keep fixed size, not expand like grid items */
+    .carousel .music-item {
+        width: clamp(8rem, 40vw, 10rem);
+        max-width: 10rem;
+        flex-shrink: 0;
+    }
 }
 
 @media (max-width: 36rem) { /* 576px */
-    .music-item {
-        width: clamp(7rem, 35vw, 9rem);
+    .carousel .music-item {
+        width: clamp(7rem, 38vw, 9rem);
+        max-width: 9rem;
     }
 }
 
@@ -2937,9 +2945,13 @@ textarea.form-control {
 
 @media (max-width: 48rem) { /* 768px */
     .view-all-header {
-        margin: calc(-1 * var(--content-padding));
-        margin-bottom: var(--space-xl);
-        border-radius: 0;
+        margin: 0 0 var(--space-lg) 0;
+        padding: var(--space-md);
+        border-radius: var(--border-radius-md);
+    }
+
+    .filters-container {
+        padding-top: var(--space-md);
     }
 
     .filters-form {
@@ -2948,10 +2960,17 @@ textarea.form-control {
 
     .filter-group {
         width: 100%;
+        min-width: 0;
     }
 
     .filter-select {
         width: 100%;
+        font-size: 0.9rem;
+        padding: var(--space-sm);
+    }
+
+    .filter-label {
+        font-size: 0.8rem;
     }
 }
 
@@ -3029,6 +3048,26 @@ textarea.form-control {
 
     .footer-placeholder {
         margin-top: var(--space-xl);
+    }
+
+    /* Music grid mobile - 2 columns centered with equal spacing */
+    .music-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-md);
+        padding: 0;
+        margin: 0 auto;
+        justify-content: center;
+    }
+
+    .music-item {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+    }
+
+    .view-all-content {
+        padding: 0;
     }
 }
 
