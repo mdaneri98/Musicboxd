@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { LoadingSpinner } from '@/components/ui';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, selectArtistLoading, selectAlbumLoading, selectSongLoading } from '@/store/slices';
+import { useAppDispatch } from '@/store/hooks';
+import { fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync } from '@/store/slices';
 import { Artist, Album, Song, FilterTypeEnum, MusicTabEnum, ReviewItemTypeEnum } from '@/types';
 import ArtistCard from '@/components/cards/ArtistCard';
 import AlbumCard from '@/components/cards/AlbumCard';
@@ -14,10 +14,7 @@ import SongCard from '@/components/cards/SongCard';
 const MusicDiscoveryPage = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const artistLoading = useAppSelector(selectArtistLoading);
-  const albumLoading = useAppSelector(selectAlbumLoading);
-  const songLoading = useAppSelector(selectSongLoading);
-  const loading = artistLoading || albumLoading || songLoading;
+  const [loading, setLoading] = useState(true);
   
   const [artistTab, setArtistTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
   const [albumTab, setAlbumTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
@@ -32,33 +29,28 @@ const MusicDiscoveryPage = () => {
 
   useEffect(() => {
     const fetchDiscoveryContent = async () => {
+      setLoading(true);
       try {        
-        // Fetch artists
-        const [topArtists, popArtists] = await Promise.all([
+        // Fetch all content in parallel
+        const [topArtists, popArtists, topAlbums, popAlbums, topSongs, popSongs] = await Promise.all([
           dispatch(fetchArtistsAsync({ page: 1, size: 10, filter: FilterTypeEnum.RATING })).unwrap(),
           dispatch(fetchArtistsAsync({ page: 1, size: 10, filter: FilterTypeEnum.POPULAR })).unwrap(),
-        ]);
-        setTopRatedArtists(topArtists.items.map((item) => item.data));
-        setPopularArtists(popArtists.items.map((item) => item.data));
-        
-        // Fetch albums
-        const [topAlbums, popAlbums] = await Promise.all([
           dispatch(fetchAlbumsAsync({ page: 1, size: 10, filter: FilterTypeEnum.RATING })).unwrap(),
           dispatch(fetchAlbumsAsync({ page: 1, size: 10, filter: FilterTypeEnum.POPULAR })).unwrap(),
-        ]);
-        setTopRatedAlbums(topAlbums.items.map((item) => item.data));
-        setPopularAlbums(popAlbums.items.map((item) => item.data));
-        
-        // Fetch songs
-        const [topSongs, popSongs] = await Promise.all([
           dispatch(fetchSongsAsync({ page: 1, size: 10, filter: FilterTypeEnum.RATING })).unwrap(),
           dispatch(fetchSongsAsync({ page: 1, size: 10, filter: FilterTypeEnum.POPULAR })).unwrap(),
         ]);
+        
+        setTopRatedArtists(topArtists.items.map((item) => item.data));
+        setPopularArtists(popArtists.items.map((item) => item.data));
+        setTopRatedAlbums(topAlbums.items.map((item) => item.data));
+        setPopularAlbums(popAlbums.items.map((item) => item.data));
         setTopRatedSongs(topSongs.items.map((item) => item.data));
         setPopularSongs(popSongs.items.map((item) => item.data));
-
       } catch (error) {
         console.error('Failed to fetch discovery content:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
