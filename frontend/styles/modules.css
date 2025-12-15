@@ -725,6 +725,50 @@
 }
 
 @media (max-width: 48rem) { /* 768px */
+    .entity-header {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-lg);
+    }
+
+    .entity-main-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .entity-details {
+        align-items: center;
+        text-align: center;
+    }
+
+    .entity-type {
+        justify-content: center;
+    }
+
+    .entity-actions {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .album-metadata {
+        align-items: center;
+    }
+
+    .song-metadata {
+        align-items: center;
+    }
+
+    .artists-list {
+        justify-content: center;
+    }
+
+    .album-link-container {
+        justify-content: center;
+    }
+
     .album-info {
         justify-content: center;
     }
