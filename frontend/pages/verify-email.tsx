@@ -106,7 +106,7 @@ const VerifyEmailPage = () => {
             <h2 className="verification-title">{t('auth.verifyEmail.title')}</h2>
             <p className="verification-message">{message}</p>
             <p className="verification-redirect">{t('auth.verifyEmail.redirecting')}</p>
-            <Link href="/login" className="verification-button">
+            <Link href="/login" className="btn btn-primary btn-block">
               {t('auth.verifyEmail.goToLogin')}
             </Link>
           </div>
@@ -151,7 +151,7 @@ const VerifyEmailPage = () => {
               )}
             </div>
 
-            <Link href="/login" className="verification-link">
+            <Link href="/login" className="btn btn-primary btn-block">
               {t('auth.verifyEmail.backToLogin')}
             </Link>
           </div>
