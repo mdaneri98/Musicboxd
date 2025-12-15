@@ -11,6 +11,7 @@ import { selectCurrentUser, deleteCommentAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { formatTimeAgo } from '@/utils/timeUtils';
 import { useTranslation } from 'react-i18next';
+import { ASSETS } from '@/utils';
 
 interface CommentCardProps {
   comment: Comment;
@@ -29,18 +30,18 @@ const CommentCard = ({ comment, onEdit, onDelete }: CommentCardProps) => {
 
   const userImageUrl = comment.user_image_id
     ? imageRepository.getImageUrl(comment.user_image_id)
-    : '/assets/default-avatar.png';
+    : ASSETS.DEFAULT_AVATAR;
 
   const handleDelete = async () => {
     if (onDelete) {
       onDelete();
       return;
     }
-    
+
     if (!window.confirm(t('common.confirmDeleteComment'))) {
       return;
     }
-    
+
     setIsDeleting(true);
     try {
       await dispatch(deleteCommentAsync(comment.id));

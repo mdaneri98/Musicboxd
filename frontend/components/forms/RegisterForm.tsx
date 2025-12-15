@@ -1,9 +1,3 @@
-/**
- * RegisterForm Component
- * User registration form with validation
- * Migrated from: users/register.jsp
- */
-
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { registerSchema } from '@/utils/validationSchemas';

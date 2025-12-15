@@ -13,6 +13,7 @@ import {
 import { formatTimeAgo } from '@/utils/timeUtils';
 import { ConfirmationModal } from '../ui';
 import { useState } from 'react';
+import { ASSETS } from '@/utils';
 
 interface ReviewCardProps {
   review: Review;
@@ -57,11 +58,11 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
 
   const itemImageUrl = review.item_image_id
     ? imageRepository.getImageUrl(review.item_image_id)
-    : '/assets/image-placeholder.png';
+    : ASSETS.IMAGE_PLACEHOLDER;
 
   const userImageUrl = review.user_image_id
     ? imageRepository.getImageUrl(review.user_image_id)
-    : '/assets/default-avatar.png';
+    : ASSETS.DEFAULT_AVATAR;
 
   const getItemUrl = () => {
     switch (review.item_type) {
@@ -97,8 +98,8 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             {t('review.blockedByModerator')}
           </h4>
           {review.user_id == currentUser?.id && (
-          <p className="review-description">{t('review.tryChangingTheContent')}</p>
-           )}
+            <p className="review-description">{t('review.tryChangingTheContent')}</p>
+          )}
           {isModerator && (
             <div>
               <div className="review-content">
@@ -109,7 +110,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
                 onClick={() => handleBlock(review.id)}
                 className="btn btn-secondary"
               >
-                {t('review.unblock') + ' '} 
+                {t('review.unblock') + ' '}
                 <i className="fa-solid fa-ban"></i>
               </button>
             </div>

@@ -1,9 +1,3 @@
-/**
- * RatingDisplay Component
- * Displays a star rating (read-only)
- * Migrated from: rating display in JSP components
- */
-
 interface RatingDisplayProps {
   rating: number; // 1-5
   maxRating?: number;

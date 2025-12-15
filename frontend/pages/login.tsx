@@ -1,9 +1,3 @@
-/**
- * Login Page
- * User login page with form
- * Migrated from: users/login.jsp
- */
-
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -34,7 +28,7 @@ const LoginPage = () => {
       username: data.username,
       password: data.password,
     }));
-    
+
     if (loginAsync.fulfilled.match(result)) {
       router.push('/');
     }

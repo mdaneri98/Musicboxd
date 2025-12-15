@@ -1,9 +1,3 @@
-/**
- * Sidebar Component
- * Navigation sidebar with icon-based menu
- * Migrated from: components/sidebar.jsp
- */
-
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -18,6 +12,7 @@ import {
   fetchUnreadCountAsync,
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
+import { ASSETS } from '@/utils';
 
 const Sidebar = () => {
   const { t } = useTranslation();
@@ -42,7 +37,7 @@ const Sidebar = () => {
 
   const profileImageUrl = currentUser && currentUser.image_id
     ? imageRepository.getImageUrl(currentUser.image_id)
-    : '/assets/default-avatar.png';
+    : ASSETS.DEFAULT_AVATAR;
 
   return (
     <aside className="sidebar">

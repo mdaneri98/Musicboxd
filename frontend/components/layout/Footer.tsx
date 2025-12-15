@@ -1,9 +1,3 @@
-/**
- * Footer Component
- * Application footer with copyright notice
- * Migrated from: components/footer.jsp
- */
-
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {

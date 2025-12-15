@@ -1,10 +1,5 @@
-/**
- * Head Component
- * Manages document head with meta tags, title, and external resources
- * Migrated from: components/head.jsp
- */
-
 import NextHead from 'next/head';
+import { ASSETS } from '@/utils';
 
 interface HeadProps {
   title: string;
@@ -18,7 +13,7 @@ const Head = ({ title }: HeadProps) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
       {/* Favicon */}
-      <link rel="icon" type="image/x-icon" href="/assets/logo.png" />
+      <link rel="icon" type="image/x-icon" href={ASSETS.LOGO} />
     </NextHead>
   );
 };

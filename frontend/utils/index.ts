@@ -18,3 +18,6 @@ export {
 export { withAuth } from './withAuth';
 export { withGuest } from './withGuest';
 export { withModerator } from './withModerator';
+
+// Assets
+export { getAssetUrl, ASSETS } from './assets';

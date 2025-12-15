@@ -1,13 +1,8 @@
-/**
- * UserCard Component
- * Displays user information in a card format
- * Migrated from: components/user_card.jsp
- */
-
 import Link from 'next/link';
 import { imageRepository } from '@/repositories';
 import { User } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { ASSETS } from '@/utils';
 
 interface UserCardProps {
   user: User;
@@ -17,7 +12,7 @@ const UserCard = ({ user }: UserCardProps) => {
   const { t } = useTranslation();
   const profileImageUrl = user.image_id
     ? imageRepository.getImageUrl(user.image_id)
-    : '/assets/default-avatar.png';
+    : ASSETS.DEFAULT_AVATAR;
 
   return (
     <Link href={`/users/${user.id}`} className="user-card">

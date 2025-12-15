@@ -1,9 +1,3 @@
-/**
- * LoginForm Component
- * User login form with validation
- * Migrated from: users/login.jsp
- */
-
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { loginSchema } from '@/utils/validationSchemas';

@@ -1,9 +1,3 @@
-/**
- * Landing Page
- * Anonymous home page with features and popular reviews
- * Migrated from: anonymous/home.jsp
- */
-
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -12,6 +6,7 @@ import { Footer } from '@/components/layout';
 import { ReviewCard } from '@/components/cards';
 import { reviewRepository } from '@/repositories';
 import type { Review } from '@/types';
+import { ASSETS } from '@/utils';
 
 const LandingPage = () => {
   const { t } = useTranslation();
@@ -64,17 +59,17 @@ const LandingPage = () => {
 
           <section className="features-grid">
             <div className="feature-card">
-              <img src="/assets/reviewIcon.png" alt="Review Icon" className="feature-icon" />
+              <img src={ASSETS.REVIEW_ICON} alt="Review Icon" className="feature-icon" />
               <h3>{t('landing.features.writeReviews.title')}</h3>
               <p>{t('landing.features.writeReviews.description')}</p>
             </div>
             <div className="feature-card">
-              <img src="/assets/communityIcon.png" alt="Community Icon" className="feature-icon" />
+              <img src={ASSETS.COMMUNITY_ICON} alt="Community Icon" className="feature-icon" />
               <h3>{t('landing.features.joinCommunity.title')}</h3>
               <p>{t('landing.features.joinCommunity.description')}</p>
             </div>
             <div className="feature-card">
-              <img src="/assets/discoverIcon.png" alt="Discover Icon" className="feature-icon" />
+              <img src={ASSETS.DISCOVER_ICON} alt="Discover Icon" className="feature-icon" />
               <h3>{t('landing.features.discoverMusic.title')}</h3>
               <p>{t('landing.features.discoverMusic.description')}</p>
             </div>
