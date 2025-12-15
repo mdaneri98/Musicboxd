@@ -246,13 +246,13 @@
     "deleteAccountConfirmation": "Bist du sicher, dass du dein Konto löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden und alle deine Daten werden dauerhaft gelöscht.",
     "notificationTypes": {
       "follows": "Follower",
-      "followsDescription": "Benachrichtigung wenn dir jemand folgt",
+      "followsDescription": "Benachrichtigung per E-Mail wenn dir jemand folgt",
       "likes": "Likes",
-      "likesDescription": "Benachrichtigung wenn jemand deine Rezension liked",
+      "likesDescription": "Benachrichtigung per E-Mail wenn jemand deine Rezension liked",
       "comments": "Kommentare",
-      "commentsDescription": "Benachrichtigung wenn jemand deine Rezension kommentiert",
+      "commentsDescription": "Benachrichtigung per E-Mail wenn jemand deine Rezension kommentiert",
       "reviews": "Rezensionen",
-      "reviewsDescription": "Benachrichtigung wenn gefolgte Benutzer eine Rezension posten"
+      "reviewsDescription": "Benachrichtigung per E-Mail wenn gefolgte Benutzer eine Rezension posten"
     },
     "themes": {
       "dark": "Dunkel",

@@ -286,13 +286,13 @@
     "deleteAccountConfirmation": "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer y todos tus datos se eliminarán permanentemente.",
     "notificationTypes": {
       "follows": "Seguidores",
-      "followsDescription": "Recibe notificaciones cuando alguien te siga",
+      "followsDescription": "Recibe notificaciones por mail cuando alguien te siga",
       "likes": "Me gusta",
-      "likesDescription": "Recibe notificaciones cuando a alguien le guste tu reseña",
+      "likesDescription": "Recibe notificaciones por mail cuando a alguien le guste tu reseña",
       "comments": "Comentarios",
-      "commentsDescription": "Recibe notificaciones cuando alguien comente en tu reseña",
+      "commentsDescription": "Recibe notificaciones por mail cuando alguien comente en tu reseña",
       "reviews": "Reseñas",
-      "reviewsDescription": "Recibe notificaciones cuando los usuarios que sigues publiquen una reseña"
+      "reviewsDescription": "Recibe notificaciones por mail cuando los usuarios que sigues publiquen una reseña"
     },
     "themes": {
       "dark": "Oscuro",

@@ -286,13 +286,13 @@
     "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.",
     "notificationTypes": {
       "follows": "Follows",
-      "followsDescription": "Get notified when someone follows you",
+      "followsDescription": "Get notified by email when someone follows you",
       "likes": "Likes",
-      "likesDescription": "Get notified when someone likes your review",
+      "likesDescription": "Get notified by email when someone likes your review",
       "comments": "Comments",
-      "commentsDescription": "Get notified when someone comments on your review",
+      "commentsDescription": "Get notified by email when someone comments on your review",
       "reviews": "Reviews",
-      "reviewsDescription": "Get notified when followed users post a review"
+      "reviewsDescription": "Get notified by email when followed users post a review"
     },
     "themes": {
       "dark": "Dark",

@@ -246,13 +246,13 @@
     "deleteAccountConfirmation": "Tem certeza de que deseja excluir sua conta? Esta ação não pode ser desfeita e todos os seus dados serão excluídos permanentemente.",
     "notificationTypes": {
       "follows": "Seguidores",
-      "followsDescription": "Receber notificação quando alguém seguir você",
+      "followsDescription": "Receber notificação por email quando alguém seguir você",
       "likes": "Curtidas",
-      "likesDescription": "Receber notificação quando alguém curtir sua resenha",
+      "likesDescription": "Receber notificação por email quando alguém curtir sua resenha",
       "comments": "Comentários",
-      "commentsDescription": "Receber notificação quando alguém comentar em sua resenha",
+      "commentsDescription": "Receber notificação por email quando alguém comentar em sua resenha",
       "reviews": "Resenhas",
-      "reviewsDescription": "Receber notificação quando usuários seguidos publicarem uma resenha"
+      "reviewsDescription": "Receber notificação por email quando usuários seguidos publicarem uma resenha"
     },
     "themes": {
       "dark": "Escuro",

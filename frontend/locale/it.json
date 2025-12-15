@@ -246,13 +246,13 @@
     "deleteAccountConfirmation": "Sei sicuro di voler eliminare il tuo account? Questa azione non può essere annullata e tutti i tuoi dati saranno eliminati definitivamente.",
     "notificationTypes": {
       "follows": "Follower",
-      "followsDescription": "Ricevi notifiche quando qualcuno ti segue",
+      "followsDescription": "Ricevi notifiche per mail quando qualcuno ti segue",
       "likes": "Mi piace",
-      "likesDescription": "Ricevi notifiche quando qualcuno mette mi piace alla tua recensione",
+      "likesDescription": "Ricevi notifiche per mail quando qualcuno mette mi piace alla tua recensione",
       "comments": "Commenti",
-      "commentsDescription": "Ricevi notifiche quando qualcuno commenta la tua recensione",
+      "commentsDescription": "Ricevi notifiche per mail quando qualcuno commenta la tua recensione",
       "reviews": "Recensioni",
-      "reviewsDescription": "Ricevi notifiche quando gli utenti seguiti pubblicano una recensione"
+      "reviewsDescription": "Ricevi notifiche per mail quando gli utenti seguiti pubblicano una recensione"
     },
     "themes": {
       "dark": "Scuro",

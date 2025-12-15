@@ -246,13 +246,13 @@
     "deleteAccountConfirmation": "本当にアカウントを削除しますか？この操作は取り消せず、すべてのデータが完全に削除されます。",
     "notificationTypes": {
       "follows": "フォロワー",
-      "followsDescription": "誰かがあなたをフォローしたときに通知を受け取る",
+      "followsDescription": "誰かがあなたをフォローしたときにメールで通知を受け取る",
       "likes": "いいね",
-      "likesDescription": "誰かがあなたのレビューにいいねしたときに通知を受け取る",
+      "likesDescription": "誰かがあなたのレビューにいいねしたときにメールで通知を受け取る",
       "comments": "コメント",
-      "commentsDescription": "誰かがあなたのレビューにコメントしたときに通知を受け取る",
+      "commentsDescription": "誰かがあなたのレビューにコメントしたときにメールで通知を受け取る",
       "reviews": "レビュー",
-      "reviewsDescription": "フォローしているユーザーがレビューを投稿したときに通知を受け取る"
+      "reviewsDescription": "フォローしているユーザーがレビューを投稿したときにメールで通知を受け取る"
     },
     "themes": {
       "dark": "ダーク",

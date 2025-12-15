@@ -246,13 +246,13 @@
     "deleteAccountConfirmation": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action ne peut pas être annulée et toutes vos données seront définitivement supprimées.",
     "notificationTypes": {
       "follows": "Abonnés",
-      "followsDescription": "Être notifié quand quelqu'un vous suit",
+      "followsDescription": "Être notifié par email quand quelqu'un vous suit",
       "likes": "J'aime",
-      "likesDescription": "Être notifié quand quelqu'un aime votre critique",
+      "likesDescription": "Être notifié par email quand quelqu'un aime votre critique",
       "comments": "Commentaires",
-      "commentsDescription": "Être notifié quand quelqu'un commente votre critique",
+      "commentsDescription": "Être notifié par email quand quelqu'un commente votre critique",
       "reviews": "Critiques",
-      "reviewsDescription": "Être notifié quand les utilisateurs suivis publient une critique"
+      "reviewsDescription": "Être notifié par email quand les utilisateurs suivis publient une critique"
     },
     "themes": {
       "dark": "Sombre",
