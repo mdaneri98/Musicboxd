@@ -200,6 +200,52 @@
   gap: var(--space-xs);
 }
 
+/* Review card mobile adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .review-footer {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .review-actions {
+    gap: var(--space-sm);
+    flex-shrink: 0;
+  }
+
+  .action-item {
+    gap: 0.25rem;
+  }
+
+  .action-count {
+    font-size: 0.8rem;
+  }
+
+  .action-btn {
+    font-size: 0.9rem;
+  }
+
+  .user-details {
+    gap: 0.125rem;
+  }
+
+  .user-name {
+    font-size: 0.875rem;
+  }
+
+  .review-timestamp {
+    font-size: 0.75rem;
+  }
+
+  .user-badges {
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
+
 /* User Profile */
 .user-profile {
   display: flex;
