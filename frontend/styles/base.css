@@ -19,6 +19,7 @@
   --color-danger-hover: #ff6666;
   --color-danger-bg: rgba(255, 76, 76, 0.1);
   --color-danger-border: rgba(255, 76, 76, 0.2);
+  --color-danger-text: #ffffff;
 
   --color-success: #1db954;
   --color-success-bg: rgba(29, 185, 84, 0.1);
@@ -167,6 +168,7 @@ a {
   --color-danger-hover: #ff6666;
   --color-danger-bg: rgba(255, 76, 76, 0.1);
   --color-danger-border: rgba(255, 76, 76, 0.2);
+  --color-danger-text: #ffffff;
 
   --color-success: #1db954;
   --color-success-bg: rgba(29, 185, 84, 0.1);
@@ -199,6 +201,7 @@ a {
   --color-danger-hover: #8b0000;
   --color-danger-bg: rgba(178, 34, 34, 0.1);
   --color-danger-border: rgba(178, 34, 34, 0.2);
+  --color-danger-text: #ffffff;
   
   --color-success: #556b2f;
   --color-success-bg: rgba(85, 107, 47, 0.1);
@@ -231,6 +234,7 @@ a {
   --color-danger-hover: #ff1744;
   --color-danger-bg: rgba(255, 82, 82, 0.1);
   --color-danger-border: rgba(255, 82, 82, 0.2);
+  --color-danger-text: #ffffff;
   
   --color-success: #26a69a;
   --color-success-bg: rgba(38, 166, 154, 0.1);
@@ -263,6 +267,7 @@ a {
   --color-danger-hover: #e53935;
   --color-danger-bg: rgba(239, 83, 80, 0.1);
   --color-danger-border: rgba(239, 83, 80, 0.2);
+  --color-danger-text: #ffffff;
   
   --color-success: #43a047;
   --color-success-bg: rgba(67, 160, 71, 0.1);
@@ -295,6 +300,7 @@ a {
   --color-danger-hover: #ff4f4f;
   --color-danger-bg: rgba(255, 107, 107, 0.1);
   --color-danger-border: rgba(255, 107, 107, 0.2);
+  --color-danger-text: #ffffff;
   
   --color-success: #98fb98;
   --color-success-bg: rgba(152, 251, 152, 0.1);
