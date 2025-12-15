@@ -126,43 +126,51 @@ const ReviewDetailPage = () => {
 
   // Intersection Observer for comments
   useEffect(() => {
-    if (activeTab !== ReviewTab.COMMENTS || !commentsHasMore || comments.length === 0) return;
+    if (activeTab !== ReviewTab.COMMENTS || !commentsHasMore || comments.length === 0 || loadingComments) return;
 
     const sentinel = commentsSentinelRef.current;
     if (!sentinel) return;
 
+    const scrollContainer = document.querySelector('.main-container');
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoadingMoreRef.current) {
           handleLoadMoreComments();
         }
       },
-      { rootMargin: '200px' }
+      { 
+        root: scrollContainer,
+        rootMargin: '200px' 
+      }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [activeTab, commentsHasMore, comments.length, handleLoadMoreComments]);
+  }, [activeTab, commentsHasMore, comments.length, loadingComments, handleLoadMoreComments]);
 
   // Intersection Observer for likes
   useEffect(() => {
-    if (activeTab !== ReviewTab.LIKES || !likesHasMore || likedUsers.length === 0) return;
+    if (activeTab !== ReviewTab.LIKES || !likesHasMore || likedUsers.length === 0 || loadingLikes) return;
 
     const sentinel = likesSentinelRef.current;
     if (!sentinel) return;
 
+    const scrollContainer = document.querySelector('.main-container');
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoadingMoreRef.current) {
           handleLoadMoreLikes();
         }
       },
-      { rootMargin: '200px' }
+      { 
+        root: scrollContainer,
+        rootMargin: '200px' 
+      }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [activeTab, likesHasMore, likedUsers.length, handleLoadMoreLikes]);
+  }, [activeTab, likesHasMore, likedUsers.length, loadingLikes, handleLoadMoreLikes]);
 
   const handleTabChange = useCallback((tab: ReviewTab) => {
     setActiveTab(tab);
