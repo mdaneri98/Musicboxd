@@ -14,7 +14,6 @@ export { useInfiniteScroll } from './useInfiniteScroll';
 // Utility Hooks
 export { useDebounce } from './useDebounce';
 export { usePagination } from './usePagination';
-export { useModal } from './useModal';
 export { useConfirmation } from './useConfirmation';
 export { useImagePreview } from './useImagePreview';
 
