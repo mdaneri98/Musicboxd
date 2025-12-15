@@ -262,6 +262,20 @@
   scale: 1.02;
 }
 
+/* Notifications mobile adjustments */
+@media (max-width: 48rem) { /* 768px */
+  .notifications {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .mark-read-btn {
+    align-self: flex-start;
+    font-size: 0.85rem;
+  }
+}
+
 /* Notification Badge */
 .notification-badge {
     position: absolute;
