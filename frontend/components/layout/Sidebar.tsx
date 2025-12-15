@@ -15,7 +15,7 @@ import { imageRepository } from '@/repositories';
 import { ASSETS } from '@/utils';
 
 const Sidebar = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -32,6 +32,8 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     await dispatch(logoutAsync());
+    // Reset language to English after logout to avoid keeping the logged user's language cached
+    i18n.changeLanguage('en');
     router.push('/');
   };
 
