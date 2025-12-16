@@ -1,7 +1,6 @@
 import { Html, Head, Main, NextScript } from 'next/document';
 import { ASSETS } from '@/utils';
-// Script to apply theme immediately before React hydration
-// This prevents flash of wrong theme (FOWT)
+
 const themeInitScript = `
   (function() {
     try {
@@ -21,9 +20,8 @@ export default function Document() {
         <meta name="description" content="Musicboxd - Share your music taste" />
         
         {/* Favicon */}
-        <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/logo.png" />
-        <link rel="apple-touch-icon" href={ASSETS.LOGO} />
+        <link rel="icon" type="image/png" href={ASSETS.LOGO} />
+        <link rel="icon" href={ASSETS.LOGO} />
         
         {/* Font Awesome */}
         <link
