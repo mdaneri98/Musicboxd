@@ -5,15 +5,15 @@ import { TextEncoder, TextDecoder } from 'util';
 Object.assign(global, { TextEncoder, TextDecoder });
 
 if (typeof global.Response === 'undefined') {
-    global.Response = class Response { };
-    global.Request = class Request { };
-    global.Headers = class Headers { };
+    global.Response = class Response { } as any;
+    global.Request = class Request { } as any;
+    global.Headers = class Headers { } as any;
 }
 
 // Global mock for react-i18next
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (str) => str,
+        t: (str: string) => str,
         i18n: {
             changeLanguage: () => new Promise(() => { }),
             language: 'en',

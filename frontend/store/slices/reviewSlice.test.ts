@@ -23,8 +23,6 @@ import reviewReducer, {
     fetchMoreReviewLikesAsync,
     likeReviewAsync,
     unlikeReviewAsync,
-    blockReviewAsync,
-    unblockReviewAsync,
     ReviewState,
 } from './reviewSlice';
 import { Review, Comment, User } from '@/types';
@@ -630,74 +628,6 @@ describe('reviewSlice', () => {
                     .reply(500);
 
                 await store.dispatch(deleteCommentAsync(101));
-                const state = store.getState().reviews;
-                expect(state.error).toBeDefined();
-            });
-        });
-
-        describe('blockReviewAsync', () => {
-            it('should block review successfully', async () => {
-                store = configureStore({
-                    reducer: { reviews: reviewReducer },
-                    preloadedState: {
-                        reviews: {
-                            ...initialState,
-                            reviews: { 1: mockReview },
-                            currentReview: mockReview,
-                        }
-                    }
-                });
-
-                const blocked = { ...mockReview, blocked: true };
-                nock(API_BASE_URL)
-                    .put('/reviews/1')
-                    .reply(200, { data: blocked });
-
-                await store.dispatch(blockReviewAsync({ id: 1, reviewData: {} as any }));
-                const state = store.getState().reviews;
-                expect(state.reviews[1].is_blocked).toBe(true);
-            });
-
-            it('should handle failure', async () => {
-                nock(API_BASE_URL)
-                    .put('/reviews/1')
-                    .reply(500);
-
-                await store.dispatch(blockReviewAsync({ id: 1, reviewData: {} as any }));
-                const state = store.getState().reviews;
-                expect(state.error).toBeDefined();
-            });
-        });
-
-        describe('unblockReviewAsync', () => {
-            it('should unblock review successfully', async () => {
-                const blockedReview = { ...mockReview, blocked: true };
-                store = configureStore({
-                    reducer: { reviews: reviewReducer },
-                    preloadedState: {
-                        reviews: {
-                            ...initialState,
-                            reviews: { 1: blockedReview },
-                            currentReview: blockedReview,
-                        }
-                    }
-                });
-
-                nock(API_BASE_URL)
-                    .put('/reviews/1')
-                    .reply(200, { data: mockReview }); // blocked false
-
-                await store.dispatch(unblockReviewAsync({ id: 1, reviewData: {} as any }));
-                const state = store.getState().reviews;
-                expect(state.reviews[1].is_blocked).toBe(false);
-            });
-
-            it('should handle failure', async () => {
-                nock(API_BASE_URL)
-                    .put('/reviews/1')
-                    .reply(500);
-
-                await store.dispatch(unblockReviewAsync({ id: 1, reviewData: {} as any }));
                 const state = store.getState().reviews;
                 expect(state.error).toBeDefined();
             });

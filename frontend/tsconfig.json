@@ -63,7 +63,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "jest.setup.ts"
   ],
   "exclude": [
     "node_modules",
