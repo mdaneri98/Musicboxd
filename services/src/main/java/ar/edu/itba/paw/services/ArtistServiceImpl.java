@@ -155,6 +155,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Artist findAndSetContextDependentFields(Long id, Long loggedUserId) {
         Artist artist = findById(id);
         setContextDependentFields(artist, loggedUserId);

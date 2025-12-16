@@ -199,6 +199,7 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Song findAndSetContextDependentFields(Long id, Long loggedUserId) {
         Song song = findById(id);
         setContextDependentFields(song, loggedUserId);

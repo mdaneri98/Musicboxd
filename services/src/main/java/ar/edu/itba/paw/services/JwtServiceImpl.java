@@ -18,7 +18,7 @@ public class JwtServiceImpl implements JwtService {
     private final long accessTokenExpiration;
     private final long refreshTokenExpiration;
 
-    public JwtServiceImpl(@Value("${jwt.secret:defaultSecretKeyForDevelopmentOnlyChangeInProduction}") String secret,
+    public JwtServiceImpl(@Value("${jwt.secret:default-secret-key}") String secret,
                          @Value("${jwt.access.expiration:900000}") long accessTokenExpiration,
                          @Value("${jwt.refresh.expiration:2592000000}") long refreshTokenExpiration) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());

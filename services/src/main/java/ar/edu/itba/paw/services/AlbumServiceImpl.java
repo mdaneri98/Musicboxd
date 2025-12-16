@@ -189,6 +189,7 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Album findAndSetContextDependentFields(Long id, Long loggedUserId) {
         Album album = findById(id);
         setContextDependentFields(album, loggedUserId);
