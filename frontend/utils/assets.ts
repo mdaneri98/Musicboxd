@@ -12,7 +12,7 @@ export const getAssetUrl = (assetPath: string): string => {
 export const ASSETS = {
   DEFAULT_AVATAR: getAssetUrl('/assets/default-avatar.png'),
   IMAGE_PLACEHOLDER: getAssetUrl('/assets/image-placeholder.png'),
-  LOGO: getAssetUrl('/logo.png'),
+  LOGO: getAssetUrl('/assets/logo.png'),
   REVIEW_ICON: getAssetUrl('/assets/reviewIcon.png'),
   COMMUNITY_ICON: getAssetUrl('/assets/communityIcon.png'),
   DISCOVER_ICON: getAssetUrl('/assets/discoverIcon.png'),
