@@ -655,7 +655,7 @@ describe('reviewSlice', () => {
 
                 await store.dispatch(blockReviewAsync({ id: 1, reviewData: {} as any }));
                 const state = store.getState().reviews;
-                expect(state.reviews[1].blocked).toBe(true);
+                expect(state.reviews[1].is_blocked).toBe(true);
             });
 
             it('should handle failure', async () => {
@@ -689,7 +689,7 @@ describe('reviewSlice', () => {
 
                 await store.dispatch(unblockReviewAsync({ id: 1, reviewData: {} as any }));
                 const state = store.getState().reviews;
-                expect(state.reviews[1].blocked).toBe(false);
+                expect(state.reviews[1].is_blocked).toBe(false);
             });
 
             it('should handle failure', async () => {

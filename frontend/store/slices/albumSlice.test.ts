@@ -563,12 +563,6 @@ describe('albumSlice', () => {
                     .reply(500);
 
                 await store.dispatch(addAlbumFavoriteAsync(1));
-                const state = store.getState().albums;
-                // Since this thunk might update state optimistically or re-fetch on success, failure might not set 'error' state directly
-                // if it's not handled in extraReducers. Checking slice implementation...
-                // Only fulfilled is handled to update album. Rejected is not handled in extraReducers of albumSlice for this thunk.
-                // So we just expect it to not crash and maybe log error (which we can't easily assert on console here without spy).
-                // But looking at previous patterns, if it fails, the thunk returns rejected action.
             });
         });
 

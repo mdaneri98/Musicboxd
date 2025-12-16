@@ -27,6 +27,14 @@ import artistReducer, {
 } from './artistSlice';
 import { Artist, Album, Song, Review } from '@/types';
 
+const makeTestStore = (preloadedState?: { artists?: Partial<ArtistState> }) => {
+    return configureStore({
+        // @ts-expect-error - TypeScript incorrectly infers reducer type here
+        reducer: { artists: artistReducer },
+        preloadedState: preloadedState as any,
+    });
+};
+
 const API_BASE_URL = 'http://localhost:8080/api';
 
 describe('artistSlice', () => {
@@ -147,12 +155,10 @@ describe('artistSlice', () => {
     });
 
     describe('Async Thunks', () => {
-        let store: ReturnType<typeof configureStore<{ artists: ArtistState }>>;
+        let store: ReturnType<typeof makeTestStore>;
 
         beforeEach(() => {
-            store = configureStore({
-                reducer: { artists: artistReducer },
-            });
+            store = makeTestStore();
             nock.cleanAll();
         });
 
@@ -194,14 +200,11 @@ describe('artistSlice', () => {
 
         describe('fetchMoreArtistsAsync', () => {
             it('should append artists successfully', async () => {
-                store = configureStore({
-                    reducer: { artists: artistReducer },
-                    preloadedState: {
-                        artists: {
-                            ...initialState,
-                            artists: { 1: mockArtist },
-                            orderedArtistsIds: [1],
-                        }
+                store = makeTestStore({
+                    artists: {
+                        ...initialState,
+                        artists: { 1: mockArtist },
+                        orderedArtistsIds: [1],
                     }
                 });
 
@@ -282,14 +285,11 @@ describe('artistSlice', () => {
 
         describe('updateArtistAsync', () => {
             it('should update artist successfully', async () => {
-                store = configureStore({
-                    reducer: { artists: artistReducer },
-                    preloadedState: {
-                        artists: {
-                            ...initialState,
-                            artists: { 1: mockArtist },
-                            currentArtist: mockArtist,
-                        }
+                store = makeTestStore({
+                    artists: {
+                        ...initialState,
+                        artists: { 1: mockArtist },
+                        currentArtist: mockArtist,
                     }
                 });
 
@@ -317,14 +317,11 @@ describe('artistSlice', () => {
 
         describe('deleteArtistAsync', () => {
             it('should delete artist successfully', async () => {
-                store = configureStore({
-                    reducer: { artists: artistReducer },
-                    preloadedState: {
-                        artists: {
-                            ...initialState,
-                            artists: { 1: mockArtist },
-                            currentArtist: mockArtist,
-                        }
+                store = makeTestStore({
+                    artists: {
+                        ...initialState,
+                        artists: { 1: mockArtist },
+                        currentArtist: mockArtist,
                     }
                 });
 
@@ -446,13 +443,10 @@ describe('artistSlice', () => {
 
         describe('fetchMoreArtistReviewsAsync', () => {
             it('should append reviews successfully', async () => {
-                store = configureStore({
-                    reducer: { artists: artistReducer },
-                    preloadedState: {
-                        artists: {
-                            ...initialState,
-                            artistReviews: [mockReview],
-                        }
+                store = makeTestStore({
+                    artists: {
+                        ...initialState,
+                        artistReviews: [mockReview],
                     }
                 });
 
@@ -558,14 +552,11 @@ describe('artistSlice', () => {
 
         describe('addArtistFavoriteAsync', () => {
             it('should add favorite and update artist', async () => {
-                store = configureStore({
-                    reducer: { artists: artistReducer },
-                    preloadedState: {
-                        artists: {
-                            ...initialState,
-                            currentArtist: mockArtist,
-                            artists: { 1: mockArtist }
-                        }
+                store = makeTestStore({
+                    artists: {
+                        ...initialState,
+                        currentArtist: mockArtist,
+                        artists: { 1: mockArtist }
                     }
                 });
 
@@ -597,14 +588,11 @@ describe('artistSlice', () => {
 
         describe('removeArtistFavoriteAsync', () => {
             it('should remove favorite and update artist', async () => {
-                store = configureStore({
-                    reducer: { artists: artistReducer },
-                    preloadedState: {
-                        artists: {
-                            ...initialState,
-                            currentArtist: { ...mockArtist, favorite: true },
-                            artists: { 1: { ...mockArtist, favorite: true } }
-                        }
+                store = makeTestStore({
+                    artists: {
+                        ...initialState,
+                        currentArtist: { ...mockArtist, favorite: true },
+                        artists: { 1: { ...mockArtist, favorite: true } }
                     }
                 });
 
