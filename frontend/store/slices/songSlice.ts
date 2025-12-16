@@ -367,7 +367,7 @@ const songSlice = createSlice({
       })
       .addCase(updateSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        if (!state.songs[action.payload.data.id]) {
+        if (state.songs[action.payload.data.id]) {
           state.songs[action.payload.data.id] = action.payload.data as Song;
         }
         if (state.currentSong?.id === action.payload.data.id) {

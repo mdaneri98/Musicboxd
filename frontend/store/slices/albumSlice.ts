@@ -380,7 +380,7 @@ const albumSlice = createSlice({
       })
       .addCase(updateAlbumAsync.fulfilled, (state, action) => {
         state.loading = false;
-        if (!state.albums[action.payload.data.id]) {
+        if (state.albums[action.payload.data.id]) {
           state.albums[action.payload.data.id] = action.payload.data as Album;
         }
         if (state.currentAlbum?.id === action.payload.data?.id) {

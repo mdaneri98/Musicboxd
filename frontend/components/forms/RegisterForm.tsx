@@ -23,9 +23,10 @@ const RegisterForm = ({ onSubmit, error, isLoading }: RegisterFormProps) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
       <div className="form-group">
-        <label className="form-label">{t('auth.register.username')}</label>
+        <label htmlFor="register_username" className="form-label">{t('auth.register.username')}</label>
         <input
           type="text"
+          id="register_username"
           {...register('username')}
           className="form-control"
         />
@@ -35,15 +36,21 @@ const RegisterForm = ({ onSubmit, error, isLoading }: RegisterFormProps) => {
       </div>
 
       <div className="form-group">
-        <label className="form-label">{t('auth.register.email')}</label>
-        <input type="text" {...register('email')} className="form-control" />
+        <label htmlFor="register_email" className="form-label">{t('auth.register.email')}</label>
+        <input
+          type="text"
+          id="register_email"
+          {...register('email')}
+          className="form-control"
+        />
         {errors.email && <p className="form-error">{errors.email.message}</p>}
       </div>
 
       <div className="form-group">
-        <label className="form-label">{t('auth.register.password')}</label>
+        <label htmlFor="register_password" className="form-label">{t('auth.register.password')}</label>
         <input
           type="password"
+          id="register_password"
           {...register('password')}
           className="form-control"
         />
@@ -53,9 +60,10 @@ const RegisterForm = ({ onSubmit, error, isLoading }: RegisterFormProps) => {
       </div>
 
       <div className="form-group">
-        <label className="form-label">{t('auth.register.repeatPassword')}</label>
+        <label htmlFor="register_repeatPassword" className="form-label">{t('auth.register.repeatPassword')}</label>
         <input
           type="password"
+          id="register_repeatPassword"
           {...register('repeatPassword')}
           className="form-control"
         />
