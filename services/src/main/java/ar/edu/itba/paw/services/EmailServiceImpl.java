@@ -73,7 +73,7 @@ public class EmailServiceImpl implements EmailService {
 
         Locale currentLocale = new Locale.Builder().setLanguage(to.getPreferredLanguage()).build();
 
-        String frontendUrl = environment.getProperty("app.frontend");
+        String frontendUrl = environment.getProperty("app.url.base");
         String verificationURL = "";
         String template = "";
         String emailSubject = "";
@@ -155,7 +155,7 @@ public class EmailServiceImpl implements EmailService {
 
         String template = "";
         String emailSubject = "";
-        String frontendUrl = environment.getProperty("app.frontend");
+        String frontendUrl = environment.getProperty("app.url.base");
 
         // Common parameters
         params.put("recipientUsername", recipientUser.getUsername());
