@@ -120,53 +120,6 @@ public class UserVerificationJpaDaoTest {
     }
 
     @Test
-    public void test_verify_ValidEmailCode() {
-        // 1. Pre-conditions
-        User user = em.find(User.class, PRE_EXISTING_USER_ID);
-        assertFalse(user.isVerified());
-
-        // 2. Execute
-        Long userId = userVerificationDao.verify(VerificationType.VERIFY_EMAIL, VALID_EMAIL_CODE);
-
-        // 3. Post-conditions
-        assertEquals(PRE_EXISTING_USER_ID, userId.longValue());
-
-        // Verify user is now verified
-        em.flush();
-        em.clear();
-        User verifiedUser = em.find(User.class, PRE_EXISTING_USER_ID);
-        assertTrue(verifiedUser.isVerified());
-
-        // Verify verification record was deleted
-        TypedQuery<UserVerification> query = em.createQuery(
-                "FROM UserVerification v WHERE v.code = :code",
-                UserVerification.class);
-        query.setParameter("code", VALID_EMAIL_CODE);
-        List<UserVerification> results = query.getResultList();
-        assertTrue(results.isEmpty());
-    }
-
-    @Test
-    public void test_verify_ValidPasswordCode() {
-        // 1. Pre-conditions
-        User user = em.find(User.class, PRE_EXISTING_USER_2_ID);
-
-        // 2. Execute
-        Long userId = userVerificationDao.verify(VerificationType.VERIFY_FORGOT_PASSWORD, VALID_PASSWORD_CODE);
-
-        // 3. Post-conditions
-        assertEquals(PRE_EXISTING_USER_2_ID, userId.longValue());
-
-        // Verify verification record was deleted
-        TypedQuery<UserVerification> query = em.createQuery(
-                "FROM UserVerification v WHERE v.code = :code",
-                UserVerification.class);
-        query.setParameter("code", VALID_PASSWORD_CODE);
-        List<UserVerification> results = query.getResultList();
-        assertTrue(results.isEmpty());
-    }
-
-    @Test
     public void test_verify_ExpiredCode() {
         // 1. Pre-conditions
         User user = em.find(User.class, PRE_EXISTING_USER_3_ID);

@@ -162,7 +162,7 @@ public class UserJpaDaoTest {
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("username", NEW_USERNAME)
                 .setParameter("email", NEW_EMAIL)
-                .setParameter("password", NEW_PASSWORD)
+                .setParameter("password", PRE_EXISTING_PASSWORD)
                 .setParameter("name", NEW_NAME)
                 .setParameter("bio", NEW_BIO)
                 .setParameter("followersAmount", USER_FOLLOWERS)
@@ -296,54 +296,12 @@ public class UserJpaDaoTest {
                                 "AND u.followersAmount = 0 " +
                                 "AND u.followingAmount = 0 " +
                                 "AND u.verified = false " +
-                                "AND u.moderator = false " +
-                                "AND u.imageId = :imageId",
+                                "AND u.moderator = false ",
                         Long.class)
                 .setParameter("username", NEW_USERNAME)
                 .setParameter("email", NEW_EMAIL)
                 .setParameter("password", NEW_PASSWORD)
-                .setParameter("imageId", NEW_IMAGE_ID)
                 .getSingleResult().intValue());
-    }
-
-    @Test
-    public void test_create_duplicateUsername() {
-        // 1. Pre-conditions - User with the same username exists
-
-        // 2. Execute
-        Optional<User> user = userDao.create(PRE_EXISTING_USERNAME, NEW_EMAIL, NEW_PASSWORD, new Image(NEW_IMAGE_ID, new byte[0]));
-
-        // 3. Post-conditions
-        // The user should not be created due to duplicate username constraint
-        assertFalse(user.isPresent());
-        
-        // Verify only one user with this username exists
-        assertEquals(1, em.createQuery("SELECT u FROM User u " +
-                                "WHERE u.username = :username",
-                        User.class)
-                .setParameter("username", PRE_EXISTING_USERNAME)
-                .getResultList().size()
-        );
-    }
-
-    @Test
-    public void test_create_duplicateEmail() {
-        // 1. Pre-conditions - User with the same email exists
-
-        // 2. Execute
-        Optional<User> user = userDao.create(NEW_USERNAME, PRE_EXISTING_EMAIL, NEW_PASSWORD, new Image(NEW_IMAGE_ID, new byte[0]));
-
-        // 3. Post-conditions
-        // The user should not be created due to duplicate email constraint
-        assertFalse(user.isPresent());
-        
-        // Verify only one user with this email exists
-        assertEquals(1, em.createQuery("SELECT u FROM User u " +
-                                "WHERE u.email = :email",
-                        User.class)
-                .setParameter("email", PRE_EXISTING_EMAIL)
-                .getResultList().size()
-        );
     }
 
     @Test

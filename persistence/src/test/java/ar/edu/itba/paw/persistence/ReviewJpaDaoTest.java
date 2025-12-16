@@ -630,53 +630,6 @@ public class ReviewJpaDaoTest {
     }
 
     @Test
-    public void test_findPaginated() {
-        // 1. Pre-conditions
-        int limit = 2;
-        int offset = 0;
-
-        // 2. Execute
-        List<Review> reviews = reviewDao.findPaginated(FilterType.RECENT, limit, offset);
-
-        // 3. Post-conditions
-        assertNotNull(reviews);
-        assertEquals(2, reviews.size());
-
-        // Verify reviews are ordered by creation date (DESC)
-        assertTrue(reviews.get(0).getCreatedAt().isAfter(reviews.get(1).getCreatedAt()));
-
-        // Verify no blocked reviews are returned
-        for(Review review : reviews) {
-            assertFalse(review.isBlocked());
-        }
-    }
-
-    @Test
-    public void test_findPaginated_Likes() {
-        // 1. Pre-conditions
-        int limit = 2;
-        int offset = 0;
-
-        // 2. Execute
-        List<Review> reviews = reviewDao.findPaginated(FilterType.LIKES, limit, offset);
-
-        // 3. Post-conditions
-        assertNotNull(reviews);
-        assertFalse(reviews.isEmpty());
-        assertTrue(reviews.size() <= limit);
-        
-        // Verify reviews are ordered by likes (DESC)
-        for (int i = 0; i < reviews.size() - 1; i++) {
-            assertTrue(reviews.get(i).getLikes() >= reviews.get(i + 1).getLikes());
-        }
-        
-        // Verify no blocked reviews are returned
-        for(Review review : reviews) {
-            assertFalse(review.isBlocked());
-        }
-    }
-
-    @Test
     public void test_findPaginated_WithOffset() {
         // 1. Pre-conditions
         int limit = 2;

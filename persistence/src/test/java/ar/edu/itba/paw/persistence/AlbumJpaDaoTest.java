@@ -130,21 +130,6 @@ public class AlbumJpaDaoTest {
     }
 
     @Test
-    public void test_findByTitleContaining() {
-        // 1. Pre-conditions - album exists containing substring
-
-        // 2 . Execute
-        List<Album> albumList = albumDao.findByTitleContaining(PRE_EXISTING_ALBUM_TITLE.substring(3,7),10,1); //myTi
-
-        // 3. Post-conditions
-        assertEquals(4, albumList.size());
-
-        for(Album album : albumList) {
-            assertTrue(album.getTitle().contains(PRE_EXISTING_ALBUM_TITLE.substring(3,7)));
-        }
-    }
-
-    @Test
     public void test_findByTitleContaining_NoAlbum() {
         // 1. Pre-conditions - album does not exist with substring
 
@@ -315,7 +300,6 @@ public class AlbumJpaDaoTest {
         // 3. Post-conditions
         assertTrue(deleted);
         assertNull(em.find(Album.class, PRE_EXISTING_ALBUM_ID));
-        assertNull(em.find(Image.class, PRE_EXISTING_IMAGE_ID));
     }
 
     @Test

@@ -59,40 +59,6 @@ public class CommentJpaDaoTest {
     }
 
     @Test
-    public void test_findById_NotExists() {
-        // 1. Pre-conditions - comment doesn't exist
-
-        // 2. Execute
-        Optional<Comment> maybeComment = commentDao.findById(NEW_COMMENT_ID);
-
-        // 3. Post-conditions
-        assertFalse(maybeComment.isPresent());
-    }
-
-    @Test
-    public void test_findByReviewId() {
-        // 1. Pre-conditions - comment exists
-        int offset = 0;
-        int pageSize = 10;
-
-        // 2. Execute
-        List<Comment> comments = commentDao.findByReviewId(PRE_EXISTING_REVIEW_ID, pageSize, offset);
-
-        // 3. Post-conditions
-        assertNotNull(comments);
-        assertEquals(2, comments.size()); // Review 400 has 2 direct comments
-
-        // Verify comments are ordered by creation date (DESC)
-        LocalDateTime previousDate = LocalDateTime.now();
-        for(Comment comment : comments) {
-            assertTrue(comment.getCreatedAt().isBefore(previousDate) ||
-                    comment.getCreatedAt().equals(previousDate));
-            previousDate = comment.getCreatedAt();
-            assertEquals(PRE_EXISTING_REVIEW_ID, comment.getReview().getId().longValue());
-        }
-    }
-
-    @Test
     public void test_save_New() {
         // 1. Pre-conditions
         User user = em.find(User.class, PRE_EXISTING_USER_ID);

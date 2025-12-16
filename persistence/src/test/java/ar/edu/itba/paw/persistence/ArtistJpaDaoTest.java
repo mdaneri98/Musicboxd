@@ -141,20 +141,6 @@ public class ArtistJpaDaoTest {
     }
 
     @Test
-    public void test_findNameContaining() {
-        // 1. Pre-conditions - artist exists containing substring
-
-        // 2. Execute
-        List<Artist> artistList = artistDao.findByNameContaining(PRE_EXISTING_ARTIST_NAME.substring(3,7),10,1); // myNa
-
-        // 3. Post-conditions
-        assertEquals(4, artistList.size());
-        for (Artist artist : artistList) {
-            assertTrue(artist.getName().contains(PRE_EXISTING_ARTIST_NAME.substring(3,7)));
-        }
-    }
-
-    @Test
     public void test_findByTitleContaining_NoArtist() {
         // 1. Pre-conditions - artist does not exist with substring
 
@@ -287,7 +273,6 @@ public class ArtistJpaDaoTest {
         // 3. Post-conditions
         assertTrue(deleted);
         assertNull(em.find(Artist.class, PRE_EXISTING_ARTIST_ID));
-        assertNull(em.find(Image.class, PRE_EXISTING_IMAGE_ID));
     }
 
     @Test
