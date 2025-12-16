@@ -11,7 +11,6 @@ import albumReducer from './slices/albumSlice';
 import songReducer from './slices/songSlice';
 import reviewReducer from './slices/reviewSlice';
 import notificationReducer from './slices/notificationSlice';
-import searchReducer from './slices/searchSlice';
 import uiReducer from './slices/uiSlice';
 
 // ============================================================================
@@ -43,7 +42,6 @@ const rootReducer = combineReducers({
   reviews: reviewReducer,
   notifications: notificationReducer,
   ui: uiReducer,
-  search: searchReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
