@@ -52,7 +52,11 @@
       "repeatPassword": "Passwort wiederholen",
       "submit": "Registrieren",
       "haveAccount": "Hast du bereits ein Konto?",
-      "registering": "Registrierung läuft..."
+      "registering": "Registrierung läuft...",
+      "successTitle": "Konto erstellt!",
+      "successMessage": "Dein Konto wurde erfolgreich erstellt. Bitte überprüfe deine E-Mail, um dein Konto zu bestätigen.",
+      "redirecting": "Weiterleitung zum Login...",
+      "goToLogin": "Zum Login"
     },
     "verifyEmail": {
       "pageTitle": "Musicboxd - E-Mail-Verifizierung",

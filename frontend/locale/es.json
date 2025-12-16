@@ -52,7 +52,11 @@
       "repeatPassword": "Repetir contraseña",
       "submit": "Crear cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
-      "registering": "Registrando..."
+      "registering": "Registrando...",
+      "successTitle": "¡Cuenta creada!",
+      "successMessage": "Tu cuenta ha sido creada exitosamente. Por favor revisa tu correo electrónico para verificar tu cuenta.",
+      "redirecting": "Redirigiendo al inicio de sesión...",
+      "goToLogin": "Ir al inicio de sesión"
     },
     "resetPassword": {
       "pageTitle": "Musicboxd - Restablecer contraseña",

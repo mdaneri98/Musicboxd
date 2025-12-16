@@ -52,7 +52,11 @@
       "repeatPassword": "Repeat Password",
       "submit": "Sign Up",
       "haveAccount": "Already have an account?",
-      "registering": "Registering..."
+      "registering": "Registering...",
+      "successTitle": "Account Created!",
+      "successMessage": "Your account has been created successfully. Please check your email to verify your account.",
+      "redirecting": "Redirecting to login...",
+      "goToLogin": "Go to Login"
     },
     "resetPassword": {
       "pageTitle": "Musicboxd - Reset Password",
