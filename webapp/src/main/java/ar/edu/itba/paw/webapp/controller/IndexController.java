@@ -25,7 +25,7 @@ public class IndexController extends BaseController {
     
     @GET
     public Response getApiInfo(@Context HttpServletRequest request, @Context UriInfo uriInfo) {
-        String baseUrl = HATEOASUtils.getBaseUrl(request);
+        String baseUrl = HATEOASUtils.getBaseUrl(request) + "/api";
 
         Resource<Map<String, Object>> apiResource = new Resource<Map<String, Object>>() {
             @Override

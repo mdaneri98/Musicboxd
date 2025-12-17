@@ -1,0 +1,19 @@
+app.url.base=
+app.frontend=
+app.backend=
+
+
+database.url=
+database.username=
+database.password=
+
+# JWT Configuration
+jwt.secret=
+jwt.access.expiration=
+jwt.refresh.expiration=
+
+# Mailing
+mailer.host=
+mailer.port=
+mailer.email=
+mailer.password=
