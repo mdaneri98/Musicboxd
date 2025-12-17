@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Footer } from '@/components/layout';
 import { LoginForm } from '@/components/forms';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginAsync, selectIsAuthenticated, selectAuthError, selectAuthLoading } from '@/store/slices';
+import { loginAsync, selectIsAuthenticated, selectAuthError, selectAuthLoading, clearAuthError } from '@/store/slices';
 import type { LoginFormData } from '@/types';
 
 const LoginPage = () => {
@@ -16,6 +16,11 @@ const LoginPage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const error = useAppSelector(selectAuthError);
   const isLoading = useAppSelector(selectAuthLoading);
+
+  // Clear any previous auth errors when component mounts
+  useEffect(() => {
+    dispatch(clearAuthError());
+  }, [dispatch]);
 
   useEffect(() => {
     if (isAuthenticated) {
