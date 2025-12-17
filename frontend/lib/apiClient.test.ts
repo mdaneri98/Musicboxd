@@ -58,9 +58,10 @@ describe('ApiClient', () => {
                 .matchHeader('Authorization', 'Bearer expired-access-token')
                 .reply(401);
 
-            // 2. Refresh token request
+            // 2. Refresh token request (token sent in Authorization header)
             nock(API_BASE_URL)
-                .post('/auth/refresh', { refreshToken: 'valid-refresh-token' })
+                .post('/auth/refresh', {})
+                .matchHeader('Authorization', 'Bearer valid-refresh-token')
                 .reply(200, {
                     access_token: 'new-access-token',
                     refresh_token: 'new-refresh-token',
@@ -90,9 +91,10 @@ describe('ApiClient', () => {
                 .matchHeader('Authorization', 'Bearer expired-access-token')
                 .reply(403);
 
-            // 2. Refresh token request
+            // 2. Refresh token request (token sent in Authorization header)
             nock(API_BASE_URL)
-                .post('/auth/refresh', { refreshToken: 'valid-refresh-token' })
+                .post('/auth/refresh', {})
+                .matchHeader('Authorization', 'Bearer valid-refresh-token')
                 .reply(200, {
                     access_token: 'new-access-token',
                     refresh_token: 'new-refresh-token',
