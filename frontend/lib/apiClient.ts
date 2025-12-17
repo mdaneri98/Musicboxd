@@ -245,7 +245,7 @@ if (typeof window !== 'undefined') {
     } catch {
       // Network error - retry on next interval
     }
-  }, 20000);
+  }, 100000);
 }
 
 // ============================================================================
