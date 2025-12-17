@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
 
-import ar.edu.itba.paw.webapp.form.validation.EmailNotInUse;
-import ar.edu.itba.paw.webapp.form.validation.UsernameNotInUse;
 import ar.edu.itba.paw.webapp.form.validation.passwords.PasswordConfirmation;
 import ar.edu.itba.paw.webapp.form.validation.passwords.PasswordMatch;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,12 +17,10 @@ public class UserForm implements PasswordConfirmation {
     @NotBlank(message = "{validation.user.username.notblank}")
     @Size(min = 4, max = 50, message = "{validation.user.username.size}")
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*", message = "{validation.user.username.pattern}")
-    @UsernameNotInUse(message = "{validation.user.username.in.use}")
     private String username;
 
     @JsonProperty("email")
     @NotBlank(message = "{validation.user.email.notblank}")
-    @EmailNotInUse(message = "{validation.user.email.in.use}")
     @Email(message = "{validation.user.email.invalid}")
     private String email;
 
