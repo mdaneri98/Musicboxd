@@ -8,12 +8,13 @@ import { ReviewCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  selectIsAuthenticated, 
-  fetchReviewsAsync, 
+import {
+  selectIsAuthenticated,
+  selectAuthInitializing,
+  fetchReviewsAsync,
   fetchMoreReviewsAsync,
   clearReviews,
-  selectOrderedReviews, 
+  selectOrderedReviews,
   selectReviewLoading,
   selectReviewLoadingMore,
   selectReviewPagination,
@@ -27,26 +28,30 @@ const HomePage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const authInitializing = useAppSelector(selectAuthInitializing);
   const reviews = useAppSelector(selectOrderedReviews);
   const loading = useAppSelector(selectReviewLoading);
   const loadingMore = useAppSelector(selectReviewLoadingMore);
   const pagination = useAppSelector(selectReviewPagination);
   const hasMore = useAppSelector(selectReviewsHasMore);
-  
+
   const [activeTab, setActiveTab] = useState<HomeTabEnum>(HomeTabEnum.FOR_YOU);
   const filter = activeTab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING;
 
-  // Redirect to landing page if not authenticated
+  // Redirect to landing page if not authenticated (after auth initialization is complete)
   useEffect(() => {
+    // Wait for auth to finish initializing before making redirect decision
+    if (authInitializing) return;
+
     if (!isAuthenticated) {
       router.push('/landing');
     }
-  }, [isAuthenticated, router]);
+  }, [authInitializing, isAuthenticated, router]);
 
   // Initial data fetch when tab/filter changes
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     // Clear existing reviews and fetch fresh data
     dispatch(clearReviews());
     dispatch(fetchReviewsAsync({ page: 1, size: 10, filter }));
@@ -55,12 +60,12 @@ const HomePage = () => {
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!hasMore || loadingMore) return;
-    
+
     const nextPage = pagination.page + 1;
-    await dispatch(fetchMoreReviewsAsync({ 
-      page: nextPage, 
-      size: pagination.size, 
-      filter 
+    await dispatch(fetchMoreReviewsAsync({
+      page: nextPage,
+      size: pagination.size,
+      filter
     }));
   }, [dispatch, pagination.page, pagination.size, filter, hasMore, loadingMore]);
 
