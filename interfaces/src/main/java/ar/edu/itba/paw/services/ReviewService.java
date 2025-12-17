@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ReviewService extends CrudService<Review> {
 
-
+    Boolean safeDelete(Long id, Long userId);
     Review findArtistReviewById(Long id, Long loggedUserId);
     Review findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId);
 
