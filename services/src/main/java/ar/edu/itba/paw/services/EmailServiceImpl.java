@@ -181,7 +181,7 @@ public class EmailServiceImpl implements EmailService {
             case FOLLOW:
                 template = "notification_follow";
                 emailSubject = "notification.follow";
-                params.put("profileUrl", frontendUrl + "/users/" + triggerUser.getUsername());
+                params.put("profileUrl", frontendUrl + "/users/" + triggerUser.getId());
                 break;
 
             case NEW_REVIEW:
