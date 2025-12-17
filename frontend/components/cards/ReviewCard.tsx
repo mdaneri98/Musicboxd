@@ -15,7 +15,6 @@ import { formatTimeAgo } from '@/utils/timeUtils';
 import { ConfirmationModal } from '../ui';
 import { useState } from 'react';
 import { ASSETS } from '@/utils';
-import router from 'next/router';
 
 interface ReviewCardProps {
   review: Review;
@@ -31,9 +30,6 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   const [isBlocked, setIsBlocked] = useState(review.is_blocked);
 
   const handleLike = async (e: React.MouseEvent) => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
     e.preventDefault();
     if (review.liked) {
       await dispatch(unlikeReviewAsync(review.id));
@@ -190,9 +186,15 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             <Link href={`/reviews/${review.id}?tab=likes`}>
               <span className="action-count">{review.likes}</span>
             </Link>
-            <button onClick={handleLike} className={`action-btn ${review.liked ? 'active' : ''}`}>
-              <i className={`fa-${review.liked ? 'solid' : 'regular'} fa-heart`}></i>
-            </button>
+            {isAuthenticated ? (
+              <button onClick={handleLike} className={`action-btn ${review.liked ? 'active' : ''}`}>
+                <i className={`fa-${review.liked ? 'solid' : 'regular'} fa-heart`}></i>
+              </button>
+            ) : (
+              <Link href="/login" className="action-btn">
+                <i className="fa-regular fa-heart"></i>
+              </Link>
+            )}
           </div>
 
           {/* Comment action */}
