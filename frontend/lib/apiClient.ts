@@ -111,10 +111,8 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-    // If error is 401 and we haven't retried yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
       if (isRefreshing) {
-        // If already refreshing, queue this request
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -135,7 +133,6 @@ axiosInstance.interceptors.response.use(
       const refreshToken = tokenStorage.getRefreshToken();
 
       if (!refreshToken) {
-        // No refresh token, clear everything and redirect to login
         tokenStorage.clearTokens();
         if (typeof window !== 'undefined') {
           window.location.href = '/login';
@@ -144,23 +141,22 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
-        // Attempt to refresh token
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-          refreshToken,
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+          },
         });
 
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
+        const { access_token, refresh_token: newRefreshToken } = response.data;
 
-        tokenStorage.setTokens(accessToken, newRefreshToken);
-        processQueue(null, accessToken);
+        tokenStorage.setTokens(access_token, newRefreshToken);
+        processQueue(null, access_token);
 
-        // Retry original request with new token
         if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${access_token}`;
         }
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, clear tokens and redirect
         processQueue(refreshError as Error, null);
         tokenStorage.clearTokens();
         if (typeof window !== 'undefined') {
@@ -171,7 +167,6 @@ axiosInstance.interceptors.response.use(
         isRefreshing = false;
       }
     }
-
     return Promise.reject(error);
   }
 );
@@ -203,6 +198,55 @@ const handleApiError = (error: unknown): APIError => {
     message: 'An unexpected error occurred',
   };
 };
+
+// ============================================================================
+// Periodic Token Refresh (Module Level)
+// ============================================================================
+
+// Dedicated axios instance for refresh to avoid interceptor recursion
+const refreshClient = axios.create({
+  baseURL: API_BASE_URL,
+  validateStatus: () => true, // Never throw on HTTP errors
+});
+
+if (typeof window !== 'undefined') {
+  const win = window as any;
+  const REFRESH_VERSION = 'v1';
+
+  if (win.__auth_refresh_interval) {
+    clearInterval(win.__auth_refresh_interval);
+  }
+
+  win.__auth_refresh_version = REFRESH_VERSION;
+  win.__auth_refresh_interval = setInterval(async () => {
+    if (win.__auth_refresh_version !== REFRESH_VERSION) {
+      clearInterval(win.__auth_refresh_interval);
+      return;
+    }
+
+    const refreshToken = tokenStorage.getRefreshToken();
+    if (!refreshToken) return;
+
+    try {
+      const response = await refreshClient.post('/auth/refresh', {}, {
+        headers: { Authorization: `Bearer ${refreshToken}` },
+      });
+
+      if (response.status === 200) {
+        const { access_token, refresh_token: newRefreshToken } = response.data;
+        if (access_token && newRefreshToken) {
+          tokenStorage.setTokens(access_token, newRefreshToken);
+        }
+      } else if ([401, 403, 500].includes(response.status)) {
+        clearInterval(win.__auth_refresh_interval);
+        tokenStorage.clearTokens();
+        window.location.href = '/login';
+      }
+    } catch {
+      // Network error - retry on next interval
+    }
+  }, 100000);
+}
 
 // ============================================================================
 // API Client Class
@@ -366,7 +410,7 @@ class ApiClient {
       const response: AxiosResponse<T> = await axiosInstance.put(url, data, {
         headers: options?.headers,
         params: options?.params,
-        signal: options?.signal,  
+        signal: options?.signal,
       });
       return response.data;
     } catch (error) {

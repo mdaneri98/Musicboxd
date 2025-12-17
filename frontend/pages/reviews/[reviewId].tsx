@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
@@ -6,6 +6,7 @@ import { ReviewCard, UserCard, CommentCard } from '@/components/cards';
 import { CommentForm } from '@/components/forms';
 import { ConfirmationModal, LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useInfiniteScroll } from '@/hooks';
 import {
   selectIsAuthenticated,
   selectCurrentUser,
@@ -61,11 +62,6 @@ const ReviewDetailPage = () => {
   const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // Refs for infinite scroll
-  const commentsSentinelRef = useRef<HTMLDivElement>(null);
-  const likesSentinelRef = useRef<HTMLDivElement>(null);
-  const isLoadingMoreRef = useRef(false);
-
   useEffect(() => {
     if (queryTab) {
       setActiveTab(queryTab as ReviewTab);
@@ -86,91 +82,47 @@ const ReviewDetailPage = () => {
     dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page: 1, size: 10 }));
   }, [reviewId, dispatch, review]);
 
-  // Load more comments
+  // Load more comments callback
   const handleLoadMoreComments = useCallback(async () => {
-    if (!reviewId || !commentsHasMore || loadingMoreComments || isLoadingMoreRef.current) return;
-    
-    isLoadingMoreRef.current = true;
+    if (!reviewId || !commentsHasMore || loadingMoreComments) return;
+
     const reviewIdNum = parseInt(reviewId as string);
     const nextPage = commentsPagination.page + 1;
-    
-    try {
-      await dispatch(fetchMoreReviewCommentsAsync({ 
-        reviewId: reviewIdNum, 
-        page: nextPage, 
-        size: commentsPagination.size 
-      })).unwrap();
-    } finally {
-      isLoadingMoreRef.current = false;
-    }
+    await dispatch(fetchMoreReviewCommentsAsync({
+      reviewId: reviewIdNum,
+      page: nextPage,
+      size: commentsPagination.size
+    }));
   }, [dispatch, reviewId, commentsPagination.page, commentsPagination.size, commentsHasMore, loadingMoreComments]);
 
-  // Load more likes
+  // Load more likes callback
   const handleLoadMoreLikes = useCallback(async () => {
-    if (!reviewId || !likesHasMore || loadingMoreLikes || isLoadingMoreRef.current) return;
-    
-    isLoadingMoreRef.current = true;
+    if (!reviewId || !likesHasMore || loadingMoreLikes) return;
+
     const reviewIdNum = parseInt(reviewId as string);
     const nextPage = likesPagination.page + 1;
-    
-    try {
-      await dispatch(fetchMoreReviewLikesAsync({ 
-        reviewId: reviewIdNum, 
-        page: nextPage, 
-        size: likesPagination.size 
-      })).unwrap();
-    } finally {
-      isLoadingMoreRef.current = false;
-    }
+    await dispatch(fetchMoreReviewLikesAsync({
+      reviewId: reviewIdNum,
+      page: nextPage,
+      size: likesPagination.size
+    }));
   }, [dispatch, reviewId, likesPagination.page, likesPagination.size, likesHasMore, loadingMoreLikes]);
 
-  // Intersection Observer for comments
-  useEffect(() => {
-    if (activeTab !== ReviewTab.COMMENTS || !commentsHasMore || comments.length === 0 || loadingComments) return;
+  // Infinite scroll hook for comments
+  const { sentinelRef: commentsSentinelRef, isFetchingMore: isFetchingMoreComments } = useInfiniteScroll({
+    onLoadMore: handleLoadMoreComments,
+    hasMore: commentsHasMore,
+    isLoading: loadingComments || loadingMoreComments,
+    enabled: activeTab === ReviewTab.COMMENTS && !loadingComments && comments.length > 0,
+  });
 
-    const sentinel = commentsSentinelRef.current;
-    if (!sentinel) return;
-
-    const scrollContainer = document.querySelector('.main-container');
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoadingMoreRef.current) {
-          handleLoadMoreComments();
-        }
-      },
-      { 
-        root: scrollContainer,
-        rootMargin: '200px' 
-      }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [activeTab, commentsHasMore, comments.length, loadingComments, handleLoadMoreComments]);
-
-  // Intersection Observer for likes
-  useEffect(() => {
-    if (activeTab !== ReviewTab.LIKES || !likesHasMore || likedUsers.length === 0 || loadingLikes) return;
-
-    const sentinel = likesSentinelRef.current;
-    if (!sentinel) return;
-
-    const scrollContainer = document.querySelector('.main-container');
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoadingMoreRef.current) {
-          handleLoadMoreLikes();
-        }
-      },
-      { 
-        root: scrollContainer,
-        rootMargin: '200px' 
-      }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [activeTab, likesHasMore, likedUsers.length, loadingLikes, handleLoadMoreLikes]);
+  // Infinite scroll hook for likes
+  const { sentinelRef: likesSentinelRef, isFetchingMore: isFetchingMoreLikes } = useInfiniteScroll({
+    onLoadMore: handleLoadMoreLikes,
+    hasMore: likesHasMore,
+    isLoading: loadingLikes || loadingMoreLikes,
+    enabled: activeTab === ReviewTab.LIKES && !loadingLikes && likedUsers.length > 0,
+  });
 
   const handleTabChange = useCallback((tab: ReviewTab) => {
     setActiveTab(tab);
@@ -274,7 +226,7 @@ const ReviewDetailPage = () => {
                 {/* Sentinel for infinite scroll */}
                 <div ref={likesSentinelRef} className="infinite-scroll-sentinel" />
 
-                {loadingMoreLikes && (
+                {(loadingMoreLikes || isFetchingMoreLikes) && (
                   <div className="loading-more">
                     <LoadingSpinner size="small" />
                   </div>
@@ -317,8 +269,8 @@ const ReviewDetailPage = () => {
               <>
                 <div className="comments-list">
                   {comments.map((comment) => (
-                    <CommentCard 
-                      key={comment.id} 
+                    <CommentCard
+                      key={comment.id}
                       comment={comment}
                       onDelete={canDeleteComment(comment) ? () => setCommentToDelete(comment.id) : undefined}
                     />
@@ -328,7 +280,7 @@ const ReviewDetailPage = () => {
                 {/* Sentinel for infinite scroll */}
                 <div ref={commentsSentinelRef} className="infinite-scroll-sentinel" />
 
-                {loadingMoreComments && (
+                {(loadingMoreComments || isFetchingMoreComments) && (
                   <div className="loading-more">
                     <LoadingSpinner size="small" />
                   </div>
@@ -358,3 +310,4 @@ const ReviewDetailPage = () => {
 };
 
 export default ReviewDetailPage;
+
