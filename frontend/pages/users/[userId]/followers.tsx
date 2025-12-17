@@ -6,7 +6,7 @@ import { UserCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
+import {
   fetchUserByIdAsync,
   fetchFollowersAsync,
   fetchMoreFollowersAsync,
@@ -39,7 +39,7 @@ const FollowersPage = () => {
   const pagination = useAppSelector(selectFollowersPagination);
   const hasMore = useAppSelector(selectFollowersHasMore);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  
+
   const loading = loadingProfile || loadingFollowers;
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
@@ -53,7 +53,7 @@ const FollowersPage = () => {
 
   useEffect(() => {
     if (!userId) return;
-    
+
     const userIdNum = parseInt(userId as string);
     dispatch(fetchUserByIdAsync(userIdNum));
     dispatch(fetchFollowersAsync({ userId: userIdNum, page: 1, size: 10 }));
@@ -69,12 +69,12 @@ const FollowersPage = () => {
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!userId || !hasMore || loadingMoreFollowers) return;
-    
+
     const nextPage = pagination.page + 1;
-    await dispatch(fetchMoreFollowersAsync({ 
-      userId: parseInt(userId as string), 
-      page: nextPage, 
-      size: pagination.size 
+    await dispatch(fetchMoreFollowersAsync({
+      userId: parseInt(userId as string),
+      page: nextPage,
+      size: pagination.size
     }));
   }, [dispatch, userId, pagination.page, pagination.size, hasMore, loadingMoreFollowers]);
 
@@ -88,7 +88,7 @@ const FollowersPage = () => {
 
   const handleFollowToggle = async () => {
     if (!user) return;
-    
+
     try {
       setFollowLoading(true);
       if (isFollowing) {

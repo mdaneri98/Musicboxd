@@ -31,7 +31,7 @@ export function useInfiniteScroll({
 
     isFetchingRef.current = true;
     setIsFetchingMore(true);
-    
+
     try {
       await onLoadMore();
     } catch (error) {
@@ -47,14 +47,17 @@ export function useInfiniteScroll({
 
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
-
+    const scrollContainer = document.querySelector('.main-container');
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
           handleLoadMore();
         }
       },
-      { rootMargin }
+      {
+        root: scrollContainer,
+        rootMargin
+      }
     );
 
     observer.observe(sentinel);
@@ -69,3 +72,4 @@ export function useInfiniteScroll({
 }
 
 export default useInfiniteScroll;
+

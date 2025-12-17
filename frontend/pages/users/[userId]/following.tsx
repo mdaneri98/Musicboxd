@@ -39,7 +39,7 @@ const FollowingPage = () => {
   const pagination = useAppSelector(selectFollowingPagination);
   const hasMore = useAppSelector(selectFollowingHasMore);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  
+
   const loading = loadingProfile || loadingFollowing;
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
@@ -53,7 +53,7 @@ const FollowingPage = () => {
 
   useEffect(() => {
     if (!userId) return;
-    
+
     const userIdNum = parseInt(userId as string);
     dispatch(fetchUserByIdAsync(userIdNum));
     dispatch(fetchFollowingAsync({ userId: userIdNum, page: 1, size: 10 }));
@@ -69,12 +69,12 @@ const FollowingPage = () => {
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!userId || !hasMore || loadingMoreFollowing) return;
-    
+
     const nextPage = pagination.page + 1;
-    await dispatch(fetchMoreFollowingAsync({ 
-      userId: parseInt(userId as string), 
-      page: nextPage, 
-      size: pagination.size 
+    await dispatch(fetchMoreFollowingAsync({
+      userId: parseInt(userId as string),
+      page: nextPage,
+      size: pagination.size
     }));
   }, [dispatch, userId, pagination.page, pagination.size, hasMore, loadingMoreFollowing]);
 
@@ -88,7 +88,7 @@ const FollowingPage = () => {
 
   const handleFollowToggle = async () => {
     if (!user) return;
-    
+
     try {
       setFollowLoading(true);
       if (isFollowing) {
