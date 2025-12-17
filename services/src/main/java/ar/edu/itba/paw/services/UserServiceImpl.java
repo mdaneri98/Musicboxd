@@ -113,8 +113,8 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("Creating new user with username: {} and email: {}", username, email);
         String hashedPassword = passwordEncoder.encode(password);
 
-        if (usernameExists(username)) throw new UserAlreadyExistsException(username, "username");
-        if (emailExists(email)) throw new UserAlreadyExistsException(email, "email");
+        if (usernameExists(username)) throw new RuntimeException("exception.UsernameAlreadyExists");
+        if (emailExists(email)) throw new RuntimeException("exception.EmailAlreadyExists");
 
         User createdUser = userDao.create(username, email, hashedPassword, imageService.findById(imageService.getDefaultProfileImgId())).orElseThrow(() -> new RuntimeException("Failed to create user"));
         createdUser.setPreferredLanguage(LocaleContextHolder.getLocale().getLanguage());
