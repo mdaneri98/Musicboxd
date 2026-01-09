@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, getCurrentUserAsync, deleteUserAsync, updateUserConfigAsync } from '@/store/slices';
+import { selectIsAuthenticated, selectAuthInitializing, selectCurrentUser, getCurrentUserAsync, deleteUserAsync, updateUserConfigAsync } from '@/store/slices';
 import { ConfirmationModal, LanguageSwitcher } from '@/components/ui';
 import { useThemeContext } from '@/components/ThemeProvider';
 import { ThemeEnum, LanguageEnum } from '@/types';
@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const authInitializing = useAppSelector(selectAuthInitializing);
   const currentUser = useAppSelector(selectCurrentUser);
   const { theme, setTheme } = useThemeContext();
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
@@ -29,15 +30,16 @@ export default function SettingsPage() {
     has_comments_notifications_enabled: false,
     has_reviews_notifications_enabled: false,
   });
-  
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (authInitializing) return;
     if (!isAuthenticated) {
       router.push('/landing');
     } else dispatch(getCurrentUserAsync());
-  }, [isAuthenticated, router, dispatch]);
+  }, [authInitializing, isAuthenticated, router, dispatch]);
 
   useEffect(() => {
     if (currentUser) {
@@ -146,7 +148,7 @@ export default function SettingsPage() {
             <h2 className="section-title">{t('settings.language')}</h2>
             <div className="settings-card">
               <div className="settings-option">
-              <LanguageSwitcher onLanguageChange={handleLanguageChange} />
+                <LanguageSwitcher onLanguageChange={handleLanguageChange} />
               </div>
             </div>
           </section>

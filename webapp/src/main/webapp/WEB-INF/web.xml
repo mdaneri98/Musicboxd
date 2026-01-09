@@ -106,7 +106,7 @@
         <url-pattern>/assets/*</url-pattern>
     </filter-mapping>
 
-    <!-- Redirect all requests to index.html so that React Router handles routes -->
+    <!-- Serve static assets directly using Tomcat's default servlet -->
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/assets/*</url-pattern>
@@ -119,13 +119,75 @@
         <servlet-name>default</servlet-name>
         <url-pattern>/_next/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.js</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.css</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.svg</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.png</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.jpg</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.ico</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.woff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.woff2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.json</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.map</url-pattern>
+    </servlet-mapping>
+
+    <!-- SPA Routing Servlet - handles all SPA routes (dynamic and static pages) -->
+    <!-- This servlet acts as a fallback for all routes not handled by other servlets -->
     <servlet>
-        <servlet-name>index</servlet-name>
-        <jsp-file>/index.html</jsp-file>
+        <servlet-name>SpaRoutingServlet</servlet-name>
+        <servlet-class>ar.edu.itba.paw.webapp.servlet.SpaRoutingServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>index</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>SpaRoutingServlet</servlet-name>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+    <!-- Custom error pages to always show Next.js 404 instead of Tomcat's -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/404/index.html</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/500/index.html</location>
+    </error-page>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/403/index.html</location>
+    </error-page>
 
 </web-app>

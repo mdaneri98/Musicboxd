@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated, selectCurrentUser, fetchAlbumsAsync } from '@/store/slices';
+import { selectIsAuthenticated, selectAuthInitializing, selectCurrentUser, fetchAlbumsAsync } from '@/store/slices';
 import { Artist, Album, HALResource } from '@/types';
 import { fetchArtistsAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
@@ -22,6 +22,7 @@ export default function ModeratorDashboardPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const authInitializing = useAppSelector(selectAuthInitializing);
   const currentUser = useAppSelector(selectCurrentUser);
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<ReviewItemType>(ReviewItemType.ARTIST);
@@ -36,12 +37,13 @@ export default function ModeratorDashboardPage() {
 
   // Redirect if not authenticated or not moderator
   useEffect(() => {
+    if (authInitializing) return;
     if (!isAuthenticated) {
       router.push('/landing');
     } else if (currentUser && !currentUser.moderator) {
       router.push('/');
     }
-  }, [isAuthenticated, currentUser, router]);
+  }, [authInitializing, isAuthenticated, currentUser, router]);
 
   // Close results when clicking outside
   useEffect(() => {
@@ -246,7 +248,7 @@ export default function ModeratorDashboardPage() {
             {t("label.artist")}
           </span>
           <span
-              className={`tab ${activeTab === ReviewItemType.ALBUM ? 'active' : ''}`}
+            className={`tab ${activeTab === ReviewItemType.ALBUM ? 'active' : ''}`}
             onClick={() => handleTabChange(ReviewItemType.ALBUM)}
           >
             {t("label.album")}

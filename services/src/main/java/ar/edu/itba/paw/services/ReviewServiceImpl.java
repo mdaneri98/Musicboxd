@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exception.conflict.ReviewNotOwnedByUserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
@@ -495,6 +496,14 @@ public class ReviewServiceImpl implements ReviewService {
             return Notification.NotificationType.REVIEW_BLOCKED;
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public Boolean safeDelete(Long id, Long userId) {
+        Review review = reviewDao.findById(id).orElseThrow(() -> new ReviewNotFoundException(id));
+        if (!review.getUser().getId().equals(userId)) throw new ReviewNotOwnedByUserException(id, userId);
+        return delete(id);
     }
 
 }

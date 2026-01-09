@@ -114,9 +114,8 @@ public class ReviewController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        reviewService.delete(id);
+        reviewService.safeDelete(id, SecurityContextUtils.getCurrentUserId());
         return buildNoContentResponse();
     }
 
