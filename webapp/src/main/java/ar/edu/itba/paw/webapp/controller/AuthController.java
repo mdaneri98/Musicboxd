@@ -70,7 +70,7 @@ public class AuthController extends BaseController {
         UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
 
-        return Response.status(Response.Status.CREATED).entity(userResource).build();
+        return buildCreatedResponse(userResource, buildResourceLocation(ApiUriConstants.USERS_BASE, user.getId()));
     }
 
     @POST

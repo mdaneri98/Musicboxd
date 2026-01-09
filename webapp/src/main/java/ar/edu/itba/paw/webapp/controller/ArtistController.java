@@ -124,7 +124,7 @@ public class ArtistController extends BaseController {
         Artist artist = artistService.create(artistInput);
         ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
-        return buildCreatedResponse(artistResource);
+        return buildCreatedResponse(artistResource, buildResourceLocation(ApiUriConstants.ARTISTS_BASE, artist.getId()));
     }
 
     @GET
@@ -199,7 +199,7 @@ public class ArtistController extends BaseController {
         Album album = albumService.create(albumInput);
         AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
         AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
-        return buildResponse(albumResource);
+        return buildCreatedResponse(albumResource, buildResourceLocation(ApiUriConstants.ALBUMS_BASE, album.getId()));
     }
 
     @GET
@@ -224,7 +224,9 @@ public class ArtistController extends BaseController {
         Artist artist = artistService.findAndSetContextDependentFields(id, loggedUserId);
         ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
         ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
-        return buildCreatedResponse(artistResource);
+
+        return buildCreatedResponse(artistResource,
+                buildNestedResourceLocation(ApiUriConstants.USERS_BASE, loggedUserId, "/favorites/artists", id));
     }
 
     @DELETE

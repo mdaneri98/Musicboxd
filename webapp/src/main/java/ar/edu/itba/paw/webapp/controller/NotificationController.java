@@ -57,7 +57,7 @@ public class NotificationController extends BaseController {
         Notification createdNotification = notificationService.create(notification);
         NotificationDTO responseDTO = notificationDtoMapper.toDTO(createdNotification);
         NotificationResource notificationResource = notificationResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildCreatedResponse(notificationResource);
+        return buildCreatedResponse(notificationResource, buildResourceLocation(ApiUriConstants.NOTIFICATIONS_BASE, createdNotification.getId()));
     }
 
 

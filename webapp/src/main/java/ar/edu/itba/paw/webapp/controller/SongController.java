@@ -87,7 +87,7 @@ public class SongController extends BaseController {
         Song song = songService.create(songInput);
         SongDTO songDTO = songDtoMapper.toDTO(song);
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
-        return buildCreatedResponse(songResource);
+        return buildCreatedResponse(songResource, buildResourceLocation(ApiUriConstants.SONGS_BASE, song.getId()));
     }
 
     @GET
@@ -149,7 +149,9 @@ public class SongController extends BaseController {
         Song song = songService.findAndSetContextDependentFields(id, loggedUserId);
         SongDTO songDTO = songDtoMapper.toDTO(song);
         SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
-        return buildCreatedResponse(songResource);
+
+        return buildCreatedResponse(songResource,
+                buildNestedResourceLocation(ApiUriConstants.USERS_BASE, loggedUserId, "/favorites/songs", id));
     }
 
     @DELETE

@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.*;
+import java.net.URI;
 import java.util.function.Supplier;
 
 public abstract class BaseController {
-    
+
     @Context
     protected HttpServletRequest request;
-    
+
     @Context
     protected UriInfo uriInfo;
 
@@ -31,11 +32,30 @@ public abstract class BaseController {
             return Response.serverError().entity("Serialization error").build();
         }
     }
-    
-    protected Response buildCreatedResponse(Object resource) {
-        return Response.status(Response.Status.CREATED).entity(resource).build();
+
+    protected Response buildCreatedResponse(Object resource, URI location) {
+        return Response.status(Response.Status.CREATED)
+                .entity(resource)
+                .header(HttpHeaders.LOCATION, location)
+                .build();
     }
-    
+
+    protected URI buildResourceLocation(String resourcePath, Long resourceId) {
+        return uriInfo.getBaseUriBuilder()
+                .path(resourcePath)
+                .path(String.valueOf(resourceId))
+                .build();
+    }
+
+    protected URI buildNestedResourceLocation(String resourcePath, Long parentId, String subResourcePath, Long resourceId) {
+        return uriInfo.getBaseUriBuilder()
+                .path(resourcePath)
+                .path(String.valueOf(parentId))
+                .path(subResourcePath)
+                .path(String.valueOf(resourceId))
+                .build();
+    }
+
     protected Response buildNoContentResponse() {
         return Response.noContent().build();
     }

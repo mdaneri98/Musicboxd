@@ -67,7 +67,7 @@ public class CommentController extends BaseController {
         Comment createdComment = commentService.create(comment);
         CommentDTO commentDTO = commentDtoMapper.toDTO(createdComment);
         CommentResource commentResource = commentResourceMapper.toResource(commentDTO, getBaseUrl());
-        return buildCreatedResponse(commentResource);
+        return buildCreatedResponse(commentResource, buildResourceLocation(ApiUriConstants.COMMENTS_BASE, createdComment.getId()));
     }
 
     @GET

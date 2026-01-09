@@ -136,7 +136,7 @@ public class UserController extends BaseController {
         UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
 
-        return buildCreatedResponse(userResource);
+        return buildCreatedResponse(userResource, buildResourceLocation(ApiUriConstants.USERS_BASE, user.getId()));
     }
 
     @PUT
@@ -214,7 +214,9 @@ public class UserController extends BaseController {
         User user = userService.findUserById(id, loggedUserId);
         UserDTO userDTO = userDtoMapper.toDTO(user);
         UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
-        return buildCreatedResponse(userResource);
+
+        return buildCreatedResponse(userResource,
+                buildNestedResourceLocation(ApiUriConstants.USERS_BASE, loggedUserId, "/followings", id));
     }
 
     @DELETE

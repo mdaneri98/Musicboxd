@@ -98,7 +98,7 @@ public class ReviewController extends BaseController {
         Review review = reviewService.create(reviewInput);
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review);
         ReviewResource reviewResource = reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
-        return buildResponse(reviewResource);
+        return buildCreatedResponse(reviewResource, buildResourceLocation(ApiUriConstants.REVIEWS_BASE, review.getId()));
     }
 
     @GET
@@ -163,7 +163,9 @@ public class ReviewController extends BaseController {
     public Response likeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         reviewService.createLike(loggedUserId, reviewId);
-        return buildCreatedResponse(null);
+
+        return buildCreatedResponse(null,
+                buildNestedResourceLocation(ApiUriConstants.REVIEWS_BASE, reviewId, "/likes", loggedUserId));
     }
 
     @DELETE
