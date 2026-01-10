@@ -88,7 +88,7 @@ public class ReviewController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE, ControllerUtils.reviewsCollectionLinks);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST
@@ -140,7 +140,7 @@ public class ReviewController extends BaseController {
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
                 commentResources, commentService.countByReviewId(id).intValue(), page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @GET
@@ -155,7 +155,7 @@ public class ReviewController extends BaseController {
         Integer totalCount = review.getLikes();
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, totalCount, page, size, getBaseUrl(), ApiUriConstants.REVIEWS_BASE + ApiUriConstants.REVIEW_LIKES, ControllerUtils.likesCollectionLinks, reviewId);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST

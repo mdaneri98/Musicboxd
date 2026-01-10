@@ -77,7 +77,7 @@ public class SongController extends BaseController {
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                 songResources, songService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE, ControllerUtils.songsCollectionLinks);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST
@@ -138,7 +138,7 @@ public class SongController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.SONGS_BASE + ApiUriConstants.SONG_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST

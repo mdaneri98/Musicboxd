@@ -3,36 +3,44 @@ package ar.edu.itba.paw.webapp.models.resources;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * HATEOAS resource wrapper for collections with pagination support
  */
 public class CollectionResource<T> extends Resource<List<T>> {
     
-    @JsonProperty("items")
-    private List<T> items;
-    
-    @JsonProperty("totalCount")
+    @JsonIgnore
     private Long totalCount;
     
-    @JsonProperty("pageSize")
+    @JsonIgnore
     private Integer pageSize;
     
-    @JsonProperty("currentPage")
+    @JsonIgnore
     private Integer currentPage;
     
-    @JsonProperty("totalPages")
+    @JsonIgnore
     private Integer totalPages;
     
-    public CollectionResource() {}
+    public CollectionResource() {
+        super();
+    }
     
     public CollectionResource(List<T> items) {
-        this.items = items;
+        super();
+        if (items != null && !items.isEmpty()) {
+            addEmbedded("items", items);
+        }
     }
     
     public CollectionResource(List<T> items, Long totalCount, Integer pageSize, Integer currentPage) {
-        this.items = items;
+        super();
+        if (items != null && !items.isEmpty()) {
+            addEmbedded("items", items);
+        }
+        
         this.totalCount = totalCount;
         this.pageSize = pageSize;
         this.currentPage = currentPage;
@@ -41,43 +49,54 @@ public class CollectionResource<T> extends Resource<List<T>> {
             : null;
     }
     
+    @JsonIgnore
     public List<T> getData() {
-        return items;
+        Map<String, Object> embedded = getEmbedded();
+        if (embedded != null && embedded.containsKey("items")) {
+            @SuppressWarnings("unchecked")
+            List<T> items = (List<T>) embedded.get("items");
+            return items;
+        }
+        return null;
     }
     
     
-    public void setItems(List<T> items) {
-        this.items = items;
-    }
-    
+    @JsonIgnore
     public Long getTotalCount() {
         return totalCount;
     }
     
+    @JsonIgnore
     public void setTotalCount(Long totalCount) {
         this.totalCount = totalCount;
     }
     
+    @JsonIgnore
     public Integer getPageSize() {
         return pageSize;
     }
     
+    @JsonIgnore
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
     
+    @JsonIgnore
     public Integer getCurrentPage() {
         return currentPage;
     }
     
+    @JsonIgnore
     public void setCurrentPage(Integer currentPage) {
         this.currentPage = currentPage;
     }
     
+    @JsonIgnore
     public Integer getTotalPages() {
         return totalPages;
     }
     
+    @JsonIgnore
     public void setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
     }

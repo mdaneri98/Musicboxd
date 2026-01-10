@@ -100,7 +100,7 @@ public class AlbumController extends BaseController {
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
                 albumResources, albumService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE, ControllerUtils.albumsCollectionLinks);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST
@@ -159,7 +159,7 @@ public class AlbumController extends BaseController {
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
         
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @GET
@@ -172,7 +172,7 @@ public class AlbumController extends BaseController {
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                 songResources, songService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ALBUMS_BASE + ApiUriConstants.ALBUM_SONGS, ControllerUtils.albumSongsCollectionLinks, id);
         
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST

@@ -57,7 +57,7 @@ public class CommentController extends BaseController {
         List<CommentResource> commentResources = commentResourceMapper.toResourceList(commentDTOs, getBaseUrl());
         CollectionResource<CommentResource> collection = collectionResourceMapper.createCollection(
                 commentResources, commentService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.COMMENTS_BASE, ControllerUtils.commentsCollectionLinks);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST

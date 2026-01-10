@@ -115,7 +115,7 @@ public class UserController extends BaseController {
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, userService.countUsers().intValue(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE, ControllerUtils.usersCollectionLinks);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @GET
@@ -173,7 +173,7 @@ public class UserController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, user.getReviewAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_REVIEWS, ControllerUtils.userReviewsCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @GET
@@ -189,7 +189,7 @@ public class UserController extends BaseController {
         List<UserResource> userResources = userResourceMapper.toResourceList(followerDTOs, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, user.getFollowersAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWERS, ControllerUtils.followersCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @GET
@@ -203,7 +203,7 @@ public class UserController extends BaseController {
         List<UserResource> userResources = userResourceMapper.toResourceList(followingDTOs, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
                 userResources, user.getFollowingAmount(), page, size, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FOLLOWINGS, ControllerUtils.followingsCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST
@@ -234,7 +234,7 @@ public class UserController extends BaseController {
         List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
                 artistResources, artists.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ARTISTS, ControllerUtils.userFavoriteCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @GET
@@ -245,7 +245,7 @@ public class UserController extends BaseController {
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
                 albumResources, albums.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_ALBUMS, ControllerUtils.userFavoriteCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @GET
@@ -256,7 +256,7 @@ public class UserController extends BaseController {
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                     songResources, songs.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_SONGS, ControllerUtils.userFavoriteCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @PATCH  

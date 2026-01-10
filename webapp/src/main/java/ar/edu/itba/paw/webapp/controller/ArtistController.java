@@ -114,7 +114,7 @@ public class ArtistController extends BaseController {
         CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
                 artistResources, artistService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, ControllerUtils.artistsCollectionLinks);
         
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST
@@ -171,7 +171,7 @@ public class ArtistController extends BaseController {
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
                 reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @GET
@@ -185,7 +185,7 @@ public class ArtistController extends BaseController {
         List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
         CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
                 albumResources, albumService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_ALBUMS, ControllerUtils.artistAlbumsCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
 
     @POST
@@ -213,7 +213,7 @@ public class ArtistController extends BaseController {
         List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                 songResources, songService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_SONGS, ControllerUtils.artistSongsCollectionLinks, id);
-        return buildResponse(collection);
+        return buildPaginatedResponse(collection);
     }
     
     @POST
