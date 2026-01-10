@@ -41,10 +41,7 @@ public class IndexController extends BaseController {
         apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.SONGS_BASE, ControllerUtils.ITEM_TYPE_SONG, ControllerUtils.METHOD_GET));
         apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.REVIEWS_BASE, ControllerUtils.ITEM_TYPE_REVIEW, ControllerUtils.METHOD_GET));
 
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.LOGIN, ControllerUtils.ACTION_LOGIN, ControllerUtils.METHOD_POST));
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.REGISTER, ControllerUtils.ACTION_REGISTER, ControllerUtils.METHOD_POST));
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.REFRESH, ControllerUtils.ACTION_REFRESH, ControllerUtils.METHOD_POST));
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.AUTH_BASE + ApiUriConstants.LOGOUT, ControllerUtils.ACTION_LOGOUT, ControllerUtils.METHOD_POST));
+        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.USERS_BASE, ControllerUtils.ACTION_REGISTER, ControllerUtils.METHOD_POST));
         
         return buildResponse(apiResource);
     }

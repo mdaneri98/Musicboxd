@@ -9,21 +9,6 @@ public class ApiUriConstants {
     public static final String API_BASE = EMPTY;
     public static final String ID = "/{" + ControllerUtils.ID_PARAM_NAME + ":\\d+}";
 
-    /* AUTH */
-    public static final String AUTH_BASE = API_BASE + "/auth";
-    public static final String LOGIN = "/login";
-    public static final String REGISTER = "/register";
-    public static final String LOGOUT = "/logout";
-    public static final String REFRESH = "/refresh";
-    public static final String ME = "/me";
-
-    /* EMAIL */
-    public static final String EMAIL_BASE = API_BASE + "/email";
-    public static final String EMAIL_VERIFICATION = "/verification";
-    public static final String RESEND_VERIFICATION = "/resend";
-    public static final String PASSWORD_FORGOT = "/password/forgot";
-    public static final String PASSWORD_RESET = "/password/reset";
-
     /* USERS */
     public static final String USERS_BASE = API_BASE + "/users";
     public static final String USER_REVIEWS = ID + "/reviews";

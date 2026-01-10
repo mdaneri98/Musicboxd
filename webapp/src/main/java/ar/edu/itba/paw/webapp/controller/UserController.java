@@ -20,7 +20,9 @@ import ar.edu.itba.paw.webapp.mapper.resource.UserResourceMapper;
 import ar.edu.itba.paw.webapp.models.resources.*;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
+import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
+import ar.edu.itba.paw.models.VerificationType;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
@@ -123,7 +125,10 @@ public class UserController extends BaseController {
         });
     }
 
+    // ==================== User Registration ====================
+
     @POST
+    @Consumes(CustomMediaType.USER)
     public Response createUser(@Valid UserForm userForm) {
         CreateUserDTO createUserDTO = userFormMapper.toDTO(userForm);
         User user = userService.create(createUserDTO.getUsername(), createUserDTO.getEmail(), createUserDTO.getPassword());
@@ -132,6 +137,60 @@ public class UserController extends BaseController {
 
         return buildCreatedResponse(userResource, buildResourceLocation(ApiUriConstants.USERS_BASE, user.getId()));
     }
+
+    // ==================== Password Reset Operations ====================
+
+    /**
+     * Request password reset (forgot password).
+     * Sends email with reset code.
+     */
+    @POST
+    @Consumes(CustomMediaType.USER_PASSWORD)
+    public Response requestPasswordReset(@Valid ForgotPasswordRequestDTO request) {
+        User user = userService.findByEmail(request.getEmail());
+        userService.createVerification(VerificationType.VERIFY_FORGOT_PASSWORD, user);
+        return buildNoContentResponse();
+    }
+
+    /**
+     * Reset password with verification code.
+     */
+    @PATCH
+    @Path(ApiUriConstants.ID)
+    @Consumes(CustomMediaType.USER_PASSWORD)
+    public Response updatePassword(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+                                   @Valid ResetPasswordRequestDTO request) {
+        userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, request.getCode());
+        userService.changePassword(id, request.getPassword());
+        return buildNoContentResponse();
+    }
+
+    // ==================== Email Verification Operations ====================
+
+    /**
+     * Verify email with verification code.
+     */
+    @PATCH
+    @Path(ApiUriConstants.ID)
+    @Consumes(CustomMediaType.USER_VERIFICATION)
+    public Response verifyEmail(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+                                @Valid EmailVerificationRequestDTO request) {
+        userService.verify(VerificationType.VERIFY_EMAIL, request.getCode());
+        return buildNoContentResponse();
+    }
+
+    /**
+     * Resend verification email.
+     */
+    @POST
+    @Consumes(CustomMediaType.USER_VERIFICATION)
+    public Response resendVerificationEmail(@Valid ResendVerificationRequestDTO request) {
+        User user = userService.findByEmail(request.getEmail());
+        userService.createVerification(VerificationType.VERIFY_EMAIL, user);
+        return buildNoContentResponse();
+    }
+
+    // ==================== User CRUD Operations ====================
 
     @PUT
     @Path(ApiUriConstants.ID)

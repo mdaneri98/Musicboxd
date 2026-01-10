@@ -27,9 +27,7 @@ public class ArtistDtoMapper {
         dto.setAvgRating(artist.getAvgRating());
         dto.setCreatedAt(artist.getCreatedAt());
         dto.setUpdatedAt(artist.getUpdatedAt());
-        dto.setIsReviewed(artist.getIsReviewed());
-        dto.setIsFavorite(artist.getIsFavorite());
-        
+
         return dto;
     }
 

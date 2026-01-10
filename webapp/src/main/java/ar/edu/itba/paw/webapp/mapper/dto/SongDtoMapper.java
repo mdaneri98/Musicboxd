@@ -35,8 +35,7 @@ public class SongDtoMapper {
         if (song.getArtists() != null && !song.getArtists().isEmpty()) {
             dto.setArtistId(song.getArtists().get(0).getId());
         }
-        dto.setIsReviewed(song.getIsReviewed());
-        dto.setIsFavorite(song.getIsFavorite());
+
         return dto;
     }
 
