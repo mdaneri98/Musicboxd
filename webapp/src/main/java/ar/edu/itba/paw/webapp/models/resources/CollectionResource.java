@@ -3,6 +3,8 @@ package ar.edu.itba.paw.webapp.models.resources;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,16 +32,12 @@ public class CollectionResource<T> extends Resource<List<T>> {
     
     public CollectionResource(List<T> items) {
         super();
-        if (items != null && !items.isEmpty()) {
-            addEmbedded("items", items);
-        }
+        addEmbedded("items", items != null ? items : new ArrayList<>());
     }
     
     public CollectionResource(List<T> items, Long totalCount, Integer pageSize, Integer currentPage) {
         super();
-        if (items != null && !items.isEmpty()) {
-            addEmbedded("items", items);
-        }
+        addEmbedded("items", items != null ? items : new ArrayList<>());
         
         this.totalCount = totalCount;
         this.pageSize = pageSize;
@@ -55,9 +53,9 @@ public class CollectionResource<T> extends Resource<List<T>> {
         if (embedded != null && embedded.containsKey("items")) {
             @SuppressWarnings("unchecked")
             List<T> items = (List<T>) embedded.get("items");
-            return items;
+            return items != null ? items : Collections.emptyList();
         }
-        return null;
+        return Collections.emptyList();
     }
     
     
