@@ -18,7 +18,7 @@ public class SongResourceMapper implements ResourceMapper<SongDTO, SongResource>
     @Override
     public SongResource toResource(SongDTO songDTO, String baseUrl) {
         SongResource resource = new SongResource(songDTO);
-        songLinkManager.addSongLinks(resource, baseUrl, songDTO.getId());
+        songLinkManager.addSongLinks(resource, baseUrl, songDTO.getId(), songDTO);
         return resource;
     }
 

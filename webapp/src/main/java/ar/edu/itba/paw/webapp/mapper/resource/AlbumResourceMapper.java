@@ -18,7 +18,7 @@ public class AlbumResourceMapper implements ResourceMapper<AlbumDTO, AlbumResour
     @Override
     public AlbumResource toResource(AlbumDTO albumDTO, String baseUrl) {
         AlbumResource resource = new AlbumResource(albumDTO);
-        albumLinkManager.addAlbumLinks(resource, baseUrl, albumDTO.getId());
+        albumLinkManager.addAlbumLinks(resource, baseUrl, albumDTO.getId(), albumDTO);
         return resource;
     }
 

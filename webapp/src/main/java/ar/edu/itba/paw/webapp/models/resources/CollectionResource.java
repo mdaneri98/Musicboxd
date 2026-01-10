@@ -41,8 +41,6 @@ public class CollectionResource<T> extends Resource<List<T>> {
             : null;
     }
     
-    @Override
-    @JsonIgnore 
     public List<T> getData() {
         return items;
     }

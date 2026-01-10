@@ -18,7 +18,7 @@ public class ReviewResourceMapper implements ResourceMapper<ReviewDTO, ReviewRes
     @Override
     public ReviewResource toResource(ReviewDTO reviewDTO, String baseUrl) {
         ReviewResource resource = new ReviewResource(reviewDTO);
-        reviewLinkManager.addReviewLinks(resource, baseUrl, reviewDTO.getId());
+        reviewLinkManager.addReviewLinks(resource, baseUrl, reviewDTO.getId(), reviewDTO);
         return resource;
     }
 

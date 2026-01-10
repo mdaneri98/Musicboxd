@@ -18,9 +18,9 @@ public class ReviewLinkManager {
     @Autowired
     private UriBuilder uriBuilder;
     
-    public void addReviewLinks(Resource<ReviewDTO> resource, String baseUrl, Long reviewId) {
+    public void addReviewLinks(Resource<ReviewDTO> resource, String baseUrl, Long reviewId, ReviewDTO dto) {
         HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.REVIEWS_BASE, reviewId);
-        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.REVIEWS_BASE, resource.getData().getItemImageId());
+        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.REVIEWS_BASE, dto.getItemImageId());
         resource.addLink(uriBuilder.buildReviewCommentsUri(baseUrl, reviewId), ControllerUtils.RELATION_COMMENTS, "Review comments", ControllerUtils.METHOD_GET);
         resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), ControllerUtils.RELATION_LIKES, "Review likes", ControllerUtils.METHOD_GET);
         resource.addLink(uriBuilder.buildReviewLikesUri(baseUrl, reviewId), ControllerUtils.RELATION_LIKES, "Like review", ControllerUtils.METHOD_POST);

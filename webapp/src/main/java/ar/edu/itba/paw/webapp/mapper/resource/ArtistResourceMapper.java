@@ -18,7 +18,7 @@ public class ArtistResourceMapper implements ResourceMapper<ArtistDTO, ArtistRes
     @Override
     public ArtistResource toResource(ArtistDTO artistDTO, String baseUrl) {
         ArtistResource resource = new ArtistResource(artistDTO);
-        artistLinkManager.addArtistLinks(resource, baseUrl, artistDTO.getId());
+        artistLinkManager.addArtistLinks(resource, baseUrl, artistDTO.getId(), artistDTO);
         return resource;
     }
 

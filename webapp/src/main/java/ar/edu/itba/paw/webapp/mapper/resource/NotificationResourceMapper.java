@@ -18,7 +18,7 @@ public class NotificationResourceMapper implements ResourceMapper<NotificationDT
     @Override
     public NotificationResource toResource(NotificationDTO dto, String baseUrl) {
         NotificationResource resource = new NotificationResource(dto);
-        notificationLinkManager.addNotificationLinks(resource, baseUrl);
+        notificationLinkManager.addNotificationLinks(resource, baseUrl, dto);
         return resource;
     }
 

@@ -18,7 +18,7 @@ public class CommentResourceMapper implements ResourceMapper<CommentDTO, Comment
     @Override
     public CommentResource toResource(CommentDTO commentDTO, String baseUrl) {
         CommentResource resource = new CommentResource(commentDTO);
-        commentLinkManager.addCommentLinks(resource, baseUrl, commentDTO.getId());
+        commentLinkManager.addCommentLinks(resource, baseUrl, commentDTO.getId(), commentDTO);
         return resource;
     }
 

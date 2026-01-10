@@ -18,11 +18,11 @@ public class SongLinkManager {
     @Autowired
     private UriBuilder uriBuilder;
     
-    public void addSongLinks(Resource<SongDTO> resource, String baseUrl, Long songId) {
+    public void addSongLinks(Resource<SongDTO> resource, String baseUrl, Long songId, SongDTO dto) {
         HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.SONGS_BASE, songId);
-        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.SONGS_BASE, resource.getData().getAlbumImageId());
-        resource.addLink(uriBuilder.buildSongAlbumUri(baseUrl, resource.getData().getAlbumId()), ControllerUtils.RELATION_ALBUM, "Song album", ControllerUtils.METHOD_GET);
-        resource.addLink(uriBuilder.buildSongArtistUri(baseUrl, resource.getData().getArtistId()), ControllerUtils.RELATION_ARTIST, "Song artist", ControllerUtils.METHOD_GET);
+        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.SONGS_BASE, dto.getAlbumImageId());
+        resource.addLink(uriBuilder.buildSongAlbumUri(baseUrl, dto.getAlbumId()), ControllerUtils.RELATION_ALBUM, "Song album", ControllerUtils.METHOD_GET);
+        resource.addLink(uriBuilder.buildSongArtistUri(baseUrl, dto.getArtistId()), ControllerUtils.RELATION_ARTIST, "Song artist", ControllerUtils.METHOD_GET);
         resource.addLink(uriBuilder.buildSongReviewsUri(baseUrl, songId), ControllerUtils.RELATION_REVIEWS, "Song reviews", ControllerUtils.METHOD_GET);
         resource.addLink(uriBuilder.buildSongReviewsUri(baseUrl, songId), ControllerUtils.RELATION_REVIEWS, "Create song review", ControllerUtils.METHOD_POST);
         resource.addLink(uriBuilder.buildSongFavoriteUri(baseUrl, songId), ControllerUtils.RELATION_FAVORITE, "Add song to favorites", ControllerUtils.METHOD_POST);

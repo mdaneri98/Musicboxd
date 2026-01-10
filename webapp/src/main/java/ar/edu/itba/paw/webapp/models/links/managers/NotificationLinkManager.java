@@ -14,12 +14,12 @@ public class NotificationLinkManager {
     @Autowired
     private UriBuilder uriBuilder;
 
-    public void addNotificationLinks(NotificationResource resource, String baseUrl) {
-        HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.NOTIFICATIONS_BASE, resource.getData().getId());
-        resource.addLink(uriBuilder.buildNotificationReadUri(baseUrl, resource.getData().getId()), ControllerUtils.RELATION_READ, "Mark notification as read", ControllerUtils.METHOD_PUT);
+    public void addNotificationLinks(NotificationResource resource, String baseUrl, NotificationDTO dto) {
+        HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.NOTIFICATIONS_BASE, dto.getId());
+        resource.addLink(uriBuilder.buildNotificationReadUri(baseUrl, dto.getId()), ControllerUtils.RELATION_READ, "Mark notification as read", ControllerUtils.METHOD_PUT);
         resource.addLink(uriBuilder.buildNotificationReadAllUri(baseUrl), ControllerUtils.RELATION_READ_ALL, "Mark all notifications as read", ControllerUtils.METHOD_PUT);
         resource.addLink(uriBuilder.buildNotificationUnreadCountUri(baseUrl), ControllerUtils.RELATION_UNREAD_COUNT, "Get unread notifications count", ControllerUtils.METHOD_GET);
-        addRelationshipLinks(resource, baseUrl, resource.getData());
+        addRelationshipLinks(resource, baseUrl, dto);
     }
 
     private void addRelationshipLinks(NotificationResource resource, String baseUrl, NotificationDTO dto) {

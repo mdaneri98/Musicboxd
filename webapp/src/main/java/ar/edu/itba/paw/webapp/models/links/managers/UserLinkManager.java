@@ -18,9 +18,9 @@ public class UserLinkManager {
     @Autowired
     private UriBuilder uriBuilder;
     
-    public void addUserLinks(Resource<UserDTO> resource, String baseUrl, Long userId) {
+    public void addUserLinks(Resource<UserDTO> resource, String baseUrl, Long userId, UserDTO dto) {
         HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.USERS_BASE, userId);
-        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.USERS_BASE, resource.getData().getImageId());
+        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.USERS_BASE, dto.getImageId());
         resource.addLink(uriBuilder.buildUserReviewsUri(baseUrl, userId), ControllerUtils.RELATION_REVIEWS, "User reviews", ControllerUtils.METHOD_GET);
         resource.addLink(uriBuilder.buildUserFollowersUri(baseUrl, userId), ControllerUtils.RELATION_FOLLOWERS, "User followers", ControllerUtils.METHOD_GET);
         resource.addLink(uriBuilder.buildUserFollowersUri(baseUrl, userId), ControllerUtils.RELATION_FOLLOWERS, "Follow user", ControllerUtils.METHOD_POST);

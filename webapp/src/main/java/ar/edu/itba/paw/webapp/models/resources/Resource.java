@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Base class for HATEOAS resources that wraps domain objects with links
  */
-public abstract class Resource<T> {
+public class Resource<T> {
     
     @JsonProperty("_links")
     private List<Link> links = new ArrayList<>();
@@ -19,13 +19,6 @@ public abstract class Resource<T> {
     private Map<String, Object> embedded;
     
     public Resource() {}
-    
-    public Resource(T data) {
-        // Subclasses will implement how to extract data from the domain object
-    }
-    
-    // Abstract method to get the actual data
-    public abstract T getData();
     
     // Link management methods
     public void addLink(Link link) {

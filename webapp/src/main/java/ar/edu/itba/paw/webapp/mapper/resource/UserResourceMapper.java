@@ -18,7 +18,7 @@ public class UserResourceMapper implements ResourceMapper<UserDTO, UserResource>
     @Override
     public UserResource toResource(UserDTO userDTO, String baseUrl) {
         UserResource resource = new UserResource(userDTO);
-        userLinkManager.addUserLinks(resource, baseUrl, userDTO.getId());
+        userLinkManager.addUserLinks(resource, baseUrl, userDTO.getId(), userDTO);
         return resource;
     }
 

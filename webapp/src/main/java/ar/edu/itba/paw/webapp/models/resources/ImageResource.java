@@ -11,13 +11,7 @@ public class ImageResource extends Resource<Image> {
     private final Image item;
 
     public ImageResource(Image item) {
-        super(item);
         this.item = item;
-    }
-
-    @Override
-    public Image getData() {
-        return item;
     }
     
     /**

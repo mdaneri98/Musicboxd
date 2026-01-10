@@ -18,9 +18,9 @@ public class ArtistLinkManager {
     @Autowired
     private UriBuilder uriBuilder;
     
-    public void addArtistLinks(Resource<ArtistDTO> resource, String baseUrl, Long artistId) {
+    public void addArtistLinks(Resource<ArtistDTO> resource, String baseUrl, Long artistId, ArtistDTO dto) {
         HATEOASUtils.addCrudLinks(resource, baseUrl, ApiUriConstants.ARTISTS_BASE, artistId);
-        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.ARTISTS_BASE, resource.getData().getImageId());
+        HATEOASUtils.addImageLinks(resource, baseUrl, ApiUriConstants.ARTISTS_BASE, dto.getImageId());
         resource.addLink(uriBuilder.buildArtistReviewsUri(baseUrl, artistId), ControllerUtils.RELATION_REVIEWS, "Artist reviews", ControllerUtils.METHOD_GET);
         resource.addLink(uriBuilder.buildArtistReviewsUri(baseUrl, artistId), ControllerUtils.RELATION_REVIEWS, "Create Artist review", ControllerUtils.METHOD_POST);
         resource.addLink(uriBuilder.buildArtistSongsUri(baseUrl, artistId), ControllerUtils.RELATION_SONGS, "Artist songs", ControllerUtils.METHOD_GET);
