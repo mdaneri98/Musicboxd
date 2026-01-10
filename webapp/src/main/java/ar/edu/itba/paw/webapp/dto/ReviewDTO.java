@@ -15,7 +15,6 @@ public class ReviewDTO {
     private Integer rating;
     private LocalDateTime createdAt;
     private Integer likes;
-    private Boolean isLiked;
     private Boolean isBlocked;
     private Integer commentAmount;
     private ReviewType itemType; 
@@ -89,17 +88,6 @@ public class ReviewDTO {
 
     public void setLikes(Integer likes) {
         this.likes = likes;
-    }
-
-    public Boolean isLiked() {
-        if (isLiked == null) {
-            return false;
-        }
-        return isLiked;
-    }
-
-    public void setIsLiked(Boolean isLiked) {
-        this.isLiked = isLiked;
     }
 
     public Boolean getIsBlocked() {
@@ -176,7 +164,7 @@ public class ReviewDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, userId, userImageId, title, description, rating, createdAt, likes, isLiked, isBlocked, commentAmount, itemType, itemId, itemName, itemImageId, userVerified, userModerator);
+        return Objects.hash(id, username, userId, userImageId, title, description, rating, createdAt, likes, isBlocked, commentAmount, itemType, itemId, itemName, itemImageId, userVerified, userModerator);
     }
 }
 

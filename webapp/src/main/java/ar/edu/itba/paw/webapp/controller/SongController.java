@@ -93,8 +93,7 @@ public class SongController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Song song = songService.findAndSetContextDependentFields(id, loggedUserId);
+        Song song = songService.findById(id);
         return buildResponseUsingEtag(request, () -> {
             SongDTO songDTO = songDtoMapper.toDTO(song);
             return songResourceMapper.toResource(songDTO, getBaseUrl());

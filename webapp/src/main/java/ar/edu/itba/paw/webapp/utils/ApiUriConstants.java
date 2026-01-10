@@ -44,18 +44,15 @@ public class ApiUriConstants {
     public static final String ARTIST_REVIEWS = ID + "/reviews";
     public static final String ARTIST_ALBUMS = ID + "/albums";
     public static final String ARTIST_SONGS = ID + "/songs";
-    public static final String ARTIST_FAVORITE = ID + "/favorites";
 
     /* ALBUMS */
     public static final String ALBUMS_BASE = API_BASE + "/albums";
     public static final String ALBUM_REVIEWS = ID + "/reviews";
     public static final String ALBUM_SONGS = ID + "/songs";
-    public static final String ALBUM_FAVORITE = ID + "/favorites";
 
     /* SONGS */
     public static final String SONGS_BASE = API_BASE + "/songs";
     public static final String SONG_REVIEWS = ID + "/reviews";
-    public static final String SONG_FAVORITE = ID + "/favorites";
 
     /* REVIEWS */
     public static final String REVIEWS_BASE = API_BASE + "/reviews";

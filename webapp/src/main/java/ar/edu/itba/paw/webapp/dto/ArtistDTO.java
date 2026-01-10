@@ -15,8 +15,6 @@ public class ArtistDTO {
     private LocalDateTime updatedAt;
     private List<AlbumDTO> albums;
     private Long imageId;
-    private Boolean isReviewed;
-    private Boolean isFavorite;
 
     public ArtistDTO() {}
 
@@ -92,31 +90,9 @@ public class ArtistDTO {
         this.imageId = imageId;
     }
 
-    public Boolean isReviewed() {
-        if (isReviewed == null) {
-            return false;
-        }
-        return isReviewed;
-    }
-
-    public void setIsReviewed(Boolean isReviewed) {
-        this.isReviewed = isReviewed;
-    }
-
-    public Boolean isFavorite() {
-        if (isFavorite == null) {
-            return false;
-        }
-        return isFavorite;
-    }
-
-    public void setIsFavorite(Boolean isFavorite) {
-        this.isFavorite = isFavorite;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, bio, ratingCount, avgRating, createdAt, updatedAt, albums, imageId, isReviewed, isFavorite);
+        return Objects.hash(id, name, bio, ratingCount, avgRating, createdAt, updatedAt, albums, imageId);
     }
 }
 

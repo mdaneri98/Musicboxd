@@ -130,8 +130,7 @@ public class ArtistController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Artist artist = artistService.findAndSetContextDependentFields(id, loggedUserId);
+        Artist artist = artistService.findById(id);
         return buildResponseUsingEtag(request, () -> {
             ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
             return artistResourceMapper.toResource(artistDTO, getBaseUrl());

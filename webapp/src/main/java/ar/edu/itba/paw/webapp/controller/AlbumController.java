@@ -116,8 +116,7 @@ public class AlbumController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Album album = albumService.findAndSetContextDependentFields(id, loggedUserId);
+        Album album = albumService.findById(id);
         return buildResponseUsingEtag(request, () -> {
             AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
             return albumResourceMapper.toResource(albumDTO, getBaseUrl());

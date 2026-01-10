@@ -20,8 +20,6 @@ public class SongDTO {
     private LocalDate releaseDate;
     private LocalDateTime updatedAt;
     private Boolean isDeleted;
-    private Boolean isReviewed;
-    private Boolean isFavorite;
 
     public SongDTO() {}
 
@@ -132,28 +130,6 @@ public class SongDTO {
         this.isDeleted = isDeleted;
     }
 
-    public Boolean isReviewed() {
-        if (isReviewed == null) {
-            return false;
-        }
-        return isReviewed;
-    }
-
-    public void setIsReviewed(Boolean isReviewed) {
-        this.isReviewed = isReviewed;
-    }
-
-    public Boolean isFavorite() {
-        if (isFavorite == null) {
-            return false;
-        }
-        return isFavorite;
-    }
-    
-    public void setIsFavorite(Boolean isFavorite) {
-        this.isFavorite = isFavorite;
-    }
-
     public LocalDate getReleaseDate() {
         return releaseDate;
     }
@@ -164,7 +140,7 @@ public class SongDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, duration, trackNumber, albumId, artistId, albumTitle, albumImageId, ratingCount, avgRating, createdAt, releaseDate, updatedAt, isDeleted, isReviewed, isFavorite);
+        return Objects.hash(id, title, duration, trackNumber, albumId, artistId, albumTitle, albumImageId, ratingCount, avgRating, createdAt, releaseDate, updatedAt, isDeleted);
     }
 }
 

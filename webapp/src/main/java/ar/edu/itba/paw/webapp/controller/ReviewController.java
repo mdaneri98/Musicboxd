@@ -104,8 +104,7 @@ public class ReviewController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Review review = reviewService.findAndSetContextDependentFields(id, loggedUserId);
+        Review review = reviewService.findById(id);
         return buildResponseUsingEtag(request, () -> {
             ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review);
             return reviewResourceMapper.toResource(reviewDTO, getBaseUrl());
