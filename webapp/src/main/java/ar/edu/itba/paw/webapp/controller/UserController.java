@@ -200,23 +200,23 @@ public class UserController extends BaseController {
         return buildPaginatedResponse(collection);
     }
 
-    @POST
-    @Path(ApiUriConstants.USER_FOLLOWERS)
-    public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        userService.createFollowing(loggedUserId, id);
-        User user = userService.findUserById(id, loggedUserId);
-        UserDTO userDTO = userDtoMapper.toDTO(user);
-        UserResource userResource = userResourceMapper.toResource(userDTO, getBaseUrl());
+    @PUT
+    @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
+    public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+                               @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
+        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
 
-        return buildCreatedResponse(userResource,
-                buildNestedResourceLocation(ApiUriConstants.USERS_BASE, loggedUserId, "/followings", id));
+        userService.createFollowing(userId, targetUserId);
+        return buildNoContentResponse();
     }
 
     @DELETE
-    @Path(ApiUriConstants.USER_FOLLOWERS)
-    public Response unfollowUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        userService.undoFollowing(SecurityContextUtils.getCurrentUserId(), id);
+    @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
+    public Response unfollowUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+                                 @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
+        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
+        
+        userService.undoFollowing(userId, targetUserId);
         return buildNoContentResponse();
     }
 

@@ -27,6 +27,7 @@ public final class ControllerUtils {
     public static final String ALBUM_ID_PARAM_NAME = "albumId";
     public static final String SONG_ID_PARAM_NAME = "songId";
     public static final String USER_ID_PARAM_NAME = "userId";
+    public static final String TARGET_USER_ID_PARAM_NAME = "targetUserId";
 
 
     // Default values

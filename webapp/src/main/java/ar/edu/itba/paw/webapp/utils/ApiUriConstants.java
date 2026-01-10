@@ -29,6 +29,7 @@ public class ApiUriConstants {
     public static final String USER_REVIEWS = ID + "/reviews";
     public static final String USER_FOLLOWERS = ID + "/followers";
     public static final String USER_FOLLOWINGS = ID + "/followings";
+    public static final String USER_FOLLOWING_DETAIL = USER_FOLLOWINGS + "/{" + ControllerUtils.TARGET_USER_ID_PARAM_NAME + ":\\d+}";
     public static final String USER_FAVORITES = ID + "/favorites";
     public static final String USER_FAVORITE_ARTISTS = USER_FAVORITES + "/artists";
     public static final String USER_FAVORITE_ALBUMS = USER_FAVORITES + "/albums";
