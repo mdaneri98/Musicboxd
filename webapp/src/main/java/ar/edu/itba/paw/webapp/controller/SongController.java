@@ -141,23 +141,5 @@ public class SongController extends BaseController {
         return buildPaginatedResponse(collection);
     }
 
-    @POST
-    @Path(ApiUriConstants.SONG_FAVORITE)
-    public Response addSongFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        userService.addFavoriteSong(loggedUserId, id);
-        Song song = songService.findAndSetContextDependentFields(id, loggedUserId);
-        SongDTO songDTO = songDtoMapper.toDTO(song);
-        SongResource songResource = songResourceMapper.toResource(songDTO, getBaseUrl());
 
-        return buildCreatedResponse(songResource,
-                buildNestedResourceLocation(ApiUriConstants.USERS_BASE, loggedUserId, "/favorites/songs", id));
-    }
-
-    @DELETE
-    @Path(ApiUriConstants.SONG_FAVORITE)
-    public Response removeSongFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        userService.removeFavoriteSong(SecurityContextUtils.getCurrentUserId(), id);
-        return buildNoContentResponse();
-    }
 }

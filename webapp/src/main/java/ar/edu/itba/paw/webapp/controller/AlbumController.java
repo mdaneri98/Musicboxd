@@ -188,23 +188,5 @@ public class AlbumController extends BaseController {
         return buildCreatedResponse(songResource, buildResourceLocation(ApiUriConstants.SONGS_BASE, song.getId()));
     }
 
-    @POST
-    @Path(ApiUriConstants.ALBUM_FAVORITE)
-    public Response addAlbumFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        userService.addFavoriteAlbum(loggedUserId, id);
-        Album album = albumService.findAndSetContextDependentFields(id, loggedUserId);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
-        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
-        // Location points to the user's favorite albums collection for this album
-        return buildCreatedResponse(albumResource,
-                buildNestedResourceLocation(ApiUriConstants.USERS_BASE, loggedUserId, "/favorites/albums", id));
-    }
 
-    @DELETE
-    @Path(ApiUriConstants.ALBUM_FAVORITE)
-    public Response removeAlbumFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        userService.removeFavoriteAlbum(SecurityContextUtils.getCurrentUserId(), id);
-        return buildNoContentResponse();
-    }
 }

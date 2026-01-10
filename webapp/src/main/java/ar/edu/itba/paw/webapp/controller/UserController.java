@@ -1,11 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.webapp.dto.AlbumDTO;
-import ar.edu.itba.paw.webapp.dto.ArtistDTO;
-import ar.edu.itba.paw.webapp.dto.CreateUserDTO;
-import ar.edu.itba.paw.webapp.dto.ReviewDTO;
-import ar.edu.itba.paw.webapp.dto.SongDTO;
-import ar.edu.itba.paw.webapp.dto.UserDTO;
+
+import ar.edu.itba.paw.webapp.dto.*;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
 import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
@@ -21,12 +17,7 @@ import ar.edu.itba.paw.webapp.mapper.resource.CollectionResourceMapper;
 import ar.edu.itba.paw.webapp.mapper.resource.ReviewResourceMapper;
 import ar.edu.itba.paw.webapp.mapper.resource.SongResourceMapper;
 import ar.edu.itba.paw.webapp.mapper.resource.UserResourceMapper;
-import ar.edu.itba.paw.webapp.models.resources.AlbumResource;
-import ar.edu.itba.paw.webapp.models.resources.ArtistResource;
-import ar.edu.itba.paw.webapp.models.resources.CollectionResource;
-import ar.edu.itba.paw.webapp.models.resources.ReviewResource;
-import ar.edu.itba.paw.webapp.models.resources.SongResource;
-import ar.edu.itba.paw.webapp.models.resources.UserResource;
+import ar.edu.itba.paw.webapp.models.resources.*;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
@@ -100,6 +91,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private SongDtoMapper songDtoMapper;
+
+    @Autowired
+    private ar.edu.itba.paw.webapp.mapper.resource.FavoriteResourceMapper favoriteResourceMapper;
 
     @GET
     public Response getAllUsers(
@@ -257,6 +251,84 @@ public class UserController extends BaseController {
         CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
                     songResources, songs.size(), ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, getBaseUrl(), ApiUriConstants.USERS_BASE + ApiUriConstants.USER_FAVORITE_SONGS, ControllerUtils.userFavoriteCollectionLinks, id);
         return buildPaginatedResponse(collection);
+    }
+
+    @PUT
+    @Path(ApiUriConstants.USER_FAVORITE_ARTIST_DETAIL)
+    public Response addFavoriteArtist(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
+        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
+
+        userService.addFavoriteArtist(userId, artistId);
+
+        FavoriteDTO favoriteDTO = new FavoriteDTO(userId, artistId, ControllerUtils.ITEM_TYPE_ARTIST, java.time.LocalDateTime.now());
+        FavoriteResource resource = favoriteResourceMapper.toResource(favoriteDTO, getBaseUrl());
+
+        return buildCreatedResponse(resource, buildNestedResourceLocation(ApiUriConstants.USERS_BASE, userId, "/favorites/artists", artistId));
+    }
+
+    @DELETE
+    @Path(ApiUriConstants.USER_FAVORITE_ARTIST_DETAIL)
+    public Response removeFavoriteArtist(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
+        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
+
+        userService.removeFavoriteArtist(userId, artistId);
+        return buildNoContentResponse();
+    }
+
+    @PUT
+    @Path(ApiUriConstants.USER_FAVORITE_ALBUM_DETAIL)
+    public Response addFavoriteAlbum(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
+        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
+
+        userService.addFavoriteAlbum(userId, albumId);
+
+        FavoriteDTO favoriteDTO = new FavoriteDTO(userId, albumId, ControllerUtils.ITEM_TYPE_ALBUM, java.time.LocalDateTime.now());
+        FavoriteResource resource = favoriteResourceMapper.toResource(favoriteDTO, getBaseUrl());
+
+        return buildCreatedResponse(resource, buildNestedResourceLocation(ApiUriConstants.USERS_BASE, userId, "/favorites/albums", albumId));
+    }
+
+    @DELETE
+    @Path(ApiUriConstants.USER_FAVORITE_ALBUM_DETAIL)
+    public Response removeFavoriteAlbum(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
+        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
+
+        userService.removeFavoriteAlbum(userId, albumId);
+        return buildNoContentResponse();
+    }
+
+    @PUT
+    @Path(ApiUriConstants.USER_FAVORITE_SONG_DETAIL)
+    public Response addFavoriteSong(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
+        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
+
+        userService.addFavoriteSong(userId, songId);
+
+        FavoriteDTO favoriteDTO = new FavoriteDTO(userId, songId, ControllerUtils.ITEM_TYPE_SONG, java.time.LocalDateTime.now());
+        FavoriteResource resource = favoriteResourceMapper.toResource(favoriteDTO, getBaseUrl());
+
+        return buildCreatedResponse(resource, buildNestedResourceLocation(ApiUriConstants.USERS_BASE, userId, "/favorites/songs", songId));
+    }
+
+    @DELETE
+    @Path(ApiUriConstants.USER_FAVORITE_SONG_DETAIL)
+    public Response removeFavoriteSong(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
+        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
+
+        userService.removeFavoriteSong(userId, songId);
+        return buildNoContentResponse();
     }
 
     @PATCH  

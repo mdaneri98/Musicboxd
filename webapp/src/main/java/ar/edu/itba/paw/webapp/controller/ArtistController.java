@@ -216,23 +216,5 @@ public class ArtistController extends BaseController {
         return buildPaginatedResponse(collection);
     }
     
-    @POST
-    @Path(ApiUriConstants.ARTIST_FAVORITE)
-    public Response addArtistFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        userService.addFavoriteArtist(loggedUserId, id);
-        Artist artist = artistService.findAndSetContextDependentFields(id, loggedUserId);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
-        ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
 
-        return buildCreatedResponse(artistResource,
-                buildNestedResourceLocation(ApiUriConstants.USERS_BASE, loggedUserId, "/favorites/artists", id));
-    }
-
-    @DELETE
-    @Path(ApiUriConstants.ARTIST_FAVORITE)
-    public Response removeArtistFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        userService.removeFavoriteArtist(SecurityContextUtils.getCurrentUserId(), id);
-        return buildNoContentResponse();
-    }
 }
