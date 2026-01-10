@@ -60,4 +60,11 @@ public interface JwtService {
      * @return true if expired
      */
     boolean isTokenExpired(String token);
+
+    /**
+     * Check if token is a refresh token (has type: "refresh" claim)
+     * @param token the JWT token
+     * @return true if it's a refresh token
+     */
+    boolean isRefreshToken(String token);
 }
