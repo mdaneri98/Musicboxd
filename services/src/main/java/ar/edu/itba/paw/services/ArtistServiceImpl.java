@@ -154,22 +154,4 @@ public class ArtistServiceImpl implements ArtistService {
         return artistDao.countAll();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Artist findAndSetContextDependentFields(Long id, Long loggedUserId) {
-        Artist artist = findById(id);
-        setContextDependentFields(artist, loggedUserId);
-        return artist;
-    }
-
-    @Override
-    public void setContextDependentFields(Artist artist, Long loggedUserId) {
-        if (loggedUserId == null) {
-            artist.setIsReviewed(false);
-            artist.setIsFavorite(false);
-        } else {
-            artist.setIsReviewed(hasUserReviewed(loggedUserId, artist.getId()));
-            artist.setIsFavorite(userService.isArtistFavorite(loggedUserId, artist.getId()));
-        }
-    }
 }

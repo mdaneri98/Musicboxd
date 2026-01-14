@@ -6,6 +6,8 @@ import javax.ws.rs.core.UriInfo;
 /**
  * Utility class for adding RFC 5988 compliant pagination links to JAX-RS responses.
  * Uses JAX-RS native link() method for standard HTTP Link headers.
+ *
+ * https://www.baeldung.com/rest-api-pagination-in-spring
  */
 public final class PaginationHeadersBuilder {
 

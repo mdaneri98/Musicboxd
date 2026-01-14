@@ -19,7 +19,5 @@ public interface ArtistService extends CrudService<Artist> {
 
     Long countAll();
 
-    void setContextDependentFields(Artist artist, Long loggedUserId);
 
-    Artist findAndSetContextDependentFields(Long id, Long loggedUserId);
 }

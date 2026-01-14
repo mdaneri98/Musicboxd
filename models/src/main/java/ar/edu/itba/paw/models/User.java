@@ -133,8 +133,7 @@ public class User {
     @Column(name = "theme", nullable = false, columnDefinition = "varchar(20) default 'dark'")
     private String theme;
 
-    @Transient
-    private Boolean isFollowed;
+
 
 
     public User() {}
@@ -601,11 +600,5 @@ public class User {
         this.triggeredNotifications = triggeredNotifications;
     }
 
-    public Boolean getIsFollowed() {
-        return isFollowed;
-    }
 
-    public void setIsFollowed(Boolean isFollowed) {
-        this.isFollowed = isFollowed;
-    }
 }

@@ -82,7 +82,7 @@ public class ReviewController extends BaseController {
         if (search != null && !search.isEmpty())
             reviews = reviewService.findBySubstring(search, page, size);
         else
-            reviews = reviewService.findPaginated(filter, page, size, loggedUserId);
+            reviews = reviewService.findPaginated(filter, page, size);
 
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());

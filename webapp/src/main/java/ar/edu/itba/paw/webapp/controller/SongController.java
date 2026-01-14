@@ -131,8 +131,8 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         List<Review> reviews = new ArrayList<>();
-        if (userId != null) reviews.add(reviewService.findSongReviewByUserId(userId, id, loggedUserId));
-        else reviews = reviewService.findSongReviewsPaginated(id, page, size, loggedUserId);
+        if (userId != null) reviews.add(reviewService.findSongReviewByUserId(userId, id));
+        else reviews = reviewService.findSongReviewsPaginated(id, page, size);
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(

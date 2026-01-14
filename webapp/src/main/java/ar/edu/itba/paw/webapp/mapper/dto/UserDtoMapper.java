@@ -39,7 +39,6 @@ public class UserDtoMapper {
         dto.setHasLikeNotificationsEnabled(user.getLikeNotificationsEnabled());
         dto.setHasCommentsNotificationsEnabled(user.getCommentNotificationsEnabled());
         dto.setHasReviewsNotificationsEnabled(user.getReviewNotificationsEnabled());
-        dto.setFollowed(user.getIsFollowed());
         
         return dto;
     }
@@ -65,8 +64,6 @@ public class UserDtoMapper {
         user.setEmail(dto.getEmail());
         user.setName(dto.getName());
         user.setBio(dto.getBio());
-        // Note: Image needs to be set separately using ImageService if full conversion is needed
-        // user.setImage(...) - requires Image object, not just ID
         user.setFollowersAmount(dto.getFollowersAmount());
         user.setFollowingAmount(dto.getFollowingAmount());
         user.setReviewAmount(dto.getReviewAmount());

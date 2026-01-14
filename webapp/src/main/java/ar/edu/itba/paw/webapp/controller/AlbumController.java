@@ -151,8 +151,8 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
         List<Review> reviews = new ArrayList<>();
-        if (userId != null) reviews.add(reviewService.findAlbumReviewByUserId(userId, id, SecurityContextUtils.getCurrentUserId()));
-        else reviews = reviewService.findAlbumReviewsPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
+        if (userId != null) reviews.add(reviewService.findAlbumReviewByUserId(userId, id));
+        else reviews = reviewService.findAlbumReviewsPaginated(id, page, size);
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(

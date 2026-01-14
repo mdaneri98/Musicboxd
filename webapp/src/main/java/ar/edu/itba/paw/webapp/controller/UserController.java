@@ -106,7 +106,7 @@ public class UserController extends BaseController {
         List<User> users = new ArrayList<>();
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         if (search != null && !search.isEmpty()) users = userService.findByUsernameContaining(search, page, size);
-        else users = userService.findPaginated(filter, page, size, loggedUserId);
+        else users = userService.findPaginated(filter, page, size);
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
         List<UserResource> userResources = userResourceMapper.toResourceList(userDTOs, getBaseUrl());
         CollectionResource<UserResource> collection = collectionResourceMapper.createCollection(
@@ -118,7 +118,7 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.ID)
     public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        User user = userService.findUserById(id, loggedUserId);
+        User user = userService.findUserById(id);
         return buildResponseUsingEtag(request, () -> {
             UserDTO userDTO = userDtoMapper.toDTO(user);
             return userResourceMapper.toResource(userDTO, getBaseUrl());
@@ -220,8 +220,8 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        User user = userService.findUserById(id, loggedUserId);
-        List<Review> reviews = reviewService.findReviewsByUserPaginated(id, page, size, loggedUserId);
+        User user = userService.findUserById(id);
+        List<Review> reviews = reviewService.findReviewsByUserPaginated(id, page, size);
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
         List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
         CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
@@ -236,7 +236,7 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        User user = userService.findUserById(id, loggedUserId);
+        User user = userService.findUserById(id);
         List<User> followers = userService.getFollowers(id, page, size);
         List<UserDTO> followerDTOs = userDtoMapper.toDTOList(followers);
         List<UserResource> userResources = userResourceMapper.toResourceList(followerDTOs, getBaseUrl());
@@ -250,7 +250,7 @@ public class UserController extends BaseController {
     public Response getUserFollowing(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        User user = userService.findUserById(id, loggedUserId);
+        User user = userService.findUserById(id);
         List<User> following = userService.getFollowings(id, page, size);
         List<UserDTO> followingDTOs = userDtoMapper.toDTOList(following);
         List<UserResource> userResources = userResourceMapper.toResourceList(followingDTOs, getBaseUrl());
@@ -395,7 +395,7 @@ public class UserController extends BaseController {
     public Response updateUserConfig(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserDTO userDTO) {
         if(!Objects.equals(SecurityContextUtils.getCurrentUserId(), userId))
             throw new ForbiddenException("You are not allowed to update this user config");
-        User user = userService.findUserById(userId, SecurityContextUtils.getCurrentUserId());
+        User user = userService.findUserById(userId);
         UserDtoMapper.mergeConfigToModel(user, userDTO);
         User userUpdated = userService.updateUser(user);
         UserDTO updatedUserDTO = userDtoMapper.toDTO(userUpdated);
