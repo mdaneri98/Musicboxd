@@ -32,6 +32,7 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.ws.rs.ForbiddenException;
 import javax.validation.Valid;
@@ -40,6 +41,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -103,8 +105,7 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        List<User> users = new ArrayList<>();
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        List<User> users;
         if (search != null && !search.isEmpty()) users = userService.findByUsernameContaining(search, page, size);
         else users = userService.findPaginated(filter, page, size);
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users);
@@ -117,7 +118,6 @@ public class UserController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         User user = userService.findUserById(id);
         return buildResponseUsingEtag(request, () -> {
             UserDTO userDTO = userDtoMapper.toDTO(user);
@@ -219,7 +219,6 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         User user = userService.findUserById(id);
         List<Review> reviews = reviewService.findReviewsByUserPaginated(id, page, size);
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
@@ -235,7 +234,6 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         User user = userService.findUserById(id);
         List<User> followers = userService.getFollowers(id, page, size);
         List<UserDTO> followerDTOs = userDtoMapper.toDTOList(followers);
@@ -249,7 +247,6 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FOLLOWINGS)
     public Response getUserFollowing(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         User user = userService.findUserById(id);
         List<User> following = userService.getFollowings(id, page, size);
         List<UserDTO> followingDTOs = userDtoMapper.toDTOList(following);
@@ -261,20 +258,18 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
                                @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
-        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
-
         userService.createFollowing(userId, targetUserId);
         return buildNoContentResponse();
     }
 
     @DELETE
     @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response unfollowUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
                                  @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
-        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
-        
         userService.undoFollowing(userId, targetUserId);
         return buildNoContentResponse();
     }
@@ -314,14 +309,13 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_ARTIST_DETAIL)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response addFavoriteArtist(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
-        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
-
         userService.addFavoriteArtist(userId, artistId);
 
-        FavoriteDTO favoriteDTO = new FavoriteDTO(userId, artistId, ControllerUtils.ITEM_TYPE_ARTIST, java.time.LocalDateTime.now());
+        FavoriteDTO favoriteDTO = new FavoriteDTO(userId, artistId, ControllerUtils.ITEM_TYPE_ARTIST, LocalDateTime.now());
         FavoriteResource resource = favoriteResourceMapper.toResource(favoriteDTO, getBaseUrl());
 
         return buildCreatedResponse(resource, buildNestedResourceLocation(ApiUriConstants.USERS_BASE, userId, "/favorites/artists", artistId));
@@ -329,22 +323,20 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.USER_FAVORITE_ARTIST_DETAIL)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response removeFavoriteArtist(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
-        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
-
         userService.removeFavoriteArtist(userId, artistId);
         return buildNoContentResponse();
     }
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_ALBUM_DETAIL)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response addFavoriteAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
-        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
-
         userService.addFavoriteAlbum(userId, albumId);
 
         FavoriteDTO favoriteDTO = new FavoriteDTO(userId, albumId, ControllerUtils.ITEM_TYPE_ALBUM, java.time.LocalDateTime.now());
@@ -355,22 +347,20 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.USER_FAVORITE_ALBUM_DETAIL)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response removeFavoriteAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
-        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
-
         userService.removeFavoriteAlbum(userId, albumId);
         return buildNoContentResponse();
     }
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_SONG_DETAIL)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response addFavoriteSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
-        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
-
         userService.addFavoriteSong(userId, songId);
 
         FavoriteDTO favoriteDTO = new FavoriteDTO(userId, songId, ControllerUtils.ITEM_TYPE_SONG, java.time.LocalDateTime.now());
@@ -381,20 +371,19 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.USER_FAVORITE_SONG_DETAIL)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response removeFavoriteSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
-        if (!userId.equals(SecurityContextUtils.getCurrentUserId())) return Response.status(Response.Status.FORBIDDEN).build();
-
         userService.removeFavoriteSong(userId, songId);
         return buildNoContentResponse();
     }
 
     @PATCH  
     @Path(ApiUriConstants.ID)
+    //TODO: @PreAuthorize(isLoggedUser(#userId))
     public Response updateUserConfig(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserDTO userDTO) {
-        if(!Objects.equals(SecurityContextUtils.getCurrentUserId(), userId))
-            throw new ForbiddenException("You are not allowed to update this user config");
+
         User user = userService.findUserById(userId);
         UserDtoMapper.mergeConfigToModel(user, userDTO);
         User userUpdated = userService.updateUser(user);
