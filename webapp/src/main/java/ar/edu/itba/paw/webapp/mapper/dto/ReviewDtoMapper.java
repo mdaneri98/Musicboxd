@@ -31,7 +31,7 @@ public class ReviewDtoMapper {
         dto.setCreatedAt(review.getCreatedAt());
         dto.setLikes(review.getLikes());
         dto.setIsBlocked(review.isBlocked());
-        dto.setCommentAmount(review.getCommentAmount());
+        dto.setCommentAmount(review.getCommentAmount() != null ? review.getCommentAmount() : 0);
         dto.setItemType(review.getItemType());
         dto.setItemId(review.getItemId());
         dto.setItemName(review.getItemName());

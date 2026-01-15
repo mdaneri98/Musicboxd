@@ -116,6 +116,7 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/reviews").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/api/reviews/*/comments").hasRole("USER")
                 .antMatchers(HttpMethod.PUT, "/api/reviews/*").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/api/reviews/*").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/api/reviews/*/likes").hasRole("USER")
                 .antMatchers(HttpMethod.DELETE, "/api/reviews/*/likes").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/api/comments").hasRole("USER")

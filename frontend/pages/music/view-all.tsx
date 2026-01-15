@@ -10,12 +10,12 @@ import { Layout } from '@/components/layout';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  fetchArtistsAsync, 
+import {
+  fetchArtistsAsync,
   fetchMoreArtistsAsync,
-  fetchAlbumsAsync, 
+  fetchAlbumsAsync,
   fetchMoreAlbumsAsync,
-  fetchSongsAsync, 
+  fetchSongsAsync,
   fetchMoreSongsAsync,
   clearArtists,
   clearAlbums,
@@ -24,7 +24,7 @@ import {
   selectArtistLoading,
   selectArtistLoadingMore,
   selectArtistsHasMore,
-  selectAlbumPagination, 
+  selectAlbumPagination,
   selectAlbumLoading,
   selectAlbumLoadingMore,
   selectAlbumsHasMore,
@@ -32,9 +32,9 @@ import {
   selectSongLoading,
   selectSongLoadingMore,
   selectSongsHasMore,
-  selectOrderedArtists, 
-  selectOrderedAlbums, 
-  selectOrderedSongs 
+  selectOrderedArtists,
+  selectOrderedAlbums,
+  selectOrderedSongs
 } from '@/store/slices';
 import { Artist, Album, Song, FilterTypeEnum, ReviewItemTypeEnum } from '@/types';
 import { ArtistCard, AlbumCard, SongCard } from '@/components/cards';
@@ -44,7 +44,7 @@ const ViewAllMusicPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tab: queryTab, filter: queryFilter } = router.query;
-  
+
   const artists = useAppSelector(selectOrderedArtists);
   const albums = useAppSelector(selectOrderedAlbums);
   const songs = useAppSelector(selectOrderedSongs);
@@ -69,28 +69,28 @@ const ViewAllMusicPage = () => {
   const [activeTab, setActiveTab] = useState<ReviewItemTypeEnum>(queryTab ? queryTab as ReviewItemTypeEnum : ReviewItemTypeEnum.ARTIST);
 
   // Get current tab's loading, loadingMore, hasMore, and pagination
-  const loading = activeTab === ReviewItemTypeEnum.ARTIST 
-    ? artistLoading 
-    : activeTab === ReviewItemTypeEnum.ALBUM 
-      ? albumLoading 
+  const loading = activeTab === ReviewItemTypeEnum.ARTIST
+    ? artistLoading
+    : activeTab === ReviewItemTypeEnum.ALBUM
+      ? albumLoading
       : songLoading;
 
-  const loadingMore = activeTab === ReviewItemTypeEnum.ARTIST 
-    ? artistLoadingMore 
-    : activeTab === ReviewItemTypeEnum.ALBUM 
-      ? albumLoadingMore 
+  const loadingMore = activeTab === ReviewItemTypeEnum.ARTIST
+    ? artistLoadingMore
+    : activeTab === ReviewItemTypeEnum.ALBUM
+      ? albumLoadingMore
       : songLoadingMore;
 
-  const hasMore = activeTab === ReviewItemTypeEnum.ARTIST 
-    ? artistHasMore 
-    : activeTab === ReviewItemTypeEnum.ALBUM 
-      ? albumHasMore 
+  const hasMore = activeTab === ReviewItemTypeEnum.ARTIST
+    ? artistHasMore
+    : activeTab === ReviewItemTypeEnum.ALBUM
+      ? albumHasMore
       : songHasMore;
 
-  const pagination = activeTab === ReviewItemTypeEnum.ARTIST 
-    ? artistPagination 
-    : activeTab === ReviewItemTypeEnum.ALBUM 
-      ? albumPagination 
+  const pagination = activeTab === ReviewItemTypeEnum.ARTIST
+    ? artistPagination
+    : activeTab === ReviewItemTypeEnum.ALBUM
+      ? albumPagination
       : songPagination;
 
   // Fetch initial data when tab or filter changes
@@ -114,9 +114,9 @@ const ViewAllMusicPage = () => {
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!hasMore || loadingMore) return;
-    
+
     const nextPage = pagination.page + 1;
-    
+
     if (activeTab === ReviewItemTypeEnum.ARTIST) {
       await dispatch(fetchMoreArtistsAsync({ page: nextPage, filter }));
     } else if (activeTab === ReviewItemTypeEnum.ALBUM) {
@@ -136,6 +136,10 @@ const ViewAllMusicPage = () => {
 
   const handleTabChange = (tab: ReviewItemTypeEnum) => {
     if (tab !== activeTab) {
+      if (tab !== ReviewItemTypeEnum.ALBUM &&
+        (filter === FilterTypeEnum.NEWEST || filter === FilterTypeEnum.OLDEST)) {
+        setFilter(FilterTypeEnum.POPULAR);
+      }
       setActiveTab(tab);
     }
   };
@@ -146,10 +150,10 @@ const ViewAllMusicPage = () => {
   };
 
   // Get current data based on active tab
-  const currentData = activeTab === ReviewItemTypeEnum.ARTIST 
-    ? artists 
-    : activeTab === ReviewItemTypeEnum.ALBUM 
-      ? albums 
+  const currentData = activeTab === ReviewItemTypeEnum.ARTIST
+    ? artists
+    : activeTab === ReviewItemTypeEnum.ALBUM
+      ? albums
       : songs;
 
   return (

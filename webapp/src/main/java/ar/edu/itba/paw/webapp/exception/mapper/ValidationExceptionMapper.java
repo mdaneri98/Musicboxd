@@ -54,10 +54,10 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
                 validationError.getRejectedValue());
         }
 
-        ErrorResponseDTO error = errorResponseBuilder.buildWithValidations(
+        ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.BAD_REQUEST,
+                exception,
                 "exception.BadRequest",
-                validationErrors,
                 uriInfo
         );
 

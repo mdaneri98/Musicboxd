@@ -26,14 +26,14 @@ const UserCard = ({ user }: UserCardProps) => {
           <h3 className="user-card-username">@{user.username}</h3>
           {user.name && <p className="user-card-name">{user.name}</p>}
         </div>
-        {user.moderator && (
+        {(user.moderator || user.verified) && (
           <div className="user-card-badges">
-            <span className="badge badge-moderator">{t('label.moderator')}</span>
-          </div>
-        )}
-        {user.verified && (
-          <div className="user-card-badges">
-            <span className="badge badge-verified">{t('label.verified')}</span>
+            {user.moderator && (
+              <span className="badge badge-moderator">{t('label.moderator')}</span>
+            )}
+            {user.verified && (
+              <span className="badge badge-verified">{t('label.verified')}</span>
+            )}
           </div>
         )}
       </div>

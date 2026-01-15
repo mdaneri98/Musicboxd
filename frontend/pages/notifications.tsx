@@ -6,14 +6,15 @@ import { NotificationCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  selectIsAuthenticated, 
-  selectOrderedNotifications, 
-  fetchNotificationsAsync, 
+import {
+  selectIsAuthenticated,
+  selectAuthInitializing,
+  selectOrderedNotifications,
+  fetchNotificationsAsync,
   fetchMoreNotificationsAsync,
-  markAllAsReadAsync, 
-  selectNotificationPagination, 
-  selectUnreadCount, 
+  markAllAsReadAsync,
+  selectNotificationPagination,
+  selectUnreadCount,
   selectNotificationLoading,
   selectNotificationLoadingMore,
   selectNotificationsHasMore,
@@ -25,6 +26,7 @@ export default function NotificationsPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const authInitializing = useAppSelector(selectAuthInitializing);
   const notifications = useAppSelector(selectOrderedNotifications);
   const unreadCount = useAppSelector(selectUnreadCount);
   const loading = useAppSelector(selectNotificationLoading);
@@ -32,19 +34,20 @@ export default function NotificationsPage() {
   const pagination = useAppSelector(selectNotificationPagination);
   const hasMore = useAppSelector(selectNotificationsHasMore);
 
-  // Redirect to landing if not authenticated
+  // Redirect to landing if not authenticated (after auth initialization is complete)
   useEffect(() => {
+    if (authInitializing) return;
     if (!isAuthenticated) {
       router.push('/landing');
     }
-  }, [isAuthenticated, router]);
+  }, [authInitializing, isAuthenticated, router]);
 
   // Fetch notifications only on mount
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         await dispatch(fetchNotificationsAsync({ page: 1, size: 10 })).unwrap();
-      } catch (error) { 
+      } catch (error) {
         console.error('Failed to fetch notifications:', error);
       }
     };
@@ -57,11 +60,11 @@ export default function NotificationsPage() {
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!hasMore || loadingMore) return;
-    
+
     const nextPage = pagination.page + 1;
-    await dispatch(fetchMoreNotificationsAsync({ 
-      page: nextPage, 
-      size: pagination.size 
+    await dispatch(fetchMoreNotificationsAsync({
+      page: nextPage,
+      size: pagination.size
     }));
   }, [dispatch, pagination.page, pagination.size, hasMore, loadingMore]);
 

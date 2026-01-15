@@ -9,6 +9,7 @@ import {
   unlikeReviewAsync,
   blockReviewAsync,
   unblockReviewAsync,
+  selectIsAuthenticated,
 } from '@/store/slices';
 import { formatTimeAgo } from '@/utils/timeUtils';
 import { ConfirmationModal } from '../ui';
@@ -24,6 +25,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   const dispatch = useAppDispatch();
   const isModerator = useAppSelector(selectIsModerator);
   const currentUser = useAppSelector(selectCurrentUser);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [reviewToBlock, setReviewToBlock] = useState(false);
   const [isBlocked, setIsBlocked] = useState(review.is_blocked);
 
@@ -184,9 +186,15 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             <Link href={`/reviews/${review.id}?tab=likes`}>
               <span className="action-count">{review.likes}</span>
             </Link>
-            <button onClick={handleLike} className={`action-btn ${review.liked ? 'active' : ''}`}>
-              <i className={`fa-${review.liked ? 'solid' : 'regular'} fa-heart`}></i>
-            </button>
+            {isAuthenticated ? (
+              <button onClick={handleLike} className={`action-btn ${review.liked ? 'active' : ''}`}>
+                <i className={`fa-${review.liked ? 'solid' : 'regular'} fa-heart`}></i>
+              </button>
+            ) : (
+              <Link href="/login" className="action-btn">
+                <i className="fa-regular fa-heart"></i>
+              </Link>
+            )}
           </div>
 
           {/* Comment action */}
