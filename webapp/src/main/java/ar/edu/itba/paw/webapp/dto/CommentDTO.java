@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 
 public class CommentDTO {
@@ -13,6 +14,11 @@ public class CommentDTO {
     private LocalDateTime createdAt;
     private Boolean userVerified;
     private Boolean userModerator;
+
+    // HATEOAS links
+    private URI self;
+    private URI userLink;
+    private URI reviewLink;
 
     public CommentDTO() {}
 
@@ -86,6 +92,31 @@ public class CommentDTO {
 
     public void setUserModerator(Boolean userModerator) {
         this.userModerator = userModerator;
+    }
+
+    // HATEOAS getters and setters
+    public URI getSelf() {
+        return self;
+    }
+
+    public void setSelf(URI self) {
+        this.self = self;
+    }
+
+    public URI getUserLink() {
+        return userLink;
+    }
+
+    public void setUserLink(URI userLink) {
+        this.userLink = userLink;
+    }
+
+    public URI getReviewLink() {
+        return reviewLink;
+    }
+
+    public void setReviewLink(URI reviewLink) {
+        this.reviewLink = reviewLink;
     }
 }
 

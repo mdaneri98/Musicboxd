@@ -4,6 +4,7 @@ import ar.edu.itba.paw.webapp.dto.NotificationDTO;
 import ar.edu.itba.paw.models.Notification;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class NotificationDtoMapper {
 
-    public NotificationDTO toDTO(Notification notification) {
+    public NotificationDTO toDTO(Notification notification, UriInfo uriInfo) {
         if (notification == null) {
             return null;
         }
@@ -33,16 +34,37 @@ public class NotificationDtoMapper {
         dto.setIsRead(notification.isRead());
         dto.setMessage(notification.getMessage());
 
+        // Build HATEOAS links
+        if (uriInfo != null) {
+            dto.setSelf(uriInfo.getBaseUriBuilder()
+                    .path("notifications").path(String.valueOf(notification.getId())).build());
+
+            if (notification.getRecipientUser() != null) {
+                dto.setRecipientUserLink(uriInfo.getBaseUriBuilder()
+                        .path("users").path(String.valueOf(notification.getRecipientUser().getId())).build());
+            }
+
+            if (notification.getTriggerUser() != null) {
+                dto.setTriggerUserLink(uriInfo.getBaseUriBuilder()
+                        .path("users").path(String.valueOf(notification.getTriggerUser().getId())).build());
+            }
+
+            if (notification.getReview() != null) {
+                dto.setReviewLink(uriInfo.getBaseUriBuilder()
+                        .path("reviews").path(String.valueOf(notification.getReview().getId())).build());
+            }
+        }
+
         return dto;
     }
 
-    public List<NotificationDTO> toDTOList(List<Notification> notifications) {
+    public List<NotificationDTO> toDTOList(List<Notification> notifications, UriInfo uriInfo) {
         if (notifications == null) {
             return null;
         }
 
         return notifications.stream()
-                .map(this::toDTO)
+                .map(n -> toDTO(n, uriInfo))
                 .collect(Collectors.toList());
     }
 

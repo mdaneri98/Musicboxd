@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 
 public class FavoriteDTO {
@@ -8,6 +9,11 @@ public class FavoriteDTO {
     private Long itemId;
     private String type;
     private LocalDateTime createdAt;
+
+    // HATEOAS links
+    private URI self;
+    private URI userLink;
+    private URI itemLink;
 
     public FavoriteDTO() {
     }
@@ -58,5 +64,30 @@ public class FavoriteDTO {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    // HATEOAS getters and setters
+    public URI getSelf() {
+        return self;
+    }
+
+    public void setSelf(URI self) {
+        this.self = self;
+    }
+
+    public URI getUserLink() {
+        return userLink;
+    }
+
+    public void setUserLink(URI userLink) {
+        this.userLink = userLink;
+    }
+
+    public URI getItemLink() {
+        return itemLink;
+    }
+
+    public void setItemLink(URI itemLink) {
+        this.itemLink = itemLink;
     }
 }

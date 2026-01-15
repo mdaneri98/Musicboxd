@@ -1,49 +1,33 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.webapp.dto.ApiInfoDTO;
-import ar.edu.itba.paw.webapp.models.links.Link;
-import ar.edu.itba.paw.webapp.models.resources.ApiInfoResource;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
-import ar.edu.itba.paw.webapp.utils.HATEOASUtils;
+import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 
 @Path(ApiUriConstants.API_BASE)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class IndexController extends BaseController {
-    
+
     @GET
-    public Response getApiInfo(@Context HttpServletRequest request, @Context UriInfo uriInfo) {
-        String baseUrl = HATEOASUtils.getBaseUrl(request) + "/api";
-
-        // Create API info DTO
+    @Produces(CustomMediaType.API_INFO)
+    public Response getApiInfo() {
         ApiInfoDTO apiInfo = new ApiInfoDTO(
-            "Musicbox REST API",
-            "0.0.1",
-            "Music discovery and reviews"
+                "Musicbox REST API",
+                "1.0.0",
+                "Music discovery and reviews"
         );
-        
-        ApiInfoResource apiResource = new ApiInfoResource(apiInfo);
 
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.USERS_BASE, ControllerUtils.ITEM_TYPE_USER, ControllerUtils.METHOD_GET));
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.ARTISTS_BASE, ControllerUtils.ITEM_TYPE_ARTIST, ControllerUtils.METHOD_GET));
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.ALBUMS_BASE, ControllerUtils.ITEM_TYPE_ALBUM, ControllerUtils.METHOD_GET));
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.SONGS_BASE, ControllerUtils.ITEM_TYPE_SONG, ControllerUtils.METHOD_GET));
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.REVIEWS_BASE, ControllerUtils.ITEM_TYPE_REVIEW, ControllerUtils.METHOD_GET));
+        // Build HATEOAS links
+        apiInfo.setUsers(uriInfo.getBaseUriBuilder().path("users").build());
+        apiInfo.setArtists(uriInfo.getBaseUriBuilder().path("artists").build());
+        apiInfo.setAlbums(uriInfo.getBaseUriBuilder().path("albums").build());
+        apiInfo.setSongs(uriInfo.getBaseUriBuilder().path("songs").build());
+        apiInfo.setReviews(uriInfo.getBaseUriBuilder().path("reviews").build());
 
-        apiResource.addLink(Link.createLink(baseUrl + ApiUriConstants.USERS_BASE, ControllerUtils.ACTION_REGISTER, ControllerUtils.METHOD_POST));
-        
-        return buildResponse(apiResource);
+        return Response.ok(apiInfo).build();
     }
-
 }

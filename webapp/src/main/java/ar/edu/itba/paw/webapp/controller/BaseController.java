@@ -1,8 +1,5 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.webapp.models.resources.CollectionResource;
-import ar.edu.itba.paw.webapp.utils.HATEOASUtils;
-import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,10 +18,6 @@ public abstract class BaseController {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    protected String getBaseUrl() {
-        return HATEOASUtils.getBaseUrl(uriInfo);
-    }
 
     protected Response buildResponse(Object resource) {
         try {
@@ -61,21 +54,6 @@ public abstract class BaseController {
     protected Response buildNoContentResponse() {
         return Response.noContent().build();
     }
-
-    protected Response buildPaginatedResponse(CollectionResource<?> collection) {
-        Response.ResponseBuilder responseBuilder = Response.ok(collection);
-        
-        PaginationHeadersBuilder.addPaginationHeaders(
-            responseBuilder,
-            uriInfo,
-            collection.getCurrentPage(),
-            collection.getPageSize(),
-            collection.getTotalCount()
-        );
-        
-        return responseBuilder.build();
-    }
-
 
     // https://howtodoinjava.com/resteasy/jax-rs-resteasy-cache-control-with-etag-example/
     public static <T> Response buildResponseUsingEtag(Request request, Supplier<T> dtoSupplier) {

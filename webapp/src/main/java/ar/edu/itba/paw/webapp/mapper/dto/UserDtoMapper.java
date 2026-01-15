@@ -4,6 +4,7 @@ import ar.edu.itba.paw.webapp.dto.UserDTO;
 import ar.edu.itba.paw.models.User;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Component
 public class UserDtoMapper {
 
-    public UserDTO toDTO(User user) {
+    public UserDTO toDTO(User user, UriInfo uriInfo) {
         if (user == null) {
             return null;
         }
@@ -39,17 +40,46 @@ public class UserDtoMapper {
         dto.setHasLikeNotificationsEnabled(user.getLikeNotificationsEnabled());
         dto.setHasCommentsNotificationsEnabled(user.getCommentNotificationsEnabled());
         dto.setHasReviewsNotificationsEnabled(user.getReviewNotificationsEnabled());
-        
+
+        // Build HATEOAS links
+        if (uriInfo != null) {
+            dto.setSelf(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).build());
+
+            if (user.getImageId() != null) {
+                dto.setImage(uriInfo.getBaseUriBuilder()
+                        .path("images").path(String.valueOf(user.getImageId())).build());
+            }
+
+            dto.setReviews(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("reviews").build());
+
+            dto.setFollowers(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("followers").build());
+
+            dto.setFollowing(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("following").build());
+
+            dto.setFavoriteArtists(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("artists").build());
+
+            dto.setFavoriteAlbums(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("albums").build());
+
+            dto.setFavoriteSongs(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("songs").build());
+        }
+
         return dto;
     }
 
-    public List<UserDTO> toDTOList(List<User> users) {
+    public List<UserDTO> toDTOList(List<User> users, UriInfo uriInfo) {
         if (users == null) {
             return null;
         }
 
         return users.stream()
-                .map(this::toDTO)
+                .map(u -> toDTO(u, uriInfo))
                 .collect(Collectors.toList());
     }
 

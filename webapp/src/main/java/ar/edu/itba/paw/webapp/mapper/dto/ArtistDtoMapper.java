@@ -4,6 +4,7 @@ import ar.edu.itba.paw.webapp.dto.ArtistDTO;
 import ar.edu.itba.paw.models.Artist;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class ArtistDtoMapper {
 
-    public ArtistDTO toDTO(Artist artist) {
+    public ArtistDTO toDTO(Artist artist, UriInfo uriInfo) {
         if (artist == null) {
             return null;
         }
@@ -28,16 +29,36 @@ public class ArtistDtoMapper {
         dto.setCreatedAt(artist.getCreatedAt());
         dto.setUpdatedAt(artist.getUpdatedAt());
 
+        // Build HATEOAS links
+        if (uriInfo != null) {
+            dto.setSelf(uriInfo.getBaseUriBuilder()
+                    .path("artists").path(String.valueOf(artist.getId())).build());
+
+            if (artist.getImage() != null) {
+                dto.setImage(uriInfo.getBaseUriBuilder()
+                        .path("images").path(String.valueOf(artist.getImage().getId())).build());
+            }
+
+            dto.setAlbumsLink(uriInfo.getBaseUriBuilder()
+                    .path("artists").path(String.valueOf(artist.getId())).path("albums").build());
+
+            dto.setSongsLink(uriInfo.getBaseUriBuilder()
+                    .path("artists").path(String.valueOf(artist.getId())).path("songs").build());
+
+            dto.setReviewsLink(uriInfo.getBaseUriBuilder()
+                    .path("artists").path(String.valueOf(artist.getId())).path("reviews").build());
+        }
+
         return dto;
     }
 
-    public List<ArtistDTO> toDTOList(List<Artist> artists) {
+    public List<ArtistDTO> toDTOList(List<Artist> artists, UriInfo uriInfo) {
         if (artists == null) {
             return null;
         }
 
         return artists.stream()
-                .map(this::toDTO)
+                .map(a -> toDTO(a, uriInfo))
                 .collect(Collectors.toList());
     }
 
@@ -68,4 +89,3 @@ public class ArtistDtoMapper {
                 .collect(Collectors.toList());
     }
 }
-

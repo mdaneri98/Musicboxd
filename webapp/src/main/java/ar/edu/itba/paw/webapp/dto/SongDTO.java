@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -20,6 +21,12 @@ public class SongDTO {
     private LocalDate releaseDate;
     private LocalDateTime updatedAt;
     private Boolean isDeleted;
+
+    // HATEOAS links
+    private URI self;
+    private URI albumLink;
+    private URI artistLink;
+    private URI reviewsLink;
 
     public SongDTO() {}
 
@@ -136,6 +143,39 @@ public class SongDTO {
 
     public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    // HATEOAS getters and setters
+    public URI getSelf() {
+        return self;
+    }
+
+    public void setSelf(URI self) {
+        this.self = self;
+    }
+
+    public URI getAlbumLink() {
+        return albumLink;
+    }
+
+    public void setAlbumLink(URI albumLink) {
+        this.albumLink = albumLink;
+    }
+
+    public URI getArtistLink() {
+        return artistLink;
+    }
+
+    public void setArtistLink(URI artistLink) {
+        this.artistLink = artistLink;
+    }
+
+    public URI getReviewsLink() {
+        return reviewsLink;
+    }
+
+    public void setReviewsLink(URI reviewsLink) {
+        this.reviewsLink = reviewsLink;
     }
 
     @Override

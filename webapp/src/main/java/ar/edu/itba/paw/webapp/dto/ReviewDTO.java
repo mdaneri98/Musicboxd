@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import ar.edu.itba.paw.models.reviews.ReviewType;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -17,12 +18,19 @@ public class ReviewDTO {
     private Integer likes;
     private Boolean isBlocked;
     private Integer commentAmount;
-    private ReviewType itemType; 
+    private ReviewType itemType;
     private Long itemId;
     private String itemName;
     private Long itemImageId;
     private Boolean userVerified;
     private Boolean userModerator;
+
+    // HATEOAS links
+    private URI self;
+    private URI userLink;
+    private URI itemLink;
+    private URI commentsLink;
+    private URI likesLink;
 
     public ReviewDTO() {}
 
@@ -160,6 +168,47 @@ public class ReviewDTO {
 
     public void setUserModerator(Boolean userModerator) {
         this.userModerator = userModerator;
+    }
+
+    // HATEOAS getters and setters
+    public URI getSelf() {
+        return self;
+    }
+
+    public void setSelf(URI self) {
+        this.self = self;
+    }
+
+    public URI getUserLink() {
+        return userLink;
+    }
+
+    public void setUserLink(URI userLink) {
+        this.userLink = userLink;
+    }
+
+    public URI getItemLink() {
+        return itemLink;
+    }
+
+    public void setItemLink(URI itemLink) {
+        this.itemLink = itemLink;
+    }
+
+    public URI getCommentsLink() {
+        return commentsLink;
+    }
+
+    public void setCommentsLink(URI commentsLink) {
+        this.commentsLink = commentsLink;
+    }
+
+    public URI getLikesLink() {
+        return likesLink;
+    }
+
+    public void setLikesLink(URI likesLink) {
+        this.likesLink = likesLink;
     }
 
     @Override

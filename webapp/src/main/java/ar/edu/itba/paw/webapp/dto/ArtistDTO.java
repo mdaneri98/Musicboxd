@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +16,13 @@ public class ArtistDTO {
     private LocalDateTime updatedAt;
     private List<AlbumDTO> albums;
     private Long imageId;
+
+    // HATEOAS links
+    private URI self;
+    private URI image;
+    private URI albumsLink;
+    private URI songsLink;
+    private URI reviewsLink;
 
     public ArtistDTO() {}
 
@@ -88,6 +96,47 @@ public class ArtistDTO {
 
     public void setImageId(Long imageId) {
         this.imageId = imageId;
+    }
+
+    // HATEOAS getters and setters
+    public URI getSelf() {
+        return self;
+    }
+
+    public void setSelf(URI self) {
+        this.self = self;
+    }
+
+    public URI getImage() {
+        return image;
+    }
+
+    public void setImage(URI image) {
+        this.image = image;
+    }
+
+    public URI getAlbumsLink() {
+        return albumsLink;
+    }
+
+    public void setAlbumsLink(URI albumsLink) {
+        this.albumsLink = albumsLink;
+    }
+
+    public URI getSongsLink() {
+        return songsLink;
+    }
+
+    public void setSongsLink(URI songsLink) {
+        this.songsLink = songsLink;
+    }
+
+    public URI getReviewsLink() {
+        return reviewsLink;
+    }
+
+    public void setReviewsLink(URI reviewsLink) {
+        this.reviewsLink = reviewsLink;
     }
 
     @Override

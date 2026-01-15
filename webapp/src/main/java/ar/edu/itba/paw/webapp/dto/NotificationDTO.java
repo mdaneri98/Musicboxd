@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import ar.edu.itba.paw.models.Notification;
+import java.net.URI;
 import java.time.LocalDateTime;
 
 public class NotificationDTO {
@@ -18,6 +19,12 @@ public class NotificationDTO {
     private LocalDateTime createdAt;
     private Boolean isRead;
     private String message;
+
+    // HATEOAS links
+    private URI self;
+    private URI recipientUserLink;
+    private URI triggerUserLink;
+    private URI reviewLink;
 
     public NotificationDTO() {}
 
@@ -128,4 +135,36 @@ public class NotificationDTO {
         this.message = message;
     }
 
+    // HATEOAS getters and setters
+    public URI getSelf() {
+        return self;
+    }
+
+    public void setSelf(URI self) {
+        this.self = self;
+    }
+
+    public URI getRecipientUserLink() {
+        return recipientUserLink;
+    }
+
+    public void setRecipientUserLink(URI recipientUserLink) {
+        this.recipientUserLink = recipientUserLink;
+    }
+
+    public URI getTriggerUserLink() {
+        return triggerUserLink;
+    }
+
+    public void setTriggerUserLink(URI triggerUserLink) {
+        this.triggerUserLink = triggerUserLink;
+    }
+
+    public URI getReviewLink() {
+        return reviewLink;
+    }
+
+    public void setReviewLink(URI reviewLink) {
+        this.reviewLink = reviewLink;
+    }
 }
