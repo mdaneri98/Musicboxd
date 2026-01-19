@@ -36,23 +36,24 @@ public class NotificationController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.STATUS_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_STATUS_STRING) String status) {
-        
+
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         StatusType statusType = StatusType.fromString(status);
-        
-        List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size, statusType);
+
+        List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size,
+                statusType);
         Long totalCount = notificationService.countByUserId(loggedUserId, statusType);
-        
+
         if (notifications.isEmpty()) {
             return Response.noContent().build();
         }
-        
+
         List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications, uriInfo);
-        
+
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<NotificationDTO>>(notificationDTOs) {}
-        );
-        
+                new GenericEntity<List<NotificationDTO>>(notificationDTOs) {
+                });
+
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
         return responseBuilder.build();
     }
@@ -64,7 +65,7 @@ public class NotificationController extends BaseController {
         Notification notification = notificationDtoMapper.toModel(notificationDTO);
         Notification createdNotification = notificationService.create(notification);
         NotificationDTO responseDTO = notificationDtoMapper.toDTO(createdNotification, uriInfo);
-        return Response.created(responseDTO.getSelf()).entity(responseDTO).build();
+        return Response.created(responseDTO.getLinks().getSelf()).entity(responseDTO).build();
     }
 
     @GET
@@ -80,7 +81,8 @@ public class NotificationController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Consumes(CustomMediaType.NOTIFICATION)
     @Produces(CustomMediaType.NOTIFICATION)
-    public Response updateNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid NotificationDTO notificationDTO) {
+    public Response updateNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @Valid NotificationDTO notificationDTO) {
         notificationDTO.setId(id);
         Notification notification = notificationDtoMapper.toModel(notificationDTO);
         Notification updatedNotification = notificationService.update(notification);
@@ -99,7 +101,8 @@ public class NotificationController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Consumes(CustomMediaType.NOTIFICATION)
     @Produces(CustomMediaType.NOTIFICATION)
-    public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid NotificationDTO notificationDTO) {
+    public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @Valid NotificationDTO notificationDTO) {
         if (notificationDTO.getIsRead()) {
             notificationService.markAsRead(id);
         } else {

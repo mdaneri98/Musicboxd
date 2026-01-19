@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.NotificationDTO;
+import ar.edu.itba.paw.webapp.dto.links.NotificationLinksDTO;
 import ar.edu.itba.paw.models.Notification;
 import org.springframework.stereotype.Component;
 
@@ -22,37 +23,47 @@ public class NotificationDtoMapper {
         NotificationDTO dto = new NotificationDTO();
         dto.setId(notification.getId());
         dto.setType(notification.getType() != null ? notification.getType().name() : null);
-        dto.setRecipientUserId(notification.getRecipientUser() != null ? notification.getRecipientUser().getId() : null);
-        dto.setRecipientUsername(notification.getRecipientUser() != null ? notification.getRecipientUser().getUsername() : null);
+        dto.setRecipientUserId(
+                notification.getRecipientUser() != null ? notification.getRecipientUser().getId() : null);
+        dto.setRecipientUsername(
+                notification.getRecipientUser() != null ? notification.getRecipientUser().getUsername() : null);
         dto.setTriggerUserId(notification.getTriggerUser() != null ? notification.getTriggerUser().getId() : null);
-        dto.setTriggerUsername(notification.getTriggerUser() != null ? notification.getTriggerUser().getUsername() : null);
-        dto.setTriggerUserImageId(notification.getTriggerUser() != null ? notification.getTriggerUser().getImageId() : null);
+        dto.setTriggerUsername(
+                notification.getTriggerUser() != null ? notification.getTriggerUser().getUsername() : null);
+        dto.setTriggerUserImageId(
+                notification.getTriggerUser() != null ? notification.getTriggerUser().getImageId() : null);
         dto.setReviewId(notification.getReview() != null ? notification.getReview().getId() : null);
         dto.setReviewItemName(notification.getReview() != null ? notification.getReview().getItemName() : null);
-        dto.setReviewItemImageId(notification.getReview() != null && notification.getReview().getItemImage() != null ? notification.getReview().getItemImage().getId() : null);
+        dto.setReviewItemImageId(notification.getReview() != null && notification.getReview().getItemImage() != null
+                ? notification.getReview().getItemImage().getId()
+                : null);
         dto.setCreatedAt(notification.getCreatedAt());
         dto.setIsRead(notification.isRead());
         dto.setMessage(notification.getMessage());
 
         // Build HATEOAS links
         if (uriInfo != null) {
-            dto.setSelf(uriInfo.getBaseUriBuilder()
+            NotificationLinksDTO links = new NotificationLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
                     .path("notifications").path(String.valueOf(notification.getId())).build());
 
             if (notification.getRecipientUser() != null) {
-                dto.setRecipientUserLink(uriInfo.getBaseUriBuilder()
+                links.setRecipientUser(uriInfo.getBaseUriBuilder()
                         .path("users").path(String.valueOf(notification.getRecipientUser().getId())).build());
             }
 
             if (notification.getTriggerUser() != null) {
-                dto.setTriggerUserLink(uriInfo.getBaseUriBuilder()
+                links.setTriggerUser(uriInfo.getBaseUriBuilder()
                         .path("users").path(String.valueOf(notification.getTriggerUser().getId())).build());
             }
 
             if (notification.getReview() != null) {
-                dto.setReviewLink(uriInfo.getBaseUriBuilder()
+                links.setReview(uriInfo.getBaseUriBuilder()
                         .path("reviews").path(String.valueOf(notification.getReview().getId())).build());
             }
+
+            dto.setLinks(links);
         }
 
         return dto;

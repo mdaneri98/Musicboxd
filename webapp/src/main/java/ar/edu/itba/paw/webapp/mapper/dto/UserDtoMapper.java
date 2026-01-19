@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.UserDTO;
+import ar.edu.itba.paw.webapp.dto.links.UserLinksDTO;
 import ar.edu.itba.paw.models.User;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,6 @@ public class UserDtoMapper {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setBio(user.getBio());
         dto.setImageId(user.getImageId());
@@ -43,31 +43,35 @@ public class UserDtoMapper {
 
         // Build HATEOAS links
         if (uriInfo != null) {
-            dto.setSelf(uriInfo.getBaseUriBuilder()
+            UserLinksDTO links = new UserLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).build());
 
             if (user.getImageId() != null) {
-                dto.setImage(uriInfo.getBaseUriBuilder()
+                links.setImage(uriInfo.getBaseUriBuilder()
                         .path("images").path(String.valueOf(user.getImageId())).build());
             }
 
-            dto.setReviews(uriInfo.getBaseUriBuilder()
+            links.setReviews(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("reviews").build());
 
-            dto.setFollowers(uriInfo.getBaseUriBuilder()
+            links.setFollowers(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("followers").build());
 
-            dto.setFollowing(uriInfo.getBaseUriBuilder()
+            links.setFollowing(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("following").build());
 
-            dto.setFavoriteArtists(uriInfo.getBaseUriBuilder()
+            links.setFavoriteArtists(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("favorites").path("artists").build());
 
-            dto.setFavoriteAlbums(uriInfo.getBaseUriBuilder()
+            links.setFavoriteAlbums(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("favorites").path("albums").build());
 
-            dto.setFavoriteSongs(uriInfo.getBaseUriBuilder()
+            links.setFavoriteSongs(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("favorites").path("songs").build());
+
+            dto.setLinks(links);
         }
 
         return dto;
@@ -91,7 +95,6 @@ public class UserDtoMapper {
         User user = new User();
         user.setId(dto.getId());
         user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
         user.setName(dto.getName());
         user.setBio(dto.getBio());
         user.setFollowersAmount(dto.getFollowersAmount());

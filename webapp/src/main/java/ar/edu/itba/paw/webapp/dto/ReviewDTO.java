@@ -1,7 +1,8 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import ar.edu.itba.paw.models.reviews.ReviewType;
-import java.net.URI;
+import ar.edu.itba.paw.webapp.dto.links.ReviewLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -25,14 +26,11 @@ public class ReviewDTO {
     private Boolean userVerified;
     private Boolean userModerator;
 
-    // HATEOAS links
-    private URI self;
-    private URI userLink;
-    private URI itemLink;
-    private URI commentsLink;
-    private URI likesLink;
+    @JsonProperty("_links")
+    private ReviewLinksDTO links;
 
-    public ReviewDTO() {}
+    public ReviewDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -170,50 +168,17 @@ public class ReviewDTO {
         this.userModerator = userModerator;
     }
 
-    // HATEOAS getters and setters
-    public URI getSelf() {
-        return self;
+    public ReviewLinksDTO getLinks() {
+        return links;
     }
 
-    public void setSelf(URI self) {
-        this.self = self;
-    }
-
-    public URI getUserLink() {
-        return userLink;
-    }
-
-    public void setUserLink(URI userLink) {
-        this.userLink = userLink;
-    }
-
-    public URI getItemLink() {
-        return itemLink;
-    }
-
-    public void setItemLink(URI itemLink) {
-        this.itemLink = itemLink;
-    }
-
-    public URI getCommentsLink() {
-        return commentsLink;
-    }
-
-    public void setCommentsLink(URI commentsLink) {
-        this.commentsLink = commentsLink;
-    }
-
-    public URI getLikesLink() {
-        return likesLink;
-    }
-
-    public void setLikesLink(URI likesLink) {
-        this.likesLink = likesLink;
+    public void setLinks(ReviewLinksDTO links) {
+        this.links = links;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, userId, userImageId, title, description, rating, createdAt, likes, isBlocked, commentAmount, itemType, itemId, itemName, itemImageId, userVerified, userModerator);
+        return Objects.hash(id, username, userId, userImageId, title, description, rating, createdAt, likes, isBlocked,
+                commentAmount, itemType, itemId, itemName, itemImageId, userVerified, userModerator);
     }
 }
-

@@ -1,19 +1,18 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import java.net.URI;
+import ar.edu.itba.paw.webapp.dto.links.FavoriteLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class FavoriteDTO {
-    private Long id; // The ID of the item
+    private Long id;
     private Long userId;
     private Long itemId;
     private String type;
     private LocalDateTime createdAt;
 
-    // HATEOAS links
-    private URI self;
-    private URI userLink;
-    private URI itemLink;
+    @JsonProperty("_links")
+    private FavoriteLinksDTO links;
 
     public FavoriteDTO() {
     }
@@ -66,28 +65,11 @@ public class FavoriteDTO {
         this.createdAt = createdAt;
     }
 
-    // HATEOAS getters and setters
-    public URI getSelf() {
-        return self;
+    public FavoriteLinksDTO getLinks() {
+        return links;
     }
 
-    public void setSelf(URI self) {
-        this.self = self;
-    }
-
-    public URI getUserLink() {
-        return userLink;
-    }
-
-    public void setUserLink(URI userLink) {
-        this.userLink = userLink;
-    }
-
-    public URI getItemLink() {
-        return itemLink;
-    }
-
-    public void setItemLink(URI itemLink) {
-        this.itemLink = itemLink;
+    public void setLinks(FavoriteLinksDTO links) {
+        this.links = links;
     }
 }

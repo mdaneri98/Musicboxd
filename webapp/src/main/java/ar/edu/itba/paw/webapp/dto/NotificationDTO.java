@@ -1,7 +1,8 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import ar.edu.itba.paw.models.Notification;
-import java.net.URI;
+import ar.edu.itba.paw.webapp.dto.links.NotificationLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class NotificationDTO {
@@ -20,13 +21,11 @@ public class NotificationDTO {
     private Boolean isRead;
     private String message;
 
-    // HATEOAS links
-    private URI self;
-    private URI recipientUserLink;
-    private URI triggerUserLink;
-    private URI reviewLink;
+    @JsonProperty("_links")
+    private NotificationLinksDTO links;
 
-    public NotificationDTO() {}
+    public NotificationDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -41,7 +40,12 @@ public class NotificationDTO {
     }
 
     public void setType(String type) {
-        if(!type.equals(Notification.NotificationType.LIKE.name()) && !type.equals(Notification.NotificationType.COMMENT.name()) && !type.equals(Notification.NotificationType.FOLLOW.name()) && !type.equals(Notification.NotificationType.NEW_REVIEW.name()) && !type.equals(Notification.NotificationType.REVIEW_BLOCKED.name()) && !type.equals(Notification.NotificationType.REVIEW_UNBLOCKED.name())) {
+        if (!type.equals(Notification.NotificationType.LIKE.name())
+                && !type.equals(Notification.NotificationType.COMMENT.name())
+                && !type.equals(Notification.NotificationType.FOLLOW.name())
+                && !type.equals(Notification.NotificationType.NEW_REVIEW.name())
+                && !type.equals(Notification.NotificationType.REVIEW_BLOCKED.name())
+                && !type.equals(Notification.NotificationType.REVIEW_UNBLOCKED.name())) {
             throw new IllegalArgumentException("Invalid notification type");
         }
         this.type = type;
@@ -135,36 +139,12 @@ public class NotificationDTO {
         this.message = message;
     }
 
-    // HATEOAS getters and setters
-    public URI getSelf() {
-        return self;
+    // HATEOAS links getter and setter
+    public NotificationLinksDTO getLinks() {
+        return links;
     }
 
-    public void setSelf(URI self) {
-        this.self = self;
-    }
-
-    public URI getRecipientUserLink() {
-        return recipientUserLink;
-    }
-
-    public void setRecipientUserLink(URI recipientUserLink) {
-        this.recipientUserLink = recipientUserLink;
-    }
-
-    public URI getTriggerUserLink() {
-        return triggerUserLink;
-    }
-
-    public void setTriggerUserLink(URI triggerUserLink) {
-        this.triggerUserLink = triggerUserLink;
-    }
-
-    public URI getReviewLink() {
-        return reviewLink;
-    }
-
-    public void setReviewLink(URI reviewLink) {
-        this.reviewLink = reviewLink;
+    public void setLinks(NotificationLinksDTO links) {
+        this.links = links;
     }
 }

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import java.net.URI;
+import ar.edu.itba.paw.webapp.dto.links.CommentLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class CommentDTO {
@@ -15,12 +16,11 @@ public class CommentDTO {
     private Boolean userVerified;
     private Boolean userModerator;
 
-    // HATEOAS links
-    private URI self;
-    private URI userLink;
-    private URI reviewLink;
+    @JsonProperty("_links")
+    private CommentLinksDTO links;
 
-    public CommentDTO() {}
+    public CommentDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -94,29 +94,11 @@ public class CommentDTO {
         this.userModerator = userModerator;
     }
 
-    // HATEOAS getters and setters
-    public URI getSelf() {
-        return self;
+    public CommentLinksDTO getLinks() {
+        return links;
     }
 
-    public void setSelf(URI self) {
-        this.self = self;
-    }
-
-    public URI getUserLink() {
-        return userLink;
-    }
-
-    public void setUserLink(URI userLink) {
-        this.userLink = userLink;
-    }
-
-    public URI getReviewLink() {
-        return reviewLink;
-    }
-
-    public void setReviewLink(URI reviewLink) {
-        this.reviewLink = reviewLink;
+    public void setLinks(CommentLinksDTO links) {
+        this.links = links;
     }
 }
-

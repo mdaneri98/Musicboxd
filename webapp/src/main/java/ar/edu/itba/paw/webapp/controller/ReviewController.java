@@ -79,8 +79,8 @@ public class ReviewController extends BaseController {
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<ReviewDTO>>(reviewDTOs) {}
-        );
+                new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
+                });
 
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
         return responseBuilder.build();
@@ -94,7 +94,7 @@ public class ReviewController extends BaseController {
         Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, reviewForm.getItemId().longValue());
         Review review = reviewService.create(reviewInput);
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, uriInfo);
-        return Response.created(reviewDTO.getSelf()).entity(reviewDTO).build();
+        return Response.created(reviewDTO.getLinks().getSelf()).entity(reviewDTO).build();
     }
 
     @GET
@@ -131,7 +131,7 @@ public class ReviewController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
-        
+
         List<Comment> comments = commentService.findByReviewId(id, size, page);
         Long totalCount = commentService.countByReviewId(id);
 
@@ -142,8 +142,8 @@ public class ReviewController extends BaseController {
         List<CommentDTO> commentDTOs = commentDtoMapper.toDTOList(comments, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<CommentDTO>>(commentDTOs) {}
-        );
+                new GenericEntity<List<CommentDTO>>(commentDTOs) {
+                });
 
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
         return responseBuilder.build();
@@ -153,10 +153,10 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.REVIEW_LIKES)
     @Produces(CustomMediaType.USER_LIST)
     public Response getReviewLikes(
-            @PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId, 
-            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
-        
+
         Review review = reviewService.findById(reviewId);
         List<User> users = reviewService.likedBy(reviewId, page, size);
         Integer totalCount = review.getLikes();
@@ -168,8 +168,8 @@ public class ReviewController extends BaseController {
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<UserDTO>>(userDTOs) {}
-        );
+                new GenericEntity<List<UserDTO>>(userDTOs) {
+                });
 
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount.longValue());
         return responseBuilder.build();

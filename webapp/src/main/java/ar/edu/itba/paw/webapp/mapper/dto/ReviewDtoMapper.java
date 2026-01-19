@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.ReviewDTO;
+import ar.edu.itba.paw.webapp.dto.links.ReviewLinksDTO;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ReviewType;
 import org.springframework.stereotype.Component;
@@ -41,26 +42,30 @@ public class ReviewDtoMapper {
 
         // Build HATEOAS links
         if (uriInfo != null) {
-            dto.setSelf(uriInfo.getBaseUriBuilder()
+            ReviewLinksDTO links = new ReviewLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
                     .path("reviews").path(String.valueOf(review.getId())).build());
 
             if (review.getUser() != null) {
-                dto.setUserLink(uriInfo.getBaseUriBuilder()
+                links.setUser(uriInfo.getBaseUriBuilder()
                         .path("users").path(String.valueOf(review.getUser().getId())).build());
             }
 
             // Build item link based on type
             if (review.getItemType() != null && review.getItemId() != null) {
                 String itemPath = getItemPath(review.getItemType());
-                dto.setItemLink(uriInfo.getBaseUriBuilder()
+                links.setItem(uriInfo.getBaseUriBuilder()
                         .path(itemPath).path(String.valueOf(review.getItemId())).build());
             }
 
-            dto.setCommentsLink(uriInfo.getBaseUriBuilder()
+            links.setComments(uriInfo.getBaseUriBuilder()
                     .path("reviews").path(String.valueOf(review.getId())).path("comments").build());
 
-            dto.setLikesLink(uriInfo.getBaseUriBuilder()
+            links.setLikes(uriInfo.getBaseUriBuilder()
                     .path("reviews").path(String.valueOf(review.getId())).path("likes").build());
+
+            dto.setLinks(links);
         }
 
         return dto;

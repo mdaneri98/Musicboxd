@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.webapp.dto.ImageDTO;
+import ar.edu.itba.paw.webapp.dto.links.ImageLinksDTO;
 import ar.edu.itba.paw.webapp.form.UploadImageForm;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
@@ -43,7 +44,10 @@ public class ImageController extends BaseController {
         ImageDTO imageDTO = new ImageDTO(image.getId());
         URI imageUri = uriInfo.getBaseUriBuilder()
                 .path("images").path(String.valueOf(image.getId())).build();
-        imageDTO.setSelf(imageUri);
+
+        ImageLinksDTO links = new ImageLinksDTO();
+        links.setSelf(imageUri);
+        imageDTO.setLinks(links);
 
         return Response.created(imageUri).entity(imageDTO).build();
     }

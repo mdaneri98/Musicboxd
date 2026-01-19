@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.ArtistDTO;
+import ar.edu.itba.paw.webapp.dto.links.ArtistLinksDTO;
 import ar.edu.itba.paw.models.Artist;
 import org.springframework.stereotype.Component;
 
@@ -31,22 +32,26 @@ public class ArtistDtoMapper {
 
         // Build HATEOAS links
         if (uriInfo != null) {
-            dto.setSelf(uriInfo.getBaseUriBuilder()
+            ArtistLinksDTO links = new ArtistLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
                     .path("artists").path(String.valueOf(artist.getId())).build());
 
             if (artist.getImage() != null) {
-                dto.setImage(uriInfo.getBaseUriBuilder()
+                links.setImage(uriInfo.getBaseUriBuilder()
                         .path("images").path(String.valueOf(artist.getImage().getId())).build());
             }
 
-            dto.setAlbumsLink(uriInfo.getBaseUriBuilder()
+            links.setAlbums(uriInfo.getBaseUriBuilder()
                     .path("artists").path(String.valueOf(artist.getId())).path("albums").build());
 
-            dto.setSongsLink(uriInfo.getBaseUriBuilder()
+            links.setSongs(uriInfo.getBaseUriBuilder()
                     .path("artists").path(String.valueOf(artist.getId())).path("songs").build());
 
-            dto.setReviewsLink(uriInfo.getBaseUriBuilder()
+            links.setReviews(uriInfo.getBaseUriBuilder()
                     .path("artists").path(String.valueOf(artist.getId())).path("reviews").build());
+
+            dto.setLinks(links);
         }
 
         return dto;
