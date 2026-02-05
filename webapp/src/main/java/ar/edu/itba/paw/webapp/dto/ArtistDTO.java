@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import ar.edu.itba.paw.webapp.dto.links.ArtistLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -15,10 +17,12 @@ public class ArtistDTO {
     private LocalDateTime updatedAt;
     private List<AlbumDTO> albums;
     private Long imageId;
-    private Boolean isReviewed;
-    private Boolean isFavorite;
 
-    public ArtistDTO() {}
+    @JsonProperty("_links")
+    private ArtistLinksDTO links;
+
+    public ArtistDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -92,31 +96,16 @@ public class ArtistDTO {
         this.imageId = imageId;
     }
 
-    public Boolean isReviewed() {
-        if (isReviewed == null) {
-            return false;
-        }
-        return isReviewed;
+    public ArtistLinksDTO getLinks() {
+        return links;
     }
 
-    public void setIsReviewed(Boolean isReviewed) {
-        this.isReviewed = isReviewed;
-    }
-
-    public Boolean isFavorite() {
-        if (isFavorite == null) {
-            return false;
-        }
-        return isFavorite;
-    }
-
-    public void setIsFavorite(Boolean isFavorite) {
-        this.isFavorite = isFavorite;
+    public void setLinks(ArtistLinksDTO links) {
+        this.links = links;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, bio, ratingCount, avgRating, createdAt, updatedAt, albums, imageId, isReviewed, isFavorite);
+        return Objects.hash(id, name, bio, ratingCount, avgRating, createdAt, updatedAt, albums, imageId);
     }
 }
-

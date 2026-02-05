@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import ar.edu.itba.paw.webapp.dto.links.AlbumLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,10 +23,12 @@ public class AlbumDTO {
     private LocalDateTime updatedAt;
     private List<SongDTO> songs;
     private Boolean isDeleted;
-    private Boolean isReviewed;
-    private Boolean isFavorite;
 
-    public AlbumDTO() {}
+    @JsonProperty("_links")
+    private AlbumLinksDTO links;
+
+    public AlbumDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -133,28 +137,6 @@ public class AlbumDTO {
         this.isDeleted = isDeleted;
     }
 
-    public Boolean isReviewed() {
-        if (isReviewed == null) {
-            return false;
-        }
-        return isReviewed;
-    }
-
-    public void setIsReviewed(Boolean isReviewed) {
-        this.isReviewed = isReviewed;
-    }
-
-    public Boolean isFavorite() {
-        if (isFavorite == null) {
-            return false;
-        }
-        return isFavorite;
-    }
-    
-    public void setIsFavorite(Boolean isFavorite) {
-        this.isFavorite = isFavorite;
-    }
-
     public String getFormattedReleaseDate() {
         return formattedReleaseDate;
     }
@@ -163,9 +145,17 @@ public class AlbumDTO {
         this.formattedReleaseDate = formattedReleaseDate;
     }
 
+    public AlbumLinksDTO getLinks() {
+        return links;
+    }
+
+    public void setLinks(AlbumLinksDTO links) {
+        this.links = links;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, genre, releaseDate, formattedReleaseDate, imageId, artistId, artistName, ratingCount, avgRating, createdAt, updatedAt, songs, isDeleted, isReviewed, isFavorite);
+        return Objects.hash(id, title, genre, releaseDate, formattedReleaseDate, imageId, artistId, artistName,
+                ratingCount, avgRating, createdAt, updatedAt, songs, isDeleted);
     }
 }
-

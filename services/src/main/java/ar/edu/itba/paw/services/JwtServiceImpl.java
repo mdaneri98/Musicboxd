@@ -100,6 +100,16 @@ public class JwtServiceImpl implements JwtService {
         return claims.getExpiration().before(new Date());
     }
 
+    @Override
+    public boolean isRefreshToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return "refresh".equals(claims.get("type"));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private String createToken(Map<String, Object> claims, String subject, long expiration) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);

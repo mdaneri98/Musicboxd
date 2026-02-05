@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import ar.edu.itba.paw.webapp.dto.links.CommentLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class CommentDTO {
@@ -14,7 +16,11 @@ public class CommentDTO {
     private Boolean userVerified;
     private Boolean userModerator;
 
-    public CommentDTO() {}
+    @JsonProperty("_links")
+    private CommentLinksDTO links;
+
+    public CommentDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -87,5 +93,12 @@ public class CommentDTO {
     public void setUserModerator(Boolean userModerator) {
         this.userModerator = userModerator;
     }
-}
 
+    public CommentLinksDTO getLinks() {
+        return links;
+    }
+
+    public void setLinks(CommentLinksDTO links) {
+        this.links = links;
+    }
+}

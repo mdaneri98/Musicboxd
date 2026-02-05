@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.filter;
 
+import ar.edu.itba.paw.models.AuthResult;
+import ar.edu.itba.paw.services.AuthService;
 import ar.edu.itba.paw.webapp.utils.JwtUtils;
 import ar.edu.itba.paw.services.JwtService;
 import org.slf4j.Logger;
@@ -20,11 +22,15 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    
-    private final JwtService jwtService;
+    private static final String JWT_ACCESS_HEADER = "X-JWT-Token";
+    private static final String JWT_REFRESH_HEADER = "X-JWT-Refresh-Token";
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    private final JwtService jwtService;
+    private final AuthService authService;
+
+    public JwtAuthenticationFilter(JwtService jwtService, AuthService authService) {
         this.jwtService = jwtService;
+        this.authService = authService;
     }
 
     @Override
@@ -32,29 +38,54 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   FilterChain filterChain) throws ServletException, IOException {
         
         String requestPath = request.getRequestURI();
-        
-        // Skip JWT authentication for auth endpoints
-        if (JwtUtils.isExcludedPath(requestPath)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        
-        // Clear any existing authentication to prevent stale data
+
         SecurityContextHolder.clearContext();
         
         String token = JwtUtils.extractTokenFromRequest(request);
         
         if (token != null) {
             try {
-                if (jwtService.validateAccessToken(token)) {
+                // Check if it's a refresh token first
+                if (jwtService.validateRefreshToken(token)) {
+                    LOGGER.info("Refresh token detected, auto-refreshing tokens");
+                    try {
+                        AuthResult authResult = authService.refresh(token);
+
+                        // Set new tokens in response headers
+                        response.setHeader(JWT_ACCESS_HEADER, authResult.getAccessToken());
+                        response.setHeader(JWT_REFRESH_HEADER, authResult.getRefreshToken());
+
+                        // Set authentication from refresh result
+                        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                        if (authResult.getUser().isModerator()) {
+                            authorities.add(new SimpleGrantedAuthority("ROLE_MODERATOR"));
+                        }
+
+                        UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                authResult.getUser().getId().toString(),
+                                null,
+                                authorities
+                            );
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                        LOGGER.info("Token refresh successful for user: {} (ID: {})",
+                            authResult.getUser().getUsername(), authResult.getUser().getId());
+                    } catch (Exception e) {
+                        LOGGER.warn("Token refresh failed: {}", e.getMessage());
+                        response.addHeader("WWW-Authenticate", "Bearer realm=\"Musicboxd\"");
+                    }
+                } else if (jwtService.validateAccessToken(token)) {
+                    // Regular access token processing
                     Long userId = jwtService.extractUserId(token);
                     String username = jwtService.extractUsername(token);
                     String roles = jwtService.extractRoles(token);
-                    
-                    LOGGER.info("Processing JWT for path: {}, extracted roles: {}", requestPath, roles);
-                    
+
+                    LOGGER.debug("Processing JWT for path: {}, extracted roles: {}", requestPath, roles);
+
                     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    
+
                     if (roles != null && !roles.isEmpty()) {
                         String[] roleArray = roles.split(",");
                         for (String role : roleArray) {
@@ -67,16 +98,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
 
                     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-                    
+
                     // Set authentication in SecurityContext
-                    UsernamePasswordAuthenticationToken authentication = 
+                    UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userId.toString(), null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    
-                    LOGGER.info("JWT authentication successful for user: {} (ID: {}) with roles: {}", username, userId, roles);
-                    LOGGER.info("Authorities set in SecurityContext: {}", authorities);
+
+                    LOGGER.debug("JWT authentication successful for user: {} (ID: {}) with roles: {}", username, userId, roles);
                 } else {
                     LOGGER.warn("Invalid JWT token");
+                    response.addHeader("WWW-Authenticate", "Bearer realm=\"Musicboxd\"");
                 }
             } catch (Exception e) {
                 LOGGER.error("Error processing JWT token", e);

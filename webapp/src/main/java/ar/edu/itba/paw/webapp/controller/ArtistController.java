@@ -7,19 +7,15 @@ import ar.edu.itba.paw.webapp.dto.SongDTO;
 import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ArtistDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.resource.ArtistResourceMapper;
-import ar.edu.itba.paw.webapp.mapper.resource.CollectionResourceMapper;
-import ar.edu.itba.paw.webapp.mapper.resource.ReviewResourceMapper;
-import ar.edu.itba.paw.webapp.mapper.resource.SongResourceMapper;
-import ar.edu.itba.paw.webapp.mapper.resource.AlbumResourceMapper;
-import ar.edu.itba.paw.webapp.models.resources.ArtistResource;
-import ar.edu.itba.paw.webapp.models.resources.AlbumResource;
-import ar.edu.itba.paw.webapp.models.resources.CollectionResource;
-import ar.edu.itba.paw.webapp.models.resources.ReviewResource;
-import ar.edu.itba.paw.webapp.models.resources.SongResource;
+import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.ModAlbumFormMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.ModArtistFormMapper;
+import ar.edu.itba.paw.webapp.form.ModAlbumForm;
+import ar.edu.itba.paw.webapp.form.ModArtistForm;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
-import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
+import ar.edu.itba.paw.webapp.utils.CustomMediaType;
+import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
@@ -29,18 +25,13 @@ import ar.edu.itba.paw.services.ArtistService;
 import ar.edu.itba.paw.services.AlbumService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
-import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.form.ModAlbumForm;
-import ar.edu.itba.paw.webapp.form.ModArtistForm;
-import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModAlbumFormMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModArtistFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -60,27 +51,9 @@ public class ArtistController extends BaseController {
 
     @Autowired
     private ReviewService reviewService;
-    
+
     @Autowired
     private SongService songService;
-    
-    @Autowired
-    private UserService userService;
-    
-    @Autowired
-    private SongResourceMapper songResourceMapper;
-
-    @Autowired
-    private AlbumResourceMapper albumResourceMapper;
-
-    @Autowired
-    private ArtistResourceMapper artistResourceMapper;
-
-    @Autowired
-    private ReviewResourceMapper reviewResourceMapper;
-
-    @Autowired
-    private CollectionResourceMapper collectionResourceMapper;
 
     @Autowired
     private ModAlbumFormMapper modAlbumFormMapper;
@@ -101,52 +74,66 @@ public class ArtistController extends BaseController {
     private ReviewDtoMapper reviewDtoMapper;
 
     @GET
+    @Produces(CustomMediaType.ARTIST_LIST)
     public Response getAllArtists(
             @QueryParam(ControllerUtils.SEARCH_PARAM_NAME) String search,
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
+
         List<Artist> artists;
-        if (search != null && !search.isEmpty()) artists = artistService.findByNameContaining(search, page, size);
-        else artists = artistService.findPaginated(filter, page, size);
-        List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists);
-        List<ArtistResource> artistResources = artistResourceMapper.toResourceList(artistDTOs, getBaseUrl());
-        CollectionResource<ArtistResource> collection = collectionResourceMapper.createCollection(
-                artistResources, artistService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE, ControllerUtils.artistsCollectionLinks);
-        
-        return buildResponse(collection);
+        if (search != null && !search.isEmpty()) {
+            artists = artistService.findByNameContaining(search, page, size);
+        } else {
+            artists = artistService.findPaginated(filter, page, size);
+        }
+
+        Long totalCount = artistService.countAll();
+
+        if (artists.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists, uriInfo);
+
+        Response.ResponseBuilder responseBuilder = Response.ok(
+                new GenericEntity<List<ArtistDTO>>(artistDTOs) {
+                });
+
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+        return responseBuilder.build();
     }
 
     @POST
     @PreAuthorize("hasRole('MODERATOR')")
+    @Consumes(CustomMediaType.ARTIST)
+    @Produces(CustomMediaType.ARTIST)
     public Response createArtist(@Valid ModArtistForm modArtistForm) {
         Artist artistInput = modArtistFormMapper.toModel(modArtistForm);
         Artist artist = artistService.create(artistInput);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
-        ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
-        return buildCreatedResponse(artistResource);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist, uriInfo);
+        return Response.created(artistDTO.getLinks().getSelf()).entity(artistDTO).build();
     }
 
     @GET
     @Path(ApiUriConstants.ID)
+    @Produces(CustomMediaType.ARTIST)
     public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Artist artist = artistService.findAndSetContextDependentFields(id, loggedUserId);
-        return buildResponseUsingEtag(request, () -> {
-            ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
-            return artistResourceMapper.toResource(artistDTO, getBaseUrl());
-        });
+        Artist artist = artistService.findById(id);
+        return buildResponseUsingEtag(request, () -> artistDtoMapper.toDTO(artist, uriInfo));
     }
 
     @PUT
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
-    public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModArtistForm modArtistForm) {
+    @Consumes(CustomMediaType.ARTIST)
+    @Produces(CustomMediaType.ARTIST)
+    public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @Valid ModArtistForm modArtistForm) {
         Artist form = modArtistFormMapper.toModel(modArtistForm);
         Artist updatedArtist = artistService.update(form);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(updatedArtist);
-        ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
-        return buildResponse(artistResource);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(updatedArtist, uriInfo);
+        return Response.ok(artistDTO).build();
     }
 
     @DELETE
@@ -154,83 +141,108 @@ public class ArtistController extends BaseController {
     @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         artistService.delete(id);
-        return buildNoContentResponse();
+        return Response.noContent().build();
     }
 
     @GET
     @Path(ApiUriConstants.ARTIST_REVIEWS)
+    @Produces(CustomMediaType.REVIEW_LIST)
     public Response getArtistReviews(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
-        List<Review> reviews = new ArrayList<>();
-        if (userId != null) reviews.add(reviewService.findArtistReviewByUserId(userId, id, SecurityContextUtils.getCurrentUserId()));
-        else reviews = reviewService.findArtistReviewsPaginated(id, page, size, SecurityContextUtils.getCurrentUserId());
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews);
-        List<ReviewResource> reviewResources = reviewResourceMapper.toResourceList(reviewDTOs, getBaseUrl());
-        CollectionResource<ReviewResource> collection = collectionResourceMapper.createCollection(
-                reviewResources, reviewService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_REVIEWS, ControllerUtils.itemReviewsCollectionLinks, id);
-        return buildResponse(collection);
+
+        List<Review> reviews;
+        if (userId != null) {
+            reviews = new ArrayList<>();
+            Review review = reviewService.findArtistReviewByUserId(userId, id);
+            if (review != null) {
+                reviews.add(review);
+            }
+        } else {
+            reviews = reviewService.findArtistReviewsPaginated(id, page, size);
+        }
+
+        Long totalCount = reviewService.countAll();
+
+        if (reviews.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
+
+        Response.ResponseBuilder responseBuilder = Response.ok(
+                new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
+                });
+
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+        return responseBuilder.build();
     }
 
     @GET
     @Path(ApiUriConstants.ARTIST_ALBUMS)
+    @Produces(CustomMediaType.ALBUM_LIST)
     public Response getArtistAlbums(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
+
         List<Album> albums = albumService.findByArtistId(id);
-        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums);
-        List<AlbumResource> albumResources = albumResourceMapper.toResourceList(albumDTOs, getBaseUrl());
-        CollectionResource<AlbumResource> collection = collectionResourceMapper.createCollection(
-                albumResources, albumService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_ALBUMS, ControllerUtils.artistAlbumsCollectionLinks, id);
-        return buildResponse(collection);
+        Long totalCount = albumService.countAll();
+
+        if (albums.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums, uriInfo);
+
+        Response.ResponseBuilder responseBuilder = Response.ok(
+                new GenericEntity<List<AlbumDTO>>(albumDTOs) {
+                });
+
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+        return responseBuilder.build();
     }
 
     @POST
     @Path(ApiUriConstants.ARTIST_ALBUMS)
     @PreAuthorize("hasRole('MODERATOR')")
+    @Consumes(CustomMediaType.ALBUM)
+    @Produces(CustomMediaType.ALBUM)
     public Response createArtistAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModAlbumForm modAlbumForm) {
         Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
         albumInput.setArtist(new Artist(id));
         Album album = albumService.create(albumInput);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album);
-        AlbumResource albumResource = albumResourceMapper.toResource(albumDTO, getBaseUrl());
-        return buildResponse(albumResource);
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, uriInfo);
+        return Response.created(albumDTO.getLinks().getSelf()).entity(albumDTO).build();
     }
 
     @GET
     @Path(ApiUriConstants.ARTIST_SONGS)
-    public Response getArtistSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, 
-            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
+    @Produces(CustomMediaType.SONG_LIST)
+    public Response getArtistSongs(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.POPULAR_FILTER_STRING) FilterType filter) {
-        List<Song> songs = songService.findByArtistId(id, filter, page, size);
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs);
-        List<SongResource> songResources = songResourceMapper.toResourceList(songDTOs, getBaseUrl());
-        CollectionResource<SongResource> collection = collectionResourceMapper.createCollection(
-                songResources, songService.countAll().intValue(), page, size, getBaseUrl(), ApiUriConstants.ARTISTS_BASE + ApiUriConstants.ARTIST_SONGS, ControllerUtils.artistSongsCollectionLinks, id);
-        return buildResponse(collection);
-    }
-    
-    @POST
-    @Path(ApiUriConstants.ARTIST_FAVORITE)
-    public Response addArtistFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        userService.addFavoriteArtist(loggedUserId, id);
-        Artist artist = artistService.findAndSetContextDependentFields(id, loggedUserId);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist);
-        ArtistResource artistResource = artistResourceMapper.toResource(artistDTO, getBaseUrl());
-        return buildCreatedResponse(artistResource);
-    }
 
-    @DELETE
-    @Path(ApiUriConstants.ARTIST_FAVORITE)
-    public Response removeArtistFavorite(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        userService.removeFavoriteArtist(SecurityContextUtils.getCurrentUserId(), id);
-        return buildNoContentResponse();
+        List<Song> songs = songService.findByArtistId(id, filter, page, size);
+        Long totalCount = songService.countAll();
+
+        if (songs.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+
+        Response.ResponseBuilder responseBuilder = Response.ok(
+                new GenericEntity<List<SongDTO>>(songDTOs) {
+                });
+
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+        return responseBuilder.build();
     }
 }

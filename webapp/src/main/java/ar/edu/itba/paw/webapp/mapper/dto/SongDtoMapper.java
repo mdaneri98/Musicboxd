@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.SongDTO;
+import ar.edu.itba.paw.webapp.dto.links.SongLinksDTO;
 import ar.edu.itba.paw.models.Song;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 @Component
 public class SongDtoMapper {
 
-    public SongDTO toDTO(Song song) {
+    public SongDTO toDTO(Song song, UriInfo uriInfo) {
         if (song == null) {
             return null;
         }
@@ -25,28 +27,53 @@ public class SongDtoMapper {
         dto.setTrackNumber(song.getTrackNumber());
         dto.setAlbumId(song.getAlbum() != null ? song.getAlbum().getId() : null);
         dto.setAlbumTitle(song.getAlbum() != null ? song.getAlbum().getTitle() : null);
-        dto.setAlbumImageId(song.getAlbum() != null && song.getAlbum().getImage() != null 
-                ? song.getAlbum().getImage().getId() : null);
+        dto.setAlbumImageId(song.getAlbum() != null && song.getAlbum().getImage() != null
+                ? song.getAlbum().getImage().getId()
+                : null);
         dto.setRatingCount(song.getRatingCount());
         dto.setAvgRating(song.getAvgRating());
         dto.setCreatedAt(song.getCreatedAt());
         dto.setUpdatedAt(song.getUpdatedAt());
-        dto.setReleaseDate(song.getAlbum() != null && song.getAlbum().getReleaseDate() != null ? song.getAlbum().getReleaseDate() : null);
+        dto.setReleaseDate(
+                song.getAlbum() != null && song.getAlbum().getReleaseDate() != null ? song.getAlbum().getReleaseDate()
+                        : null);
         if (song.getArtists() != null && !song.getArtists().isEmpty()) {
             dto.setArtistId(song.getArtists().get(0).getId());
         }
-        dto.setIsReviewed(song.getIsReviewed());
-        dto.setIsFavorite(song.getIsFavorite());
+
+        // Build HATEOAS links
+        if (uriInfo != null) {
+            SongLinksDTO links = new SongLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
+                    .path("songs").path(String.valueOf(song.getId())).build());
+
+            if (song.getAlbum() != null) {
+                links.setAlbum(uriInfo.getBaseUriBuilder()
+                        .path("albums").path(String.valueOf(song.getAlbum().getId())).build());
+            }
+
+            if (song.getArtists() != null && !song.getArtists().isEmpty()) {
+                links.setArtist(uriInfo.getBaseUriBuilder()
+                        .path("artists").path(String.valueOf(song.getArtists().get(0).getId())).build());
+            }
+
+            links.setReviews(uriInfo.getBaseUriBuilder()
+                    .path("songs").path(String.valueOf(song.getId())).path("reviews").build());
+
+            dto.setLinks(links);
+        }
+
         return dto;
     }
 
-    public List<SongDTO> toDTOList(List<Song> songs) {
+    public List<SongDTO> toDTOList(List<Song> songs, UriInfo uriInfo) {
         if (songs == null) {
             return null;
         }
 
         return songs.stream()
-                .map(this::toDTO)
+                .map(s -> toDTO(s, uriInfo))
                 .collect(Collectors.toList());
     }
 
@@ -64,7 +91,7 @@ public class SongDtoMapper {
         song.setAvgRating(dto.getAvgRating());
         song.setCreatedAt(dto.getCreatedAt());
         song.setUpdatedAt(dto.getUpdatedAt());
-        
+
         return song;
     }
 
@@ -78,4 +105,3 @@ public class SongDtoMapper {
                 .collect(Collectors.toList());
     }
 }
-

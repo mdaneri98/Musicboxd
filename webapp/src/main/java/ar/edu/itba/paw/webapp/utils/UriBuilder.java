@@ -217,14 +217,6 @@ public class UriBuilder {
                 .toUriString();
     }
     
-    // Auth URIs
-    public String buildAuthUri(String baseUrl, String action) {
-        return UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .path(ApiUriConstants.AUTH_BASE)
-                .pathSegment(action)
-                .toUriString();
-    }
-    
     // Generic URIs for HATEOAS
     public String buildResourceUri(String baseUrl, String resourcePath, Long id) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)

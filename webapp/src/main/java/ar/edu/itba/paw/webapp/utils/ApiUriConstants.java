@@ -9,48 +9,35 @@ public class ApiUriConstants {
     public static final String API_BASE = EMPTY;
     public static final String ID = "/{" + ControllerUtils.ID_PARAM_NAME + ":\\d+}";
 
-    /* AUTH */
-    public static final String AUTH_BASE = API_BASE + "/auth";
-    public static final String LOGIN = "/login";
-    public static final String REGISTER = "/register";
-    public static final String LOGOUT = "/logout";
-    public static final String REFRESH = "/refresh";
-    public static final String ME = "/me";
-
-    /* EMAIL */
-    public static final String EMAIL_BASE = API_BASE + "/email";
-    public static final String EMAIL_VERIFICATION = "/verification";
-    public static final String RESEND_VERIFICATION = "/resend";
-    public static final String PASSWORD_FORGOT = "/password/forgot";
-    public static final String PASSWORD_RESET = "/password/reset";
-
     /* USERS */
     public static final String USERS_BASE = API_BASE + "/users";
     public static final String USER_REVIEWS = ID + "/reviews";
     public static final String USER_FOLLOWERS = ID + "/followers";
     public static final String USER_FOLLOWINGS = ID + "/followings";
+    public static final String USER_FOLLOWING_DETAIL = USER_FOLLOWINGS + "/{" + ControllerUtils.TARGET_USER_ID_PARAM_NAME + ":\\d+}";
     public static final String USER_FAVORITES = ID + "/favorites";
     public static final String USER_FAVORITE_ARTISTS = USER_FAVORITES + "/artists";
     public static final String USER_FAVORITE_ALBUMS = USER_FAVORITES + "/albums";
     public static final String USER_FAVORITE_SONGS = USER_FAVORITES + "/songs";
+
+    public static final String USER_FAVORITE_ARTIST_DETAIL = USER_FAVORITE_ARTISTS + "/{" + ControllerUtils.ARTIST_ID_PARAM_NAME + ":\\d+}";
+    public static final String USER_FAVORITE_ALBUM_DETAIL = USER_FAVORITE_ALBUMS + "/{" + ControllerUtils.ALBUM_ID_PARAM_NAME + ":\\d+}";
+    public static final String USER_FAVORITE_SONG_DETAIL = USER_FAVORITE_SONGS + "/{" + ControllerUtils.SONG_ID_PARAM_NAME + ":\\d+}";
 
     /* ARTISTS */
     public static final String ARTISTS_BASE = API_BASE + "/artists";
     public static final String ARTIST_REVIEWS = ID + "/reviews";
     public static final String ARTIST_ALBUMS = ID + "/albums";
     public static final String ARTIST_SONGS = ID + "/songs";
-    public static final String ARTIST_FAVORITE = ID + "/favorites";
 
     /* ALBUMS */
     public static final String ALBUMS_BASE = API_BASE + "/albums";
     public static final String ALBUM_REVIEWS = ID + "/reviews";
     public static final String ALBUM_SONGS = ID + "/songs";
-    public static final String ALBUM_FAVORITE = ID + "/favorites";
 
     /* SONGS */
     public static final String SONGS_BASE = API_BASE + "/songs";
     public static final String SONG_REVIEWS = ID + "/reviews";
-    public static final String SONG_FAVORITE = ID + "/favorites";
 
     /* REVIEWS */
     public static final String REVIEWS_BASE = API_BASE + "/reviews";

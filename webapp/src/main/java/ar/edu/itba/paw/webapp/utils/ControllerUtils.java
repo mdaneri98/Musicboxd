@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.utils;
 
-import ar.edu.itba.paw.webapp.models.links.managers.CollectionLinkManager;
 import ar.edu.itba.paw.models.reviews.ReviewType;
 
 /**
@@ -27,6 +26,7 @@ public final class ControllerUtils {
     public static final String ALBUM_ID_PARAM_NAME = "albumId";
     public static final String SONG_ID_PARAM_NAME = "songId";
     public static final String USER_ID_PARAM_NAME = "userId";
+    public static final String TARGET_USER_ID_PARAM_NAME = "targetUserId";
 
 
     // Default values
@@ -91,34 +91,7 @@ public final class ControllerUtils {
     public static final String RELATION_PAGINATED_LAST = "last";
     public static final String RELATION_ITEM = "item";
 
-
-    // User endpoints
-    public static final CollectionLinkManager usersCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    public static final CollectionLinkManager followingsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
-    public static final CollectionLinkManager followersCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
-    public static final CollectionLinkManager userReviewsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
-    public static final CollectionLinkManager userFavoriteCollectionLinks = new CollectionLinkManager(false, false, false, false, false);
-
-    // Song endpoints
-    public static final CollectionLinkManager songsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-
-    // Album endpoints
-    public static final CollectionLinkManager albumsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    public static final CollectionLinkManager albumSongsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-
-
-    // Artist endpoints
-    public static final CollectionLinkManager artistsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    public static final CollectionLinkManager artistAlbumsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-    public static final CollectionLinkManager artistSongsCollectionLinks = new CollectionLinkManager(false, false, false, false, true);
-
-    // Review endpoints
-    public static final CollectionLinkManager reviewsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    public static final CollectionLinkManager commentsCollectionLinks = new CollectionLinkManager(true, false, false, true, true);
-    public static final CollectionLinkManager likesCollectionLinks = new CollectionLinkManager(true, true, false, false, true);
-    public static final CollectionLinkManager itemReviewsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-
-    // Notification endpoints
-    public static final CollectionLinkManager notificationsCollectionLinks = new CollectionLinkManager(true, false, false, false, true);
-
+    private ControllerUtils() {
+        throw new AssertionError("Cannot instantiate utility class");
+    }
 }

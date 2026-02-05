@@ -42,11 +42,8 @@ public class UserServiceImpl implements UserService {
         this.imageService = imageService;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public User findUserById(Long id, Long loggedUserId) {
+    public User findUserById(Long id) {
         User user = userDao.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        setContextDependentFields(user, loggedUserId);
         return user;
     }
 
@@ -100,10 +97,7 @@ public class UserServiceImpl implements UserService {
         return userDao.findAll();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<User> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId) {
-        if (filterType == FilterType.RECOMMENDED) return getRecommendedUsers(loggedUserId, page, pageSize);
+    public List<User> findPaginated(FilterType filterType, Integer page, Integer pageSize) {
         return userDao.findPaginated(filterType, page, pageSize);
     }
 
@@ -377,12 +371,5 @@ public class UserServiceImpl implements UserService {
         return userDao.updateUser(user.getId(), user).orElseThrow(() -> new UserNotFoundException(user.getId()));
     }
 
-    @Override
-    public void setContextDependentFields(User user, Long loggedUserId) {
-        if (loggedUserId == null) {
-            user.setIsFollowed(false);
-        } else {
-            user.setIsFollowed(isFollowing(loggedUserId, user.getId()));
-        }
-    }
+
 }

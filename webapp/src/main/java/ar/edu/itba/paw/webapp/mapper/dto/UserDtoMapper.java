@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.UserDTO;
+import ar.edu.itba.paw.webapp.dto.links.UserLinksDTO;
 import ar.edu.itba.paw.models.User;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
@@ -14,7 +16,7 @@ import java.time.LocalDateTime;
 @Component
 public class UserDtoMapper {
 
-    public UserDTO toDTO(User user) {
+    public UserDTO toDTO(User user, UriInfo uriInfo) {
         if (user == null) {
             return null;
         }
@@ -22,7 +24,6 @@ public class UserDtoMapper {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setBio(user.getBio());
         dto.setImageId(user.getImageId());
@@ -39,18 +40,50 @@ public class UserDtoMapper {
         dto.setHasLikeNotificationsEnabled(user.getLikeNotificationsEnabled());
         dto.setHasCommentsNotificationsEnabled(user.getCommentNotificationsEnabled());
         dto.setHasReviewsNotificationsEnabled(user.getReviewNotificationsEnabled());
-        dto.setFollowed(user.getIsFollowed());
-        
+
+        // Build HATEOAS links
+        if (uriInfo != null) {
+            UserLinksDTO links = new UserLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).build());
+
+            if (user.getImageId() != null) {
+                links.setImage(uriInfo.getBaseUriBuilder()
+                        .path("images").path(String.valueOf(user.getImageId())).build());
+            }
+
+            links.setReviews(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("reviews").build());
+
+            links.setFollowers(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("followers").build());
+
+            links.setFollowing(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("following").build());
+
+            links.setFavoriteArtists(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("artists").build());
+
+            links.setFavoriteAlbums(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("albums").build());
+
+            links.setFavoriteSongs(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("songs").build());
+
+            dto.setLinks(links);
+        }
+
         return dto;
     }
 
-    public List<UserDTO> toDTOList(List<User> users) {
+    public List<UserDTO> toDTOList(List<User> users, UriInfo uriInfo) {
         if (users == null) {
             return null;
         }
 
         return users.stream()
-                .map(this::toDTO)
+                .map(u -> toDTO(u, uriInfo))
                 .collect(Collectors.toList());
     }
 
@@ -62,11 +95,8 @@ public class UserDtoMapper {
         User user = new User();
         user.setId(dto.getId());
         user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
         user.setName(dto.getName());
         user.setBio(dto.getBio());
-        // Note: Image needs to be set separately using ImageService if full conversion is needed
-        // user.setImage(...) - requires Image object, not just ID
         user.setFollowersAmount(dto.getFollowersAmount());
         user.setFollowingAmount(dto.getFollowingAmount());
         user.setReviewAmount(dto.getReviewAmount());

@@ -47,11 +47,7 @@ public class Album {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Song> songs = new ArrayList<>();
 
-    @Transient
-    private Boolean isReviewed;
 
-    @Transient
-    private Boolean isFavorite;
 
     public Album() {
         // Constructor vacío necesario para JPA
@@ -246,19 +242,5 @@ public class Album {
         this.songs = songs;
     }
 
-    public Boolean getIsReviewed() {
-        return isReviewed;
-    }
 
-    public void setIsReviewed(Boolean isReviewed) {
-        this.isReviewed = isReviewed;
-    }
-
-    public Boolean getIsFavorite() {
-        return isFavorite;
-    }
-
-    public void setIsFavorite(Boolean isFavorite) {
-        this.isFavorite = isFavorite;
-    }
 }

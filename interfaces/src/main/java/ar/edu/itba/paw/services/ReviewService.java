@@ -7,15 +7,15 @@ import java.util.List;
 
 public interface ReviewService extends CrudService<Review> {
 
-    Boolean safeDelete(Long id, Long userId);
-    Review findArtistReviewById(Long id, Long loggedUserId);
-    Review findArtistReviewByUserId(Long userId, Long artistId, Long loggedUserId);
 
-    Review findAlbumReviewById(Long id, Long loggedUserId);
-    Review findAlbumReviewByUserId(Long userId, Long albumId, Long loggedUserId);
+    Review findArtistReviewById(Long id);
+    Review findArtistReviewByUserId(Long userId, Long artistId);
 
-    Review findSongReviewById(Long id, Long loggedUserId);
-    Review findSongReviewByUserId(Long userId, Long songId, Long loggedUserId);
+    Review findAlbumReviewById(Long id);
+    Review findAlbumReviewByUserId(Long userId, Long albumId);
+
+    Review findSongReviewById(Long id);
+    Review findSongReviewByUserId(Long userId, Long songId);
 
     List<User> likedBy(Long reviewId, Integer pageNum, Integer pageSize);
     Void createLike(Long userId, Long reviewId);
@@ -23,14 +23,14 @@ public interface ReviewService extends CrudService<Review> {
     Boolean isLiked(Long userId, Long reviewId);
     List<Long> getLikedReviewIds(Long userId, List<Long> reviewIds);
 
-    List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> findPaginated(FilterType filterType, Integer page, Integer pageSize);
     List<Review> getReviewsFromFollowedUsersPaginated(Integer page, Integer pageSize, Long loggedUserId);   
     
     List<Review> findBySubstring(String substring, Integer page, Integer size);
-    List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize, Long loggedUserId);
-    List<Review> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize, Long loggedUserId);
-    List<Review> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize, Long loggedUserId);
-    List<Review> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize, Long loggedUserId);
+    List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize);
+    List<Review> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize);
+    List<Review> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize);
+    List<Review> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize);
 
     Boolean isArtistReview(Long reviewId);
     Boolean isAlbumReview(Long reviewId);
@@ -46,6 +46,5 @@ public interface ReviewService extends CrudService<Review> {
     Long countReviewsByUser(Long userId);
     Long countAll();
     Long countReviewsFromFollowedUsers(Long loggedUserId);
-    void setContextDependentFields(Review review, Long loggedUserId);
-    Review findAndSetContextDependentFields(Long id, Long loggedUserId);
+
 }

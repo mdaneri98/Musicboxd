@@ -2,20 +2,19 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.webapp.dto.NotificationDTO;
 import ar.edu.itba.paw.webapp.mapper.dto.NotificationDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.resource.CollectionResourceMapper;
-import ar.edu.itba.paw.webapp.mapper.resource.NotificationResourceMapper;
-import ar.edu.itba.paw.webapp.models.resources.CollectionResource;
-import ar.edu.itba.paw.webapp.models.resources.NotificationResource;
-import ar.edu.itba.paw.models.StatusType;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
+import ar.edu.itba.paw.webapp.utils.CustomMediaType;
+import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
+import ar.edu.itba.paw.models.StatusType;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -29,79 +28,97 @@ public class NotificationController extends BaseController {
     private NotificationService notificationService;
 
     @Autowired
-    private NotificationResourceMapper notificationResourceMapper;
-
-    @Autowired
-    private CollectionResourceMapper collectionResourceMapper;
-
-    @Autowired
     private NotificationDtoMapper notificationDtoMapper;
 
     @GET
+    @Produces(CustomMediaType.NOTIFICATION_LIST)
     public Response getNotifications(
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.STATUS_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_STATUS_STRING) String status) {
+
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size, StatusType.fromString(status));
-        List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications);
-        List<NotificationResource> notificationResources = notificationResourceMapper.toResourceList(notificationDTOs, getBaseUrl());
-        CollectionResource<NotificationResource> collection = collectionResourceMapper.createCollection(
-                notificationResources, notificationService.countByUserId(loggedUserId, StatusType.fromString(status)).intValue(), page, size, getBaseUrl(), ApiUriConstants.NOTIFICATIONS_BASE, ControllerUtils.notificationsCollectionLinks);
-        return buildResponse(collection);
+        StatusType statusType = StatusType.fromString(status);
+
+        List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size,
+                statusType);
+        Long totalCount = notificationService.countByUserId(loggedUserId, statusType);
+
+        if (notifications.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications, uriInfo);
+
+        Response.ResponseBuilder responseBuilder = Response.ok(
+                new GenericEntity<List<NotificationDTO>>(notificationDTOs) {
+                });
+
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+        return responseBuilder.build();
     }
 
     @POST
+    @Consumes(CustomMediaType.NOTIFICATION)
+    @Produces(CustomMediaType.NOTIFICATION)
     public Response createNotification(@Valid NotificationDTO notificationDTO) {
         Notification notification = notificationDtoMapper.toModel(notificationDTO);
         Notification createdNotification = notificationService.create(notification);
-        NotificationDTO responseDTO = notificationDtoMapper.toDTO(createdNotification);
-        NotificationResource notificationResource = notificationResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildCreatedResponse(notificationResource);
+        NotificationDTO responseDTO = notificationDtoMapper.toDTO(createdNotification, uriInfo);
+        return Response.created(responseDTO.getLinks().getSelf()).entity(responseDTO).build();
     }
-
 
     @GET
     @Path(ApiUriConstants.ID)
+    @Produces(CustomMediaType.NOTIFICATION)
     public Response getNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Notification notification = notificationService.findById(id);
-        NotificationDTO notificationDTO = notificationDtoMapper.toDTO(notification);
-        NotificationResource notificationResource = notificationResourceMapper.toResource(notificationDTO, getBaseUrl());
-        return buildResponse(notificationResource);
+        NotificationDTO notificationDTO = notificationDtoMapper.toDTO(notification, uriInfo);
+        return Response.ok(notificationDTO).build();
     }
 
     @PUT
     @Path(ApiUriConstants.ID)
-    public Response updateNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid NotificationDTO notificationDTO) {
+    @Consumes(CustomMediaType.NOTIFICATION)
+    @Produces(CustomMediaType.NOTIFICATION)
+    public Response updateNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @Valid NotificationDTO notificationDTO) {
         notificationDTO.setId(id);
         Notification notification = notificationDtoMapper.toModel(notificationDTO);
         Notification updatedNotification = notificationService.update(notification);
-        NotificationDTO responseDTO = notificationDtoMapper.toDTO(updatedNotification);
-        NotificationResource notificationResource = notificationResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildResponse(notificationResource);
+        NotificationDTO responseDTO = notificationDtoMapper.toDTO(updatedNotification, uriInfo);
+        return Response.ok(responseDTO).build();
     }
 
     @DELETE
     @Path(ApiUriConstants.ID)
     public Response deleteNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         notificationService.delete(id);
-        return buildNoContentResponse();
+        return Response.noContent().build();
     }
 
     @PATCH
     @Path(ApiUriConstants.ID)
-    public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid NotificationDTO notificationDTO) {
-        if (notificationDTO.getIsRead()) notificationService.markAsRead(id);
-        else return buildNoContentResponse();
-        NotificationDTO responseDTO = notificationDtoMapper.toDTO(notificationService.findById(id));
-        NotificationResource notificationResource = notificationResourceMapper.toResource(responseDTO, getBaseUrl());
-        return buildResponse(notificationResource);
+    @Consumes(CustomMediaType.NOTIFICATION)
+    @Produces(CustomMediaType.NOTIFICATION)
+    public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @Valid NotificationDTO notificationDTO) {
+        if (notificationDTO.getIsRead()) {
+            notificationService.markAsRead(id);
+        } else {
+            return Response.noContent().build();
+        }
+        NotificationDTO responseDTO = notificationDtoMapper.toDTO(notificationService.findById(id), uriInfo);
+        return Response.ok(responseDTO).build();
     }
 
     @PATCH
+    @Consumes(CustomMediaType.NOTIFICATION)
     public Response markAllAsRead(@Valid NotificationDTO notificationDTO) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        if (notificationDTO.getIsRead()) notificationService.markAllAsRead(loggedUserId);
-        return buildNoContentResponse();
+        if (notificationDTO.getIsRead()) {
+            notificationService.markAllAsRead(loggedUserId);
+        }
+        return Response.noContent().build();
     }
 }

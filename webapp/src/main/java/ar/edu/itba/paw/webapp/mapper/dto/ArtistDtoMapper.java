@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.ArtistDTO;
+import ar.edu.itba.paw.webapp.dto.links.ArtistLinksDTO;
 import ar.edu.itba.paw.models.Artist;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 @Component
 public class ArtistDtoMapper {
 
-    public ArtistDTO toDTO(Artist artist) {
+    public ArtistDTO toDTO(Artist artist, UriInfo uriInfo) {
         if (artist == null) {
             return null;
         }
@@ -27,19 +29,41 @@ public class ArtistDtoMapper {
         dto.setAvgRating(artist.getAvgRating());
         dto.setCreatedAt(artist.getCreatedAt());
         dto.setUpdatedAt(artist.getUpdatedAt());
-        dto.setIsReviewed(artist.getIsReviewed());
-        dto.setIsFavorite(artist.getIsFavorite());
-        
+
+        // Build HATEOAS links
+        if (uriInfo != null) {
+            ArtistLinksDTO links = new ArtistLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
+                    .path("artists").path(String.valueOf(artist.getId())).build());
+
+            if (artist.getImage() != null) {
+                links.setImage(uriInfo.getBaseUriBuilder()
+                        .path("images").path(String.valueOf(artist.getImage().getId())).build());
+            }
+
+            links.setAlbums(uriInfo.getBaseUriBuilder()
+                    .path("artists").path(String.valueOf(artist.getId())).path("albums").build());
+
+            links.setSongs(uriInfo.getBaseUriBuilder()
+                    .path("artists").path(String.valueOf(artist.getId())).path("songs").build());
+
+            links.setReviews(uriInfo.getBaseUriBuilder()
+                    .path("artists").path(String.valueOf(artist.getId())).path("reviews").build());
+
+            dto.setLinks(links);
+        }
+
         return dto;
     }
 
-    public List<ArtistDTO> toDTOList(List<Artist> artists) {
+    public List<ArtistDTO> toDTOList(List<Artist> artists, UriInfo uriInfo) {
         if (artists == null) {
             return null;
         }
 
         return artists.stream()
-                .map(this::toDTO)
+                .map(a -> toDTO(a, uriInfo))
                 .collect(Collectors.toList());
     }
 
@@ -70,4 +94,3 @@ public class ArtistDtoMapper {
                 .collect(Collectors.toList());
     }
 }
-

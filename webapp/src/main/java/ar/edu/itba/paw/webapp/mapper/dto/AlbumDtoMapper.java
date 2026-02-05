@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.AlbumDTO;
+import ar.edu.itba.paw.webapp.dto.links.AlbumLinksDTO;
 import ar.edu.itba.paw.models.Album;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 @Component
 public class AlbumDtoMapper {
 
-    public AlbumDTO toDTO(Album album) {
+    public AlbumDTO toDTO(Album album, UriInfo uriInfo) {
         if (album == null) {
             return null;
         }
@@ -30,19 +32,43 @@ public class AlbumDtoMapper {
         dto.setAvgRating(album.getAvgRating());
         dto.setCreatedAt(album.getCreatedAt());
         dto.setUpdatedAt(album.getUpdatedAt());
-        dto.setIsReviewed(album.getIsReviewed());
-        dto.setIsFavorite(album.getIsFavorite());
+
+        // Build HATEOAS links
+        if (uriInfo != null) {
+            AlbumLinksDTO links = new AlbumLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
+                    .path("albums").path(String.valueOf(album.getId())).build());
+
+            if (album.getImage() != null) {
+                links.setImage(uriInfo.getBaseUriBuilder()
+                        .path("images").path(String.valueOf(album.getImage().getId())).build());
+            }
+
+            if (album.getArtist() != null) {
+                links.setArtist(uriInfo.getBaseUriBuilder()
+                        .path("artists").path(String.valueOf(album.getArtist().getId())).build());
+            }
+
+            links.setSongs(uriInfo.getBaseUriBuilder()
+                    .path("albums").path(String.valueOf(album.getId())).path("songs").build());
+
+            links.setReviews(uriInfo.getBaseUriBuilder()
+                    .path("albums").path(String.valueOf(album.getId())).path("reviews").build());
+
+            dto.setLinks(links);
+        }
 
         return dto;
     }
 
-    public List<AlbumDTO> toDTOList(List<Album> albums) {
+    public List<AlbumDTO> toDTOList(List<Album> albums, UriInfo uriInfo) {
         if (albums == null) {
             return null;
         }
 
         return albums.stream()
-                .map(this::toDTO)
+                .map(a -> toDTO(a, uriInfo))
                 .collect(Collectors.toList());
     }
 

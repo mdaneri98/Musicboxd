@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import ar.edu.itba.paw.models.reviews.ReviewType;
+import ar.edu.itba.paw.webapp.dto.links.ReviewLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -15,17 +17,20 @@ public class ReviewDTO {
     private Integer rating;
     private LocalDateTime createdAt;
     private Integer likes;
-    private Boolean isLiked;
     private Boolean isBlocked;
     private Integer commentAmount;
-    private ReviewType itemType; 
+    private ReviewType itemType;
     private Long itemId;
     private String itemName;
     private Long itemImageId;
     private Boolean userVerified;
     private Boolean userModerator;
 
-    public ReviewDTO() {}
+    @JsonProperty("_links")
+    private ReviewLinksDTO links;
+
+    public ReviewDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -89,17 +94,6 @@ public class ReviewDTO {
 
     public void setLikes(Integer likes) {
         this.likes = likes;
-    }
-
-    public Boolean isLiked() {
-        if (isLiked == null) {
-            return false;
-        }
-        return isLiked;
-    }
-
-    public void setIsLiked(Boolean isLiked) {
-        this.isLiked = isLiked;
     }
 
     public Boolean getIsBlocked() {
@@ -174,9 +168,17 @@ public class ReviewDTO {
         this.userModerator = userModerator;
     }
 
+    public ReviewLinksDTO getLinks() {
+        return links;
+    }
+
+    public void setLinks(ReviewLinksDTO links) {
+        this.links = links;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, userId, userImageId, title, description, rating, createdAt, likes, isLiked, isBlocked, commentAmount, itemType, itemId, itemName, itemImageId, userVerified, userModerator);
+        return Objects.hash(id, username, userId, userImageId, title, description, rating, createdAt, likes, isBlocked,
+                commentAmount, itemType, itemId, itemName, itemImageId, userVerified, userModerator);
     }
 }
-

@@ -19,16 +19,5 @@ public class JwtUtils {
         }
         return null;
     }
-    
-    /**
-     * Check if request path should be excluded from JWT authentication
-     * @param path the request path
-     * @return true if path should be excluded
-     */
-    public static boolean isExcludedPath(String path) {
-        return path != null && (
-            path.startsWith(ApiUriConstants.AUTH_BASE) ||
-            path.startsWith(ApiUriConstants.EMAIL_BASE)
-        );
-    }
+
 }

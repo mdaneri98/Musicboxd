@@ -5,10 +5,10 @@ import java.util.List;
 
 public interface UserService {
 
-    User findUserById(Long id, Long loggedUserId);
+    User findUserById(Long id);
     Long countUsers();
     List<User> findAll();
-    List<User> findPaginated(FilterType filterType, Integer pageNumber, Integer pageSize, Long loggedUserId);
+    List<User> findPaginated(FilterType filterType, Integer pageNumber, Integer pageSize);
     List<User> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize);
 
     User create(String username, String email, String password);
@@ -59,5 +59,5 @@ public interface UserService {
     
     List<User> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize);
 
-    void setContextDependentFields(User user, Long loggedUserId);
+
 }

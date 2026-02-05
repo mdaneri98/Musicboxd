@@ -1,14 +1,14 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import ar.edu.itba.paw.webapp.dto.links.UserLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 
 public class UserDTO {
 
     private Long id;
     private String username;
-    private String email;
     private String name;
     private String bio;
     private Long imageId;
@@ -19,7 +19,6 @@ public class UserDTO {
     private LocalDateTime updatedAt;
     private Boolean isVerified;
     private Boolean isModerator;
-    private Boolean isFollowed;
     private String preferredLanguage;
     private String preferredTheme;
     private Boolean hasFollowNotificationsEnabled;
@@ -27,7 +26,11 @@ public class UserDTO {
     private Boolean hasCommentsNotificationsEnabled;
     private Boolean hasReviewsNotificationsEnabled;
 
-    public UserDTO() {}
+    @JsonProperty("_links")
+    private UserLinksDTO links;
+
+    public UserDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -43,14 +46,6 @@ public class UserDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getName() {
@@ -181,20 +176,19 @@ public class UserDTO {
         this.hasReviewsNotificationsEnabled = hasReviewsNotificationsEnabled;
     }
 
-    public Boolean isFollowed() {
-        if (isFollowed == null) {
-            return false;
-        }
-        return isFollowed;
+    public UserLinksDTO getLinks() {
+        return links;
     }
 
-    public void setFollowed(Boolean isFollowed) {
-        this.isFollowed = isFollowed;
+    public void setLinks(UserLinksDTO links) {
+        this.links = links;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, name, bio, imageId, followersAmount, followingAmount, reviewAmount, createdAt, updatedAt, isVerified, isModerator, isFollowed, preferredLanguage, preferredTheme, hasFollowNotificationsEnabled, hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled, hasReviewsNotificationsEnabled);
+        return Objects.hash(id, username, name, bio, imageId, followersAmount, followingAmount, reviewAmount,
+                createdAt, updatedAt, isVerified, isModerator, preferredLanguage, preferredTheme,
+                hasFollowNotificationsEnabled, hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled,
+                hasReviewsNotificationsEnabled);
     }
 }
-
