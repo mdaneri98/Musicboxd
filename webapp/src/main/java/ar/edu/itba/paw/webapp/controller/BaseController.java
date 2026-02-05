@@ -1,8 +1,5 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.*;
 import java.net.URI;
@@ -16,44 +13,6 @@ public abstract class BaseController {
     @Context
     protected UriInfo uriInfo;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    protected Response buildResponse(Object resource) {
-        try {
-            String json = objectMapper.writeValueAsString(resource);
-            return Response.ok(json, MediaType.APPLICATION_JSON).build();
-        } catch (Exception e) {
-            return Response.serverError().entity("Serialization error").build();
-        }
-    }
-
-    protected Response buildCreatedResponse(Object resource, URI location) {
-        return Response.status(Response.Status.CREATED)
-                .entity(resource)
-                .header(HttpHeaders.LOCATION, location)
-                .build();
-    }
-
-    protected URI buildResourceLocation(String resourcePath, Long resourceId) {
-        return uriInfo.getBaseUriBuilder()
-                .path(resourcePath)
-                .path(String.valueOf(resourceId))
-                .build();
-    }
-
-    protected URI buildNestedResourceLocation(String resourcePath, Long parentId, String subResourcePath, Long resourceId) {
-        return uriInfo.getBaseUriBuilder()
-                .path(resourcePath)
-                .path(String.valueOf(parentId))
-                .path(subResourcePath)
-                .path(String.valueOf(resourceId))
-                .build();
-    }
-
-    protected Response buildNoContentResponse() {
-        return Response.noContent().build();
-    }
 
     // https://howtodoinjava.com/resteasy/jax-rs-resteasy-cache-control-with-etag-example/
     public static <T> Response buildResponseUsingEtag(Request request, Supplier<T> dtoSupplier) {
