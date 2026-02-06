@@ -20,7 +20,6 @@ public class UserDTO {
     private LocalDateTime updatedAt;
     private Boolean isVerified;
     private Boolean isModerator;
-    private Boolean isFollowed;
     private String preferredLanguage;
     private String preferredTheme;
     private Boolean hasFollowNotificationsEnabled;
@@ -192,17 +191,6 @@ public class UserDTO {
         this.hasReviewsNotificationsEnabled = hasReviewsNotificationsEnabled;
     }
 
-    public Boolean isFollowed() {
-        if (isFollowed == null) {
-            return false;
-        }
-        return isFollowed;
-    }
-
-    public void setFollowed(Boolean isFollowed) {
-        this.isFollowed = isFollowed;
-    }
-
     // HATEOAS getters and setters
     public URI getSelf() {
         return self;
@@ -270,7 +258,7 @@ public class UserDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, name, bio, imageId, followersAmount, followingAmount, reviewAmount, createdAt, updatedAt, isVerified, isModerator, isFollowed, preferredLanguage, preferredTheme, hasFollowNotificationsEnabled, hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled, hasReviewsNotificationsEnabled);
+        return Objects.hash(id, username, email, name, bio, imageId, followersAmount, followingAmount, reviewAmount, createdAt, updatedAt, isVerified, isModerator, preferredLanguage, preferredTheme, hasFollowNotificationsEnabled, hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled, hasReviewsNotificationsEnabled);
     }
 }
 

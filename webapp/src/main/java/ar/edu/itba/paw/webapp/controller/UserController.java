@@ -5,7 +5,6 @@ import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
 import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ArtistDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.FavoriteDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.UserDtoMapper;
@@ -37,7 +36,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Path(ApiUriConstants.USERS_BASE)
@@ -71,9 +69,6 @@ public class UserController extends BaseController {
 
     @Autowired
     private SongDtoMapper songDtoMapper;
-
-    @Autowired
-    private FavoriteDtoMapper favoriteDtoMapper;
 
     @GET
     @Produces(CustomMediaType.USER_LIST)
@@ -364,14 +359,11 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_ARTIST_DETAIL)
-    @Produces(CustomMediaType.FAVORITE)
     public Response addFavoriteArtist(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
         userService.addFavoriteArtist(userId, artistId);
-
-        FavoriteDTO favoriteDTO = favoriteDtoMapper.toDTO(userId, artistId, ControllerUtils.ITEM_TYPE_ARTIST, LocalDateTime.now(), uriInfo);
-        return Response.created(favoriteDTO.getSelf()).entity(favoriteDTO).build();
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -385,14 +377,11 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_ALBUM_DETAIL)
-    @Produces(CustomMediaType.FAVORITE)
     public Response addFavoriteAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
         userService.addFavoriteAlbum(userId, albumId);
-
-        FavoriteDTO favoriteDTO = favoriteDtoMapper.toDTO(userId, albumId, ControllerUtils.ITEM_TYPE_ALBUM, LocalDateTime.now(), uriInfo);
-        return Response.created(favoriteDTO.getSelf()).entity(favoriteDTO).build();
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -406,14 +395,11 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_SONG_DETAIL)
-    @Produces(CustomMediaType.FAVORITE)
     public Response addFavoriteSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
         userService.addFavoriteSong(userId, songId);
-
-        FavoriteDTO favoriteDTO = favoriteDtoMapper.toDTO(userId, songId, ControllerUtils.ITEM_TYPE_SONG, LocalDateTime.now(), uriInfo);
-        return Response.created(favoriteDTO.getSelf()).entity(favoriteDTO).build();
+        return Response.noContent().build();
     }
 
     @DELETE

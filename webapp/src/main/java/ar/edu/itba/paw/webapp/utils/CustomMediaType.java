@@ -39,9 +39,7 @@ public final class CustomMediaType {
 
     // Other
     public static final String IMAGE = "application/vnd.musicboxd.image.v1+json";
-    public static final String FAVORITE = "application/vnd.musicboxd.favorite.v1+json";
-    public static final String FAVORITE_LIST = "application/vnd.musicboxd.favoriteList.v1+json";
-    public static final String API_INFO = "application/vnd.musicboxd.apiInfo.v1+json";
+public static final String API_INFO = "application/vnd.musicboxd.apiInfo.v1+json";
     public static final String ERROR = "application/vnd.musicboxd.error.v1+json";
 
     private CustomMediaType() {
