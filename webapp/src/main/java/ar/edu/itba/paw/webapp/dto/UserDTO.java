@@ -9,7 +9,6 @@ public class UserDTO {
 
     private Long id;
     private String username;
-    private String email;
     private String name;
     private String bio;
     private Long imageId;
@@ -53,14 +52,6 @@ public class UserDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getName() {
@@ -258,7 +249,7 @@ public class UserDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, name, bio, imageId, followersAmount, followingAmount, reviewAmount, createdAt, updatedAt, isVerified, isModerator, preferredLanguage, preferredTheme, hasFollowNotificationsEnabled, hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled, hasReviewsNotificationsEnabled);
+        return Objects.hash(id, username, name, bio, imageId, followersAmount, followingAmount, reviewAmount, createdAt, updatedAt, isVerified, isModerator, preferredLanguage, preferredTheme, hasFollowNotificationsEnabled, hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled, hasReviewsNotificationsEnabled);
     }
 }
 

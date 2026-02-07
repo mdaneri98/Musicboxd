@@ -23,7 +23,6 @@ public class UserDtoMapper {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setBio(user.getBio());
         dto.setImageId(user.getImageId());
@@ -91,7 +90,6 @@ public class UserDtoMapper {
         User user = new User();
         user.setId(dto.getId());
         user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
         user.setName(dto.getName());
         user.setBio(dto.getBio());
         user.setFollowersAmount(dto.getFollowersAmount());
