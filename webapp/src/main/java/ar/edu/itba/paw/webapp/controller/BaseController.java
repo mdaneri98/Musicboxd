@@ -31,14 +31,5 @@ public abstract class BaseController {
                 .build();
     }
 
-    /**
-     * Cache control
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
-     */
-    public static Response.ResponseBuilder setMaxAge(Response.ResponseBuilder responseBuilder, int maxAge) {
-        final CacheControl cacheControl = new CacheControl();
-        cacheControl.setMaxAge(maxAge);
-        return responseBuilder.cacheControl(cacheControl);
-    }
 
 }

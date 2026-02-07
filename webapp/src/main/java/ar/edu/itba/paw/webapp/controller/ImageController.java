@@ -12,8 +12,7 @@ import org.springframework.http.HttpHeaders;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.net.URI;
 
 @Path(ApiUriConstants.IMAGES_BASE)
@@ -25,13 +24,23 @@ public class ImageController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     @Produces("image/jpeg")
-    public Response getImage(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+    public Response getImage(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         Image image = imageService.findById(id);
-        byte[] array = image.getBytes();
 
-        Response.ResponseBuilder responseBuilder = Response.ok(array)
-                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("inline; filename=\"image_%d.jpg\"", id));
-        return setMaxAge(responseBuilder, ControllerUtils.IMAGE_MAX_AGE).build();
+        final EntityTag eTag = new EntityTag(String.valueOf(image.getId()));
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setNoCache(true);
+
+        Response.ResponseBuilder response = request.evaluatePreconditions(eTag);
+        if (response != null) {
+            return response.cacheControl(cacheControl).build();
+        }
+
+        return Response.ok(image.getBytes())
+                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("inline; filename=\"image_%d.jpg\"", id))
+                .tag(eTag)
+                .cacheControl(cacheControl)
+                .build();
     }
 
     @POST
