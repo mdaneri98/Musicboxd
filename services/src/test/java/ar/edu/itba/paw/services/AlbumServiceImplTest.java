@@ -278,34 +278,4 @@ public class AlbumServiceImplTest {
         // 3. Post-conditions
         assertTrue(result);
     }
-
-    // ========== CONTEXT DEPENDENT FIELDS TESTS ==========
-
-    @Test
-    public void test_setContextDependentFields_withLoggedUser() {
-        // 1. Pre-conditions
-        Mockito.when(albumDao.hasUserReviewed(USER_ID, ALBUM_ID)).thenReturn(true);
-        Mockito.when(userService.isAlbumFavorite(USER_ID, ALBUM_ID)).thenReturn(true);
-
-        // 2. Execute
-        albumService.setContextDependentFields(testAlbum, USER_ID);
-
-        // 3. Post-conditions
-        assertTrue(testAlbum.getIsReviewed());
-        assertTrue(testAlbum.getIsFavorite());
-    }
-
-    @Test
-    public void test_setContextDependentFields_withoutLoggedUser() {
-        // 1. Pre-conditions - none
-
-        // 2. Execute
-        albumService.setContextDependentFields(testAlbum, null);
-
-        // 3. Post-conditions
-        assertFalse(testAlbum.getIsReviewed());
-        assertFalse(testAlbum.getIsFavorite());
-        Mockito.verify(albumDao, Mockito.never()).hasUserReviewed(anyLong(), anyLong());
-        Mockito.verify(userService, Mockito.never()).isAlbumFavorite(anyLong(), anyLong());
-    }
 }

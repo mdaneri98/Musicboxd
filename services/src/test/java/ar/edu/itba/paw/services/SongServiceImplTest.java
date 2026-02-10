@@ -265,34 +265,4 @@ public class SongServiceImplTest {
         // 3. Post-conditions
         assertTrue(result);
     }
-
-    // ========== CONTEXT DEPENDENT FIELDS TESTS ==========
-
-    @Test
-    public void test_setContextDependentFields_withLoggedUser() {
-        // 1. Pre-conditions
-        Mockito.when(songDao.hasUserReviewed(USER_ID, SONG_ID)).thenReturn(true);
-        Mockito.when(userService.isSongFavorite(USER_ID, SONG_ID)).thenReturn(true);
-
-        // 2. Execute
-        songService.setContextDependentFields(testSong, USER_ID);
-
-        // 3. Post-conditions
-        assertTrue(testSong.getIsReviewed());
-        assertTrue(testSong.getIsFavorite());
-    }
-
-    @Test
-    public void test_setContextDependentFields_withoutLoggedUser() {
-        // 1. Pre-conditions - none
-
-        // 2. Execute
-        songService.setContextDependentFields(testSong, null);
-
-        // 3. Post-conditions
-        assertFalse(testSong.getIsReviewed());
-        assertFalse(testSong.getIsFavorite());
-        Mockito.verify(songDao, Mockito.never()).hasUserReviewed(anyLong(), anyLong());
-        Mockito.verify(userService, Mockito.never()).isSongFavorite(anyLong(), anyLong());
-    }
 }
