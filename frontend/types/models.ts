@@ -19,7 +19,6 @@ export interface User {
   followers_amount: number;
   following_amount: number;
   review_amount: number;
-  followed?: boolean; // Context-dependent
   moderator: boolean;
   verified: boolean;
   created_at: Date;
@@ -43,8 +42,6 @@ export interface Artist {
   avg_rating: number;
   created_at: number;
   updated_at?: number;
-  favorite?: boolean; // Context-dependent
-  reviewed?: boolean; // Context-dependent
 }
 
 // ============================================================================
@@ -63,8 +60,6 @@ export interface Album {
   created_at: number;
   updated_at?: number;
   deleted: boolean;
-  favorite?: boolean; // Context-dependent
-  reviewed?: boolean; // Context-dependent
 }
 
 // ============================================================================
@@ -85,8 +80,6 @@ export interface Song {
   updated_at?: number;
   deleted: boolean;
   release_date: Date;
-  favorite?: boolean; // Context-dependent
-  reviewed?: boolean; // Context-dependent
 }
 
 // ============================================================================

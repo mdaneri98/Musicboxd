@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   User,
@@ -108,7 +109,8 @@ class UserRepository {
     try {
       const response: HALResource<User> = await apiClient.postResource<User>(
         USER_ENDPOINTS.USERS,
-        userData
+        userData,
+        { headers: { 'Content-Type': CustomMediaType.USER } }
       );
 
       if (!response) {
@@ -132,7 +134,8 @@ class UserRepository {
     try {
       const response: HALResource<User> = await apiClient.putResource<User>(
         USER_ENDPOINTS.USER_BY_ID(id),
-        userData
+        userData,
+        { headers: { 'Content-Type': CustomMediaType.USER } }
       );
 
       if (!response) {
@@ -399,7 +402,8 @@ class UserRepository {
     try {
       const response: HALResource<User> = await apiClient.patchResource<User>(
         USER_ENDPOINTS.USER_BY_ID(userId),
-        userData
+        userData,
+        { headers: { 'Content-Type': CustomMediaType.USER } }
       );
 
       if (!response) {

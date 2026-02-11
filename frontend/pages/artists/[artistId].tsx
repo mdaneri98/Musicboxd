@@ -79,13 +79,13 @@ const ArtistDetailPage = () => {
     dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
   }, [artistId, dispatch]);
 
-  // Fetch current user's review if authenticated and has reviewed
+  // Fetch current user's review if authenticated
   useEffect(() => {
-    if (!artistId || !isAuthenticated || !currentUser || !artist?.reviewed) return;
+    if (!artistId || !isAuthenticated || !currentUser) return;
 
     const artistIdNum = parseInt(artistId as string);
     dispatch(fetchUserArtistReviewAsync({ artistId: artistIdNum, userId: currentUser.id }));
-  }, [artistId, isAuthenticated, currentUser, artist?.reviewed, dispatch]);
+  }, [artistId, isAuthenticated, currentUser, dispatch]);
 
   // Fetch favorite artists to determine isFavorite status
   useEffect(() => {
@@ -188,7 +188,7 @@ const ArtistDetailPage = () => {
           isFavorite={isFavorite}
           favoriteLoading={favoriteLoading}
           userRating={currentUserReview?.rating}
-          isReviewed={artist.reviewed || false}
+          isReviewed={!!currentUserReview}
           onFavoriteToggle={handleFavoriteToggle}
         />
 

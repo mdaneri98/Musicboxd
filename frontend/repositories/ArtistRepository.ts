@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   Artist,
@@ -99,7 +100,8 @@ class ArtistRepository {
     try {
       const response: HALResource<Artist> = await apiClient.postResource<Artist>(
         ARTIST_ENDPOINTS.ARTISTS,
-        artistData
+        artistData,
+        { headers: { 'Content-Type': CustomMediaType.ARTIST } }
       );
 
       if (!response) {
@@ -123,7 +125,8 @@ class ArtistRepository {
     try {
       const response: HALResource<Artist> = await apiClient.putResource<Artist>(
         ARTIST_ENDPOINTS.ARTIST_BY_ID(id),
-        artistData
+        artistData,
+        { headers: { 'Content-Type': CustomMediaType.ARTIST } }
       );
 
       if (!response) {
@@ -246,7 +249,8 @@ class ArtistRepository {
     try {
       const response: HALResource<Album> = await apiClient.postResource<Album>(
         ARTIST_ENDPOINTS.ARTIST_ALBUMS(artistId),
-        albumData
+        albumData,
+        { headers: { 'Content-Type': CustomMediaType.ALBUM } }
       );
 
       if (!response) {

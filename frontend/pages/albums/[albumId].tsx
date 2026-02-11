@@ -96,13 +96,13 @@ const AlbumDetailPage = () => {
     dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 10 }));
   }, [albumId, dispatch]);
 
-  // Fetch current user's review if authenticated and has reviewed
+  // Fetch current user's review if authenticated
   useEffect(() => {
-    if (!albumId || !isAuthenticated || !currentUser || !album?.reviewed) return;
+    if (!albumId || !isAuthenticated || !currentUser) return;
 
     const albumIdNum = parseInt(albumId as string);
     dispatch(fetchUserAlbumReviewAsync({ albumId: albumIdNum, userId: currentUser.id }));
-  }, [albumId, isAuthenticated, currentUser, album?.reviewed, dispatch]);
+  }, [albumId, isAuthenticated, currentUser, dispatch]);
 
   // Fetch favorite albums to determine isFavorite status
   useEffect(() => {
@@ -206,7 +206,7 @@ const AlbumDetailPage = () => {
           isFavorite={isFavorite}
           favoriteLoading={favoriteLoading}
           userRating={currentUserReview?.rating}
-          isReviewed={album.reviewed || false}
+          isReviewed={!!currentUserReview}
           onFavoriteToggle={handleFavoriteToggle}
         />
 

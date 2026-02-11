@@ -4,6 +4,7 @@
  */
 
 import { apiClient, tokenStorage } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import {
   User,
   LoginResponse,
@@ -91,7 +92,8 @@ class AuthRepository {
       // We need the full response to check for tokens
       await apiClient.postResource<User>(
         AUTH_ENDPOINTS.USERS,
-        registerData
+        registerData,
+        { headers: { 'Content-Type': CustomMediaType.USER } }
       );
 
 

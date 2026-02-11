@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   Comment,
@@ -91,7 +92,8 @@ class CommentRepository {
     try {
       const response: HALResource<Comment> = await apiClient.postResource<Comment>(
         COMMENT_ENDPOINTS.COMMENTS,
-        commentData
+        commentData,
+        { headers: { 'Content-Type': CustomMediaType.COMMENT } }
       );
 
       if (!response) {
@@ -115,7 +117,8 @@ class CommentRepository {
     try {
       const response: HALResource<Comment> = await apiClient.putResource<Comment>(
         COMMENT_ENDPOINTS.COMMENT_BY_ID(id),
-        commentData
+        commentData,
+        { headers: { 'Content-Type': CustomMediaType.COMMENT } }
       );
 
       if (!response) {

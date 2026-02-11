@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   Notification,
@@ -154,7 +155,7 @@ class NotificationRepository {
    */
   async markAsRead(id: number): Promise<void> {
     try {
-      await apiClient.patchResource<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATION_BY_ID(id), {is_read: true});
+      await apiClient.patchResource<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATION_BY_ID(id), { is_read: true }, { headers: { 'Content-Type': CustomMediaType.NOTIFICATION } });
     } catch (error) {
       console.error(`Mark notification ${id} as read error:`, error);
       throw error;
@@ -166,7 +167,7 @@ class NotificationRepository {
    */
   async markAllAsRead(): Promise<void> {
     try {
-      await apiClient.patchResource<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATIONS, {is_read: true});
+      await apiClient.patchResource<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATIONS, { is_read: true }, { headers: { 'Content-Type': CustomMediaType.NOTIFICATION } });
     } catch (error) {
       console.error('Mark all notifications as read error:', error);
       throw error;

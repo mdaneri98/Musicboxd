@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   Review,
@@ -96,7 +97,8 @@ class ReviewRepository {
     try {
       const response: HALResource<Review> = await apiClient.postResource<Review>(
         REVIEW_ENDPOINTS.REVIEWS,
-        reviewData
+        reviewData,
+        { headers: { 'Content-Type': CustomMediaType.REVIEW } }
       );
 
       if (!response) {
@@ -120,7 +122,8 @@ class ReviewRepository {
     try {
       const response: HALResource<Review> = await apiClient.putResource<Review>(
         REVIEW_ENDPOINTS.REVIEW_BY_ID(id),
-        reviewData
+        reviewData,
+        { headers: { 'Content-Type': CustomMediaType.REVIEW } }
       );
 
       if (!response) {

@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   Song,
@@ -94,7 +95,8 @@ class SongRepository {
     try {
       const response: HALResource<Song> = await apiClient.postResource<Song>(
         SONG_ENDPOINTS.SONGS,
-        songData
+        songData,
+        { headers: { 'Content-Type': CustomMediaType.SONG } }
       );
 
       if (!response) {
@@ -118,7 +120,8 @@ class SongRepository {
     try {
       const response: HALResource<Song> = await apiClient.putResource<Song>(
         SONG_ENDPOINTS.SONG_BY_ID(id),
-        songData
+        songData,
+        { headers: { 'Content-Type': CustomMediaType.SONG } }
       );
 
       if (!response) {

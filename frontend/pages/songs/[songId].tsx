@@ -88,13 +88,13 @@ const SongDetailPage = () => {
     dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 10 }));
   }, [songId, dispatch, t]);
 
-  // Fetch current user's review if authenticated and has reviewed
+  // Fetch current user's review if authenticated
   useEffect(() => {
-    if (!songId || !isAuthenticated || !currentUser || !song?.reviewed) return;
+    if (!songId || !isAuthenticated || !currentUser) return;
 
     const songIdNum = parseInt(songId as string);
     dispatch(fetchUserSongReviewAsync({ songId: songIdNum, userId: currentUser.id }));
-  }, [songId, isAuthenticated, currentUser, song?.reviewed, dispatch]);
+  }, [songId, isAuthenticated, currentUser, dispatch]);
 
   // Fetch favorite songs to determine isFavorite status
   useEffect(() => {
@@ -205,7 +205,7 @@ const SongDetailPage = () => {
           isFavorite={isFavorite}
           favoriteLoading={favoriteLoading}
           userRating={currentUserReview?.rating}
-          isReviewed={song.reviewed || false}
+          isReviewed={!!currentUserReview}
           onFavoriteToggle={handleFavoriteToggle}
         />
 
