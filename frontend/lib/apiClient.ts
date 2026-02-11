@@ -4,7 +4,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { HALResource, APIError, APIRequestOptions, Collection } from '@/types';
+import { HALResource, HALLink, APIError, APIRequestOptions, Collection } from '@/types';
 
 // ============================================================================
 // Configuration
@@ -220,6 +220,78 @@ if (typeof window !== 'undefined') {
 }
 
 // ============================================================================
+// Link Header Parser
+// ============================================================================
+
+interface ParsedPagination {
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+  totalCount: number;
+  links: HALLink[];
+}
+
+/**
+ * Parse RFC 5988 Link headers into pagination metadata.
+ * Example header: <http://host/api/artists?page=2&size=10>; rel="next", <...>; rel="last"
+ */
+const parseLinkHeader = (linkHeader: string): ParsedPagination => {
+  const links: HALLink[] = [];
+  let lastPage = 1;
+  let currentPage = 1;
+  let pageSize = 10;
+
+  if (!linkHeader) {
+    return { currentPage, totalPages: 1, pageSize, totalCount: 0, links };
+  }
+
+  // Split on comma, but be careful with commas inside angle brackets
+  const parts = linkHeader.split(/,\s*(?=<)/);
+
+  for (const part of parts) {
+    const match = part.match(/<([^>]+)>;\s*rel="([^"]+)"/);
+    if (!match) continue;
+
+    const [, href, rel] = match;
+    links.push({ href, rel });
+
+    try {
+      const url = new URL(href, 'http://localhost');
+      const page = parseInt(url.searchParams.get('page') || '1');
+      const size = parseInt(url.searchParams.get('size') || '10');
+
+      if (size > 0) pageSize = size;
+
+      if (rel === 'last') {
+        lastPage = page;
+      }
+      if (rel === 'next') {
+        currentPage = page - 1;
+      }
+      if (rel === 'prev') {
+        currentPage = page + 1;
+      }
+      if (rel === 'first' && !links.some(l => l.rel === 'prev')) {
+        // If no prev link, we might be on the first page
+        // (will be overridden by next/prev if they exist)
+      }
+    } catch {
+      // Invalid URL, skip
+    }
+  }
+
+  // If there's no 'prev' and no 'next' that told us the page, assume page 1
+  if (!links.some(l => l.rel === 'prev') && !links.some(l => l.rel === 'next')) {
+    currentPage = 1;
+  }
+
+  const totalPages = lastPage;
+  const totalCount = totalPages * pageSize;
+
+  return { currentPage, totalPages, pageSize, totalCount, links };
+};
+
+// ============================================================================
 // API Client Class
 // ============================================================================
 
@@ -243,17 +315,47 @@ class ApiClient {
     }
   }
 
+  /**
+   * GET collection - parses array body + Link headers into Collection<T>
+   * Backend returns plain JSON arrays with RFC 5988 Link headers for pagination.
+   */
   async getCollection<T>(
     url: string,
     options?: APIRequestOptions
   ): Promise<Collection<HALResource<T>>> {
     try {
-      const response: AxiosResponse<Collection<HALResource<T>>> = await axiosInstance.get(url, {
+      const response: AxiosResponse = await axiosInstance.get(url, {
         headers: options?.headers,
         params: options?.params,
         signal: options?.signal,
       });
-      return response.data;
+
+      // Handle 204 No Content (backend returns this when list is empty)
+      if (response.status === 204 || !response.data) {
+        const urlParams = new URLSearchParams(url.split('?')[1] || '');
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: parseInt(urlParams.get('page') || '1'),
+          totalPages: 0,
+          pageSize: parseInt(urlParams.get('size') || '10'),
+          _links: [],
+        };
+      }
+
+      // Backend returns a plain JSON array
+      const items: HALResource<T>[] = Array.isArray(response.data) ? response.data : [];
+      const linkHeader: string = response.headers?.['link'] || '';
+      const pagination = parseLinkHeader(linkHeader);
+
+      return {
+        items,
+        totalCount: pagination.totalCount > 0 ? pagination.totalCount : items.length,
+        currentPage: pagination.currentPage,
+        totalPages: pagination.totalPages,
+        pageSize: pagination.pageSize,
+        _links: pagination.links,
+      };
     } catch (error) {
       throw handleApiError(error);
     }

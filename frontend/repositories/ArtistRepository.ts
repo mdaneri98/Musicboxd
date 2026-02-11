@@ -63,19 +63,7 @@ class ArtistRepository {
         throw new Error('Invalid artists response: missing data');
       }
 
-      // Handle case where backend returns empty array instead of Collection object
-      if (Array.isArray(response)) {
-        return {
-          items: [],
-          totalCount: 0,
-          currentPage: page,
-          totalPages: 0,
-          pageSize: size,
-          _links: []
-        };
-      }
-
-      return response as Collection<HALResource<Artist>>;
+      return response;
     } catch (error) {
       console.error('Get artists error:', error);
       throw error;
@@ -190,19 +178,7 @@ class ArtistRepository {
         throw new Error('Invalid artist reviews response: missing data');
       }
 
-      // Handle case where backend returns empty array instead of Collection object
-      if (Array.isArray(response)) {
-        return {
-          items: [],
-          totalCount: 0,
-          currentPage: page,
-          totalPages: 0,
-          pageSize: size,
-          _links: []
-        };
-      }
-
-      return response as Collection<HALResource<Review>>;
+      return response;
     } catch (error) {
       console.error(`Get artist ${id} reviews error:`, error);
       throw error;
@@ -255,19 +231,7 @@ class ArtistRepository {
         throw new Error('Invalid artist albums response: missing data');
       }
 
-      // Handle case where backend returns empty array instead of Collection object
-      if (Array.isArray(response)) {
-        return {
-          items: [],
-          totalCount: 0,
-          currentPage: page,
-          totalPages: 0,
-          pageSize: size,
-          _links: []
-        };
-      }
-
-      return response as Collection<HALResource<Album>>;
+      return response;
     } catch (error) {
       console.error(`Get artist ${id} albums error:`, error);
       throw error;
@@ -319,19 +283,7 @@ class ArtistRepository {
         throw new Error('Invalid artist songs response: missing data');
       }
 
-      // Handle case where backend returns empty array instead of Collection object
-      if (Array.isArray(response)) {
-        return {
-          items: [],
-          totalCount: 0,
-          currentPage: page,
-          totalPages: 0,
-          pageSize: size,
-          _links: []
-        };
-      }
-
-      return response as Collection<HALResource<Song>>;
+      return response;
     } catch (error) {
       console.error(`Get artist ${id} songs error:`, error);
       throw error;

@@ -58,19 +58,7 @@ class SongRepository {
         throw new Error('Invalid songs response: missing data');
       }
 
-      // Handle case where backend returns empty array instead of Collection object
-      if (Array.isArray(response)) {
-        return {
-          items: [],
-          totalCount: 0,
-          currentPage: page,
-          totalPages: 0,
-          pageSize: size,
-          _links: []
-        };
-      }
-
-      return response as Collection<HALResource<Song>>;
+      return response;
     } catch (error) {
       console.error('Get songs error:', error);
       throw error;
@@ -184,19 +172,7 @@ class SongRepository {
         throw new Error('Invalid song reviews response: missing data');
       }
 
-      // Handle case where backend returns empty array instead of Collection object
-      if (Array.isArray(response)) {
-        return {
-          items: [],
-          totalCount: 0,
-          currentPage: page,
-          totalPages: 0,
-          pageSize: size,
-          _links: []
-        };
-      }
-
-      return response as Collection<HALResource<Review>>;
+      return response;
     } catch (error) {
       console.error(`Get song ${id} reviews error:`, error);
       throw error;
