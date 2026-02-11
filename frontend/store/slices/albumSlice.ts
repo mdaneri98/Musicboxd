@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
-import { albumRepository, reviewRepository } from '@/repositories';
+import { albumRepository, reviewRepository, userRepository } from '@/repositories';
 import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 import { blockReviewAsync, unblockReviewAsync, likeReviewAsync, unlikeReviewAsync } from './reviewSlice';
@@ -233,11 +233,11 @@ export const createAlbumReviewAsync = createAsyncThunk<
 
 export const addAlbumFavoriteAsync = createAsyncThunk<
   HALResource<Album>,
-  number,
+  { userId: number; albumId: number },
   { rejectValue: string }
->('albums/addFavorite', async (albumId, { rejectWithValue }) => {
+>('albums/addFavorite', async ({ userId, albumId }, { rejectWithValue }) => {
   try {
-    await albumRepository.addAlbumFavorite(albumId);
+    await userRepository.addFavoriteAlbum(userId, albumId);
     return await albumRepository.getAlbumById(albumId) as HALResource<Album>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to add album to favorites');
@@ -246,11 +246,11 @@ export const addAlbumFavoriteAsync = createAsyncThunk<
 
 export const removeAlbumFavoriteAsync = createAsyncThunk<
   HALResource<Album>,
-  number,
+  { userId: number; albumId: number },
   { rejectValue: string }
->('albums/removeFavorite', async (albumId, { rejectWithValue }) => {
+>('albums/removeFavorite', async ({ userId, albumId }, { rejectWithValue }) => {
   try {
-    await albumRepository.removeAlbumFavorite(albumId);
+    await userRepository.removeFavoriteAlbum(userId, albumId);
     return await albumRepository.getAlbumById(albumId) as HALResource<Album>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to remove album from favorites');

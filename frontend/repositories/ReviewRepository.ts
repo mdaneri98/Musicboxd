@@ -24,8 +24,6 @@ const REVIEW_ENDPOINTS = {
   REVIEWS: '/reviews',
   REVIEW_BY_ID: (id: number) => `/reviews/${id}`,
   REVIEW_LIKES: (id: number) => `/reviews/${id}/likes`,
-  LIKE_REVIEW: (id: number) => `/reviews/${id}/likes`,
-  UNLIKE_REVIEW: (id: number) => `/reviews/${id}/likes`,
   REVIEW_COMMENTS: (id: number) => `/reviews/${id}/comments`,
 };
 
@@ -183,7 +181,7 @@ class ReviewRepository {
    */
   async likeReview(reviewId: number): Promise<void> {
     try {
-      await apiClient.postResource<Review>(REVIEW_ENDPOINTS.LIKE_REVIEW(reviewId));
+      await apiClient.postResource<Review>(REVIEW_ENDPOINTS.REVIEW_LIKES(reviewId));
     } catch (error) {
       console.error(`Like review ${reviewId} error:`, error);
       throw error;
@@ -196,7 +194,7 @@ class ReviewRepository {
    */
   async unlikeReview(reviewId: number): Promise<void> {
     try {
-      await apiClient.deleteResource<Review>(REVIEW_ENDPOINTS.UNLIKE_REVIEW(reviewId));
+      await apiClient.deleteResource<Review>(REVIEW_ENDPOINTS.REVIEW_LIKES(reviewId));
     } catch (error) {
       console.error(`Unlike review ${reviewId} error:`, error);
       throw error;

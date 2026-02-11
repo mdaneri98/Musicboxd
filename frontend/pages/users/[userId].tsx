@@ -6,14 +6,15 @@ import { LoadingSpinner } from '@/components/ui';
 import { FavoritesSection, ReviewsSection } from '@/components/profile';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  selectIsAuthenticated, 
+import {
+  selectIsAuthenticated,
   fetchUserByIdAsync,
   fetchFavoriteArtistsAsync,
   fetchFavoriteAlbumsAsync,
   fetchFavoriteSongsAsync,
   fetchUserReviewsAsync,
   fetchMoreUserReviewsAsync,
+  fetchFollowingAsync,
   followUserAsync,
   unfollowUserAsync,
   selectCurrentUser,
@@ -24,6 +25,7 @@ import {
   selectUserReviews,
   selectUserReviewsPagination,
   selectUserReviewsHasMore,
+  selectFollowing,
   clearCurrentProfile,
   selectLoadingReviews,
   selectLoadingMoreReviews,
@@ -41,7 +43,7 @@ const UserProfilePage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const loggedUser = useAppSelector(selectCurrentUser);
   const user = useAppSelector(selectUserById(parseInt(userId as string)));
-  
+
   const [activeTab, setActiveTab] = useState<ProfileTabEnum>(queryTab ? queryTab as ProfileTabEnum : ProfileTabEnum.FAVORITES);
   const favoriteArtists = useAppSelector(selectFavoriteArtists);
   const favoriteAlbums = useAppSelector(selectFavoriteAlbums);
@@ -56,6 +58,7 @@ const UserProfilePage = () => {
   const loadingProfile = useAppSelector(selectLoadingProfile);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+  const followingList = useAppSelector(selectFollowing);
 
   useEffect(() => {
     return () => {
@@ -72,7 +75,7 @@ const UserProfilePage = () => {
       router.push(`/profile?tab=${activeTab}`);
       return;
     }
-    
+
     dispatch(fetchUserByIdAsync(userIdNum));
     dispatch(fetchFavoriteArtistsAsync(userIdNum));
     dispatch(fetchFavoriteAlbumsAsync(userIdNum));
@@ -80,24 +83,30 @@ const UserProfilePage = () => {
     dispatch(fetchUserReviewsAsync({ userId: userIdNum, page: 1, size: 10 }));
   }, [userId, dispatch, loggedUser, router, activeTab]);
 
-  // Update isFollowing when user data is loaded
+  // Fetch logged-in user's following list to determine isFollowing status
   useEffect(() => {
-    if (user) {
-      setIsFollowing(user.followed ?? false);
-    }
-  }, [user]);
+    if (!isAuthenticated || !loggedUser) return;
+    dispatch(fetchFollowingAsync({ userId: loggedUser.id, page: 1, size: 100 }));
+  }, [isAuthenticated, loggedUser, dispatch]);
+
+  // Update isFollowing when following list or target user changes
+  useEffect(() => {
+    if (!userId || !followingList) return;
+    const userIdNum = parseInt(userId as string);
+    setIsFollowing(followingList.some(u => u.id === userIdNum));
+  }, [userId, followingList]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!userId || !hasMoreReviews || loadingMoreReviews) return;
-    
+
     const userIdNum = parseInt(userId as string);
     const nextPage = reviewsPagination.page + 1;
-    
-    await dispatch(fetchMoreUserReviewsAsync({ 
-      userId: userIdNum, 
-      page: nextPage, 
-      size: reviewsPagination.size 
+
+    await dispatch(fetchMoreUserReviewsAsync({
+      userId: userIdNum,
+      page: nextPage,
+      size: reviewsPagination.size
     }));
   }, [dispatch, userId, reviewsPagination.page, reviewsPagination.size, hasMoreReviews, loadingMoreReviews]);
 
@@ -120,10 +129,10 @@ const UserProfilePage = () => {
     try {
       setFollowLoading(true);
       if (isFollowing) {
-        await dispatch(unfollowUserAsync(user.id)).unwrap();
+        await dispatch(unfollowUserAsync({ userId: loggedUser!.id, targetUserId: user.id })).unwrap();
         setIsFollowing(false);
       } else {
-        await dispatch(followUserAsync(user.id)).unwrap();
+        await dispatch(followUserAsync({ userId: loggedUser!.id, targetUserId: user.id })).unwrap();
         setIsFollowing(true);
       }
     } catch (error) {

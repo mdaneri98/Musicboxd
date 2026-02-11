@@ -36,8 +36,6 @@ public class AuthenticationExceptionMapper implements ExceptionMapper<Authentica
 				uriInfo
 		);
 
-        LOGGER.error("Email sending failed: {}", error, exception);
-
 		return Response.status(Response.Status.UNAUTHORIZED)
 				.header("WWW-Authenticate", "Basic realm=\"API\", Bearer realm=\"API\"")
 				.type(MediaType.APPLICATION_JSON_TYPE)

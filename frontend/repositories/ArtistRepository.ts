@@ -28,8 +28,6 @@ const ARTIST_ENDPOINTS = {
   ARTIST_REVIEWS: (id: number) => `/artists/${id}/reviews`,
   ARTIST_ALBUMS: (id: number) => `/artists/${id}/albums`,
   ARTIST_SONGS: (id: number) => `/artists/${id}/songs`,
-  ADD_FAVORITE: (id: number) => `/artists/${id}/favorites`,
-  REMOVE_FAVORITE: (id: number) => `/artists/${id}/favorites`,
 };
 
 // ============================================================================
@@ -290,31 +288,6 @@ class ArtistRepository {
     }
   }
 
-  /**
-   * Add artist to user's favorites
-   * @param id Artist ID
-   */
-  async addArtistFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.postResource<Artist>(ARTIST_ENDPOINTS.ADD_FAVORITE(id));
-    } catch (error) {
-      console.error(`Add artist ${id} to favorites error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove artist from user's favorites
-   * @param id Artist ID
-   */
-  async removeArtistFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.deleteResource<Artist>(ARTIST_ENDPOINTS.REMOVE_FAVORITE(id));
-    } catch (error) {
-      console.error(`Remove artist ${id} from favorites error:`, error);
-      throw error;
-    }
-  }
 }
 
 // ============================================================================

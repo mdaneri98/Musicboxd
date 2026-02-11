@@ -43,8 +43,6 @@ public class EmailExceptionMapper implements ExceptionMapper<EmailException> {
                 uriInfo
         );
 
-        LOGGER.error("Email sending failed: {}", error, exception);
-
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(error)

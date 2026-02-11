@@ -23,8 +23,6 @@ const SONG_ENDPOINTS = {
   SONGS: '/songs',
   SONG_BY_ID: (id: number) => `/songs/${id}`,
   SONG_REVIEWS: (id: number) => `/songs/${id}/reviews`,
-  ADD_FAVORITE: (id: number) => `/songs/${id}/favorites`,
-  REMOVE_FAVORITE: (id: number) => `/songs/${id}/favorites`,
 };
 
 // ============================================================================
@@ -203,33 +201,8 @@ class SongRepository {
       return null;
     }
   }
-
-  /**
-   * Add song to user's favorites
-   * @param id Song ID
-   */
-  async addSongFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.postResource<Song>(SONG_ENDPOINTS.ADD_FAVORITE(id));
-    } catch (error) {
-      console.error(`Add song ${id} to favorites error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove song from user's favorites
-   * @param id Song ID
-   */
-  async removeSongFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.deleteResource<Song>(SONG_ENDPOINTS.REMOVE_FAVORITE(id));
-    } catch (error) {
-      console.error(`Remove song ${id} from favorites error:`, error);
-      throw error;
-    }
-  }
 }
+
 
 // ============================================================================
 // Export Singleton Instance

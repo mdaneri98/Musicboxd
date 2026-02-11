@@ -17,6 +17,7 @@ import {
   fetchUserSongReviewAsync,
   addSongFavoriteAsync,
   removeSongFavoriteAsync,
+  fetchFavoriteSongsAsync,
   selectCurrentSong,
   selectSongReviews,
   selectLoadingSong,
@@ -25,6 +26,7 @@ import {
   selectSongReviewsHasMore,
   selectSongError,
   selectCurrentUserSongReview,
+  selectFavoriteSongs,
   clearCurrentSong,
   showError,
 } from '@/store/slices';
@@ -54,6 +56,8 @@ const SongDetailPage = () => {
   const [album, setAlbum] = useState<Album | null>(null);
   const [artist, setArtist] = useState<Artist | null>(null);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const favoriteSongs = useAppSelector(selectFavoriteSongs);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -92,6 +96,19 @@ const SongDetailPage = () => {
     dispatch(fetchUserSongReviewAsync({ songId: songIdNum, userId: currentUser.id }));
   }, [songId, isAuthenticated, currentUser, song?.reviewed, dispatch]);
 
+  // Fetch favorite songs to determine isFavorite status
+  useEffect(() => {
+    if (!isAuthenticated || !currentUser) return;
+    dispatch(fetchFavoriteSongsAsync(currentUser.id));
+  }, [isAuthenticated, currentUser, dispatch]);
+
+  // Update isFavorite when favorites list or current song changes
+  useEffect(() => {
+    if (!songId || !favoriteSongs) return;
+    const songIdNum = parseInt(songId as string);
+    setIsFavorite(favoriteSongs.some(s => s.id === songIdNum));
+  }, [songId, favoriteSongs]);
+
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!songId || !hasMoreReviews || loadingMoreReviews) return;
@@ -124,10 +141,12 @@ const SongDetailPage = () => {
 
     try {
       setFavoriteLoading(true);
-      if (song.favorite) {
-        await dispatch(removeSongFavoriteAsync(song.id)).unwrap();
+      if (isFavorite) {
+        await dispatch(removeSongFavoriteAsync({ userId: currentUser!.id, songId: song.id })).unwrap();
+        setIsFavorite(false);
       } else {
-        await dispatch(addSongFavoriteAsync(song.id)).unwrap();
+        await dispatch(addSongFavoriteAsync({ userId: currentUser!.id, songId: song.id })).unwrap();
+        setIsFavorite(true);
       }
     } catch (err: any) {
       // Check if error is due to max favorites limit
@@ -183,7 +202,7 @@ const SongDetailPage = () => {
           artist={artist}
           currentUser={currentUser}
           isAuthenticated={isAuthenticated}
-          isFavorite={song.favorite || false}
+          isFavorite={isFavorite}
           favoriteLoading={favoriteLoading}
           userRating={currentUserReview?.rating}
           isReviewed={song.reviewed || false}

@@ -256,17 +256,14 @@ export const fetchMoreFollowingAsync = createAsyncThunk<
   }
 });
 
-/**
- * Follow a user
- */
 export const followUserAsync = createAsyncThunk<
   number,
-  number,
+  { userId: number; targetUserId: number },
   { rejectValue: string }
->('users/followUser', async (userId, { rejectWithValue }) => {
+>('users/followUser', async ({ userId, targetUserId }, { rejectWithValue }) => {
   try {
-    await userRepository.followUser(userId);
-    return userId;
+    await userRepository.followUser(userId, targetUserId);
+    return targetUserId;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to follow user');
   }
@@ -277,12 +274,12 @@ export const followUserAsync = createAsyncThunk<
  */
 export const unfollowUserAsync = createAsyncThunk<
   number,
-  number,
+  { userId: number; targetUserId: number },
   { rejectValue: string }
->('users/unfollowUser', async (userId, { rejectWithValue }) => {
+>('users/unfollowUser', async ({ userId, targetUserId }, { rejectWithValue }) => {
   try {
-    await userRepository.unfollowUser(userId);
-    return userId;
+    await userRepository.unfollowUser(userId, targetUserId);
+    return targetUserId;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to unfollow user');
   }

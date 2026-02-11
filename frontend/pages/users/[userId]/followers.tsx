@@ -10,6 +10,7 @@ import {
   fetchUserByIdAsync,
   fetchFollowersAsync,
   fetchMoreFollowersAsync,
+  fetchFollowingAsync,
   selectCurrentProfile,
   selectFollowers,
   selectLoadingProfile,
@@ -20,6 +21,7 @@ import {
   clearCurrentProfile,
   selectCurrentUser,
   selectIsAuthenticated,
+  selectFollowing,
   followUserAsync,
   unfollowUserAsync
 } from '@/store/slices';
@@ -44,6 +46,7 @@ const FollowersPage = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const isOwnProfile = loggedUser?.id === parseInt(userId as string);
+  const followingList = useAppSelector(selectFollowing);
 
   useEffect(() => {
     return () => {
@@ -59,12 +62,18 @@ const FollowersPage = () => {
     dispatch(fetchFollowersAsync({ userId: userIdNum, page: 1, size: 10 }));
   }, [userId, dispatch]);
 
-  // Update isFollowing when user data is loaded
+  // Fetch logged-in user's following list to determine isFollowing status
   useEffect(() => {
-    if (user) {
-      setIsFollowing(user.followed ?? false);
-    }
-  }, [user]);
+    if (!isAuthenticated || !loggedUser) return;
+    dispatch(fetchFollowingAsync({ userId: loggedUser.id, page: 1, size: 100 }));
+  }, [isAuthenticated, loggedUser, dispatch]);
+
+  // Update isFollowing when following list or target user changes
+  useEffect(() => {
+    if (!userId || !followingList) return;
+    const userIdNum = parseInt(userId as string);
+    setIsFollowing(followingList.some(u => u.id === userIdNum));
+  }, [userId, followingList]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
@@ -92,10 +101,10 @@ const FollowersPage = () => {
     try {
       setFollowLoading(true);
       if (isFollowing) {
-        await dispatch(unfollowUserAsync(user.id)).unwrap();
+        await dispatch(unfollowUserAsync({ userId: loggedUser!.id, targetUserId: user.id })).unwrap();
         setIsFollowing(false);
       } else {
-        await dispatch(followUserAsync(user.id)).unwrap();
+        await dispatch(followUserAsync({ userId: loggedUser!.id, targetUserId: user.id })).unwrap();
         setIsFollowing(true);
       }
     } catch (error) {

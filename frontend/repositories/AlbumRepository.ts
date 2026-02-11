@@ -26,8 +26,6 @@ const ALBUM_ENDPOINTS = {
   ALBUM_BY_ID: (id: number) => `/albums/${id}`,
   ALBUM_REVIEWS: (id: number) => `/albums/${id}/reviews`,
   ALBUM_SONGS: (id: number) => `/albums/${id}/songs`,
-  ADD_FAVORITE: (id: number) => `/albums/${id}/favorites`,
-  REMOVE_FAVORITE: (id: number) => `/albums/${id}/favorites`,
 };
 
 // ============================================================================
@@ -258,33 +256,8 @@ class AlbumRepository {
       throw error;
     }
   }
-
-  /**
-   * Add album to user's favorites
-   * @param id Album ID
-   */
-  async addAlbumFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.postResource<Album>(ALBUM_ENDPOINTS.ADD_FAVORITE(id));
-    } catch (error) {
-      console.error(`Add album ${id} to favorites error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove album from user's favorites
-   * @param id Album ID
-   */
-  async removeAlbumFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.deleteResource<Album>(ALBUM_ENDPOINTS.REMOVE_FAVORITE(id));
-    } catch (error) {
-      console.error(`Remove album ${id} from favorites error:`, error);
-      throw error;
-    }
-  }
 }
+
 
 // ============================================================================
 // Export Singleton Instance
