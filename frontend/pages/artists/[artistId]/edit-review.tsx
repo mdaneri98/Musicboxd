@@ -6,13 +6,13 @@ import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal, LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  fetchArtistByIdAsync, 
-  fetchArtistReviewsAsync, 
-  updateReviewAsync, 
-  deleteReviewAsync, 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  fetchArtistByIdAsync,
+  fetchArtistReviewsAsync,
+  updateReviewAsync,
+  deleteReviewAsync,
   selectCurrentArtist,
   selectLoadingArtist,
   clearCurrentArtist
@@ -59,15 +59,15 @@ const EditArtistReviewPage = () => {
 
         if (currentUser) {
           const reviews = await dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: 1, size: 100 })).unwrap();
-          const userReview = reviews.items.find(r => r.data.user_id === currentUser.id);
-          
+          const userReview = reviews.items.find(r => r.user_id === currentUser.id);
+
           if (!userReview) {
             // No review to edit, redirect to create
             router.push(`/artists/${artistId}/reviews`);
             return;
           }
-          
-          setExistingReview(userReview.data);
+
+          setExistingReview(userReview);
         }
       } catch (error) {
         console.error('Failed to fetch artist:', error);

@@ -25,10 +25,9 @@ export interface HALLink {
  * Generic HAL Resource wrapper
  * All API responses follow this structure
  */
-export interface HALResource<T = unknown> {
-  data: T; // Main data payload
+export type HALResource<T = unknown> = T & {
   _links: HALLink[];
-}
+};
 
 // ============================================================================
 // Pagination Types

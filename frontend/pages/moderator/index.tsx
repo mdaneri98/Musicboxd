@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated, selectAuthInitializing, selectCurrentUser, fetchAlbumsAsync } from '@/store/slices';
-import { Artist, Album, HALResource } from '@/types';
+import { Artist, Album } from '@/types';
 import { fetchArtistsAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
 import { ReviewItemType } from '@/types/enums';
@@ -73,7 +73,7 @@ export default function ModeratorDashboardPage() {
 
         if (activeTab === ReviewItemType.ALBUM) {
           const artistsData = await dispatch(fetchArtistsAsync({ page: 1, size: 10, search: query })).unwrap();
-          const artists = artistsData.items.map((item: HALResource<Artist>) => item.data);
+          const artists = artistsData.items;
           const results: SearchResultItem[] = artists.map((artist: Artist) => ({
             id: artist.id,
             name: artist.name,
@@ -109,7 +109,7 @@ export default function ModeratorDashboardPage() {
           }
         } else if (activeTab === ReviewItemType.SONG) {
           const albumsData = await dispatch(fetchAlbumsAsync({ page: 1, size: 10, search: query })).unwrap();
-          const albums = albumsData.items.map((item: HALResource<Album>) => item.data);
+          const albums = albumsData.items;
           const results: SearchResultItem[] = albums.map((album: Album) => ({
             id: album.id,
             name: album.title,

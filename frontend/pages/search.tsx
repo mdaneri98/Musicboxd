@@ -23,7 +23,7 @@ export default function SearchPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  
+
   const [activeTab, setActiveTab] = useState<SearchTabEnum>(SearchTabEnum.MUSIC);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
@@ -32,7 +32,7 @@ export default function SearchPage() {
   const [showResults, setShowResults] = useState(false);
   const [currentFocus, setCurrentFocus] = useState(-1);
   const [error, setError] = useState<string | null>(null);
-  
+
   const searchWrapperRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,9 +40,9 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchRecommendedUsers = async () => {
       setLoadingRecommended(true);
-      try { 
+      try {
         const usersData = await dispatch(fetchUsersAsync({ page: 1, size: 6, filter: FilterTypeEnum.RECOMMENDED })).unwrap();
-        setRecommendedUsers(usersData.items.map((user: HALResource<User>) => user.data as User));
+        setRecommendedUsers(usersData.items as User[]);
       } catch (error) {
         console.error('Failed to fetch recommended users:', error);
       } finally {
@@ -87,36 +87,36 @@ export default function SearchPage() {
         dispatch(fetchUsersAsync({ page: 1, size: 10, search: query })).unwrap(),
       ]);
 
-      const artistResults: SearchResultItem[] = artistsData.items.map((artist: HALResource<Artist>  ) => ({
-        id: artist.data.id,
-        name: artist.data.name,
+      const artistResults: SearchResultItem[] = artistsData.items.map((artist: HALResource<Artist>) => ({
+        id: artist.id,
+        name: artist.name,
         type: SearchTypeEnum.ARTISTS,
-        imgId: artist.data.image_id,
-        imageUrl: artist.data.image_id ? imageRepository.getImageUrl(artist.data.image_id) : undefined,
+        imgId: artist.image_id,
+        imageUrl: artist.image_id ? imageRepository.getImageUrl(artist.image_id) : undefined,
       }));
 
       const albumResults: SearchResultItem[] = albumsData.items.map((album: HALResource<Album>) => ({
-        id: album.data.id,
-        name: album.data.title,
+        id: album.id,
+        name: album.title,
         type: SearchTypeEnum.ALBUMS,
-        imgId: album.data.image_id,
-        imageUrl: album.data.image_id ? imageRepository.getImageUrl(album.data.image_id) : undefined,
+        imgId: album.image_id,
+        imageUrl: album.image_id ? imageRepository.getImageUrl(album.image_id) : undefined,
       }));
 
       const songResults: SearchResultItem[] = songsData.items.map((song: HALResource<Song>) => ({
-        id: song.data.id,
-        name: song.data.title,
+        id: song.id,
+        name: song.title,
         type: SearchTypeEnum.SONGS,
-        imgId: song.data.album_image_id,
-        imageUrl: song.data.album_image_id ? imageRepository.getImageUrl(song.data.album_image_id) : undefined,
+        imgId: song.album_image_id,
+        imageUrl: song.album_image_id ? imageRepository.getImageUrl(song.album_image_id) : undefined,
       }));
 
       const userResults: SearchResultItem[] = usersData.items.map((user: HALResource<User>) => ({
-        id: user.data.id,
-        name: user.data.username,
+        id: user.id,
+        name: user.username,
         type: SearchTypeEnum.USERS,
-        imgId: user.data.image_id,
-        imageUrl: user.data.image_id ? imageRepository.getImageUrl(user.data.image_id) : undefined,
+        imgId: user.image_id,
+        imageUrl: user.image_id ? imageRepository.getImageUrl(user.image_id) : undefined,
       }));
 
       // Filter and sort based on active tab
@@ -145,7 +145,7 @@ export default function SearchPage() {
         return indexA - indexB;
       });
 
-      setSearchResults(results.slice(0, Math.min(results.length, 7))); 
+      setSearchResults(results.slice(0, Math.min(results.length, 7)));
       setShowResults(true);
 
       if (results.length === 0) {
@@ -226,11 +226,11 @@ export default function SearchPage() {
           <span
             className={`tab ${activeTab === SearchTabEnum.USERS ? 'active' : ''}`}
             onClick={() => handleTabChange(SearchTabEnum.USERS)}
-          > 
+          >
             {t('search.tabs.users')}
           </span>
         </div>
- 
+
         {/* Search Input */}
         <div className="search-wrapper" ref={searchWrapperRef}>
           <input
@@ -292,11 +292,11 @@ export default function SearchPage() {
           ) : recommendedUsers.length > 0 ? (
             <>
               <h1 className="page-title">{t('search.recommendedUsers')}</h1>
-            <div className="users-grid">
-              {recommendedUsers.map((user) => (
-                <UserCard key={user.id} user={user} />
-              ))}
-            </div>
+              <div className="users-grid">
+                {recommendedUsers.map((user) => (
+                  <UserCard key={user.id} user={user} />
+                ))}
+              </div>
             </>
           ) : null}
         </>

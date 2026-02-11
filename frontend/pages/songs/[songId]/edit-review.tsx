@@ -64,12 +64,12 @@ const EditSongReviewPage = () => {
         const songIdNum = parseInt(songId as string);
         const fetchedSong = await dispatch(fetchSongByIdAsync(songIdNum)).unwrap();
 
-        const albumData = await dispatch(fetchAlbumByIdAsync(fetchedSong.data.album_id)).unwrap();
-        setAlbum(albumData.data);
+        const albumData = await dispatch(fetchAlbumByIdAsync(fetchedSong.album_id)).unwrap();
+        setAlbum(albumData);
 
         if (currentUser) {
           const reviews = await dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 100 })).unwrap();
-          const userReview = reviews.items.find((r: HALResource<Review>) => r.data.user_id === currentUser.id);
+          const userReview = reviews.items.find((r: HALResource<Review>) => r.user_id === currentUser.id);
 
           if (!userReview) {
             // No review to edit, redirect to create
@@ -77,7 +77,7 @@ const EditSongReviewPage = () => {
             return;
           }
 
-          setExistingReview(userReview.data);
+          setExistingReview(userReview);
         }
       } catch (error) {
         console.error('Failed to fetch song:', error);

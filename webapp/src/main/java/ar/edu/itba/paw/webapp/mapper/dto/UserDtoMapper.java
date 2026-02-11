@@ -57,7 +57,7 @@ public class UserDtoMapper {
                     .path("users").path(String.valueOf(user.getId())).path("followers").build());
 
             dto.setFollowing(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("following").build());
+                    .path("users").path(String.valueOf(user.getId())).path("followings").build());
 
             dto.setFavoriteArtists(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("favorites").path("artists").build());

@@ -6,8 +6,8 @@ import { ReviewCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  selectIsAuthenticated, 
+import {
+  selectIsAuthenticated,
   selectCurrentUser,
   fetchSongByIdAsync,
   fetchAlbumByIdAsync,
@@ -41,7 +41,7 @@ const SongDetailPage = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  
+
   const song = useAppSelector(selectCurrentSong);
   const reviews = useAppSelector(selectSongReviews);
   const loading = useAppSelector(selectLoadingSong);
@@ -50,7 +50,7 @@ const SongDetailPage = () => {
   const hasMoreReviews = useAppSelector(selectSongReviewsHasMore);
   const error = useAppSelector(selectSongError);
   const currentUserReview = useAppSelector(selectCurrentUserSongReview);
-  
+
   const [album, setAlbum] = useState<Album | null>(null);
   const [artist, setArtist] = useState<Artist | null>(null);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
@@ -63,19 +63,19 @@ const SongDetailPage = () => {
 
   useEffect(() => {
     if (!songId) return;
-    
+
     const songIdNum = parseInt(songId as string);
     dispatch(fetchSongByIdAsync(songIdNum))
       .unwrap()
       .then((songData) => {
-        dispatch(fetchAlbumByIdAsync(songData.data.album_id))
+        dispatch(fetchAlbumByIdAsync(songData.album_id))
           .unwrap()
-          .then((albumData) => setAlbum(albumData.data))
+          .then((albumData) => setAlbum(albumData))
           .catch((err) => console.error(t('common.error'), err));
-        
-        dispatch(fetchArtistByIdAsync(songData.data.artist_id))
+
+        dispatch(fetchArtistByIdAsync(songData.artist_id))
           .unwrap()
-          .then((artistData) => setArtist(artistData.data))
+          .then((artistData) => setArtist(artistData))
           .catch((err) => console.error(t('common.error'), err));
       })
       .catch((err) => console.error(t('common.error'), err));
@@ -87,7 +87,7 @@ const SongDetailPage = () => {
   // Fetch current user's review if authenticated and has reviewed
   useEffect(() => {
     if (!songId || !isAuthenticated || !currentUser || !song?.reviewed) return;
-    
+
     const songIdNum = parseInt(songId as string);
     dispatch(fetchUserSongReviewAsync({ songId: songIdNum, userId: currentUser.id }));
   }, [songId, isAuthenticated, currentUser, song?.reviewed, dispatch]);
@@ -95,14 +95,14 @@ const SongDetailPage = () => {
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!songId || !hasMoreReviews || loadingMoreReviews) return;
-    
+
     const songIdNum = parseInt(songId as string);
     const nextPage = reviewsPagination.page + 1;
-    
-    await dispatch(fetchMoreSongReviewsAsync({ 
-      songId: songIdNum, 
-      page: nextPage, 
-      size: reviewsPagination.size 
+
+    await dispatch(fetchMoreSongReviewsAsync({
+      songId: songIdNum,
+      page: nextPage,
+      size: reviewsPagination.size
     }));
   }, [dispatch, songId, reviewsPagination.page, reviewsPagination.size, hasMoreReviews, loadingMoreReviews]);
 

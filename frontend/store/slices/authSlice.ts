@@ -20,7 +20,7 @@ export interface AuthState {
   isModerator: boolean;
   loading: boolean;
   error: string | null;
-  initializing: boolean; 
+  initializing: boolean;
 }
 
 // ============================================================================
@@ -61,13 +61,13 @@ export const loginAsync = createAsyncThunk<
  * Register a new user
  */
 export const registerAsync = createAsyncThunk<
-  User,
+  LoginResponse,
   RegisterFormData,
   { rejectValue: string }
 >('auth/register', async (registerData, { rejectWithValue }) => {
   try {
     const response = await authRepository.register(registerData);
-    return response.data;
+    return response;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Registration failed');
   }
@@ -96,7 +96,7 @@ export const getCurrentUserAsync = createAsyncThunk<User, void, { rejectValue: s
   async (_, { rejectWithValue }) => {
     try {
       const response = await authRepository.getCurrentUser();
-      return response.data as User;
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to get current user');
     }
@@ -124,12 +124,12 @@ export const checkAuthAsync = createAsyncThunk<
 
       // Try to get current user to verify token is still valid
       const response = await authRepository.getCurrentUser();
-      if (!response.data) {
+      if (!response) {
         return rejectWithValue('Invalid user response');
       }
 
       return {
-        user: response.data as User,
+        user: response,
         accessToken,
         refreshToken,
       };
@@ -233,14 +233,25 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerAsync.fulfilled, (state) => {
+      .addCase(registerAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        // After registration, user needs to login
+        // Auto-login successful
+        state.currentUser = action.payload.user as User;
+        state.jwt = {
+          accessToken: action.payload.access_token,
+          refreshToken: action.payload.refresh_token,
+        };
+        state.isAuthenticated = true;
+        state.isModerator = action.payload.user.moderator;
       })
       .addCase(registerAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Registration failed';
+        state.isAuthenticated = false;
+        state.currentUser = null;
+        state.jwt = { accessToken: null, refreshToken: null };
+        state.isModerator = false;
       });
 
     // Logout
@@ -337,8 +348,8 @@ const authSlice = createSlice({
       });
 
     builder.addCase(updateUserConfigAsync.fulfilled, (state, action) => {
-      if (state.currentUser?.id === action.payload.data.id) {
-        state.currentUser = action.payload.data as User;
+      if (state.currentUser?.id === action.payload.id) {
+        state.currentUser = action.payload as User;
       }
     });
   },

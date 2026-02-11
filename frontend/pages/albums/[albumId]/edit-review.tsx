@@ -7,14 +7,14 @@ import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
 import { ConfirmationModal, LoadingSpinner } from '@/components/ui';
 import { useAppSelector } from '@/store/hooks';
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  updateReviewAsync, 
-  fetchAlbumByIdAsync, 
-  selectCurrentAlbum, 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  updateReviewAsync,
+  fetchAlbumByIdAsync,
+  selectCurrentAlbum,
   selectLoadingAlbum,
-  fetchAlbumReviewsAsync, 
+  fetchAlbumReviewsAsync,
   deleteReviewAsync,
   clearCurrentAlbum
 } from '@/store/slices';
@@ -61,15 +61,15 @@ const EditAlbumReviewPage = () => {
 
         if (currentUser) {
           const reviews = await dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 100 })).unwrap();
-          const userReview = reviews.items.find((r: any) => r.data.user_id === currentUser.id);
-          
+          const userReview = reviews.items.find((r: any) => r.user_id === currentUser.id);
+
           if (!userReview) {
             // No review to edit, redirect to create
             router.push(`/albums/${albumId}/reviews`);
             return;
           }
-          
-          setExistingReview(userReview.data);
+
+          setExistingReview(userReview);
         }
       } catch (error) {
         console.error('Failed to fetch album:', error);
@@ -83,7 +83,7 @@ const EditAlbumReviewPage = () => {
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!album || !existingReview) return;
-    
+
     try {
       setSubmitLoading(true);
       data.item_type = ReviewItemType.ALBUM;
@@ -135,7 +135,7 @@ const EditAlbumReviewPage = () => {
             <div className="review-preview-info">
               <h2 className="review-preview-title">{album.title}</h2>
               {album.release_date && (
-                  <p className="review-preview-subtitle">{formatDate(album.release_date)}</p>
+                <p className="review-preview-subtitle">{formatDate(album.release_date)}</p>
               )}
             </div>
           </Link>

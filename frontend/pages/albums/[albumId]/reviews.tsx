@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Layout } from '@/components/layout';
 import { ReviewForm } from '@/components/forms';
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  createAlbumReviewAsync, 
-  fetchAlbumByIdAsync, 
-  selectCurrentAlbum, 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  createAlbumReviewAsync,
+  fetchAlbumByIdAsync,
+  selectCurrentAlbum,
   selectLoadingAlbum,
-  fetchAlbumReviewsAsync, 
+  fetchAlbumReviewsAsync,
   clearCurrentAlbum
 } from '@/store/slices';
 import { imageRepository } from '@/repositories';
@@ -56,8 +56,8 @@ const AlbumReviewPage = () => {
 
         if (currentUser) {
           const reviews = await dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 100 })).unwrap();
-          const userReview = reviews.items.find((r: any) => r.data.user_id === currentUser.id);
-          
+          const userReview = reviews.items.find((r: any) => r.user_id === currentUser.id);
+
           if (userReview) {
             router.push(`/albums/${albumId}/edit-review`);
             return;
@@ -75,10 +75,10 @@ const AlbumReviewPage = () => {
 
   const handleSubmit = async (data: ReviewFormData) => {
     if (!album) return;
-    
+
     try {
       setSubmitLoading(true);
-      await dispatch(createAlbumReviewAsync({ 
+      await dispatch(createAlbumReviewAsync({
         title: data.title,
         description: data.description,
         rating: data.rating,
@@ -121,7 +121,7 @@ const AlbumReviewPage = () => {
             <div className="review-preview-info">
               <h2 className="review-preview-title">{album.title}</h2>
               {album.release_date && (
-                  <p className="review-preview-subtitle">{formatDate(album.release_date)}</p>
+                <p className="review-preview-subtitle">{formatDate(album.release_date)}</p>
               )}
             </div>
           </Link>

@@ -12,7 +12,7 @@ import { NotificationType, ReviewItemType } from "./enums";
 export interface User {
   id: number;
   username: string;
-  email: string;
+  email?: string;
   name?: string;
   bio?: string;
   image_id?: number;
@@ -28,7 +28,7 @@ export interface User {
   has_follow_notifications_enabled: boolean;
   has_like_notifications_enabled: boolean;
   has_comments_notifications_enabled: boolean;
-  has_reviews_notifications_enabled: boolean; 
+  has_reviews_notifications_enabled: boolean;
 }
 
 // ============================================================================

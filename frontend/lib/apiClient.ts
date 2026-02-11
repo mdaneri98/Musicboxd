@@ -141,21 +141,23 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
-          headers: {
-            Authorization: `Bearer ${refreshToken}`,
-          },
-        });
-
-        const { access_token, refresh_token: newRefreshToken } = response.data;
-
-        tokenStorage.setTokens(access_token, newRefreshToken);
-        processQueue(null, access_token);
-
+        // Retry original request with refresh token
         if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
+          originalRequest.headers.Authorization = `Bearer ${refreshToken}`;
         }
-        return axiosInstance(originalRequest);
+
+        const response = await axiosInstance(originalRequest);
+
+        // Check for new tokens in headers
+        const newAccessToken = response.headers['x-jwt-token'];
+        const newRefreshToken = response.headers['x-jwt-refresh-token'];
+
+        if (newAccessToken && newRefreshToken) {
+          tokenStorage.setTokens(newAccessToken, newRefreshToken);
+          processQueue(null, newAccessToken);
+        }
+
+        return response;
       } catch (refreshError) {
         processQueue(refreshError as Error, null);
         tokenStorage.clearTokens();
@@ -203,49 +205,18 @@ const handleApiError = (error: unknown): APIError => {
 // Periodic Token Refresh (Module Level)
 // ============================================================================
 
-// Dedicated axios instance for refresh to avoid interceptor recursion
-const refreshClient = axios.create({
-  baseURL: API_BASE_URL,
-  validateStatus: () => true, // Never throw on HTTP errors
-});
+
+
+// Periodic refresh removed as it relies on specific endpoint.
+// We allow the interceptor to handle refresh on 401s or 
+// we could implement a proactive refresh using a safe GET endpoint.
+// For now, we'll disable the interval to avoid errors.
 
 if (typeof window !== 'undefined') {
   const win = window as any;
-  const REFRESH_VERSION = 'v1';
-
   if (win.__auth_refresh_interval) {
     clearInterval(win.__auth_refresh_interval);
   }
-
-  win.__auth_refresh_version = REFRESH_VERSION;
-  win.__auth_refresh_interval = setInterval(async () => {
-    if (win.__auth_refresh_version !== REFRESH_VERSION) {
-      clearInterval(win.__auth_refresh_interval);
-      return;
-    }
-
-    const refreshToken = tokenStorage.getRefreshToken();
-    if (!refreshToken) return;
-
-    try {
-      const response = await refreshClient.post('/auth/refresh', {}, {
-        headers: { Authorization: `Bearer ${refreshToken}` },
-      });
-
-      if (response.status === 200) {
-        const { access_token, refresh_token: newRefreshToken } = response.data;
-        if (access_token && newRefreshToken) {
-          tokenStorage.setTokens(access_token, newRefreshToken);
-        }
-      } else if ([401, 403, 500].includes(response.status)) {
-        clearInterval(win.__auth_refresh_interval);
-        tokenStorage.clearTokens();
-        window.location.href = '/login';
-      }
-    } catch {
-      // Network error - retry on next interval
-    }
-  }, 100000);
 }
 
 // ============================================================================
@@ -283,6 +254,22 @@ class ApiClient {
         signal: options?.signal,
       });
       return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  async getWithHeaders<T>(
+    url: string,
+    options?: APIRequestOptions
+  ): Promise<{ data: T, headers: any }> {
+    try {
+      const response: AxiosResponse<T> = await axiosInstance.get(url, {
+        headers: options?.headers,
+        params: options?.params,
+        signal: options?.signal,
+      });
+      return { data: response.data, headers: response.headers };
     } catch (error) {
       throw handleApiError(error);
     }

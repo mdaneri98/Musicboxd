@@ -63,6 +63,18 @@ class ArtistRepository {
         throw new Error('Invalid artists response: missing data');
       }
 
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
+      }
+
       return response as Collection<HALResource<Artist>>;
     } catch (error) {
       console.error('Get artists error:', error);
@@ -178,6 +190,18 @@ class ArtistRepository {
         throw new Error('Invalid artist reviews response: missing data');
       }
 
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
+      }
+
       return response as Collection<HALResource<Review>>;
     } catch (error) {
       console.error(`Get artist ${id} reviews error:`, error);
@@ -200,7 +224,7 @@ class ArtistRepository {
       const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
 
       if (response && response.items && response.items.length > 0) {
-        return response.items[0].data;
+        return response.items[0];
       }
 
       return null;
@@ -229,6 +253,18 @@ class ArtistRepository {
 
       if (!response) {
         throw new Error('Invalid artist albums response: missing data');
+      }
+
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
       }
 
       return response as Collection<HALResource<Album>>;
@@ -281,6 +317,18 @@ class ArtistRepository {
 
       if (!response) {
         throw new Error('Invalid artist songs response: missing data');
+      }
+
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
       }
 
       return response as Collection<HALResource<Song>>;

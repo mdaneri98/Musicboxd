@@ -87,7 +87,7 @@ const initialState: UserState = {
   userReviews: [],
   pagination: {
     page: 1,
-    size: 10, 
+    size: 10,
     totalCount: 0,
     hasMore: true,
   },
@@ -382,7 +382,7 @@ export const updateUserConfigAsync = createAsyncThunk<
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to update user config');
   }
-});  
+});
 // ============================================================================
 // Slice
 // ============================================================================
@@ -436,7 +436,7 @@ const userSlice = createSlice({
         state.loading = false;
         // Add users to normalized state
         action.payload.items.forEach((user) => {
-          state.users[user.data.id] = user.data as User;
+          state.users[user.id] = user as User;
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
@@ -459,8 +459,8 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserByIdAsync.fulfilled, (state, action) => {
         state.loadingProfile = false;
-        state.currentProfile = action.payload.data as User;
-        state.users[action.payload.data.id] = action.payload.data as User;
+        state.currentProfile = action.payload as User;
+        state.users[action.payload.id] = action.payload as User;
       })
       .addCase(fetchUserByIdAsync.rejected, (state, action) => {
         state.loadingProfile = false;
@@ -475,9 +475,9 @@ const userSlice = createSlice({
       })
       .addCase(updateUserAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.users[action.payload.data.id] = action.payload.data as User;
-        if (state.currentProfile?.id === action.payload.data.id) {
-          state.currentProfile = action.payload.data as User;
+        state.users[action.payload.id] = action.payload as User;
+        if (state.currentProfile?.id === action.payload.id) {
+          state.currentProfile = action.payload as User;
         }
       })
       .addCase(updateUserAsync.rejected, (state, action) => {
@@ -511,9 +511,9 @@ const userSlice = createSlice({
       })
       .addCase(fetchFollowersAsync.fulfilled, (state, action) => {
         state.loadingFollowers = false;
-        state.followers = action.payload.items.map((user) => user.data as User);
+        state.followers = action.payload.items.map((user) => user as User);
         action.payload.items.forEach((user) => {
-          state.users[user.data.id] = user.data as User;
+          state.users[user.id] = user as User;
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.followersPagination = {
@@ -538,11 +538,11 @@ const userSlice = createSlice({
         state.loadingMoreFollowers = false;
         const existingIds = new Set(state.followers.map(u => u.id));
         const newFollowers = action.payload.items
-          .map((user) => user.data as User)
+          .map((user) => user as User)
           .filter(u => !existingIds.has(u.id));
         state.followers = [...state.followers, ...newFollowers];
         action.payload.items.forEach((user) => {
-          state.users[user.data.id] = user.data as User;
+          state.users[user.id] = user as User;
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.followersPagination = {
@@ -565,9 +565,9 @@ const userSlice = createSlice({
       })
       .addCase(fetchFollowingAsync.fulfilled, (state, action) => {
         state.loadingFollowing = false;
-        state.following = action.payload.items.map((user) => user.data as User);
+        state.following = action.payload.items.map((user) => user as User);
         action.payload.items.forEach((user) => {
-          state.users[user.data.id] = user.data as User;
+          state.users[user.id] = user as User;
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.followingPagination = {
@@ -592,11 +592,11 @@ const userSlice = createSlice({
         state.loadingMoreFollowing = false;
         const existingIds = new Set(state.following.map(u => u.id));
         const newFollowing = action.payload.items
-          .map((user) => user.data as User)
+          .map((user) => user as User)
           .filter(u => !existingIds.has(u.id));
         state.following = [...state.following, ...newFollowing];
         action.payload.items.forEach((user) => {
-          state.users[user.data.id] = user.data as User;
+          state.users[user.id] = user as User;
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.followingPagination = {
@@ -651,7 +651,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchFavoriteArtistsAsync.fulfilled, (state, action) => {
         state.loadingFavoriteArtists = false;
-        state.favoriteArtists = action.payload.items.map((artist) => artist.data as Artist);
+        state.favoriteArtists = action.payload.items.map((artist) => artist as Artist);
       })
       .addCase(fetchFavoriteArtistsAsync.rejected, (state, action) => {
         state.loadingFavoriteArtists = false;
@@ -666,7 +666,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchFavoriteAlbumsAsync.fulfilled, (state, action) => {
         state.loadingFavoriteAlbums = false;
-        state.favoriteAlbums = action.payload.items.map((album) => album.data as Album);
+        state.favoriteAlbums = action.payload.items.map((album) => album as Album);
       })
       .addCase(fetchFavoriteAlbumsAsync.rejected, (state, action) => {
         state.loadingFavoriteAlbums = false;
@@ -681,7 +681,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchFavoriteSongsAsync.fulfilled, (state, action) => {
         state.loadingFavoriteSongs = false;
-        state.favoriteSongs = action.payload.items.map((song) => song.data as Song);
+        state.favoriteSongs = action.payload.items.map((song) => song as Song);
       })
       .addCase(fetchFavoriteSongsAsync.rejected, (state, action) => {
         state.loadingFavoriteSongs = false;
@@ -696,7 +696,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        state.userReviews = action.payload.items.map((review) => review.data as Review);
+        state.userReviews = action.payload.items.map((review) => review as Review);
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.reviewsPagination = {
           page: action.payload.currentPage,
@@ -720,7 +720,7 @@ const userSlice = createSlice({
         state.loadingMoreReviews = false;
         const existingIds = new Set(state.userReviews.map(r => r.id));
         const newReviews = action.payload.items
-          .map((review) => review.data as Review)
+          .map((review) => review as Review)
           .filter(r => !existingIds.has(r.id));
         state.userReviews = [...state.userReviews, ...newReviews];
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
@@ -744,9 +744,9 @@ const userSlice = createSlice({
       })
       .addCase(updateUserConfigAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.users[action.payload.data.id] = action.payload.data as User;
-        if (state.currentProfile?.id === action.payload.data.id) {
-          state.currentProfile = action.payload.data as User;
+        state.users[action.payload.id] = action.payload as User;
+        if (state.currentProfile?.id === action.payload.id) {
+          state.currentProfile = action.payload as User;
         }
       })
       .addCase(updateUserConfigAsync.rejected, (state, action) => {

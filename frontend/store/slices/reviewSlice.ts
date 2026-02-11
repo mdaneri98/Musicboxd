@@ -412,9 +412,9 @@ const reviewSlice = createSlice({
         // Clear and replace data
         state.reviews = {};
         state.orderedReviewsIds = [];
-        action.payload.items.forEach((review) => { 
-          state.reviews[review.data.id] = review.data as Review;
-          state.orderedReviewsIds.push(review.data.id);
+        action.payload.items.forEach((review) => {
+          state.reviews[review.id] = review as Review;
+          state.orderedReviewsIds.push(review.id);
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
@@ -439,9 +439,9 @@ const reviewSlice = createSlice({
         state.loadingMore = false;
         // Append data without duplicates
         action.payload.items.forEach((review) => {
-          if (!state.reviews[review.data.id]) {
-            state.reviews[review.data.id] = review.data as Review;
-            state.orderedReviewsIds.push(review.data.id);
+          if (!state.reviews[review.id]) {
+            state.reviews[review.id] = review as Review;
+            state.orderedReviewsIds.push(review.id);
           }
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
@@ -465,8 +465,8 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewByIdAsync.fulfilled, (state, action) => {
         state.loadingReview = false;
-        state.currentReview = action.payload.data as Review;
-        state.reviews[action.payload.data.id] = action.payload.data as Review;
+        state.currentReview = action.payload as Review;
+        state.reviews[action.payload.id] = action.payload as Review;
       })
       .addCase(fetchReviewByIdAsync.rejected, (state, action) => {
         state.loadingReview = false;
@@ -481,7 +481,7 @@ const reviewSlice = createSlice({
       })
       .addCase(createReviewAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.reviews[action.payload.data.id] = action.payload.data as Review;
+        state.reviews[action.payload.id] = action.payload as Review;
       })
       .addCase(createReviewAsync.rejected, (state, action) => {
         state.loading = false;
@@ -496,9 +496,9 @@ const reviewSlice = createSlice({
       })
       .addCase(updateReviewAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.reviews[action.payload.data.id] = action.payload.data as Review;
-        if (state.currentReview?.id === action.payload.data.id) {
-          state.currentReview = action.payload.data as Review;
+        state.reviews[action.payload.id] = action.payload as Review;
+        if (state.currentReview?.id === action.payload.id) {
+          state.currentReview = action.payload as Review;
         }
       })
       .addCase(updateReviewAsync.rejected, (state, action) => {
@@ -532,7 +532,7 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewLikesAsync.fulfilled, (state, action) => {
         state.loadingLikes = false;
-        state.reviewLikes = action.payload.items.map((like) => like.data as User);
+        state.reviewLikes = action.payload.items.map((like) => like as User);
         const loadedCount = action.payload.currentPage * action.payload.pageSize;
         const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
         state.likesPagination = {
@@ -558,7 +558,7 @@ const reviewSlice = createSlice({
         // Append without duplicates
         const existingIds = new Set(state.reviewLikes.map(u => u.id));
         const newLikes = action.payload.items
-          .map((like) => like.data as User)
+          .map((like) => like as User)
           .filter(u => !existingIds.has(u.id));
         state.reviewLikes = [...state.reviewLikes, ...newLikes];
         const loadedCount = action.payload.currentPage * action.payload.pageSize;
@@ -619,7 +619,7 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviewCommentsAsync.fulfilled, (state, action) => {
         state.loadingComments = false;
-        state.reviewComments = action.payload.items.map((comment) => comment.data as Comment);
+        state.reviewComments = action.payload.items.map((comment) => comment as Comment);
         // hasMore is false if we got fewer items than page size OR if we've loaded all items
         const loadedCount = action.payload.currentPage * action.payload.pageSize;
         const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
@@ -646,7 +646,7 @@ const reviewSlice = createSlice({
         // Append without duplicates
         const existingIds = new Set(state.reviewComments.map(c => c.id));
         const newComments = action.payload.items
-          .map((comment) => comment.data as Comment)
+          .map((comment) => comment as Comment)
           .filter(c => !existingIds.has(c.id));
         state.reviewComments = [...state.reviewComments, ...newComments];
         // hasMore is false if we got fewer items than page size OR if we've loaded all items
@@ -672,8 +672,8 @@ const reviewSlice = createSlice({
       })
       .addCase(postCommentAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.reviewComments.unshift(action.payload.data as Comment);
-        const reviewId = action.payload.data.review_id;
+        state.reviewComments.unshift(action.payload as Comment);
+        const reviewId = action.payload.review_id;
         if (state.reviews[reviewId]) {
           state.reviews[reviewId].comment_amount += 1;
         }
@@ -714,7 +714,7 @@ const reviewSlice = createSlice({
     // Block Review
     builder
       .addCase(blockReviewAsync.fulfilled, (state, action) => {
-        const reviewData = action.payload.data as Review;
+        const reviewData = action.payload as Review;
         state.reviews[reviewData.id] = reviewData;
         if (state.currentReview?.id === reviewData.id) {
           state.currentReview = reviewData;
@@ -727,7 +727,7 @@ const reviewSlice = createSlice({
     // Unblock Review
     builder
       .addCase(unblockReviewAsync.fulfilled, (state, action) => {
-        const reviewData = action.payload.data as Review;
+        const reviewData = action.payload as Review;
         state.reviews[reviewData.id] = reviewData;
         if (state.currentReview?.id === reviewData.id) {
           state.currentReview = reviewData;

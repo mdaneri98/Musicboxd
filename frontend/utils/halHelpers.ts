@@ -225,17 +225,17 @@ export const buildUrl = (
 // };
 
 /**
- * Check if resource has data
+ * Check if resource is valid (not null/undefined)
  */
-export const hasData = <T>(resource: HALResource<T>): resource is Required<HALResource<T>> => {
-  return resource.data !== undefined && resource.data !== null;
+export const hasData = <T>(resource: HALResource<T> | null | undefined): resource is HALResource<T> => {
+  return resource !== null && resource !== undefined;
 };
 
 /**
- * Extract data from HAL resource safely
+ * Extract data from HAL resource (returns the resource itself as it is now flattened)
  */
 export const extractData = <T>(resource: HALResource<T>): T | null => {
-  return hasData(resource) ? resource.data : null;
+  return hasData(resource) ? resource : null;
 };
 
 /**
@@ -243,8 +243,8 @@ export const extractData = <T>(resource: HALResource<T>): T | null => {
  */
 export const extractDataOrThrow = <T>(resource: HALResource<T>): T => {
   if (!hasData(resource)) {
-    throw new Error('Resource does not contain data');
+    throw new Error('Resource is null or undefined');
   }
-  return resource.data;
+  return resource;
 };
 

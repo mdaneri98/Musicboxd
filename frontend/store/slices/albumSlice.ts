@@ -298,8 +298,8 @@ const albumSlice = createSlice({
         state.albums = {};
         state.orderedAlbumsIds = [];
         action.payload.items.forEach((album) => {
-          state.albums[album.data.id] = album.data as Album;
-          state.orderedAlbumsIds.push(album.data.id);
+          state.albums[album.id] = album as Album;
+          state.orderedAlbumsIds.push(album.id);
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
@@ -322,9 +322,9 @@ const albumSlice = createSlice({
       .addCase(fetchMoreAlbumsAsync.fulfilled, (state, action) => {
         state.loadingMore = false;
         action.payload.items.forEach((album) => {
-          if (!state.albums[album.data.id]) {
-            state.albums[album.data.id] = album.data as Album;
-            state.orderedAlbumsIds.push(album.data.id);
+          if (!state.albums[album.id]) {
+            state.albums[album.id] = album as Album;
+            state.orderedAlbumsIds.push(album.id);
           }
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
@@ -347,9 +347,9 @@ const albumSlice = createSlice({
       })
       .addCase(fetchAlbumByIdAsync.fulfilled, (state, action) => {
         state.loadingAlbum = false;
-        state.currentAlbum = action.payload.data as Album;
-        if (!state.albums[action.payload.data.id]) {
-          state.albums[action.payload.data.id] = action.payload.data as Album;
+        state.currentAlbum = action.payload as Album;
+        if (!state.albums[action.payload.id]) {
+          state.albums[action.payload.id] = action.payload as Album;
         }
       })
       .addCase(fetchAlbumByIdAsync.rejected, (state, action) => {
@@ -364,8 +364,8 @@ const albumSlice = createSlice({
       })
       .addCase(createAlbumAsync.fulfilled, (state, action) => {
         state.loading = false;
-        if (!state.albums[action.payload.data.id]) {
-          state.albums[action.payload.data.id] = action.payload.data as Album;
+        if (!state.albums[action.payload.id]) {
+          state.albums[action.payload.id] = action.payload as Album;
         }
       })
       .addCase(createAlbumAsync.rejected, (state, action) => {
@@ -380,11 +380,11 @@ const albumSlice = createSlice({
       })
       .addCase(updateAlbumAsync.fulfilled, (state, action) => {
         state.loading = false;
-        if (state.albums[action.payload.data.id]) {
-          state.albums[action.payload.data.id] = action.payload.data as Album;
+        if (state.albums[action.payload.id]) {
+          state.albums[action.payload.id] = action.payload as Album;
         }
-        if (state.currentAlbum?.id === action.payload.data?.id) {
-          state.currentAlbum = action.payload.data as Album;
+        if (state.currentAlbum?.id === action.payload.id) {
+          state.currentAlbum = action.payload as Album;
         }
       })
       .addCase(updateAlbumAsync.rejected, (state, action) => {
@@ -417,7 +417,7 @@ const albumSlice = createSlice({
       .addCase(fetchAlbumSongsAsync.fulfilled, (state, action) => {
         state.loadingSongs = false;
         // Sobrescribir el array completo en lugar de acumular
-        state.albumSongs = action.payload.items.map((song) => song.data as Song);
+        state.albumSongs = action.payload.items.map((song) => song as Song);
       })
       .addCase(fetchAlbumSongsAsync.rejected, (state, action) => {
         state.loadingSongs = false;
@@ -431,7 +431,7 @@ const albumSlice = createSlice({
       })
       .addCase(fetchAlbumReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        state.albumReviews = action.payload.items.map((review) => review.data as Review);
+        state.albumReviews = action.payload.items.map((review) => review as Review);
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.reviewsPagination = {
           page: action.payload.currentPage,
@@ -454,7 +454,7 @@ const albumSlice = createSlice({
         state.loadingMoreReviews = false;
         const existingIds = new Set(state.albumReviews.map(r => r.id));
         const newReviews = action.payload.items
-          .map((review) => review.data as Review)
+          .map((review) => review as Review)
           .filter(r => !existingIds.has(r.id));
         state.albumReviews = [...state.albumReviews, ...newReviews];
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
@@ -481,26 +481,26 @@ const albumSlice = createSlice({
 
     builder
       .addCase(addAlbumFavoriteAsync.fulfilled, (state, action) => {
-        const updatedAlbum = action.payload.data as Album;
+        const updatedAlbum = action.payload as Album;
         state.currentAlbum = updatedAlbum;
         state.albums[updatedAlbum.id] = updatedAlbum;
       })
       .addCase(removeAlbumFavoriteAsync.fulfilled, (state, action) => {
-        const updatedAlbum = action.payload.data as Album;
+        const updatedAlbum = action.payload as Album;
         state.currentAlbum = updatedAlbum;
         state.albums[updatedAlbum.id] = updatedAlbum;
       });
 
     builder
       .addCase(blockReviewAsync.fulfilled, (state, action) => {
-        const reviewData = action.payload.data as Review;
+        const reviewData = action.payload as Review;
         const index = state.albumReviews.findIndex((r) => r.id === reviewData.id);
         if (index !== -1) {
           state.albumReviews[index] = reviewData;
         }
       })
       .addCase(unblockReviewAsync.fulfilled, (state, action) => {
-        const reviewData = action.payload.data as Review;
+        const reviewData = action.payload as Review;
         const index = state.albumReviews.findIndex((r) => r.id === reviewData.id);
         if (index !== -1) {
           state.albumReviews[index] = reviewData;

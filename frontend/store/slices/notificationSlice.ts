@@ -189,12 +189,12 @@ const notificationSlice = createSlice({
     removeNotification: (state, action: PayloadAction<number>) => {
       const notificationId = action.payload;
       const notification = state.notifications[notificationId];
-      
+
       // Update unread count if notification was unread
       if (notification && !notification.is_read) {
         state.unreadCount = Math.max(0, state.unreadCount - 1);
       }
-      
+
       delete state.notifications[notificationId];
       state.notificationIds = state.notificationIds.filter((id) => id !== notificationId);
       state.pagination.totalCount = Math.max(0, state.pagination.totalCount - 1);
@@ -227,12 +227,12 @@ const notificationSlice = createSlice({
         // Clear existing data for initial load
         state.notifications = {};
         state.notificationIds = [];
-        
+
         action.payload.items.forEach((notification) => {
-          state.notifications[notification.data.id] = notification.data as Notification;
-          state.notificationIds.push(notification.data.id);
+          state.notifications[notification.id] = notification as Notification;
+          state.notificationIds.push(notification.id);
         });
-        
+
         // Calculate hasMore: check if there are more items to load
         const loadedCount = action.payload.currentPage * action.payload.pageSize;
         const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
@@ -256,14 +256,14 @@ const notificationSlice = createSlice({
       })
       .addCase(fetchMoreNotificationsAsync.fulfilled, (state, action) => {
         state.loadingMore = false;
-        
+
         action.payload.items.forEach((notification) => {
-          if (!state.notifications[notification.data.id]) {
-            state.notifications[notification.data.id] = notification.data as Notification;
-            state.notificationIds.push(notification.data.id);
+          if (!state.notifications[notification.id]) {
+            state.notifications[notification.id] = notification as Notification;
+            state.notificationIds.push(notification.id);
           }
         });
-        
+
         // Calculate hasMore: check if there are more items to load
         const loadedCount = action.payload.currentPage * action.payload.pageSize;
         const hasMore = loadedCount < action.payload.totalCount && action.payload.items.length === action.payload.pageSize;
@@ -301,7 +301,7 @@ const notificationSlice = createSlice({
       .addCase(markAsReadAsync.fulfilled, (state, action) => {
         const notificationId = action.payload;
         const notification = state.notifications[notificationId];
-        
+
         if (notification && !notification.is_read) {
           notification.is_read = true;
           state.unreadCount = Math.max(0, state.unreadCount - 1);
@@ -334,12 +334,12 @@ const notificationSlice = createSlice({
         state.loading = false;
         const notificationId = action.payload;
         const notification = state.notifications[notificationId];
-        
+
         // Update unread count if notification was unread
         if (notification && !notification.is_read) {
           state.unreadCount = Math.max(0, state.unreadCount - 1);
         }
-        
+
         delete state.notifications[notificationId];
         state.notificationIds = state.notificationIds.filter((id) => id !== notificationId);
         state.pagination.totalCount = Math.max(0, state.pagination.totalCount - 1);

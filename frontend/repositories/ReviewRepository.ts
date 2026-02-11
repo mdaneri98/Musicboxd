@@ -60,6 +60,18 @@ class ReviewRepository {
         throw new Error('Invalid reviews response: missing data');
       }
 
+      // Handle case where the backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
+      }
+
       return response as Collection<HALResource<Review>>;
     } catch (error) {
       console.error('Get reviews error:', error);
@@ -170,6 +182,18 @@ class ReviewRepository {
         throw new Error('Invalid review likes response: missing data');
       }
 
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
+      }
+
       return response as Collection<HALResource<User>>;
     } catch (error) {
       console.error(`Get review ${reviewId} likes error:`, error);
@@ -222,6 +246,18 @@ class ReviewRepository {
 
       if (!response) {
         throw new Error('Invalid review comments response: missing data');
+      }
+
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
       }
 
       return response as Collection<HALResource<Comment>>;

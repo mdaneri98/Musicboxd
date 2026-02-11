@@ -61,6 +61,18 @@ class AlbumRepository {
         throw new Error('Invalid albums response: missing data');
       }
 
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
+      }
+
       return response as Collection<HALResource<Album>>;
     } catch (error) {
       console.error('Get albums error:', error);
@@ -119,7 +131,7 @@ class AlbumRepository {
    * @param albumData Updated album data
    * @returns Updated album
    */
-    async updateAlbum(id: number, albumData: EditAlbumFormData): Promise<HALResource<Album>> {
+  async updateAlbum(id: number, albumData: EditAlbumFormData): Promise<HALResource<Album>> {
     try {
       const response: HALResource<Album> = await apiClient.putResource<Album>(
         ALBUM_ENDPOINTS.ALBUM_BY_ID(id),
@@ -175,6 +187,18 @@ class AlbumRepository {
         throw new Error('Invalid album reviews response: missing data');
       }
 
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
+      }
+
       return response as Collection<HALResource<Review>>;
     } catch (error) {
       console.error(`Get album ${id} reviews error:`, error);
@@ -197,7 +221,7 @@ class AlbumRepository {
       const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
 
       if (response && response.items && response.items.length > 0) {
-        return response.items[0].data;
+        return response.items[0];
       }
 
       return null;
@@ -226,6 +250,18 @@ class AlbumRepository {
 
       if (!response) {
         throw new Error('Invalid album songs response: missing data');
+      }
+
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
       }
 
       return response as Collection<HALResource<Song>>;

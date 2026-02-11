@@ -41,7 +41,7 @@ class SongRepository {
    * @returns Collection of songs with pagination metadata
    */
   async getSongs(
-    page: number = 1, 
+    page: number = 1,
     size: number = 10,
     search?: string,
     filter?: string
@@ -54,8 +54,20 @@ class SongRepository {
       const url = buildUrl(SONG_ENDPOINTS.SONGS, params as Record<string, string | number | boolean>);
       const response: Collection<HALResource<Song>> = await apiClient.getCollection<Song>(url);
 
-        if (!response) {
+      if (!response) {
         throw new Error('Invalid songs response: missing data');
+      }
+
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
       }
 
       return response as Collection<HALResource<Song>>;
@@ -116,7 +128,7 @@ class SongRepository {
    * @param songData Updated song data
    * @returns Updated song
    */
-    async updateSong(id: number, songData: EditSongFormData): Promise<HALResource<Song>> {
+  async updateSong(id: number, songData: EditSongFormData): Promise<HALResource<Song>> {
     try {
       const response: HALResource<Song> = await apiClient.putResource<Song>(
         SONG_ENDPOINTS.SONG_BY_ID(id),
@@ -172,6 +184,18 @@ class SongRepository {
         throw new Error('Invalid song reviews response: missing data');
       }
 
+      // Handle case where backend returns empty array instead of Collection object
+      if (Array.isArray(response)) {
+        return {
+          items: [],
+          totalCount: 0,
+          currentPage: page,
+          totalPages: 0,
+          pageSize: size,
+          _links: []
+        };
+      }
+
       return response as Collection<HALResource<Review>>;
     } catch (error) {
       console.error(`Get song ${id} reviews error:`, error);
@@ -194,7 +218,7 @@ class SongRepository {
       const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
 
       if (response && response.items && response.items.length > 0) {
-        return response.items[0].data;
+        return response.items[0];
       }
 
       return null;

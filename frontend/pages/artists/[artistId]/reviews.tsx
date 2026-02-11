@@ -56,7 +56,7 @@ const ArtistReviewPage = () => {
 
         if (currentUser) {
           const reviews = await dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: 1, size: 100 })).unwrap();
-          const userReview = reviews.items.find(r => r.data.user_id === currentUser.id);
+          const userReview = reviews.items.find(r => r.user_id === currentUser.id);
 
           if (userReview) {
             router.push(`/artists/${artistId}/edit-review`);

@@ -298,7 +298,7 @@ export const addArtistFavoriteAsync = createAsyncThunk<
  * Remove artist from favorites
  */
 export const removeArtistFavoriteAsync = createAsyncThunk<
-    HALResource<Artist>,
+  HALResource<Artist>,
   number,
   { rejectValue: string }
 >('artists/removeFavoriteAsync', async (artistId, { rejectWithValue }) => {
@@ -362,7 +362,7 @@ const artistSlice = createSlice({
     removeArtist: (state, action: PayloadAction<number>) => {
       delete state.artists[action.payload];
       state.orderedArtistsIds = state.orderedArtistsIds.filter((id) => id !== action.payload);
-      },
+    },
   },
   extraReducers: (builder) => {
     // Fetch Artists (initial load - replaces data)
@@ -377,8 +377,8 @@ const artistSlice = createSlice({
         state.artists = {};
         state.orderedArtistsIds = [];
         action.payload.items.forEach((artist) => {
-          state.artists[artist.data.id] = artist.data as Artist;
-          state.orderedArtistsIds.push(artist.data.id);
+          state.artists[artist.id] = artist as Artist;
+          state.orderedArtistsIds.push(artist.id);
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
@@ -402,9 +402,9 @@ const artistSlice = createSlice({
       .addCase(fetchMoreArtistsAsync.fulfilled, (state, action) => {
         state.loadingMore = false;
         action.payload.items.forEach((artist) => {
-          if (!state.artists[artist.data.id]) {
-            state.artists[artist.data.id] = artist.data as Artist;
-            state.orderedArtistsIds.push(artist.data.id);
+          if (!state.artists[artist.id]) {
+            state.artists[artist.id] = artist as Artist;
+            state.orderedArtistsIds.push(artist.id);
           }
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
@@ -428,9 +428,9 @@ const artistSlice = createSlice({
       })
       .addCase(fetchArtistByIdAsync.fulfilled, (state, action) => {
         state.loadingArtist = false;
-        state.currentArtist = action.payload.data as Artist;
-        if (!state.artists[action.payload.data.id]) {
-          state.artists[action.payload.data.id] = action.payload.data as Artist;
+        state.currentArtist = action.payload as Artist;
+        if (!state.artists[action.payload.id]) {
+          state.artists[action.payload.id] = action.payload as Artist;
         }
       })
       .addCase(fetchArtistByIdAsync.rejected, (state, action) => {
@@ -446,7 +446,7 @@ const artistSlice = createSlice({
       })
       .addCase(createArtistAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.artists[action.payload.data.id] = action.payload.data as Artist;
+        state.artists[action.payload.id] = action.payload as Artist;
       })
       .addCase(createArtistAsync.rejected, (state, action) => {
         state.loading = false;
@@ -461,9 +461,9 @@ const artistSlice = createSlice({
       })
       .addCase(updateArtistAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.artists[action.payload.data.id] = action.payload.data as Artist;
-        if (state.currentArtist?.id === action.payload.data?.id) {
-          state.currentArtist = action.payload.data as Artist;
+        state.artists[action.payload.id] = action.payload as Artist;
+        if (state.currentArtist?.id === action.payload.id) {
+          state.currentArtist = action.payload as Artist;
         }
       })
       .addCase(updateArtistAsync.rejected, (state, action) => {
@@ -498,7 +498,7 @@ const artistSlice = createSlice({
       .addCase(fetchArtistAlbumsAsync.fulfilled, (state, action) => {
         state.loadingAlbums = false;
         // Sobrescribir el array completo en lugar de acumular
-        state.artistAlbums = action.payload.items.map((album) => album.data as Album);
+        state.artistAlbums = action.payload.items.map((album) => album as Album);
       })
       .addCase(fetchArtistAlbumsAsync.rejected, (state, action) => {
         state.loadingAlbums = false;
@@ -514,7 +514,7 @@ const artistSlice = createSlice({
       .addCase(fetchArtistSongsAsync.fulfilled, (state, action) => {
         state.loadingSongs = false;
         // Sobrescribir el array completo en lugar de acumular
-        state.artistSongs = action.payload.items.map((song) => song.data as Song);
+        state.artistSongs = action.payload.items.map((song) => song as Song);
       })
       .addCase(fetchArtistSongsAsync.rejected, (state, action) => {
         state.loadingSongs = false;
@@ -529,7 +529,7 @@ const artistSlice = createSlice({
       })
       .addCase(fetchArtistReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        state.artistReviews = action.payload.items.map((review) => review.data as Review);
+        state.artistReviews = action.payload.items.map((review) => review as Review);
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.reviewsPagination = {
           page: action.payload.currentPage,
@@ -553,7 +553,7 @@ const artistSlice = createSlice({
         state.loadingMoreReviews = false;
         const existingIds = new Set(state.artistReviews.map(r => r.id));
         const newReviews = action.payload.items
-          .map((review) => review.data as Review)
+          .map((review) => review as Review)
           .filter(r => !existingIds.has(r.id));
         state.artistReviews = [...state.artistReviews, ...newReviews];
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
@@ -581,26 +581,26 @@ const artistSlice = createSlice({
     // Add/Remove Favorite
     builder
       .addCase(addArtistFavoriteAsync.fulfilled, (state, action) => {
-        const updatedArtist = action.payload.data as Artist;
+        const updatedArtist = action.payload as Artist;
         state.currentArtist = updatedArtist;
         state.artists[updatedArtist.id] = updatedArtist;
       })
       .addCase(removeArtistFavoriteAsync.fulfilled, (state, action) => {
-        const updatedArtist = action.payload.data as Artist;
+        const updatedArtist = action.payload as Artist;
         state.currentArtist = updatedArtist;
         state.artists[updatedArtist.id] = updatedArtist;
       });
 
     builder
       .addCase(blockReviewAsync.fulfilled, (state, action) => {
-        const reviewData = action.payload.data as Review;
+        const reviewData = action.payload as Review;
         const index = state.artistReviews.findIndex((r) => r.id === reviewData.id);
         if (index !== -1) {
           state.artistReviews[index] = reviewData;
         }
       })
       .addCase(unblockReviewAsync.fulfilled, (state, action) => {
-        const reviewData = action.payload.data as Review;
+        const reviewData = action.payload as Review;
         const index = state.artistReviews.findIndex((r) => r.id === reviewData.id);
         if (index !== -1) {
           state.artistReviews[index] = reviewData;
