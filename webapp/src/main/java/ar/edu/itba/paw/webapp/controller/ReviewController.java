@@ -175,6 +175,17 @@ public class ReviewController extends BaseController {
         return responseBuilder.build();
     }
 
+    @GET
+    @Path(ApiUriConstants.REVIEW_LIKE_DETAIL)
+    public Response getReviewLikeByUser(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId,
+            @PathParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
+        if (reviewService.isLiked(userId, reviewId)) {
+            return Response.noContent().build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
     @POST
     @Path(ApiUriConstants.REVIEW_LIKES)
     public Response likeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {

@@ -205,6 +205,7 @@ export {
   fetchMoreReviewLikesAsync,
   likeReviewAsync,
   unlikeReviewAsync,
+  fetchReviewLikedStatusAsync,
   fetchReviewCommentsAsync,
   fetchMoreReviewCommentsAsync,
   deleteCommentAsync,

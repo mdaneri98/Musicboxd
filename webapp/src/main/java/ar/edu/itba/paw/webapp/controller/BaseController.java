@@ -31,5 +31,19 @@ public abstract class BaseController {
                 .build();
     }
 
+    public static Response buildResponseUsingEtag(Request request, boolean exists) {
+        final EntityTag eTag = new EntityTag(String.valueOf(Boolean.hashCode(exists)));
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setNoCache(true);
+
+        Response.ResponseBuilder response = request.evaluatePreconditions(eTag);
+        if (response != null) {
+            return response.cacheControl(cacheControl).build();
+        }
+
+        Response.ResponseBuilder builder = exists ? Response.noContent() : Response.status(Response.Status.NOT_FOUND);
+        return builder.tag(eTag).cacheControl(cacheControl).build();
+    }
+
 
 }

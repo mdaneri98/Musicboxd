@@ -25,6 +25,8 @@ const REVIEW_ENDPOINTS = {
   REVIEWS: '/reviews',
   REVIEW_BY_ID: (id: number) => `/reviews/${id}`,
   REVIEW_LIKES: (id: number) => `/reviews/${id}/likes`,
+  REVIEW_LIKE_BY_USER: (reviewId: number, userId: number) =>
+    `/reviews/${reviewId}/likes/${userId}`,
   REVIEW_COMMENTS: (id: number) => `/reviews/${id}/comments`,
 };
 
@@ -201,6 +203,21 @@ class ReviewRepository {
     } catch (error) {
       console.error(`Unlike review ${reviewId} error:`, error);
       throw error;
+    }
+  }
+
+  /**
+   * Check if a user liked a review
+   * @param reviewId Review ID
+   * @param userId User ID
+   * @returns true if liked, false otherwise
+   */
+  async checkReviewLiked(reviewId: number, userId: number): Promise<boolean> {
+    try {
+      await apiClient.get(REVIEW_ENDPOINTS.REVIEW_LIKE_BY_USER(reviewId, userId));
+      return true;
+    } catch {
+      return false;
     }
   }
 

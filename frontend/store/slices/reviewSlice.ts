@@ -256,6 +256,27 @@ export const unlikeReviewAsync = createAsyncThunk<
 });
 
 /**
+ * Fetch liked status for a list of reviews
+ */
+export const fetchReviewLikedStatusAsync = createAsyncThunk<
+  Record<number, boolean>,
+  { reviewIds: number[]; userId: number },
+  { rejectValue: string }
+>('reviews/fetchLikedStatus', async ({ reviewIds, userId }, { rejectWithValue }) => {
+  try {
+    const results: Record<number, boolean> = {};
+    await Promise.all(
+      reviewIds.map(async (id) => {
+        results[id] = await reviewRepository.checkReviewLiked(id, userId);
+      })
+    );
+    return results;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to check liked status');
+  }
+});
+
+/**
  * Fetch comments for a review (replaces existing - for initial load)
  */
 export const fetchReviewCommentsAsync = createAsyncThunk<
@@ -609,6 +630,20 @@ const reviewSlice = createSlice({
       })
       .addCase(unlikeReviewAsync.rejected, (state, action) => {
         state.error = action.payload || 'Failed to unlike review';
+      })
+
+      // Fetch Review Liked Status
+      .addCase(fetchReviewLikedStatusAsync.fulfilled, (state, action) => {
+        const results = action.payload;
+        Object.entries(results).forEach(([reviewIdStr, isLiked]) => {
+          const reviewId = parseInt(reviewIdStr);
+          if (state.reviews[reviewId]) {
+            state.reviews[reviewId].liked = isLiked;
+          }
+          if (state.currentReview?.id === reviewId) {
+            state.currentReview.liked = isLiked;
+          }
+        });
       });
 
     // Fetch Review Comments (initial load - replaces data)

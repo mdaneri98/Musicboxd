@@ -43,6 +43,7 @@ public class ApiUriConstants {
     public static final String REVIEWS_BASE = API_BASE + "/reviews";
     public static final String REVIEW_COMMENTS = ID + "/comments";
     public static final String REVIEW_LIKES = ID + "/likes";
+    public static final String REVIEW_LIKE_DETAIL = REVIEW_LIKES + "/{" + ControllerUtils.USER_ID_PARAM_NAME + ":\\d+}";
 
     /* COMMENTS */
     public static final String COMMENTS_BASE = API_BASE + "/comments";

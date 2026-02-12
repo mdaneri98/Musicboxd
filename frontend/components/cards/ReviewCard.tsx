@@ -9,11 +9,12 @@ import {
   unlikeReviewAsync,
   blockReviewAsync,
   unblockReviewAsync,
+  fetchReviewLikedStatusAsync,
   selectIsAuthenticated,
 } from '@/store/slices';
 import { formatTimeAgo } from '@/utils/timeUtils';
 import { ConfirmationModal } from '../ui';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ASSETS } from '@/utils';
 
 interface ReviewCardProps {
@@ -28,6 +29,12 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [reviewToBlock, setReviewToBlock] = useState(false);
   const [isBlocked, setIsBlocked] = useState(review.is_blocked);
+
+  useEffect(() => {
+    if (isAuthenticated && currentUser && review.liked === undefined) {
+      dispatch(fetchReviewLikedStatusAsync({ reviewIds: [review.id], userId: currentUser.id }));
+    }
+  }, [review.id, isAuthenticated, currentUser, dispatch, review.liked]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
