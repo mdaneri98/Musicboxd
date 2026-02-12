@@ -7,7 +7,6 @@ export {
   loginAsync,
   registerAsync,
   logoutAsync,
-  refreshTokenAsync,
   getCurrentUserAsync,
   checkAuthAsync,
   clearError as clearAuthError,

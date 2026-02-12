@@ -149,8 +149,8 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 // Register filters: BasicAuth first, then JWT
-                .addFilterBefore(basicAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(basicAuthFilter(), UsernamePasswordAuthenticationFilter.class)
 
                 // Enable CORS and disable csrf rules
                 .cors().and().csrf().disable();

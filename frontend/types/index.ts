@@ -26,7 +26,6 @@ export type {
   LoginCredentials,
   LoginResponse,
   RegisterData,
-  RefreshTokenResponse,
   EmailVerificationRequest,
   EmailVerificationResponse,
   ResendVerificationRequest,

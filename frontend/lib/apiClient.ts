@@ -141,14 +141,12 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
-        // Retry original request with refresh token
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${refreshToken}`;
         }
 
         const response = await axiosInstance(originalRequest);
 
-        // Check for new tokens in headers
         const newAccessToken = response.headers['x-jwt-token'];
         const newRefreshToken = response.headers['x-jwt-refresh-token'];
 
@@ -202,24 +200,6 @@ const handleApiError = (error: unknown): APIError => {
 };
 
 // ============================================================================
-// Periodic Token Refresh (Module Level)
-// ============================================================================
-
-
-
-// Periodic refresh removed as it relies on specific endpoint.
-// We allow the interceptor to handle refresh on 401s or 
-// we could implement a proactive refresh using a safe GET endpoint.
-// For now, we'll disable the interval to avoid errors.
-
-if (typeof window !== 'undefined') {
-  const win = window as any;
-  if (win.__auth_refresh_interval) {
-    clearInterval(win.__auth_refresh_interval);
-  }
-}
-
-// ============================================================================
 // Link Header Parser
 // ============================================================================
 
@@ -245,7 +225,6 @@ const parseLinkHeader = (linkHeader: string): ParsedPagination => {
     return { currentPage, totalPages: 1, pageSize, totalCount: 0, links };
   }
 
-  // Split on comma, but be careful with commas inside angle brackets
   const parts = linkHeader.split(/,\s*(?=<)/);
 
   for (const part of parts) {
@@ -272,15 +251,11 @@ const parseLinkHeader = (linkHeader: string): ParsedPagination => {
         currentPage = page + 1;
       }
       if (rel === 'first' && !links.some(l => l.rel === 'prev')) {
-        // If no prev link, we might be on the first page
-        // (will be overridden by next/prev if they exist)
       }
     } catch {
-      // Invalid URL, skip
     }
   }
 
-  // If there's no 'prev' and no 'next' that told us the page, assume page 1
   if (!links.some(l => l.rel === 'prev') && !links.some(l => l.rel === 'next')) {
     currentPage = 1;
   }

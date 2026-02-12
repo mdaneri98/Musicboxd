@@ -5,7 +5,8 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { authRepository } from '@/repositories';
-import { User, LoginResponse, RegisterFormData, RefreshTokenResponse } from '@/types';
+import { tokenStorage } from '@/lib/apiClient';
+import { User, LoginResponse, RegisterFormData } from '@/types';
 import type { RootState } from '../index';
 import { updateUserConfigAsync } from './userSlice';
 
@@ -114,15 +115,13 @@ export const checkAuthAsync = createAsyncThunk<
   'auth/checkAuth',
   async (_, { rejectWithValue }) => {
     try {
-      // Check if user has valid access token in localStorage
-      const accessToken = authRepository.getAccessToken();
-      const refreshToken = authRepository.getRefreshToken();
+      const accessToken = tokenStorage.getAccessToken();
+      const refreshToken = tokenStorage.getRefreshToken();
 
       if (!accessToken || !refreshToken) {
         return null;
       }
 
-      // Try to get current user to verify token is still valid
       const response = await authRepository.getCurrentUser();
       if (!response) {
         return rejectWithValue('Invalid user response');
@@ -134,35 +133,13 @@ export const checkAuthAsync = createAsyncThunk<
         refreshToken,
       };
     } catch (error: any) {
-      // Token is invalid, clear auth state
       authRepository.clearAuth();
       return rejectWithValue('Failed to get current user');
     }
   }
 );
 
-/**
- * Refresh access token
- */
-export const refreshTokenAsync = createAsyncThunk<
-  RefreshTokenResponse,
-  void,
-  { rejectValue: string }
->(
-  'auth/refreshToken',
-  async (_, { rejectWithValue }) => {
-    try {
-      const refreshToken = authRepository.getRefreshToken();
-      if (!refreshToken) {
-        throw new Error('No refresh token available');
-      }
-      const response = await authRepository.refresh(refreshToken);
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Token refresh failed');
-    }
-  }
-);
+
 
 // ============================================================================
 // Slice
@@ -327,25 +304,7 @@ const authSlice = createSlice({
         state.isModerator = false;
       });
 
-    // Refresh Token
-    builder
-      .addCase(refreshTokenAsync.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(refreshTokenAsync.fulfilled, (state, action) => {
-        state.error = null;
-        state.jwt = {
-          accessToken: action.payload.access_token,
-          refreshToken: action.payload.refresh_token,
-        };
-      })
-      .addCase(refreshTokenAsync.rejected, (state, action) => {
-        state.error = action.payload || 'Token refresh failed';
-        state.isAuthenticated = false;
-        state.currentUser = null;
-        state.jwt = { accessToken: null, refreshToken: null };
-        state.isModerator = false;
-      });
+
 
     builder.addCase(updateUserConfigAsync.fulfilled, (state, action) => {
       if (state.currentUser?.id === action.payload.id) {
@@ -372,10 +331,7 @@ export const selectAuthLoading = (state: RootState) => state.auth.loading;
 export const selectAuthError = (state: RootState) => state.auth.error;
 export const selectAuthInitializing = (state: RootState) => state.auth.initializing;
 
-// JWT selectors
-export const selectJwtTokens = (state: RootState) => state.auth.jwt;
-export const selectAccessToken = (state: RootState) => state.auth.jwt.accessToken;
-export const selectRefreshToken = (state: RootState) => state.auth.jwt.refreshToken;
+
 
 // Computed selectors
 export const selectUserId = (state: RootState) => state.auth.currentUser?.id ?? null;

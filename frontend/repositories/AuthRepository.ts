@@ -8,7 +8,6 @@ import { CustomMediaType } from '@/types/mediaTypes';
 import {
   User,
   LoginResponse,
-  RefreshTokenResponse,
   HALResource,
 } from '@/types';
 import { RegisterFormData } from '@/types/forms';
@@ -106,50 +105,9 @@ class AuthRepository {
   }
 
   /**
-   * Refresh access token using refresh token
-   * @param refreshToken Refresh token
-   * @returns New tokens
-   */
-  async refresh(refreshToken: string): Promise<RefreshTokenResponse> {
-    // This method might be redundant if we rely solely on the interceptor,
-    // but the slice calls it. We can implement it by making a dummy safe request
-    // with the refresh token.
-    try {
-      const response = await apiClient.getWithHeaders<any>(
-        `${AUTH_ENDPOINTS.USERS}?page=1&size=0`,
-        {
-          headers: { 'Authorization': `Bearer ${refreshToken}` }
-        }
-      );
-
-      const accessToken = response.headers['x-jwt-token'];
-      const newRefreshToken = response.headers['x-jwt-refresh-token'];
-
-      if (!accessToken || !newRefreshToken) {
-        throw new Error('Refresh failed: No tokens received');
-      }
-
-      const decoded = jwtDecode<DecodedToken>(accessToken);
-      const userId = decoded.userId;
-      const userResponse = await apiClient.getResource<User>(`${AUTH_ENDPOINTS.USERS}/${userId}`);
-
-      return {
-        access_token: accessToken,
-        refresh_token: newRefreshToken,
-        user: userResponse
-      };
-    } catch (error) {
-      console.error('Manual refresh error:', error);
-      tokenStorage.clearTokens();
-      throw error;
-    }
-  }
-
-  /**
    * Logout user (client-side only)
    */
   async logout(): Promise<void> {
-    // Stateless logout
     tokenStorage.clearTokens();
     return Promise.resolve();
   }
@@ -166,7 +124,6 @@ class AuthRepository {
       const decoded = jwtDecode<DecodedToken>(token);
       const userId = decoded.userId;
 
-      // Fetch user from /users/{id}
       const response = await apiClient.getResource<User>(
         `${AUTH_ENDPOINTS.USERS}/${userId}`
       );
@@ -184,22 +141,6 @@ class AuthRepository {
    */
   isAuthenticated(): boolean {
     return tokenStorage.getAccessToken() !== null;
-  }
-
-  /**
-   * Get stored access token
-   * @returns Access token or null
-   */
-  getAccessToken(): string | null {
-    return tokenStorage.getAccessToken();
-  }
-
-  /**
-   * Get stored refresh token
-   * @returns Refresh token or null
-   */
-  getRefreshToken(): string | null {
-    return tokenStorage.getRefreshToken();
   }
 
   /**
