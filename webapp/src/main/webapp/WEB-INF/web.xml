@@ -109,6 +109,15 @@
         <url-pattern>/_next/*</url-pattern>
     </filter-mapping>
 
+    <servlet>
+        <servlet-name>index</servlet-name>
+        <jsp-file>/index.html</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>index</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
     <!-- Serve static assets directly using Tomcat's default servlet -->
     <servlet-mapping>
         <servlet-name>default</servlet-name>
@@ -167,17 +176,6 @@
         <url-pattern>*.map</url-pattern>
     </servlet-mapping>
 
-    <!-- SPA Routing Servlet - handles all SPA routes (dynamic and static pages) -->
-    <!-- This servlet acts as a fallback for all routes not handled by other servlets -->
-    <servlet>
-        <servlet-name>SpaRoutingServlet</servlet-name>
-        <servlet-class>ar.edu.itba.paw.webapp.servlet.SpaRoutingServlet</servlet-class>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SpaRoutingServlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
 
     <!-- Custom error pages to always show Next.js 404 instead of Tomcat's -->
     <error-page>
