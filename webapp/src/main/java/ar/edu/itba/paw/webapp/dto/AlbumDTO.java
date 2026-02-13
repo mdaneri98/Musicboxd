@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import java.net.URI;
+import ar.edu.itba.paw.webapp.dto.links.AlbumLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,14 +24,11 @@ public class AlbumDTO {
     private List<SongDTO> songs;
     private Boolean isDeleted;
 
-    // HATEOAS links
-    private URI self;
-    private URI image;
-    private URI artistLink;
-    private URI songsLink;
-    private URI reviewsLink;
+    @JsonProperty("_links")
+    private AlbumLinksDTO links;
 
-    public AlbumDTO() {}
+    public AlbumDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -147,50 +145,17 @@ public class AlbumDTO {
         this.formattedReleaseDate = formattedReleaseDate;
     }
 
-    // HATEOAS getters and setters
-    public URI getSelf() {
-        return self;
+    public AlbumLinksDTO getLinks() {
+        return links;
     }
 
-    public void setSelf(URI self) {
-        this.self = self;
-    }
-
-    public URI getImage() {
-        return image;
-    }
-
-    public void setImage(URI image) {
-        this.image = image;
-    }
-
-    public URI getArtistLink() {
-        return artistLink;
-    }
-
-    public void setArtistLink(URI artistLink) {
-        this.artistLink = artistLink;
-    }
-
-    public URI getSongsLink() {
-        return songsLink;
-    }
-
-    public void setSongsLink(URI songsLink) {
-        this.songsLink = songsLink;
-    }
-
-    public URI getReviewsLink() {
-        return reviewsLink;
-    }
-
-    public void setReviewsLink(URI reviewsLink) {
-        this.reviewsLink = reviewsLink;
+    public void setLinks(AlbumLinksDTO links) {
+        this.links = links;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, genre, releaseDate, formattedReleaseDate, imageId, artistId, artistName, ratingCount, avgRating, createdAt, updatedAt, songs, isDeleted);
+        return Objects.hash(id, title, genre, releaseDate, formattedReleaseDate, imageId, artistId, artistName,
+                ratingCount, avgRating, createdAt, updatedAt, songs, isDeleted);
     }
 }
-

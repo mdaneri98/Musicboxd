@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.CommentDTO;
+import ar.edu.itba.paw.webapp.dto.links.CommentLinksDTO;
 import ar.edu.itba.paw.models.Comment;
 import org.springframework.stereotype.Component;
 
@@ -32,18 +33,22 @@ public class CommentDtoMapper {
 
         // Build HATEOAS links
         if (uriInfo != null) {
-            dto.setSelf(uriInfo.getBaseUriBuilder()
+            CommentLinksDTO links = new CommentLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
                     .path("comments").path(String.valueOf(comment.getId())).build());
 
             if (comment.getUser() != null) {
-                dto.setUserLink(uriInfo.getBaseUriBuilder()
+                links.setUser(uriInfo.getBaseUriBuilder()
                         .path("users").path(String.valueOf(comment.getUser().getId())).build());
             }
 
             if (comment.getReview() != null) {
-                dto.setReviewLink(uriInfo.getBaseUriBuilder()
+                links.setReview(uriInfo.getBaseUriBuilder()
                         .path("reviews").path(String.valueOf(comment.getReview().getId())).build());
             }
+
+            dto.setLinks(links);
         }
 
         return dto;

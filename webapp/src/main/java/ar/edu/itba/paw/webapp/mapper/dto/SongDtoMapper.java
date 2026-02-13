@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.SongDTO;
+import ar.edu.itba.paw.webapp.dto.links.SongLinksDTO;
 import ar.edu.itba.paw.models.Song;
 import org.springframework.stereotype.Component;
 
@@ -27,33 +28,40 @@ public class SongDtoMapper {
         dto.setAlbumId(song.getAlbum() != null ? song.getAlbum().getId() : null);
         dto.setAlbumTitle(song.getAlbum() != null ? song.getAlbum().getTitle() : null);
         dto.setAlbumImageId(song.getAlbum() != null && song.getAlbum().getImage() != null
-                ? song.getAlbum().getImage().getId() : null);
+                ? song.getAlbum().getImage().getId()
+                : null);
         dto.setRatingCount(song.getRatingCount());
         dto.setAvgRating(song.getAvgRating());
         dto.setCreatedAt(song.getCreatedAt());
         dto.setUpdatedAt(song.getUpdatedAt());
-        dto.setReleaseDate(song.getAlbum() != null && song.getAlbum().getReleaseDate() != null ? song.getAlbum().getReleaseDate() : null);
+        dto.setReleaseDate(
+                song.getAlbum() != null && song.getAlbum().getReleaseDate() != null ? song.getAlbum().getReleaseDate()
+                        : null);
         if (song.getArtists() != null && !song.getArtists().isEmpty()) {
             dto.setArtistId(song.getArtists().get(0).getId());
         }
 
         // Build HATEOAS links
         if (uriInfo != null) {
-            dto.setSelf(uriInfo.getBaseUriBuilder()
+            SongLinksDTO links = new SongLinksDTO();
+
+            links.setSelf(uriInfo.getBaseUriBuilder()
                     .path("songs").path(String.valueOf(song.getId())).build());
 
             if (song.getAlbum() != null) {
-                dto.setAlbumLink(uriInfo.getBaseUriBuilder()
+                links.setAlbum(uriInfo.getBaseUriBuilder()
                         .path("albums").path(String.valueOf(song.getAlbum().getId())).build());
             }
 
             if (song.getArtists() != null && !song.getArtists().isEmpty()) {
-                dto.setArtistLink(uriInfo.getBaseUriBuilder()
+                links.setArtist(uriInfo.getBaseUriBuilder()
                         .path("artists").path(String.valueOf(song.getArtists().get(0).getId())).build());
             }
 
-            dto.setReviewsLink(uriInfo.getBaseUriBuilder()
+            links.setReviews(uriInfo.getBaseUriBuilder()
                     .path("songs").path(String.valueOf(song.getId())).path("reviews").build());
+
+            dto.setLinks(links);
         }
 
         return dto;

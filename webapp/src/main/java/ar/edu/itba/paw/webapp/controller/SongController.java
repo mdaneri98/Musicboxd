@@ -10,13 +10,11 @@ import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
-import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
-import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -42,9 +40,6 @@ public class SongController extends BaseController {
     private ReviewService reviewService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private ModSongFormMapper modSongFormMapper;
 
     @Autowired
@@ -60,26 +55,26 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        
+
         List<Song> songs;
         if (search != null && !search.isEmpty()) {
             songs = songService.findByTitleContaining(search, page, size);
         } else {
             songs = songService.findPaginated(filter, page, size);
         }
-        
+
         Long totalCount = songService.countAll();
-        
+
         if (songs.isEmpty()) {
             return Response.noContent().build();
         }
-        
+
         List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
-        
+
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<SongDTO>>(songDTOs) {}
-        );
-        
+                new GenericEntity<List<SongDTO>>(songDTOs) {
+                });
+
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
         return responseBuilder.build();
     }
@@ -92,7 +87,7 @@ public class SongController extends BaseController {
         Song songInput = modSongFormMapper.toModel(modSongForm);
         Song song = songService.create(songInput);
         SongDTO songDTO = songDtoMapper.toDTO(song, uriInfo);
-        return Response.created(songDTO.getSelf()).entity(songDTO).build();
+        return Response.created(songDTO.getLinks().getSelf()).entity(songDTO).build();
     }
 
     @GET
@@ -134,7 +129,7 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
-        
+
         List<Review> reviews;
         if (userId != null) {
             reviews = new ArrayList<>();
@@ -145,19 +140,19 @@ public class SongController extends BaseController {
         } else {
             reviews = reviewService.findSongReviewsPaginated(id, page, size);
         }
-        
+
         Long totalCount = reviewService.countAll();
-        
+
         if (reviews.isEmpty()) {
             return Response.noContent().build();
         }
-        
+
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
-        
+
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<ReviewDTO>>(reviewDTOs) {}
-        );
-        
+                new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
+                });
+
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
         return responseBuilder.build();
     }

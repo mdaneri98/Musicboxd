@@ -21,7 +21,6 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.ArrayList;
 
 @Path(ApiUriConstants.COMMENTS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,26 +43,26 @@ public class CommentController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-        
+
         List<Comment> comments;
         if (search != null && !search.isEmpty()) {
             comments = commentService.findBySubstring(search, page, size);
         } else {
             comments = commentService.findPaginated(filter, page, size);
         }
-        
+
         Long totalCount = commentService.countAll();
-        
+
         if (comments.isEmpty()) {
             return Response.noContent().build();
         }
-        
+
         List<CommentDTO> commentDTOs = commentDtoMapper.toDTOList(comments, uriInfo);
-        
+
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<CommentDTO>>(commentDTOs) {}
-        );
-        
+                new GenericEntity<List<CommentDTO>>(commentDTOs) {
+                });
+
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
         return responseBuilder.build();
     }
@@ -76,7 +75,7 @@ public class CommentController extends BaseController {
         Comment comment = commentFormMapper.toModel(commentForm, loggedUserId);
         Comment createdComment = commentService.create(comment);
         CommentDTO commentDTO = commentDtoMapper.toDTO(createdComment, uriInfo);
-        return Response.created(commentDTO.getSelf()).entity(commentDTO).build();
+        return Response.created(commentDTO.getLinks().getSelf()).entity(commentDTO).build();
     }
 
     @GET

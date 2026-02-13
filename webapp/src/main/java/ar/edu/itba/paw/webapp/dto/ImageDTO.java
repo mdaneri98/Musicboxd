@@ -1,13 +1,16 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import java.net.URI;
+import ar.edu.itba.paw.webapp.dto.links.ImageLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * DTO for Image resource
  */
 public class ImageDTO {
     private Long id;
-    private URI self;
+
+    @JsonProperty("_links")
+    private ImageLinksDTO links;
 
     public ImageDTO() {
     }
@@ -24,11 +27,11 @@ public class ImageDTO {
         this.id = id;
     }
 
-    public URI getSelf() {
-        return self;
+    public ImageLinksDTO getLinks() {
+        return links;
     }
 
-    public void setSelf(URI self) {
-        this.self = self;
+    public void setLinks(ImageLinksDTO links) {
+        this.links = links;
     }
 }
