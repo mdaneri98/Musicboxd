@@ -104,6 +104,10 @@
         <filter-name>UnconditionalCacheFilter</filter-name>
         <url-pattern>/assets/*</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>UnconditionalCacheFilter</filter-name>
+        <url-pattern>/_next/*</url-pattern>
+    </filter-mapping>
 
     <!-- Serve static assets directly using Tomcat's default servlet -->
     <servlet-mapping>

@@ -79,7 +79,8 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
     public void configure(org.springframework.security.config.annotation.web.builders.WebSecurity web) throws Exception {
         web.ignoring()
                 .antMatchers("/static/**")
-                .antMatchers("/assets/**");
+                .antMatchers("/assets/**")
+                .antMatchers("/_next/**");
     }
 
     @Override
