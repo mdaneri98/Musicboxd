@@ -28,7 +28,6 @@ export type {
   RegisterData,
   EmailVerificationRequest,
   EmailVerificationResponse,
-  ResendVerificationRequest,
   APIError,
   ValidationError,
   APIResponse,

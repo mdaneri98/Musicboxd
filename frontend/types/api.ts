@@ -115,13 +115,6 @@ export interface EmailVerificationResponse {
   verified: boolean;
 }
 
-/**
- * Resend verification email request
- */
-export interface ResendVerificationRequest {
-  email: string;
-}
-
 // ============================================================================
 // Password Recovery Types
 // ============================================================================

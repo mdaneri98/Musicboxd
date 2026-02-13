@@ -25,6 +25,7 @@ public interface UserService {
 
     User updateUser(User user);
     Boolean changePassword(Long userId, String newPassword);
+    Boolean changePassword(Long userId, String newPassword, String token);
 
     Integer deleteById(Long id);
 

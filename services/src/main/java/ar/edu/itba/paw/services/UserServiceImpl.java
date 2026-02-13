@@ -242,6 +242,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public Boolean changePassword(Long userId, String newPassword, String token) {
+        LOGGER.info("Changing password for user with ID: {} using token", userId);
+        Long verifiedUserId = verify(VerificationType.VERIFY_FORGOT_PASSWORD, token);
+        if (verifiedUserId == null || verifiedUserId == 0 || !verifiedUserId.equals(userId)) {
+            LOGGER.warn("Token verification failed for user ID: {}", userId);
+            return false;
+        }
+        return changePassword(userId, newPassword);
+    }
+
+    @Override
+    @Transactional
     public Integer deleteById(Long id) {
         LOGGER.info("Deleting user with ID: {}", id);
         int result = userDao.deleteById(id);

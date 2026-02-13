@@ -143,8 +143,9 @@ public class UserController extends BaseController {
     @Consumes(CustomMediaType.USER_PASSWORD)
     public Response updatePassword(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
                                    @Valid ResetPasswordRequestDTO request) {
-        userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, request.getCode());
-        userService.changePassword(id, request.getPassword());
+        if (!userService.changePassword(id, request.getPassword(), request.getCode())) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         return Response.noContent().build();
     }
 
@@ -159,17 +160,6 @@ public class UserController extends BaseController {
     public Response verifyEmail(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
                                 @Valid EmailVerificationRequestDTO request) {
         userService.verify(VerificationType.VERIFY_EMAIL, request.getCode());
-        return Response.noContent().build();
-    }
-
-    /**
-     * Resend verification email.
-     */
-    @POST
-    @Consumes(CustomMediaType.USER_VERIFICATION)
-    public Response resendVerificationEmail(@Valid ResendVerificationRequestDTO request) {
-        User user = userService.findByEmail(request.getEmail());
-        userService.createVerification(VerificationType.VERIFY_EMAIL, user);
         return Response.noContent().build();
     }
 
