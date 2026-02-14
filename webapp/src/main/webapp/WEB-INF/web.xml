@@ -109,14 +109,15 @@
         <url-pattern>/_next/*</url-pattern>
     </filter-mapping>
 
-    <servlet>
-        <servlet-name>index</servlet-name>
-        <jsp-file>/index.html</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>index</servlet-name>
+    <!-- SPA routing: serves correct Next.js HTML for each route -->
+    <filter>
+        <filter-name>SpaRoutingFilter</filter-name>
+        <filter-class>ar.edu.itba.paw.webapp.filter.SpaRoutingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SpaRoutingFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </servlet-mapping>
+    </filter-mapping>
 
     <!-- Serve static assets directly using Tomcat's default servlet -->
     <servlet-mapping>
