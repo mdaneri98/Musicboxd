@@ -31,34 +31,6 @@ public class NotificationController extends BaseController {
     @Autowired
     private NotificationDtoMapper notificationDtoMapper;
 
-    @GET
-    @PreAuthorize("isAuthenticated()")
-    @Produces(CustomMediaType.NOTIFICATION_LIST)
-    public Response getNotifications(
-            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
-            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
-            @QueryParam(ControllerUtils.STATUS_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_STATUS_STRING) String status) {
-
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        StatusType statusType = StatusType.fromString(status);
-
-        List<Notification> notifications = notificationService.getUserNotifications(loggedUserId, page, size,
-                statusType);
-        Long totalCount = notificationService.countByUserId(loggedUserId, statusType);
-
-        if (notifications.isEmpty()) {
-            return Response.noContent().build();
-        }
-
-        List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications, uriInfo);
-
-        Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<NotificationDTO>>(notificationDTOs) {
-                });
-
-        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
-        return responseBuilder.build();
-    }
 
     @POST
     @Consumes(CustomMediaType.NOTIFICATION)
@@ -117,14 +89,4 @@ public class NotificationController extends BaseController {
         return Response.ok(responseDTO).build();
     }
 
-    @PATCH
-    @PreAuthorize("isAuthenticated()")
-    @Consumes(CustomMediaType.NOTIFICATION)
-    public Response markAllAsRead(@Valid NotificationDTO notificationDTO) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        if (notificationDTO.getIsRead()) {
-            notificationService.markAllAsRead(loggedUserId);
-        }
-        return Response.noContent().build();
-    }
 }

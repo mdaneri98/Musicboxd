@@ -472,7 +472,7 @@ describe('reviewSlice', () => {
                     .delete('/reviews/1/likes')
                     .reply(204);
 
-                await store.dispatch(unlikeReviewAsync(1));
+                await store.dispatch(unlikeReviewAsync({ reviewId: 1, userId: 10 }));
                 const state = store.getState().reviews;
                 expect(state.currentReview?.liked).toBe(false);
                 expect(state.currentReview?.likes).toBe(0);
@@ -483,7 +483,7 @@ describe('reviewSlice', () => {
                     .delete('/reviews/1/likes')
                     .reply(500);
 
-                await store.dispatch(unlikeReviewAsync(1));
+                await store.dispatch(unlikeReviewAsync({ reviewId: 1, userId: 10 }));
                 const state = store.getState().reviews;
                 expect(state.error).toBeDefined();
             });

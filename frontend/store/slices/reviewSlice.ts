@@ -244,11 +244,11 @@ export const likeReviewAsync = createAsyncThunk<
  */
 export const unlikeReviewAsync = createAsyncThunk<
   number,
-  number,
+  { reviewId: number; userId: number },
   { rejectValue: string }
->('reviews/unlikeReview', async (reviewId, { rejectWithValue }) => {
+>('reviews/unlikeReview', async ({ reviewId, userId }, { rejectWithValue }) => {
   try {
-    await reviewRepository.unlikeReview(reviewId);
+    await reviewRepository.unlikeReview(reviewId, userId);
     return reviewId;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to unlike review');
@@ -618,14 +618,14 @@ const reviewSlice = createSlice({
     builder
       .addCase(unlikeReviewAsync.fulfilled, (state, action) => {
         // Update like count in current review
-        if (state.currentReview?.id === action.meta.arg) {
+        if (state.currentReview?.id === action.meta.arg.reviewId) {
           state.currentReview.likes = Math.max(0, (state.currentReview.likes || 0) - 1);
           state.currentReview.liked = false;
         }
         // Update in normalized state
-        if (state.reviews[action.meta.arg]) {
-          state.reviews[action.meta.arg].likes = Math.max(0, (state.reviews[action.meta.arg].likes || 0) - 1);
-          state.reviews[action.meta.arg].liked = false;
+        if (state.reviews[action.meta.arg.reviewId]) {
+          state.reviews[action.meta.arg.reviewId].likes = Math.max(0, (state.reviews[action.meta.arg.reviewId].likes || 0) - 1);
+          state.reviews[action.meta.arg.reviewId].liked = false;
         }
       })
       .addCase(unlikeReviewAsync.rejected, (state, action) => {

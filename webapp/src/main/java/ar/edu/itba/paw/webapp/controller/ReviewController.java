@@ -202,11 +202,11 @@ public class ReviewController extends BaseController {
     }
 
     @DELETE
-    @Path(ApiUriConstants.REVIEW_LIKES)
-    @PreAuthorize("hasRole('USER')")
-    public Response unlikeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
-        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        reviewService.removeLike(loggedUserId, reviewId);
+    @Path(ApiUriConstants.REVIEW_LIKE_DETAIL)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
+    public Response unlikeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId,
+                                 @PathParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
+        reviewService.removeLike(userId, reviewId);
         return Response.noContent().build();
     }
 }

@@ -762,7 +762,7 @@ const userSlice = createSlice({
         }
       })
       .addCase(unlikeReviewAsync.fulfilled, (state, action) => {
-        const reviewId = action.meta.arg;
+        const reviewId = action.meta.arg.reviewId;
         const index = state.userReviews.findIndex((r) => r.id === reviewId);
         if (index !== -1) {
           state.userReviews[index].likes = Math.max(0, (state.userReviews[index].likes || 0) - 1);

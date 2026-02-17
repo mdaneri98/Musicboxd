@@ -1,15 +1,10 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.services.NotificationService;
 import ar.edu.itba.paw.webapp.dto.*;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
-import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ArtistDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.UserDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.UserFormMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.UserProfileFormMapper;
+import ar.edu.itba.paw.webapp.mapper.dto.*;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
@@ -45,6 +40,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private ReviewService reviewService;
@@ -69,6 +67,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private SongDtoMapper songDtoMapper;
+    
+    @Autowired
+    private NotificationDtoMapper notificationDtoMapper;
 
     @GET
     @Produces(CustomMediaType.USER_LIST)
@@ -427,5 +428,49 @@ public class UserController extends BaseController {
         User userUpdated = userService.updateUser(user);
         UserDTO updatedUserDTO = userDtoMapper.toDTO(userUpdated, uriInfo);
         return Response.ok(updatedUserDTO).build();
+    }
+
+    // ==================== User Notifications ====================
+    
+    @GET
+    @Path(ApiUriConstants.USER_NOTIFICATIONS)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
+    @Produces(CustomMediaType.NOTIFICATION_LIST)
+    public Response getUserNotifications(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
+            @QueryParam(ControllerUtils.STATUS_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_STATUS_STRING) String status) {
+
+        ar.edu.itba.paw.models.StatusType statusType = ar.edu.itba.paw.models.StatusType.fromString(status);
+
+        List<ar.edu.itba.paw.models.Notification> notifications = notificationService.getUserNotifications(userId, page, size, statusType);
+        Long totalCount = notificationService.countByUserId(userId, statusType);
+
+        if (notifications.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        List<NotificationDTO> notificationDTOs = notificationDtoMapper.toDTOList(notifications, uriInfo);
+
+        Response.ResponseBuilder responseBuilder = Response.ok(
+                new GenericEntity<List<NotificationDTO>>(notificationDTOs) {
+                });
+
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+        return responseBuilder.build();
+    }
+    
+    @PATCH
+    @Path(ApiUriConstants.USER_NOTIFICATIONS)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
+    @Consumes(CustomMediaType.NOTIFICATION)
+    public Response markAllNotificationsAsRead(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @Valid NotificationDTO notificationDTO) {
+        if (notificationDTO.getIsRead()) {
+            notificationService.markAllAsRead(userId);
+        }
+        return Response.noContent().build();
     }
 }

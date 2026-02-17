@@ -196,10 +196,11 @@ class ReviewRepository {
   /**
    * Unlike a review
    * @param reviewId Review ID
+   * @param userId User ID
    */
-  async unlikeReview(reviewId: number): Promise<void> {
+  async unlikeReview(reviewId: number, userId: number): Promise<void> {
     try {
-      await apiClient.deleteResource<Review>(REVIEW_ENDPOINTS.REVIEW_LIKES(reviewId));
+      await apiClient.deleteResource<Review>(REVIEW_ENDPOINTS.REVIEW_LIKE_BY_USER(reviewId, userId));
     } catch (error) {
       console.error(`Unlike review ${reviewId} error:`, error);
       throw error;

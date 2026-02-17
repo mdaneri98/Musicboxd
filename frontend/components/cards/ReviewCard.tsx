@@ -39,7 +39,9 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (review.liked) {
-      await dispatch(unlikeReviewAsync(review.id));
+      if (currentUser) {
+        await dispatch(unlikeReviewAsync({ reviewId: review.id, userId: currentUser.id }));
+      }
     } else {
       await dispatch(likeReviewAsync(review.id));
     }

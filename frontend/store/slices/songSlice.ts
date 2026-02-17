@@ -490,7 +490,7 @@ const songSlice = createSlice({
         }
       })
       .addCase(unlikeReviewAsync.fulfilled, (state, action) => {
-        const reviewId = action.meta.arg;
+        const reviewId = action.meta.arg.reviewId;
         const index = state.songReviews.findIndex((r) => r.id === reviewId);
         if (index !== -1) {
           state.songReviews[index].likes = Math.max(0, (state.songReviews[index].likes || 0) - 1);

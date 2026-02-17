@@ -65,8 +65,15 @@ export const fetchNotificationsAsync = createAsyncThunk<
   Collection<HALResource<Notification>>,
   { page?: number; size?: number },
   { rejectValue: string }
->('notifications/fetchNotificationsAsync', async ({ page = 1, size = 10 }, { rejectWithValue }) => {
+>('notifications/fetchNotificationsAsync', async ({ page = 1, size = 10 }, { rejectWithValue, getState }) => {
   try {
+    const state = getState() as RootState;
+    const userId = state.auth.currentUser?.id;
+
+    if (!userId) {
+      return rejectWithValue('User not authenticated');
+    }
+
     const response = await notificationRepository.getNotifications(page, size);
     return response as Collection<HALResource<Notification>>;
   } catch (error: any) {
@@ -81,8 +88,15 @@ export const fetchMoreNotificationsAsync = createAsyncThunk<
   Collection<HALResource<Notification>>,
   { page: number; size?: number },
   { rejectValue: string }
->('notifications/fetchMoreNotificationsAsync', async ({ page, size = 10 }, { rejectWithValue }) => {
+>('notifications/fetchMoreNotificationsAsync', async ({ page, size = 10 }, { rejectWithValue, getState }) => {
   try {
+    const state = getState() as RootState;
+    const userId = state.auth.currentUser?.id;
+
+    if (!userId) {
+      return rejectWithValue('User not authenticated');
+    }
+
     const response = await notificationRepository.getNotifications(page, size);
     return response as Collection<HALResource<Notification>>;
   } catch (error: any) {
@@ -97,8 +111,15 @@ export const fetchUnreadCountAsync = createAsyncThunk<
   number,
   void,
   { rejectValue: string }
->('notifications/fetchUnreadCountAsync', async (_, { rejectWithValue }) => {
+>('notifications/fetchUnreadCountAsync', async (_, { rejectWithValue, getState }) => {
   try {
+    const state = getState() as RootState;
+    const userId = state.auth.currentUser?.id;
+
+    if (!userId) {
+      return rejectWithValue('User not authenticated');
+    }
+
     const response = await notificationRepository.getUnreadCount();
     return response as number;
   } catch (error: any) {
@@ -129,8 +150,15 @@ export const markAllAsReadAsync = createAsyncThunk<
   void,
   void,
   { rejectValue: string }
->('notifications/markAllAsRead', async (_, { rejectWithValue }) => {
+>('notifications/markAllAsRead', async (_, { rejectWithValue, getState }) => {
   try {
+    const state = getState() as RootState;
+    const userId = state.auth.currentUser?.id;
+
+    if (!userId) {
+      return rejectWithValue('User not authenticated');
+    }
+
     await notificationRepository.markAllAsRead();
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to mark all notifications as read');
