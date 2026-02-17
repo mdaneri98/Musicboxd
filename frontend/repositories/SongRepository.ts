@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   Song,
@@ -23,8 +24,6 @@ const SONG_ENDPOINTS = {
   SONGS: '/songs',
   SONG_BY_ID: (id: number) => `/songs/${id}`,
   SONG_REVIEWS: (id: number) => `/songs/${id}/reviews`,
-  ADD_FAVORITE: (id: number) => `/songs/${id}/favorites`,
-  REMOVE_FAVORITE: (id: number) => `/songs/${id}/favorites`,
 };
 
 // ============================================================================
@@ -41,7 +40,7 @@ class SongRepository {
    * @returns Collection of songs with pagination metadata
    */
   async getSongs(
-    page: number = 1, 
+    page: number = 1,
     size: number = 10,
     search?: string,
     filter?: string
@@ -54,11 +53,11 @@ class SongRepository {
       const url = buildUrl(SONG_ENDPOINTS.SONGS, params as Record<string, string | number | boolean>);
       const response: Collection<HALResource<Song>> = await apiClient.getCollection<Song>(url);
 
-        if (!response) {
+      if (!response) {
         throw new Error('Invalid songs response: missing data');
       }
 
-      return response as Collection<HALResource<Song>>;
+      return response;
     } catch (error) {
       console.error('Get songs error:', error);
       throw error;
@@ -96,7 +95,8 @@ class SongRepository {
     try {
       const response: HALResource<Song> = await apiClient.postResource<Song>(
         SONG_ENDPOINTS.SONGS,
-        songData
+        songData,
+        { headers: { 'Content-Type': CustomMediaType.SONG } }
       );
 
       if (!response) {
@@ -116,11 +116,12 @@ class SongRepository {
    * @param songData Updated song data
    * @returns Updated song
    */
-    async updateSong(id: number, songData: EditSongFormData): Promise<HALResource<Song>> {
+  async updateSong(id: number, songData: EditSongFormData): Promise<HALResource<Song>> {
     try {
       const response: HALResource<Song> = await apiClient.putResource<Song>(
         SONG_ENDPOINTS.SONG_BY_ID(id),
-        songData
+        songData,
+        { headers: { 'Content-Type': CustomMediaType.SONG } }
       );
 
       if (!response) {
@@ -172,7 +173,7 @@ class SongRepository {
         throw new Error('Invalid song reviews response: missing data');
       }
 
-      return response as Collection<HALResource<Review>>;
+      return response;
     } catch (error) {
       console.error(`Get song ${id} reviews error:`, error);
       throw error;
@@ -194,7 +195,7 @@ class SongRepository {
       const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
 
       if (response && response.items && response.items.length > 0) {
-        return response.items[0].data;
+        return response.items[0];
       }
 
       return null;
@@ -203,33 +204,8 @@ class SongRepository {
       return null;
     }
   }
-
-  /**
-   * Add song to user's favorites
-   * @param id Song ID
-   */
-  async addSongFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.postResource<Song>(SONG_ENDPOINTS.ADD_FAVORITE(id));
-    } catch (error) {
-      console.error(`Add song ${id} to favorites error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove song from user's favorites
-   * @param id Song ID
-   */
-  async removeSongFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.deleteResource<Song>(SONG_ENDPOINTS.REMOVE_FAVORITE(id));
-    } catch (error) {
-      console.error(`Remove song ${id} from favorites error:`, error);
-      throw error;
-    }
-  }
 }
+
 
 // ============================================================================
 // Export Singleton Instance

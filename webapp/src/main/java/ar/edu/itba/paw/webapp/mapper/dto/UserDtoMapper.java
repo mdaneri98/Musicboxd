@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
 import ar.edu.itba.paw.webapp.dto.UserDTO;
-import ar.edu.itba.paw.webapp.dto.links.UserLinksDTO;
 import ar.edu.itba.paw.models.User;
 import org.springframework.stereotype.Component;
 
@@ -43,35 +42,31 @@ public class UserDtoMapper {
 
         // Build HATEOAS links
         if (uriInfo != null) {
-            UserLinksDTO links = new UserLinksDTO();
-
-            links.setSelf(uriInfo.getBaseUriBuilder()
+            dto.setSelf(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).build());
 
             if (user.getImageId() != null) {
-                links.setImage(uriInfo.getBaseUriBuilder()
+                dto.setImage(uriInfo.getBaseUriBuilder()
                         .path("images").path(String.valueOf(user.getImageId())).build());
             }
 
-            links.setReviews(uriInfo.getBaseUriBuilder()
+            dto.setReviews(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("reviews").build());
 
-            links.setFollowers(uriInfo.getBaseUriBuilder()
+            dto.setFollowers(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("followers").build());
 
-            links.setFollowing(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("following").build());
+            dto.setFollowing(uriInfo.getBaseUriBuilder()
+                    .path("users").path(String.valueOf(user.getId())).path("followings").build());
 
-            links.setFavoriteArtists(uriInfo.getBaseUriBuilder()
+            dto.setFavoriteArtists(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("favorites").path("artists").build());
 
-            links.setFavoriteAlbums(uriInfo.getBaseUriBuilder()
+            dto.setFavoriteAlbums(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("favorites").path("albums").build());
 
-            links.setFavoriteSongs(uriInfo.getBaseUriBuilder()
+            dto.setFavoriteSongs(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("favorites").path("songs").build());
-
-            dto.setLinks(links);
         }
 
         return dto;

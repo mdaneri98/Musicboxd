@@ -11,25 +11,22 @@ type VerificationState = 'idle' | 'loading' | 'success' | 'error' | 'invalid';
 
 const VerifyEmailPage = () => {
   const router = useRouter();
-  const { code } = router.query;
+  const { code, userId } = router.query;
   const { t } = useTranslation();
-  
+
   const [state, setState] = useState<VerificationState>('loading');
   const [message, setMessage] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [resendLoading, setResendLoading] = useState(false);
-  const [resendMessage, setResendMessage] = useState<string>('');
 
   useEffect(() => {
     const verifyEmail = async () => {
-      if (!code || typeof code !== 'string') {
+      if (!code || typeof code !== 'string' || !userId || typeof userId !== 'string') {
         setState('invalid');
         setMessage(t('auth.verifyEmail.errors.invalidLink'));
         return;
       }
 
       try {
-        await emailRepository.verifyEmail(code);
+        await emailRepository.verifyEmail(Number(userId), code);
         setState('success');
         setMessage(t('auth.verifyEmail.success'));
 
@@ -53,30 +50,6 @@ const VerifyEmailPage = () => {
     }
   }, [code, router, t]);
 
-  const handleResendVerification = async () => {
-    if (!email) {
-      setResendMessage(t('auth.verifyEmail.errors.emailRequired'));
-      return;
-    }
-
-    setResendLoading(true);
-    setResendMessage('');
-
-    try {
-      await emailRepository.resendVerification(email);
-      setResendMessage(t('auth.verifyEmail.resendSuccess'));
-    } catch (error) {
-      console.error('Resend error:', error);
-      const apiError = error as APIError;
-      setResendMessage(
-        apiError.message ||
-        t('auth.verifyEmail.errors.resendFailed')
-      );
-    } finally {
-      setResendLoading(false);
-    }
-  };
-
   const renderContent = () => {
     switch (state) {
       case 'loading':
@@ -85,7 +58,7 @@ const VerifyEmailPage = () => {
             <div className="verification-icon loading">
               <svg className="spinner" width="64" height="64" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeDasharray="31.4 31.4" transform="rotate(-90 12 12)">
-                  <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+                  <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite" />
                 </circle>
               </svg>
             </div>
@@ -99,8 +72,8 @@ const VerifyEmailPage = () => {
           <div className="verification-content">
             <div className="verification-icon success">
               <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <h2 className="verification-title">{t('auth.verifyEmail.title')}</h2>
@@ -118,38 +91,12 @@ const VerifyEmailPage = () => {
           <div className="verification-content">
             <div className="verification-icon error">
               <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
             <h2 className="verification-title">{t('auth.verifyEmail.failedTitle')}</h2>
             <p className="verification-message">{message}</p>
-
-            <div className="resend-section">
-              <p className="resend-label">{t('auth.verifyEmail.needNewLink')}</p>
-              <div className="resend-form">
-                <input
-                  type="email"
-                  placeholder={t('auth.verifyEmail.emailPlaceholder')}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="resend-input"
-                  disabled={resendLoading}
-                />
-                <button
-                  onClick={handleResendVerification}
-                  className="resend-button"
-                  disabled={resendLoading}
-                >
-                  {resendLoading ? t('auth.verifyEmail.sending') : t('auth.verifyEmail.resendEmail')}
-                </button>
-              </div>
-              {resendMessage && (
-                <p className={`resend-message ${resendMessage.includes('Failed') || resendMessage.includes(t('auth.verifyEmail.errors.resendFailed')) ? 'error' : 'success'}`}>
-                  {resendMessage}
-                </p>
-              )}
-            </div>
 
             <Link href="/login" className="btn btn-primary btn-block">
               {t('auth.verifyEmail.backToLogin')}
@@ -280,78 +227,6 @@ const VerifyEmailPage = () => {
 
         .verification-link:hover {
           text-decoration: underline;
-        }
-
-        .resend-section {
-          margin-top: 2rem;
-          padding-top: 2rem;
-          border-top: 1px solid var(--border-color, #ddd);
-          width: 100%;
-        }
-
-        .resend-label {
-          font-size: 0.95rem;
-          color: var(--text-primary);
-          margin-bottom: 1rem;
-        }
-
-        .resend-form {
-          display: flex;
-          gap: 0.5rem;
-          margin-bottom: 1rem;
-        }
-
-        .resend-input {
-          flex: 1;
-          padding: 0.75rem;
-          border: 1px solid var(--border-color, #ddd);
-          border-radius: 4px;
-          font-size: 0.95rem;
-          background: var(--input-bg, white);
-          color: var(--text-primary);
-        }
-
-        .resend-input:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .resend-button {
-          padding: 0.75rem 1.5rem;
-          background: var(--primary-color, #007bff);
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 0.95rem;
-          cursor: pointer;
-          white-space: nowrap;
-          transition: background-color 0.2s;
-        }
-
-        .resend-button:hover:not(:disabled) {
-          background: var(--primary-color-dark, #0056b3);
-        }
-
-        .resend-button:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .resend-message {
-          font-size: 0.875rem;
-          margin: 0;
-          padding: 0.75rem;
-          border-radius: 4px;
-        }
-
-        .resend-message.success {
-          color: #28a745;
-          background: rgba(40, 167, 69, 0.1);
-        }
-
-        .resend-message.error {
-          color: #dc3545;
-          background: rgba(220, 53, 69, 0.1);
         }
 
         .spinner {

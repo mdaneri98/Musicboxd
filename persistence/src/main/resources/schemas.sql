@@ -132,6 +132,20 @@ CREATE TABLE IF NOT EXISTS follower (
     PRIMARY KEY (user_id, following)
 );
 
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id SERIAL PRIMARY KEY,
+    type VARCHAR(50) NOT NULL,
+    recipient_user_id INT NOT NULL,
+    trigger_user_id INT,
+    resource_id INT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    read BOOLEAN NOT NULL DEFAULT FALSE,
+    message VARCHAR(500) NOT NULL,
+    FOREIGN KEY (recipient_user_id) REFERENCES cuser(id) ON DELETE CASCADE,
+    FOREIGN KEY (trigger_user_id) REFERENCES cuser(id) ON DELETE SET NULL,
+    FOREIGN KEY (resource_id) REFERENCES review(id) ON DELETE SET NULL
+    );
+
 CREATE TABLE IF NOT EXISTS favorite_artist (
      user_id INT NOT NULL,
      artist_id INT NOT NULL,

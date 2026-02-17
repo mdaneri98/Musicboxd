@@ -17,7 +17,7 @@ const LandingPage = () => {
     const fetchPopularReviews = async () => {
       try {
         const response = await reviewRepository.getReviews(1, 6, undefined, "LIKES");
-        const reviews = response.items.map((item) => item.data);
+        const reviews = response.items;
         setReviews(reviews);
       } catch (error) {
         console.error(error);

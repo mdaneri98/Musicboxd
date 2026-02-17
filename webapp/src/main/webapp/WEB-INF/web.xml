@@ -18,7 +18,6 @@
             ar.edu.itba.paw.webapp.config.ApiConfig
             ar.edu.itba.paw.webapp.config.ApiAuthConfig
             ar.edu.itba.paw.webapp.config.EmailConfig
-            ar.edu.itba.paw.webapp.config.JacksonConfig
         </param-value>
     </context-param>
 
@@ -105,6 +104,20 @@
         <filter-name>UnconditionalCacheFilter</filter-name>
         <url-pattern>/assets/*</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>UnconditionalCacheFilter</filter-name>
+        <url-pattern>/_next/*</url-pattern>
+    </filter-mapping>
+
+    <!-- SPA routing: serves correct Next.js HTML for each route -->
+    <filter>
+        <filter-name>SpaRoutingFilter</filter-name>
+        <filter-class>ar.edu.itba.paw.webapp.filter.SpaRoutingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SpaRoutingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <!-- Serve static assets directly using Tomcat's default servlet -->
     <servlet-mapping>
@@ -164,17 +177,6 @@
         <url-pattern>*.map</url-pattern>
     </servlet-mapping>
 
-    <!-- SPA Routing Servlet - handles all SPA routes (dynamic and static pages) -->
-    <!-- This servlet acts as a fallback for all routes not handled by other servlets -->
-    <servlet>
-        <servlet-name>SpaRoutingServlet</servlet-name>
-        <servlet-class>ar.edu.itba.paw.webapp.servlet.SpaRoutingServlet</servlet-class>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SpaRoutingServlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
 
     <!-- Custom error pages to always show Next.js 404 instead of Tomcat's -->
     <error-page>

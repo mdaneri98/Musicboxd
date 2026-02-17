@@ -25,10 +25,9 @@ export interface HALLink {
  * Generic HAL Resource wrapper
  * All API responses follow this structure
  */
-export interface HALResource<T = unknown> {
-  data: T; // Main data payload
+export type HALResource<T = unknown> = T & {
   _links: HALLink[];
-}
+};
 
 // ============================================================================
 // Pagination Types
@@ -96,15 +95,6 @@ export interface RegisterData {
   password: string;
 }
 
-/**
- * Token refresh response
- */
-export interface RefreshTokenResponse {
-  access_token: string;
-  refresh_token: string;
-  user: User;
-}
-
 // ============================================================================
 // Email Verification Types
 // ============================================================================
@@ -123,13 +113,6 @@ export interface EmailVerificationResponse {
   userId: number;
   message: string;
   verified: boolean;
-}
-
-/**
- * Resend verification email request
- */
-export interface ResendVerificationRequest {
-  email: string;
 }
 
 // ============================================================================

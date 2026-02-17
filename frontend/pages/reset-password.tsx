@@ -11,7 +11,7 @@ type ResetState = 'idle' | 'loading' | 'success' | 'error' | 'invalid';
 
 const ResetPasswordPage = () => {
   const router = useRouter();
-  const { code } = router.query;
+  const { code, userId } = router.query;
   const { t } = useTranslation();
 
   const [state, setState] = useState<ResetState>('idle');
@@ -20,7 +20,7 @@ const ResetPasswordPage = () => {
   const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
-    if (router.isReady && (!code || typeof code !== 'string')) {
+    if (router.isReady && (!code || typeof code !== 'string' || !userId || typeof userId !== 'string')) {
       setState('invalid');
       setMessage(t('auth.resetPassword.errors.invalidLinkDetailed'));
     }
@@ -29,7 +29,7 @@ const ResetPasswordPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!code || typeof code !== 'string') {
+    if (!code || typeof code !== 'string' || !userId || typeof userId !== 'string') {
       setState('invalid');
       setMessage(t('auth.resetPassword.errors.invalidLink'));
       return;
@@ -57,7 +57,7 @@ const ResetPasswordPage = () => {
     setMessage('');
 
     try {
-      await passwordRepository.resetPassword(code, password, repeatPassword);
+      await passwordRepository.resetPassword(Number(userId), code, password, repeatPassword);
       setState('success');
       setMessage(t('auth.resetPassword.success'));
 
@@ -82,8 +82,8 @@ const ResetPasswordPage = () => {
         <>
           <div className="status-icon success">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-              <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+              <path d="M8 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <h1 className="auth-title">{t('auth.resetPassword.title')}</h1>
@@ -105,8 +105,8 @@ const ResetPasswordPage = () => {
         <>
           <div className="status-icon error">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-              <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+              <path d="M12 8v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
           <h1 className="auth-title">{t('auth.resetPassword.invalidLinkTitle')}</h1>
@@ -124,8 +124,8 @@ const ResetPasswordPage = () => {
       <>
         <div className="status-icon">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </div>
         <h1 className="auth-title">{t('auth.resetPassword.heading')}</h1>

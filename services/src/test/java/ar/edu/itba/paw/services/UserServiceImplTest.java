@@ -130,16 +130,14 @@ public class UserServiceImplTest {
     public void test_findUserById_successfulFind() {
         // 1. Pre-conditions
         Mockito.when(userDao.findById(USER_ID)).thenReturn(Optional.of(testUser));
-        Mockito.when(userDao.isFollowing(OTHER_USER_ID, USER_ID)).thenReturn(false);
 
         // 2. Execute
-        User found = userService.findUserById(USER_ID, OTHER_USER_ID);
+        User found = userService.findUserById(USER_ID);
 
         // 3. Post-conditions
         assertNotNull(found);
         assertEquals(USER_ID, found.getId());
         assertEquals(USERNAME, found.getUsername());
-        assertFalse(found.getIsFollowed());
     }
 
     @Test(expected = UserNotFoundException.class)
@@ -148,7 +146,7 @@ public class UserServiceImplTest {
         Mockito.when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         // 2. Execute
-        userService.findUserById(USER_ID, null);
+        userService.findUserById(USER_ID);
 
         // 3. Post-conditions - exception thrown
     }
@@ -762,31 +760,6 @@ public class UserServiceImplTest {
         userService.getRecommendedUsers(USER_ID, 1, 10);
 
         // 3. Post-conditions - exception thrown
-    }
-
-    // ========== CONTEXT DEPENDENT FIELDS TESTS ==========
-
-    @Test
-    public void test_setContextDependentFields_withLoggedUser() {
-        // 1. Pre-conditions
-        Mockito.when(userDao.isFollowing(OTHER_USER_ID, USER_ID)).thenReturn(true);
-
-        // 2. Execute
-        userService.setContextDependentFields(testUser, OTHER_USER_ID);
-
-        // 3. Post-conditions
-        assertTrue(testUser.getIsFollowed());
-    }
-
-    @Test
-    public void test_setContextDependentFields_withoutLoggedUser() {
-        // 1. Pre-conditions - none
-
-        // 2. Execute
-        userService.setContextDependentFields(testUser, null);
-
-        // 3. Post-conditions
-        assertFalse(testUser.getIsFollowed());
     }
 
     // ========== SEARCH TESTS ==========

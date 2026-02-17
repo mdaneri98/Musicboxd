@@ -5,7 +5,6 @@ import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
 import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ArtistDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.FavoriteDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.UserDtoMapper;
@@ -26,6 +25,9 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import javax.ws.rs.ForbiddenException;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -33,7 +35,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import java.time.LocalDateTime;
+import java.net.URI;
 import java.util.List;
 
 @Path(ApiUriConstants.USERS_BASE)
@@ -68,9 +70,6 @@ public class UserController extends BaseController {
     @Autowired
     private SongDtoMapper songDtoMapper;
 
-    @Autowired
-    private FavoriteDtoMapper favoriteDtoMapper;
-
     @GET
     @Produces(CustomMediaType.USER_LIST)
     public Response getAllUsers(
@@ -78,26 +77,26 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-
+        
         List<User> users;
         if (search != null && !search.isEmpty()) {
             users = userService.findByUsernameContaining(search, page, size);
         } else {
             users = userService.findPaginated(filter, page, size);
         }
-
+        
         Long totalCount = userService.countUsers();
-
+        
         if (users.isEmpty()) {
             return Response.noContent().build();
         }
-
+        
         List<UserDTO> userDTOs = userDtoMapper.toDTOList(users, uriInfo);
-
+        
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<UserDTO>>(userDTOs) {
-                });
-
+                new GenericEntity<List<UserDTO>>(userDTOs) {}
+        );
+        
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
         return responseBuilder.build();
     }
@@ -117,10 +116,9 @@ public class UserController extends BaseController {
     @Produces(CustomMediaType.USER)
     public Response createUser(@Valid UserForm userForm) {
         CreateUserDTO createUserDTO = userFormMapper.toDTO(userForm);
-        User user = userService.create(createUserDTO.getUsername(), createUserDTO.getEmail(),
-                createUserDTO.getPassword());
+        User user = userService.create(createUserDTO.getUsername(), createUserDTO.getEmail(), createUserDTO.getPassword());
         UserDTO userDTO = userDtoMapper.toDTO(user, uriInfo);
-        return Response.created(userDTO.getLinks().getSelf()).entity(userDTO).build();
+        return Response.created(userDTO.getSelf()).entity(userDTO).build();
     }
 
     // ==================== Password Reset Operations ====================
@@ -144,9 +142,10 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Consumes(CustomMediaType.USER_PASSWORD)
     public Response updatePassword(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
-            @Valid ResetPasswordRequestDTO request) {
-        userService.verify(VerificationType.VERIFY_FORGOT_PASSWORD, request.getCode());
-        userService.changePassword(id, request.getPassword());
+                                   @Valid ResetPasswordRequestDTO request) {
+        if (!userService.changePassword(id, request.getPassword(), request.getCode())) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         return Response.noContent().build();
     }
 
@@ -159,19 +158,8 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Consumes(CustomMediaType.USER_VERIFICATION)
     public Response verifyEmail(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
-            @Valid EmailVerificationRequestDTO request) {
+                                @Valid EmailVerificationRequestDTO request) {
         userService.verify(VerificationType.VERIFY_EMAIL, request.getCode());
-        return Response.noContent().build();
-    }
-
-    /**
-     * Resend verification email.
-     */
-    @POST
-    @Consumes(CustomMediaType.USER_VERIFICATION)
-    public Response resendVerificationEmail(@Valid ResendVerificationRequestDTO request) {
-        User user = userService.findByEmail(request.getEmail());
-        userService.createVerification(VerificationType.VERIFY_EMAIL, user);
         return Response.noContent().build();
     }
 
@@ -181,11 +169,10 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Consumes(CustomMediaType.USER)
     @Produces(CustomMediaType.USER)
-    public Response updateUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
-            @Valid UserProfileForm userProfileForm) {
+    public Response updateUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserProfileForm userProfileForm) {
         User userUpdate = userProfileFormMapper.toModel(userProfileForm);
         userUpdate.setId(userId);
-
+        
         User user = userService.updateUser(userUpdate);
         UserDTO userDTO = userDtoMapper.toDTO(user, uriInfo);
         return Response.ok(userDTO).build();
@@ -194,9 +181,6 @@ public class UserController extends BaseController {
     @DELETE
     @Path(ApiUriConstants.ID)
     public Response deleteUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        if (!id.equals(SecurityContextUtils.getCurrentUserId())) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
         userService.deleteById(id);
         return Response.noContent().build();
     }
@@ -205,24 +189,24 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_REVIEWS)
     @Produces(CustomMediaType.REVIEW_LIST)
     public Response getUserReviews(
-            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
-            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id, 
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-
+        
         List<Review> reviews = reviewService.findReviewsByUserPaginated(id, page, size);
         Long totalCount = reviewService.countReviewsByUser(id);
-
+        
         if (reviews.isEmpty()) {
             return Response.noContent().build();
         }
-
+        
         List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
-
+        
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
-                });
-
+                new GenericEntity<List<ReviewDTO>>(reviewDTOs) {}
+        );
+        
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
         return responseBuilder.build();
     }
@@ -231,25 +215,25 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FOLLOWERS)
     @Produces(CustomMediaType.USER_LIST)
     public Response getUserFollowers(
-            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
-            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id, 
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page, 
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-
+        
         User user = userService.findUserById(id);
         List<User> followers = userService.getFollowers(id, page, size);
         Integer totalCount = user.getFollowersAmount();
-
+        
         if (followers.isEmpty()) {
             return Response.noContent().build();
         }
-
+        
         List<UserDTO> followerDTOs = userDtoMapper.toDTOList(followers, uriInfo);
-
+        
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<UserDTO>>(followerDTOs) {
-                });
-
+                new GenericEntity<List<UserDTO>>(followerDTOs) {}
+        );
+        
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount.longValue());
         return responseBuilder.build();
     }
@@ -262,21 +246,21 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
-
+        
         User user = userService.findUserById(id);
         List<User> following = userService.getFollowings(id, page, size);
         Integer totalCount = user.getFollowingAmount();
-
+        
         if (following.isEmpty()) {
             return Response.noContent().build();
         }
-
+        
         List<UserDTO> followingDTOs = userDtoMapper.toDTOList(following, uriInfo);
-
+        
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<UserDTO>>(followingDTOs) {
-                });
-
+                new GenericEntity<List<UserDTO>>(followingDTOs) {}
+        );
+        
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount.longValue());
         return responseBuilder.build();
     }
@@ -284,7 +268,7 @@ public class UserController extends BaseController {
     @PUT
     @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
     public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
-            @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
+                               @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
         userService.createFollowing(userId, targetUserId);
         return Response.noContent().build();
     }
@@ -292,7 +276,7 @@ public class UserController extends BaseController {
     @DELETE
     @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
     public Response unfollowUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
-            @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
+                                 @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
         userService.undoFollowing(userId, targetUserId);
         return Response.noContent().build();
     }
@@ -302,18 +286,18 @@ public class UserController extends BaseController {
     @Produces(CustomMediaType.ARTIST_LIST)
     public Response getUserFavoriteArtists(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         List<Artist> artists = userService.getFavoriteArtists(id);
-
+        
         if (artists.isEmpty()) {
             return Response.noContent().build();
         }
-
+        
         List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists, uriInfo);
-
+        
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<ArtistDTO>>(artistDTOs) {
-                });
-
-        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo,
+                new GenericEntity<List<ArtistDTO>>(artistDTOs) {}
+        );
+        
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, 
                 ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) artists.size());
         return responseBuilder.build();
     }
@@ -323,18 +307,18 @@ public class UserController extends BaseController {
     @Produces(CustomMediaType.ALBUM_LIST)
     public Response getUserFavoriteAlbums(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         List<Album> albums = userService.getFavoriteAlbums(id);
-
+        
         if (albums.isEmpty()) {
             return Response.noContent().build();
         }
-
+        
         List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums, uriInfo);
-
+        
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<AlbumDTO>>(albumDTOs) {
-                });
-
-        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo,
+                new GenericEntity<List<AlbumDTO>>(albumDTOs) {}
+        );
+        
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, 
                 ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) albums.size());
         return responseBuilder.build();
     }
@@ -344,33 +328,29 @@ public class UserController extends BaseController {
     @Produces(CustomMediaType.SONG_LIST)
     public Response getUserFavoriteSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         List<Song> songs = userService.getFavoriteSongs(id);
-
+        
         if (songs.isEmpty()) {
             return Response.noContent().build();
         }
-
+        
         List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
-
+        
         Response.ResponseBuilder responseBuilder = Response.ok(
-                new GenericEntity<List<SongDTO>>(songDTOs) {
-                });
-
-        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo,
+                new GenericEntity<List<SongDTO>>(songDTOs) {}
+        );
+        
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, 
                 ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) songs.size());
         return responseBuilder.build();
     }
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_ARTIST_DETAIL)
-    @Produces(CustomMediaType.FAVORITE)
     public Response addFavoriteArtist(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
         userService.addFavoriteArtist(userId, artistId);
-
-        FavoriteDTO favoriteDTO = favoriteDtoMapper.toDTO(userId, artistId, ControllerUtils.ITEM_TYPE_ARTIST,
-                LocalDateTime.now(), uriInfo);
-        return Response.created(favoriteDTO.getLinks().getSelf()).entity(favoriteDTO).build();
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -384,15 +364,11 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_ALBUM_DETAIL)
-    @Produces(CustomMediaType.FAVORITE)
     public Response addFavoriteAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
         userService.addFavoriteAlbum(userId, albumId);
-
-        FavoriteDTO favoriteDTO = favoriteDtoMapper.toDTO(userId, albumId, ControllerUtils.ITEM_TYPE_ALBUM,
-                LocalDateTime.now(), uriInfo);
-        return Response.created(favoriteDTO.getLinks().getSelf()).entity(favoriteDTO).build();
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -406,15 +382,11 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_SONG_DETAIL)
-    @Produces(CustomMediaType.FAVORITE)
     public Response addFavoriteSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
         userService.addFavoriteSong(userId, songId);
-
-        FavoriteDTO favoriteDTO = favoriteDtoMapper.toDTO(userId, songId, ControllerUtils.ITEM_TYPE_SONG,
-                LocalDateTime.now(), uriInfo);
-        return Response.created(favoriteDTO.getLinks().getSelf()).entity(favoriteDTO).build();
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -426,7 +398,7 @@ public class UserController extends BaseController {
         return Response.noContent().build();
     }
 
-    @PATCH
+    @PATCH  
     @Path(ApiUriConstants.ID)
     @Consumes(CustomMediaType.USER)
     @Produces(CustomMediaType.USER)

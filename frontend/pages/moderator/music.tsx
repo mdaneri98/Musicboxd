@@ -182,11 +182,11 @@ export default function MusicEditorPage() {
           if (currentArtistIdRef.current !== artistIdNum) return;
 
           const songs: ModSongFormData[] = result.items.map((songRes: any) => ({
-            id: songRes.data.id,
-            title: songRes.data.title,
-            duration: formatDurationForDisplay(songRes.data.duration),
-            trackNumber: songRes.data.track_number,
-            albumId: songRes.data.album_id,
+            id: songRes.id,
+            title: songRes.title,
+            duration: formatDurationForDisplay(songRes.duration),
+            trackNumber: songRes.track_number,
+            albumId: songRes.album_id,
             deleted: false,
             _tempId: generateTempId(),
             _isCollapsed: true,
@@ -548,7 +548,7 @@ export default function MusicEditorPage() {
         router.push(`/artists/${formData.id}`);
       } else {
         const result = await dispatch(createArtistAsync(payload as any)).unwrap();
-        router.push(`/artists/${result.data.id}`);
+        router.push(`/artists/${result.id}`);
       }
     } catch (error: any) {
       console.error('Failed to save artist:', error);

@@ -370,7 +370,7 @@ public class AuthServiceImplTest {
         // 1. Pre-conditions
         Mockito.when(jwtService.validateAccessToken(ACCESS_TOKEN)).thenReturn(true);
         Mockito.when(jwtService.extractUserId(ACCESS_TOKEN)).thenReturn(USER_ID);
-        Mockito.when(userService.findUserById(USER_ID, 0L)).thenReturn(testUser);
+        Mockito.when(userService.findUserById(USER_ID)).thenReturn(testUser);
 
         // 2. Execute
         User result = authService.getCurrentUser(ACCESS_TOKEN);
@@ -378,7 +378,7 @@ public class AuthServiceImplTest {
         // 3. Post-conditions
         assertNotNull(result);
         assertEquals(testUser, result);
-        Mockito.verify(userService).findUserById(USER_ID, 0L);
+        Mockito.verify(userService).findUserById(USER_ID);
     }
 
     @Test(expected = InvalidTokenException.class)

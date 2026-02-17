@@ -4,60 +4,77 @@
  */
 
 import { apiClient, tokenStorage } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import {
   User,
-  LoginCredentials,
   LoginResponse,
-  RefreshTokenResponse,
   HALResource,
 } from '@/types';
 import { RegisterFormData } from '@/types/forms';
+import { jwtDecode } from 'jwt-decode';
 
 // ============================================================================
 // API Endpoints
 // ============================================================================
 
 const AUTH_ENDPOINTS = {
-  LOGIN: '/auth/login',
-  REGISTER: '/auth/register',
-  REFRESH: '/auth/refresh',
-  LOGOUT: '/auth/logout',
-  CURRENT_USER: '/auth/me',
+  USERS: '/users',
 };
 
 // ============================================================================
 // Auth Repository Class
 // ============================================================================
 
+interface DecodedToken {
+  userId: number;
+  sub: string;
+  roles: string;
+  exp: number;
+  iat: number;
+  type?: string;
+}
+
 class AuthRepository {
   /**
-   * Login with email and password
-   * @param email User email
+   * Login with username and password using Basic Auth
+   * @param username User username
    * @param password User password
    * @returns LoginResponse with tokens and user data
    */
   async login(username: string, password: string): Promise<LoginResponse> {
     try {
-      const credentials: LoginCredentials = { username, password };
-      
-      const response = await apiClient.post<LoginResponse>(
-        AUTH_ENDPOINTS.LOGIN,
-        credentials
+      const credentials = btoa(`${username}:${password}`);
+
+      // Use a lightweight request to exchange credentials for tokens
+      const response = await apiClient.getWithHeaders<any>(
+        `${AUTH_ENDPOINTS.USERS}?page=1&size=0`,
+        {
+          headers: { 'Authorization': `Basic ${credentials}` }
+        }
       );
 
-      if (!response) {
-        throw new Error('Invalid login response: missing data');
+      const accessToken = response.headers['x-jwt-token'];
+      const refreshToken = response.headers['x-jwt-refresh-token'];
+
+      if (!accessToken || !refreshToken) {
+        throw new Error('Login failed: No tokens received in headers');
       }
 
-      const data = response as LoginResponse;
+      tokenStorage.setTokens(accessToken, refreshToken);
 
-      if (!data.access_token || !data.refresh_token) {
-        throw new Error('Invalid login response: missing data');
-      }
-      
-      tokenStorage.setTokens(data.access_token, data.refresh_token);
-    
-      return data;
+      // Decode token to get userId to fetch full profile
+      const decoded = jwtDecode<DecodedToken>(accessToken);
+      const userId = decoded.userId;
+
+      // Fetch full user profile
+      const userResponse = await apiClient.getResource<User>(`${AUTH_ENDPOINTS.USERS}/${userId}`);
+
+      return {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        user: userResponse
+      };
+
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -66,21 +83,21 @@ class AuthRepository {
 
   /**
    * Register a new user
-   * @param userData Registration data
-   * @returns Created user
+   * @param registerData Registration data
+   * @returns Created user (and logs in if possible)
    */
-  async register(registerData: RegisterFormData): Promise<HALResource<User>> {
+  async register(registerData: RegisterFormData): Promise<LoginResponse> {
     try {
-      const response = await apiClient.postResource<User>(
-        AUTH_ENDPOINTS.REGISTER,
-        registerData
+      // We need the full response to check for tokens
+      await apiClient.postResource<User>(
+        AUTH_ENDPOINTS.USERS,
+        registerData,
+        { headers: { 'Content-Type': CustomMediaType.USER } }
       );
 
-      if (!response) {
-        throw new Error('Invalid registration response: missing data');
-      }
 
-      return response as HALResource<User>;
+      return this.login(registerData.username, registerData.password);
+
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -88,69 +105,30 @@ class AuthRepository {
   }
 
   /**
-   * Refresh access token using refresh token
-   * @param refreshToken Refresh token
-   * @returns New tokens
+   * Logout user (client-side only)
    */
-  async refresh(refreshToken: string): Promise<RefreshTokenResponse> {
-    try {
-      const response = await apiClient.post<RefreshTokenResponse>(
-        AUTH_ENDPOINTS.REFRESH,
-        { refreshToken }
-      );
-
-      if (!response) {
-        throw new Error('Invalid refresh response: missing data');
-      }
-      const refreshTokenResponse = response as RefreshTokenResponse;
-
-      // Store new tokens
-      tokenStorage.setTokens(refreshTokenResponse.access_token, refreshTokenResponse.refresh_token);
-
-      return refreshTokenResponse;
-    } catch (error) {
-      console.error('Token refresh error:', error);
-      // Clear tokens on refresh failure
-      tokenStorage.clearTokens();
-      throw error;
-    }
-  }
-
-  /**
-   * Logout user (invalidate refresh token on server)
-   * @param refreshToken Refresh token to invalidate
-   */
-  async logout(refreshToken?: string): Promise<void> {
-    try {
-      const token = refreshToken || tokenStorage.getRefreshToken();
-
-      if (token) {
-        await apiClient.post(AUTH_ENDPOINTS.LOGOUT, { refreshToken: token });
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Don't throw error on logout - we still want to clear tokens locally
-    } finally {
-      // Always clear tokens locally
-      tokenStorage.clearTokens();
-    }
+  async logout(): Promise<void> {
+    tokenStorage.clearTokens();
+    return Promise.resolve();
   }
 
   /**
    * Get current authenticated user
    * @returns Current user data
    */
-    async getCurrentUser(): Promise<HALResource<User>> {
+  async getCurrentUser(): Promise<HALResource<User>> {
     try {
-      const response: HALResource<User> = await apiClient.getResource<User>(
-        AUTH_ENDPOINTS.CURRENT_USER
+      const token = tokenStorage.getAccessToken();
+      if (!token) throw new Error('No access token found');
+
+      const decoded = jwtDecode<DecodedToken>(token);
+      const userId = decoded.userId;
+
+      const response = await apiClient.getResource<User>(
+        `${AUTH_ENDPOINTS.USERS}/${userId}`
       );
 
-      if (!response) {
-        throw new Error('Invalid user response: missing data');
-      }
-
-      return response as HALResource<User>;
+      return response;
     } catch (error) {
       console.error('Get current user error:', error);
       throw error;
@@ -163,22 +141,6 @@ class AuthRepository {
    */
   isAuthenticated(): boolean {
     return tokenStorage.getAccessToken() !== null;
-  }
-
-  /**
-   * Get stored access token
-   * @returns Access token or null
-   */
-  getAccessToken(): string | null {
-    return tokenStorage.getAccessToken();
-  }
-
-  /**
-   * Get stored refresh token
-   * @returns Refresh token or null
-   */
-  getRefreshToken(): string | null {
-    return tokenStorage.getRefreshToken();
   }
 
   /**

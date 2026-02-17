@@ -44,8 +44,6 @@ public class AccessDeniedExceptionMapper implements ExceptionMapper<AccessDenied
 				uriInfo
 		);
 
-        LOGGER.error("Email sending failed: {}", error, exception);
-
 		Response.ResponseBuilder builder = Response.status(status)
 				.type(MediaType.APPLICATION_JSON_TYPE)
 				.entity(error);

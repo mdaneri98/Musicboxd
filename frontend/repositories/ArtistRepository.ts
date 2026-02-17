@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   Artist,
@@ -28,8 +29,6 @@ const ARTIST_ENDPOINTS = {
   ARTIST_REVIEWS: (id: number) => `/artists/${id}/reviews`,
   ARTIST_ALBUMS: (id: number) => `/artists/${id}/albums`,
   ARTIST_SONGS: (id: number) => `/artists/${id}/songs`,
-  ADD_FAVORITE: (id: number) => `/artists/${id}/favorites`,
-  REMOVE_FAVORITE: (id: number) => `/artists/${id}/favorites`,
 };
 
 // ============================================================================
@@ -63,7 +62,7 @@ class ArtistRepository {
         throw new Error('Invalid artists response: missing data');
       }
 
-      return response as Collection<HALResource<Artist>>;
+      return response;
     } catch (error) {
       console.error('Get artists error:', error);
       throw error;
@@ -101,7 +100,8 @@ class ArtistRepository {
     try {
       const response: HALResource<Artist> = await apiClient.postResource<Artist>(
         ARTIST_ENDPOINTS.ARTISTS,
-        artistData
+        artistData,
+        { headers: { 'Content-Type': CustomMediaType.ARTIST } }
       );
 
       if (!response) {
@@ -125,7 +125,8 @@ class ArtistRepository {
     try {
       const response: HALResource<Artist> = await apiClient.putResource<Artist>(
         ARTIST_ENDPOINTS.ARTIST_BY_ID(id),
-        artistData
+        artistData,
+        { headers: { 'Content-Type': CustomMediaType.ARTIST } }
       );
 
       if (!response) {
@@ -178,7 +179,7 @@ class ArtistRepository {
         throw new Error('Invalid artist reviews response: missing data');
       }
 
-      return response as Collection<HALResource<Review>>;
+      return response;
     } catch (error) {
       console.error(`Get artist ${id} reviews error:`, error);
       throw error;
@@ -200,7 +201,7 @@ class ArtistRepository {
       const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
 
       if (response && response.items && response.items.length > 0) {
-        return response.items[0].data;
+        return response.items[0];
       }
 
       return null;
@@ -231,7 +232,7 @@ class ArtistRepository {
         throw new Error('Invalid artist albums response: missing data');
       }
 
-      return response as Collection<HALResource<Album>>;
+      return response;
     } catch (error) {
       console.error(`Get artist ${id} albums error:`, error);
       throw error;
@@ -248,7 +249,8 @@ class ArtistRepository {
     try {
       const response: HALResource<Album> = await apiClient.postResource<Album>(
         ARTIST_ENDPOINTS.ARTIST_ALBUMS(artistId),
-        albumData
+        albumData,
+        { headers: { 'Content-Type': CustomMediaType.ALBUM } }
       );
 
       if (!response) {
@@ -283,38 +285,13 @@ class ArtistRepository {
         throw new Error('Invalid artist songs response: missing data');
       }
 
-      return response as Collection<HALResource<Song>>;
+      return response;
     } catch (error) {
       console.error(`Get artist ${id} songs error:`, error);
       throw error;
     }
   }
 
-  /**
-   * Add artist to user's favorites
-   * @param id Artist ID
-   */
-  async addArtistFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.postResource<Artist>(ARTIST_ENDPOINTS.ADD_FAVORITE(id));
-    } catch (error) {
-      console.error(`Add artist ${id} to favorites error:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove artist from user's favorites
-   * @param id Artist ID
-   */
-  async removeArtistFavorite(id: number): Promise<void> {
-    try {
-      await apiClient.deleteResource<Artist>(ARTIST_ENDPOINTS.REMOVE_FAVORITE(id));
-    } catch (error) {
-      console.error(`Remove artist ${id} from favorites error:`, error);
-      throw error;
-    }
-  }
 }
 
 // ============================================================================

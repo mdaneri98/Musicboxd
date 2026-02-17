@@ -7,10 +7,6 @@ import ar.edu.itba.paw.models.reviews.ReviewType;
  */
 public final class ControllerUtils {
 
-    // Cache max-age constants (in seconds)
-    public static final int IMAGE_MAX_AGE = 2592000; // 30 days
-    public static final int DATA_MAX_AGE = 3600; // 1 hour
-
     // Constants
     public static final Long FAVORITE_COUNT = 5L;
     public static final Integer FAVORITE_SIZE = 5;

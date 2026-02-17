@@ -6,17 +6,18 @@ import { ReviewCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  fetchArtistByIdAsync, 
-  fetchArtistAlbumsAsync, 
-  fetchArtistSongsAsync, 
-  fetchArtistReviewsAsync, 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  fetchArtistByIdAsync,
+  fetchArtistAlbumsAsync,
+  fetchArtistSongsAsync,
+  fetchArtistReviewsAsync,
   fetchMoreArtistReviewsAsync,
   fetchUserArtistReviewAsync,
-  addArtistFavoriteAsync, 
+  addArtistFavoriteAsync,
   removeArtistFavoriteAsync,
+  fetchFavoriteArtistsAsync,
   selectCurrentArtist,
   selectArtistAlbums,
   selectArtistSongs,
@@ -27,6 +28,7 @@ import {
   selectArtistReviewsHasMore,
   selectArtistError,
   selectCurrentUserArtistReview,
+  selectFavoriteArtists,
   clearCurrentArtist,
   showError,
 } from '@/store/slices';
@@ -42,7 +44,7 @@ const ArtistDetailPage = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  
+
   // Use Redux selectors
   const artist = useAppSelector(selectCurrentArtist);
   const albums = useAppSelector(selectArtistAlbums);
@@ -54,8 +56,10 @@ const ArtistDetailPage = () => {
   const hasMoreReviews = useAppSelector(selectArtistReviewsHasMore);
   const error = useAppSelector(selectArtistError);
   const currentUserReview = useAppSelector(selectCurrentUserArtistReview);
-  
+
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const favoriteArtists = useAppSelector(selectFavoriteArtists);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Clear artist data when component unmounts or id changes
   useEffect(() => {
@@ -67,7 +71,7 @@ const ArtistDetailPage = () => {
   // Fetch artist data
   useEffect(() => {
     if (!artistId) return;
-    
+
     const artistIdNum = parseInt(artistId as string);
     dispatch(fetchArtistByIdAsync(artistIdNum));
     dispatch(fetchArtistAlbumsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
@@ -75,25 +79,38 @@ const ArtistDetailPage = () => {
     dispatch(fetchArtistReviewsAsync({ artistId: artistIdNum, page: 1, size: 10 }));
   }, [artistId, dispatch]);
 
-  // Fetch current user's review if authenticated and has reviewed
+  // Fetch current user's review if authenticated
   useEffect(() => {
-    if (!artistId || !isAuthenticated || !currentUser || !artist?.reviewed) return;
-    
+    if (!artistId || !isAuthenticated || !currentUser) return;
+
     const artistIdNum = parseInt(artistId as string);
     dispatch(fetchUserArtistReviewAsync({ artistId: artistIdNum, userId: currentUser.id }));
-  }, [artistId, isAuthenticated, currentUser, artist?.reviewed, dispatch]);
+  }, [artistId, isAuthenticated, currentUser, dispatch]);
+
+  // Fetch favorite artists to determine isFavorite status
+  useEffect(() => {
+    if (!isAuthenticated || !currentUser) return;
+    dispatch(fetchFavoriteArtistsAsync(currentUser.id));
+  }, [isAuthenticated, currentUser, dispatch]);
+
+  // Update isFavorite when favorites list or current artist changes
+  useEffect(() => {
+    if (!artistId || !favoriteArtists) return;
+    const artistIdNum = parseInt(artistId as string);
+    setIsFavorite(favoriteArtists.some(a => a.id === artistIdNum));
+  }, [artistId, favoriteArtists]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!artistId || !hasMoreReviews || loadingMoreReviews) return;
-    
+
     const artistIdNum = parseInt(artistId as string);
     const nextPage = reviewsPagination.page + 1;
-    
-    await dispatch(fetchMoreArtistReviewsAsync({ 
-      artistId: artistIdNum, 
-      page: nextPage, 
-      size: reviewsPagination.size 
+
+    await dispatch(fetchMoreArtistReviewsAsync({
+      artistId: artistIdNum,
+      page: nextPage,
+      size: reviewsPagination.size
     }));
   }, [dispatch, artistId, reviewsPagination.page, reviewsPagination.size, hasMoreReviews, loadingMoreReviews]);
 
@@ -115,10 +132,12 @@ const ArtistDetailPage = () => {
 
     try {
       setFavoriteLoading(true);
-      if (artist.favorite) {
-        await dispatch(removeArtistFavoriteAsync(artist.id)).unwrap();
+      if (isFavorite) {
+        await dispatch(removeArtistFavoriteAsync({ userId: currentUser!.id, artistId: artist.id })).unwrap();
+        setIsFavorite(false);
       } else {
-        await dispatch(addArtistFavoriteAsync(artist.id)).unwrap();
+        await dispatch(addArtistFavoriteAsync({ userId: currentUser!.id, artistId: artist.id })).unwrap();
+        setIsFavorite(true);
       }
     } catch (err: any) {
       // Check if error is due to max favorites limit
@@ -166,10 +185,10 @@ const ArtistDetailPage = () => {
           artist={artist}
           currentUser={currentUser}
           isAuthenticated={isAuthenticated}
-          isFavorite={artist.favorite || false}
+          isFavorite={isFavorite}
           favoriteLoading={favoriteLoading}
           userRating={currentUserReview?.rating}
-          isReviewed={artist.reviewed || false}
+          isReviewed={!!currentUserReview}
           onFavoriteToggle={handleFavoriteToggle}
         />
 

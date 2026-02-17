@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   Review,
@@ -24,8 +25,8 @@ const REVIEW_ENDPOINTS = {
   REVIEWS: '/reviews',
   REVIEW_BY_ID: (id: number) => `/reviews/${id}`,
   REVIEW_LIKES: (id: number) => `/reviews/${id}/likes`,
-  LIKE_REVIEW: (id: number) => `/reviews/${id}/likes`,
-  UNLIKE_REVIEW: (id: number) => `/reviews/${id}/likes`,
+  REVIEW_LIKE_BY_USER: (reviewId: number, userId: number) =>
+    `/reviews/${reviewId}/likes/${userId}`,
   REVIEW_COMMENTS: (id: number) => `/reviews/${id}/comments`,
 };
 
@@ -60,7 +61,7 @@ class ReviewRepository {
         throw new Error('Invalid reviews response: missing data');
       }
 
-      return response as Collection<HALResource<Review>>;
+      return response;
     } catch (error) {
       console.error('Get reviews error:', error);
       throw error;
@@ -98,7 +99,8 @@ class ReviewRepository {
     try {
       const response: HALResource<Review> = await apiClient.postResource<Review>(
         REVIEW_ENDPOINTS.REVIEWS,
-        reviewData
+        reviewData,
+        { headers: { 'Content-Type': CustomMediaType.REVIEW } }
       );
 
       if (!response) {
@@ -122,7 +124,8 @@ class ReviewRepository {
     try {
       const response: HALResource<Review> = await apiClient.putResource<Review>(
         REVIEW_ENDPOINTS.REVIEW_BY_ID(id),
-        reviewData
+        reviewData,
+        { headers: { 'Content-Type': CustomMediaType.REVIEW } }
       );
 
       if (!response) {
@@ -170,7 +173,7 @@ class ReviewRepository {
         throw new Error('Invalid review likes response: missing data');
       }
 
-      return response as Collection<HALResource<User>>;
+      return response;
     } catch (error) {
       console.error(`Get review ${reviewId} likes error:`, error);
       throw error;
@@ -183,7 +186,7 @@ class ReviewRepository {
    */
   async likeReview(reviewId: number): Promise<void> {
     try {
-      await apiClient.postResource<Review>(REVIEW_ENDPOINTS.LIKE_REVIEW(reviewId));
+      await apiClient.postResource<Review>(REVIEW_ENDPOINTS.REVIEW_LIKES(reviewId));
     } catch (error) {
       console.error(`Like review ${reviewId} error:`, error);
       throw error;
@@ -196,10 +199,25 @@ class ReviewRepository {
    */
   async unlikeReview(reviewId: number): Promise<void> {
     try {
-      await apiClient.deleteResource<Review>(REVIEW_ENDPOINTS.UNLIKE_REVIEW(reviewId));
+      await apiClient.deleteResource<Review>(REVIEW_ENDPOINTS.REVIEW_LIKES(reviewId));
     } catch (error) {
       console.error(`Unlike review ${reviewId} error:`, error);
       throw error;
+    }
+  }
+
+  /**
+   * Check if a user liked a review
+   * @param reviewId Review ID
+   * @param userId User ID
+   * @returns true if liked, false otherwise
+   */
+  async checkReviewLiked(reviewId: number, userId: number): Promise<boolean> {
+    try {
+      await apiClient.get(REVIEW_ENDPOINTS.REVIEW_LIKE_BY_USER(reviewId, userId));
+      return true;
+    } catch {
+      return false;
     }
   }
 
@@ -224,7 +242,7 @@ class ReviewRepository {
         throw new Error('Invalid review comments response: missing data');
       }
 
-      return response as Collection<HALResource<Comment>>;
+      return response;
     } catch (error) {
       console.error(`Get review ${reviewId} comments error:`, error);
       throw error;

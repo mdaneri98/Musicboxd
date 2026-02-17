@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import { buildUrl } from '@/utils/halHelpers';
 import {
   User,
@@ -30,9 +31,13 @@ const USER_ENDPOINTS = {
   USER_REVIEWS: (id: number) => `/users/${id}/reviews`,
   USER_FOLLOWERS: (id: number) => `/users/${id}/followers`,
   USER_FOLLOWING: (id: number) => `/users/${id}/followings`,
+  USER_FOLLOWING_DETAIL: (userId: number, targetUserId: number) => `/users/${userId}/followings/${targetUserId}`,
   USER_FAVORITE_ARTISTS: (id: number) => `/users/${id}/favorites/artists`,
   USER_FAVORITE_ALBUMS: (id: number) => `/users/${id}/favorites/albums`,
   USER_FAVORITE_SONGS: (id: number) => `/users/${id}/favorites/songs`,
+  USER_FAVORITE_ARTIST_DETAIL: (userId: number, artistId: number) => `/users/${userId}/favorites/artists/${artistId}`,
+  USER_FAVORITE_ALBUM_DETAIL: (userId: number, albumId: number) => `/users/${userId}/favorites/albums/${albumId}`,
+  USER_FAVORITE_SONG_DETAIL: (userId: number, songId: number) => `/users/${userId}/favorites/songs/${songId}`,
 };
 
 // ============================================================================
@@ -104,7 +109,8 @@ class UserRepository {
     try {
       const response: HALResource<User> = await apiClient.postResource<User>(
         USER_ENDPOINTS.USERS,
-        userData
+        userData,
+        { headers: { 'Content-Type': CustomMediaType.USER } }
       );
 
       if (!response) {
@@ -128,7 +134,8 @@ class UserRepository {
     try {
       const response: HALResource<User> = await apiClient.putResource<User>(
         USER_ENDPOINTS.USER_BY_ID(id),
-        userData
+        userData,
+        { headers: { 'Content-Type': CustomMediaType.USER } }
       );
 
       if (!response) {
@@ -247,24 +254,74 @@ class UserRepository {
    * Follow a user
    * @param id User ID to follow
    */
-  async followUser(id: number): Promise<void> {
+  async followUser(userId: number, targetUserId: number): Promise<void> {
     try {
-      await apiClient.post<void>(USER_ENDPOINTS.USER_FOLLOWERS(id));
+      await apiClient.putResource(USER_ENDPOINTS.USER_FOLLOWING_DETAIL(userId, targetUserId));
     } catch (error) {
-      console.error(`Follow user ${id} error:`, error);
+      console.error(`Follow user ${targetUserId} error:`, error);
       throw error;
     }
   }
 
-  /**
-   * Unfollow a user
-   * @param id User ID to unfollow
-   */
-  async unfollowUser(id: number): Promise<void> {
+  async unfollowUser(userId: number, targetUserId: number): Promise<void> {
     try {
-      await apiClient.delete<void>(USER_ENDPOINTS.USER_FOLLOWERS(id));
+      await apiClient.deleteResource(USER_ENDPOINTS.USER_FOLLOWING_DETAIL(userId, targetUserId));
     } catch (error) {
-      console.error(`Unfollow user ${id} error:`, error);
+      console.error(`Unfollow user ${targetUserId} error:`, error);
+      throw error;
+    }
+  }
+
+  async addFavoriteArtist(userId: number, artistId: number): Promise<void> {
+    try {
+      await apiClient.putResource(USER_ENDPOINTS.USER_FAVORITE_ARTIST_DETAIL(userId, artistId));
+    } catch (error) {
+      console.error(`Add favorite artist ${artistId} error:`, error);
+      throw error;
+    }
+  }
+
+  async removeFavoriteArtist(userId: number, artistId: number): Promise<void> {
+    try {
+      await apiClient.deleteResource(USER_ENDPOINTS.USER_FAVORITE_ARTIST_DETAIL(userId, artistId));
+    } catch (error) {
+      console.error(`Remove favorite artist ${artistId} error:`, error);
+      throw error;
+    }
+  }
+
+  async addFavoriteAlbum(userId: number, albumId: number): Promise<void> {
+    try {
+      await apiClient.putResource(USER_ENDPOINTS.USER_FAVORITE_ALBUM_DETAIL(userId, albumId));
+    } catch (error) {
+      console.error(`Add favorite album ${albumId} error:`, error);
+      throw error;
+    }
+  }
+
+  async removeFavoriteAlbum(userId: number, albumId: number): Promise<void> {
+    try {
+      await apiClient.deleteResource(USER_ENDPOINTS.USER_FAVORITE_ALBUM_DETAIL(userId, albumId));
+    } catch (error) {
+      console.error(`Remove favorite album ${albumId} error:`, error);
+      throw error;
+    }
+  }
+
+  async addFavoriteSong(userId: number, songId: number): Promise<void> {
+    try {
+      await apiClient.putResource(USER_ENDPOINTS.USER_FAVORITE_SONG_DETAIL(userId, songId));
+    } catch (error) {
+      console.error(`Add favorite song ${songId} error:`, error);
+      throw error;
+    }
+  }
+
+  async removeFavoriteSong(userId: number, songId: number): Promise<void> {
+    try {
+      await apiClient.deleteResource(USER_ENDPOINTS.USER_FAVORITE_SONG_DETAIL(userId, songId));
+    } catch (error) {
+      console.error(`Remove favorite song ${songId} error:`, error);
       throw error;
     }
   }
@@ -345,7 +402,8 @@ class UserRepository {
     try {
       const response: HALResource<User> = await apiClient.patchResource<User>(
         USER_ENDPOINTS.USER_BY_ID(userId),
-        userData
+        userData,
+        { headers: { 'Content-Type': CustomMediaType.USER } }
       );
 
       if (!response) {

@@ -6,8 +6,8 @@ import { ReviewCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  selectIsAuthenticated, 
+import {
+  selectIsAuthenticated,
   selectCurrentUser,
   fetchSongByIdAsync,
   fetchAlbumByIdAsync,
@@ -17,6 +17,7 @@ import {
   fetchUserSongReviewAsync,
   addSongFavoriteAsync,
   removeSongFavoriteAsync,
+  fetchFavoriteSongsAsync,
   selectCurrentSong,
   selectSongReviews,
   selectLoadingSong,
@@ -25,6 +26,7 @@ import {
   selectSongReviewsHasMore,
   selectSongError,
   selectCurrentUserSongReview,
+  selectFavoriteSongs,
   clearCurrentSong,
   showError,
 } from '@/store/slices';
@@ -41,7 +43,7 @@ const SongDetailPage = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  
+
   const song = useAppSelector(selectCurrentSong);
   const reviews = useAppSelector(selectSongReviews);
   const loading = useAppSelector(selectLoadingSong);
@@ -50,10 +52,12 @@ const SongDetailPage = () => {
   const hasMoreReviews = useAppSelector(selectSongReviewsHasMore);
   const error = useAppSelector(selectSongError);
   const currentUserReview = useAppSelector(selectCurrentUserSongReview);
-  
+
   const [album, setAlbum] = useState<Album | null>(null);
   const [artist, setArtist] = useState<Artist | null>(null);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const favoriteSongs = useAppSelector(selectFavoriteSongs);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -63,19 +67,19 @@ const SongDetailPage = () => {
 
   useEffect(() => {
     if (!songId) return;
-    
+
     const songIdNum = parseInt(songId as string);
     dispatch(fetchSongByIdAsync(songIdNum))
       .unwrap()
       .then((songData) => {
-        dispatch(fetchAlbumByIdAsync(songData.data.album_id))
+        dispatch(fetchAlbumByIdAsync(songData.album_id))
           .unwrap()
-          .then((albumData) => setAlbum(albumData.data))
+          .then((albumData) => setAlbum(albumData))
           .catch((err) => console.error(t('common.error'), err));
-        
-        dispatch(fetchArtistByIdAsync(songData.data.artist_id))
+
+        dispatch(fetchArtistByIdAsync(songData.artist_id))
           .unwrap()
-          .then((artistData) => setArtist(artistData.data))
+          .then((artistData) => setArtist(artistData))
           .catch((err) => console.error(t('common.error'), err));
       })
       .catch((err) => console.error(t('common.error'), err));
@@ -84,25 +88,38 @@ const SongDetailPage = () => {
     dispatch(fetchSongReviewsAsync({ songId: songIdNum, page: 1, size: 10 }));
   }, [songId, dispatch, t]);
 
-  // Fetch current user's review if authenticated and has reviewed
+  // Fetch current user's review if authenticated
   useEffect(() => {
-    if (!songId || !isAuthenticated || !currentUser || !song?.reviewed) return;
-    
+    if (!songId || !isAuthenticated || !currentUser) return;
+
     const songIdNum = parseInt(songId as string);
     dispatch(fetchUserSongReviewAsync({ songId: songIdNum, userId: currentUser.id }));
-  }, [songId, isAuthenticated, currentUser, song?.reviewed, dispatch]);
+  }, [songId, isAuthenticated, currentUser, dispatch]);
+
+  // Fetch favorite songs to determine isFavorite status
+  useEffect(() => {
+    if (!isAuthenticated || !currentUser) return;
+    dispatch(fetchFavoriteSongsAsync(currentUser.id));
+  }, [isAuthenticated, currentUser, dispatch]);
+
+  // Update isFavorite when favorites list or current song changes
+  useEffect(() => {
+    if (!songId || !favoriteSongs) return;
+    const songIdNum = parseInt(songId as string);
+    setIsFavorite(favoriteSongs.some(s => s.id === songIdNum));
+  }, [songId, favoriteSongs]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!songId || !hasMoreReviews || loadingMoreReviews) return;
-    
+
     const songIdNum = parseInt(songId as string);
     const nextPage = reviewsPagination.page + 1;
-    
-    await dispatch(fetchMoreSongReviewsAsync({ 
-      songId: songIdNum, 
-      page: nextPage, 
-      size: reviewsPagination.size 
+
+    await dispatch(fetchMoreSongReviewsAsync({
+      songId: songIdNum,
+      page: nextPage,
+      size: reviewsPagination.size
     }));
   }, [dispatch, songId, reviewsPagination.page, reviewsPagination.size, hasMoreReviews, loadingMoreReviews]);
 
@@ -124,10 +141,12 @@ const SongDetailPage = () => {
 
     try {
       setFavoriteLoading(true);
-      if (song.favorite) {
-        await dispatch(removeSongFavoriteAsync(song.id)).unwrap();
+      if (isFavorite) {
+        await dispatch(removeSongFavoriteAsync({ userId: currentUser!.id, songId: song.id })).unwrap();
+        setIsFavorite(false);
       } else {
-        await dispatch(addSongFavoriteAsync(song.id)).unwrap();
+        await dispatch(addSongFavoriteAsync({ userId: currentUser!.id, songId: song.id })).unwrap();
+        setIsFavorite(true);
       }
     } catch (err: any) {
       // Check if error is due to max favorites limit
@@ -183,10 +202,10 @@ const SongDetailPage = () => {
           artist={artist}
           currentUser={currentUser}
           isAuthenticated={isAuthenticated}
-          isFavorite={song.favorite || false}
+          isFavorite={isFavorite}
           favoriteLoading={favoriteLoading}
           userRating={currentUserReview?.rating}
-          isReviewed={song.reviewed || false}
+          isReviewed={!!currentUserReview}
           onFavoriteToggle={handleFavoriteToggle}
         />
 

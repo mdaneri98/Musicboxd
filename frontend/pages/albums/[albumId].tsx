@@ -6,8 +6,8 @@ import { ReviewCard, SongCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  selectIsAuthenticated, 
+import {
+  selectIsAuthenticated,
   selectCurrentUser,
   fetchAlbumByIdAsync,
   fetchArtistByIdAsync,
@@ -17,6 +17,7 @@ import {
   fetchUserAlbumReviewAsync,
   addAlbumFavoriteAsync,
   removeAlbumFavoriteAsync,
+  fetchFavoriteAlbumsAsync,
   selectCurrentAlbum,
   selectAlbumSongs,
   selectAlbumReviews,
@@ -26,6 +27,7 @@ import {
   selectAlbumReviewsHasMore,
   selectAlbumError,
   selectCurrentUserAlbumReview,
+  selectFavoriteAlbums,
   clearCurrentAlbum,
   showError,
 } from '@/store/slices';
@@ -41,7 +43,7 @@ const AlbumDetailPage = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  
+
   // Use Redux selectors
   const album = useAppSelector(selectCurrentAlbum);
   const songs = useAppSelector(selectAlbumSongs);
@@ -52,9 +54,11 @@ const AlbumDetailPage = () => {
   const hasMoreReviews = useAppSelector(selectAlbumReviewsHasMore);
   const error = useAppSelector(selectAlbumError);
   const currentUserReview = useAppSelector(selectCurrentUserAlbumReview);
-  
+
   const [artist, setArtist] = useState<Artist | null>(null);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const favoriteAlbums = useAppSelector(selectFavoriteAlbums);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Clear on unmount
   useEffect(() => {
@@ -66,16 +70,16 @@ const AlbumDetailPage = () => {
   // Fetch album data
   useEffect(() => {
     if (!albumId) return;
-    
+
     const albumIdNum = parseInt(albumId as string);
     dispatch(fetchAlbumByIdAsync(albumIdNum))
       .unwrap()
       .then((albumData) => {
         // Fetch artist data
-        dispatch(fetchArtistByIdAsync(albumData.data.artist_id))
+        dispatch(fetchArtistByIdAsync(albumData.artist_id))
           .unwrap()
           .then((artistData) => {
-            setArtist(artistData.data);
+            setArtist(artistData);
           })
           .catch((err) => {
             console.error('Failed to fetch artist:', err);
@@ -84,33 +88,46 @@ const AlbumDetailPage = () => {
       .catch((err) => {
         console.error('Failed to fetch album:', err);
       });
-    
+
     // Fetch songs
     dispatch(fetchAlbumSongsAsync({ albumId: albumIdNum, page: 0, size: 100 }));
-    
+
     // Fetch reviews (initial load)
     dispatch(fetchAlbumReviewsAsync({ albumId: albumIdNum, page: 1, size: 10 }));
   }, [albumId, dispatch]);
 
-  // Fetch current user's review if authenticated and has reviewed
+  // Fetch current user's review if authenticated
   useEffect(() => {
-    if (!albumId || !isAuthenticated || !currentUser || !album?.reviewed) return;
-    
+    if (!albumId || !isAuthenticated || !currentUser) return;
+
     const albumIdNum = parseInt(albumId as string);
     dispatch(fetchUserAlbumReviewAsync({ albumId: albumIdNum, userId: currentUser.id }));
-  }, [albumId, isAuthenticated, currentUser, album?.reviewed, dispatch]);
+  }, [albumId, isAuthenticated, currentUser, dispatch]);
+
+  // Fetch favorite albums to determine isFavorite status
+  useEffect(() => {
+    if (!isAuthenticated || !currentUser) return;
+    dispatch(fetchFavoriteAlbumsAsync(currentUser.id));
+  }, [isAuthenticated, currentUser, dispatch]);
+
+  // Update isFavorite when favorites list or current album changes
+  useEffect(() => {
+    if (!albumId || !favoriteAlbums) return;
+    const albumIdNum = parseInt(albumId as string);
+    setIsFavorite(favoriteAlbums.some(a => a.id === albumIdNum));
+  }, [albumId, favoriteAlbums]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!albumId || !hasMoreReviews || loadingMoreReviews) return;
-    
+
     const albumIdNum = parseInt(albumId as string);
     const nextPage = reviewsPagination.page + 1;
-    
-    await dispatch(fetchMoreAlbumReviewsAsync({ 
-      albumId: albumIdNum, 
-      page: nextPage, 
-      size: reviewsPagination.size 
+
+    await dispatch(fetchMoreAlbumReviewsAsync({
+      albumId: albumIdNum,
+      page: nextPage,
+      size: reviewsPagination.size
     }));
   }, [dispatch, albumId, reviewsPagination.page, reviewsPagination.size, hasMoreReviews, loadingMoreReviews]);
 
@@ -132,10 +149,12 @@ const AlbumDetailPage = () => {
 
     try {
       setFavoriteLoading(true);
-      if (album.favorite) {
-        await dispatch(removeAlbumFavoriteAsync(album.id)).unwrap();
+      if (isFavorite) {
+        await dispatch(removeAlbumFavoriteAsync({ userId: currentUser!.id, albumId: album.id })).unwrap();
+        setIsFavorite(false);
       } else {
-        await dispatch(addAlbumFavoriteAsync(album.id)).unwrap();
+        await dispatch(addAlbumFavoriteAsync({ userId: currentUser!.id, albumId: album.id })).unwrap();
+        setIsFavorite(true);
       }
     } catch (err: any) {
       // Check if error is due to max favorites limit
@@ -184,10 +203,10 @@ const AlbumDetailPage = () => {
           artist={artist}
           currentUser={currentUser}
           isAuthenticated={isAuthenticated}
-          isFavorite={album.favorite || false}
+          isFavorite={isFavorite}
           favoriteLoading={favoriteLoading}
           userRating={currentUserReview?.rating}
-          isReviewed={album.reviewed || false}
+          isReviewed={!!currentUserReview}
           onFavoriteToggle={handleFavoriteToggle}
         />
 

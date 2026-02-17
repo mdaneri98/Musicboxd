@@ -1,36 +1,24 @@
 import { apiClient } from '@/lib/apiClient';
+import { CustomMediaType } from '@/types/mediaTypes';
 import {
   ForgotPasswordRequest,
   ResetPasswordRequest,
 } from '@/types';
 
-// ============================================================================
-// API Endpoints
-// ============================================================================
-
 const PASSWORD_ENDPOINTS = {
-  FORGOT_PASSWORD: '/email/password/forgot',
-  RESET_PASSWORD: '/email/password/reset',
+  FORGOT_PASSWORD: '/users',
+  RESET_PASSWORD: (userId: number) => `/users/${userId}`,
 };
 
-// ============================================================================
-// Password Repository Class
-// ============================================================================
-
 class PasswordRepository {
-  /**
-   * Request password reset email
-   * Backend returns 204 No Content on success, throws exception on failure
-   * @param email User's email address
-   * @returns void - throws error if request fails
-   */
   async forgotPassword(email: string): Promise<void> {
     try {
       const request: ForgotPasswordRequest = { email };
 
       await apiClient.post<void>(
         PASSWORD_ENDPOINTS.FORGOT_PASSWORD,
-        request
+        request,
+        { headers: { 'Content-Type': CustomMediaType.USER_PASSWORD } }
       );
     } catch (error) {
       console.error('Forgot password error:', error);
@@ -38,25 +26,18 @@ class PasswordRepository {
     }
   }
 
-  /**
-   * Reset password with verification code
-   * Backend returns 204 No Content on success, throws exception on failure
-   * @param code Verification code from email
-   * @param password New password
-   * @param repeatPassword Password confirmation
-   * @returns void - throws error if reset fails
-   */
-  async resetPassword(code: string, password: string, repeatPassword: string): Promise<void> {
+  async resetPassword(userId: number, code: string, password: string, repeatPassword: string): Promise<void> {
     try {
       const request: ResetPasswordRequest = {
         code,
         password,
-        repeat_password: repeatPassword, 
+        repeat_password: repeatPassword,
       };
 
-      await apiClient.post<void>(
-        PASSWORD_ENDPOINTS.RESET_PASSWORD,
-        request
+      await apiClient.patch<void>(
+        PASSWORD_ENDPOINTS.RESET_PASSWORD(userId),
+        request,
+        { headers: { 'Content-Type': CustomMediaType.USER_PASSWORD } }
       );
     } catch (error) {
       console.error('Reset password error:', error);
@@ -64,9 +45,5 @@ class PasswordRepository {
     }
   }
 }
-
-// ============================================================================
-// Export Singleton Instance
-// ============================================================================
 
 export const passwordRepository = new PasswordRepository();

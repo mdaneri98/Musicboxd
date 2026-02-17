@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
-import { songRepository, reviewRepository } from '@/repositories';
+import { songRepository, reviewRepository, userRepository } from '@/repositories';
 import { Song, Review, Collection, HALResource, CreateSongFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
 import { EditSongFormData } from '@/types/forms';
@@ -217,11 +217,11 @@ export const createSongReviewAsync = createAsyncThunk<
 
 export const addSongFavoriteAsync = createAsyncThunk<
   HALResource<Song>,
-  number,
+  { userId: number; songId: number },
   { rejectValue: string }
->('songs/addFavorite', async (songId, { rejectWithValue }) => {
+>('songs/addFavorite', async ({ userId, songId }, { rejectWithValue }) => {
   try {
-    await songRepository.addSongFavorite(songId);
+    await userRepository.addFavoriteSong(userId, songId);
     return await songRepository.getSongById(songId) as HALResource<Song>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to add song to favorites');
@@ -230,11 +230,11 @@ export const addSongFavoriteAsync = createAsyncThunk<
 
 export const removeSongFavoriteAsync = createAsyncThunk<
   HALResource<Song>,
-  number,
+  { userId: number; songId: number },
   { rejectValue: string }
->('songs/removeFavorite', async (songId, { rejectWithValue }) => {
+>('songs/removeFavorite', async ({ userId, songId }, { rejectWithValue }) => {
   try {
-    await songRepository.removeSongFavorite(songId);
+    await userRepository.removeFavoriteSong(userId, songId);
     return await songRepository.getSongById(songId) as HALResource<Song>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to remove song from favorites');
@@ -285,8 +285,8 @@ const songSlice = createSlice({
         state.songs = {};
         state.orderedSongsIds = [];
         action.payload.items.forEach((song) => {
-          state.songs[song.data.id] = song.data as Song;
-          state.orderedSongsIds.push(song.data.id);
+          state.songs[song.id] = song as Song;
+          state.orderedSongsIds.push(song.id);
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.pagination = {
@@ -309,9 +309,9 @@ const songSlice = createSlice({
       .addCase(fetchMoreSongsAsync.fulfilled, (state, action) => {
         state.loadingMore = false;
         action.payload.items.forEach((song) => {
-          if (!state.songs[song.data.id]) {
-            state.songs[song.data.id] = song.data as Song;
-            state.orderedSongsIds.push(song.data.id);
+          if (!state.songs[song.id]) {
+            state.songs[song.id] = song as Song;
+            state.orderedSongsIds.push(song.id);
           }
         });
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
@@ -334,9 +334,9 @@ const songSlice = createSlice({
       })
       .addCase(fetchSongByIdAsync.fulfilled, (state, action) => {
         state.loadingSong = false;
-        state.currentSong = action.payload.data as Song;
-        if (!state.songs[action.payload.data.id]) {
-          state.songs[action.payload.data.id] = action.payload.data as Song;
+        state.currentSong = action.payload as Song;
+        if (!state.songs[action.payload.id]) {
+          state.songs[action.payload.id] = action.payload as Song;
         }
       })
       .addCase(fetchSongByIdAsync.rejected, (state, action) => {
@@ -351,8 +351,8 @@ const songSlice = createSlice({
       })
       .addCase(createSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        if (!state.songs[action.payload.data.id]) {
-          state.songs[action.payload.data.id] = action.payload.data as Song;
+        if (!state.songs[action.payload.id]) {
+          state.songs[action.payload.id] = action.payload as Song;
         }
       })
       .addCase(createSongAsync.rejected, (state, action) => {
@@ -367,11 +367,11 @@ const songSlice = createSlice({
       })
       .addCase(updateSongAsync.fulfilled, (state, action) => {
         state.loading = false;
-        if (state.songs[action.payload.data.id]) {
-          state.songs[action.payload.data.id] = action.payload.data as Song;
+        if (state.songs[action.payload.id]) {
+          state.songs[action.payload.id] = action.payload as Song;
         }
-        if (state.currentSong?.id === action.payload.data.id) {
-          state.currentSong = action.payload.data as Song;
+        if (state.currentSong?.id === action.payload.id) {
+          state.currentSong = action.payload as Song;
         }
       })
       .addCase(updateSongAsync.rejected, (state, action) => {
@@ -403,7 +403,7 @@ const songSlice = createSlice({
       })
       .addCase(fetchSongReviewsAsync.fulfilled, (state, action) => {
         state.loadingReviews = false;
-        state.songReviews = action.payload.items.map((review) => review.data as Review);
+        state.songReviews = action.payload.items.map((review) => review as Review);
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
         state.reviewsPagination = {
           page: action.payload.currentPage,
@@ -426,7 +426,7 @@ const songSlice = createSlice({
         state.loadingMoreReviews = false;
         const existingIds = new Set(state.songReviews.map(r => r.id));
         const newReviews = action.payload.items
-          .map((review) => review.data as Review)
+          .map((review) => review as Review)
           .filter(r => !existingIds.has(r.id));
         state.songReviews = [...state.songReviews, ...newReviews];
         const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
@@ -453,26 +453,26 @@ const songSlice = createSlice({
 
     builder
       .addCase(addSongFavoriteAsync.fulfilled, (state, action) => {
-        const updatedSong = action.payload.data as Song;
+        const updatedSong = action.payload as Song;
         state.currentSong = updatedSong;
         state.songs[updatedSong.id] = updatedSong;
       })
       .addCase(removeSongFavoriteAsync.fulfilled, (state, action) => {
-        const updatedSong = action.payload.data as Song;
+        const updatedSong = action.payload as Song;
         state.currentSong = updatedSong;
         state.songs[updatedSong.id] = updatedSong;
       });
 
     builder
       .addCase(blockReviewAsync.fulfilled, (state, action) => {
-        const reviewData = action.payload.data as Review;
+        const reviewData = action.payload as Review;
         const index = state.songReviews.findIndex((r) => r.id === reviewData.id);
         if (index !== -1) {
           state.songReviews[index] = reviewData;
         }
       })
       .addCase(unblockReviewAsync.fulfilled, (state, action) => {
-        const reviewData = action.payload.data as Review;
+        const reviewData = action.payload as Review;
         const index = state.songReviews.findIndex((r) => r.id === reviewData.id);
         if (index !== -1) {
           state.songReviews[index] = reviewData;

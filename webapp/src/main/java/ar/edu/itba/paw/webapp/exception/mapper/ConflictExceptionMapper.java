@@ -45,8 +45,6 @@ public class ConflictExceptionMapper implements ExceptionMapper<ConflictExceptio
                 uriInfo
         );
 
-        LOGGER.error("Email sending failed: {}", error, exception);
-
         return Response.status(Response.Status.CONFLICT)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(error)

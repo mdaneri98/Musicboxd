@@ -79,7 +79,8 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
     public void configure(org.springframework.security.config.annotation.web.builders.WebSecurity web) throws Exception {
         web.ignoring()
                 .antMatchers("/static/**")
-                .antMatchers("/assets/**");
+                .antMatchers("/assets/**")
+                .antMatchers("/_next/**");
     }
 
     @Override
@@ -149,8 +150,8 @@ public class ApiAuthConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 // Register filters: BasicAuth first, then JWT
-                .addFilterBefore(basicAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(basicAuthFilter(), UsernamePasswordAuthenticationFilter.class)
 
                 // Enable CORS and disable csrf rules
                 .cors().and().csrf().disable();

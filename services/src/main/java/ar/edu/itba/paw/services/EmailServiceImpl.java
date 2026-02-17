@@ -80,17 +80,17 @@ public class EmailServiceImpl implements EmailService {
 
         switch (type) {
             case VERIFY_EMAIL -> {
-                verificationURL = frontendUrl + "/verify-email?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                verificationURL = frontendUrl + "/verify-email/?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
                 template = "user_verification";
                 emailSubject = "verification.email";
             }
             case VERIFY_FORGOT_PASSWORD -> {
-                verificationURL = frontendUrl + "/reset-password?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                verificationURL = frontendUrl + "/reset-password/?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
                 template = "create_password";
                 emailSubject = "verification.password";
             }
             case VERIFY_GENERAL -> {
-                verificationURL = frontendUrl + "/general-verification?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+                verificationURL = frontendUrl + "/general-verification/?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
                 template = "general_verification";
                 emailSubject = "verification.general";
             }

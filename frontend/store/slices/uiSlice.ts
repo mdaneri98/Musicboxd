@@ -24,16 +24,16 @@ export interface ConfirmationDialog {
 export interface Modal {
   isOpen: boolean;
   type:
-    | 'login'
-    | 'register'
-    | 'review'
-    | 'comment'
-    | 'profile'
-    | 'artist'
-    | 'album'
-    | 'song'
-    | 'settings'
-    | null;
+  | 'login'
+  | 'register'
+  | 'review'
+  | 'comment'
+  | 'profile'
+  | 'artist'
+  | 'album'
+  | 'song'
+  | 'settings'
+  | null;
   data?: any;
 }
 
@@ -118,7 +118,7 @@ const uiSlice = createSlice({
       state.modal = {
         isOpen: true,
         type: action.payload.type,
-        data: action.payload.data,
+        data: action.payload,
       };
     },
 

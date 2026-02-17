@@ -15,11 +15,11 @@ const MusicDiscoveryPage = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
-  
+
   const [artistTab, setArtistTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
   const [albumTab, setAlbumTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
   const [songTab, setSongTab] = useState<MusicTabEnum>(MusicTabEnum.POPULAR);
-  
+
   const [topRatedArtists, setTopRatedArtists] = useState<Artist[]>([]);
   const [popularArtists, setPopularArtists] = useState<Artist[]>([]);
   const [topRatedAlbums, setTopRatedAlbums] = useState<Album[]>([]);
@@ -30,7 +30,7 @@ const MusicDiscoveryPage = () => {
   useEffect(() => {
     const fetchDiscoveryContent = async () => {
       setLoading(true);
-      try {        
+      try {
         // Fetch all content in parallel
         const [topArtists, popArtists, topAlbums, popAlbums, topSongs, popSongs] = await Promise.all([
           dispatch(fetchArtistsAsync({ page: 1, size: 10, filter: FilterTypeEnum.RATING })).unwrap(),
@@ -40,13 +40,13 @@ const MusicDiscoveryPage = () => {
           dispatch(fetchSongsAsync({ page: 1, size: 10, filter: FilterTypeEnum.RATING })).unwrap(),
           dispatch(fetchSongsAsync({ page: 1, size: 10, filter: FilterTypeEnum.POPULAR })).unwrap(),
         ]);
-        
-        setTopRatedArtists(topArtists.items.map((item) => item.data));
-        setPopularArtists(popArtists.items.map((item) => item.data));
-        setTopRatedAlbums(topAlbums.items.map((item) => item.data));
-        setPopularAlbums(popAlbums.items.map((item) => item.data));
-        setTopRatedSongs(topSongs.items.map((item) => item.data));
-        setPopularSongs(popSongs.items.map((item) => item.data));
+
+        setTopRatedArtists(topArtists.items);
+        setPopularArtists(popArtists.items);
+        setTopRatedAlbums(topAlbums.items);
+        setPopularAlbums(popAlbums.items);
+        setTopRatedSongs(topSongs.items);
+        setPopularSongs(popSongs.items);
       } catch (error) {
         console.error('Failed to fetch discovery content:', error);
       } finally {
@@ -197,7 +197,7 @@ const MusicDiscoveryPage = () => {
                 <div className="tabs">
                   <span
                     id="popularSongButton"
-                      className={`tab ${songTab === MusicTabEnum.POPULAR ? 'active' : ''}`}
+                    className={`tab ${songTab === MusicTabEnum.POPULAR ? 'active' : ''}`}
                     onClick={() => setSongTab(MusicTabEnum.POPULAR)}
                     style={{ cursor: 'pointer' }}
                   >

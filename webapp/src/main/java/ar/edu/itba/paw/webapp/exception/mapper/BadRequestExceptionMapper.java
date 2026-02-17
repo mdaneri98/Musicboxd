@@ -43,8 +43,6 @@ public class BadRequestExceptionMapper implements ExceptionMapper<UnkownReviewTy
                 uriInfo
         );
 
-        LOGGER.error("Email sending failed: {}", error, exception);
-
         return Response.status(Response.Status.BAD_REQUEST)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .entity(error)
