@@ -89,7 +89,7 @@ public class CommentController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PreAuthorize("@securityServiceImpl.isCommentOwner(#id, authentication) or hasRole('MODERATOR')")
     public Response deleteComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         commentService.delete(id);
         return Response.noContent().build();
@@ -97,6 +97,7 @@ public class CommentController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("@securityServiceImpl.isCommentOwner(#id, authentication)")
     @Consumes(CustomMediaType.COMMENT)
     @Produces(CustomMediaType.COMMENT)
     public Response updateComment(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid CommentForm commentForm) {

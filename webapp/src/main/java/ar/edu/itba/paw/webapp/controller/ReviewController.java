@@ -107,7 +107,7 @@ public class ReviewController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PreAuthorize("@securityServiceImpl.isReviewOwner(#id, authentication) or hasRole('MODERATOR')")
     public Response deleteReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         reviewService.delete(id);
         return Response.noContent().build();
@@ -115,6 +115,7 @@ public class ReviewController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("@securityServiceImpl.isReviewOwner(#id, authentication)")
     @Consumes(CustomMediaType.REVIEW)
     @Produces(CustomMediaType.REVIEW)
     public Response updateReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ReviewForm reviewForm) {
@@ -188,6 +189,7 @@ public class ReviewController extends BaseController {
 
     @POST
     @Path(ApiUriConstants.REVIEW_LIKES)
+    @PreAuthorize("hasRole('USER')")
     public Response likeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         reviewService.createLike(loggedUserId, reviewId);
@@ -201,6 +203,7 @@ public class ReviewController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.REVIEW_LIKES)
+    @PreAuthorize("hasRole('USER')")
     public Response unlikeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
         reviewService.removeLike(loggedUserId, reviewId);

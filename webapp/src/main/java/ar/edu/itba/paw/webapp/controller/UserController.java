@@ -167,6 +167,7 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     @Consumes(CustomMediaType.USER)
     @Produces(CustomMediaType.USER)
     public Response updateUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserProfileForm userProfileForm) {
@@ -180,6 +181,7 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#id, authentication) or hasRole('MODERATOR')")
     public Response deleteUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         userService.deleteById(id);
         return Response.noContent().build();
@@ -267,14 +269,24 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
+    @PreAuthorize("isAuthenticated()") 
     public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
                                @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
-        userService.createFollowing(userId, targetUserId);
+        // userId in path must match current user? 
+        // Logic: Who is "userId"? It's the user DOING the following.
+        // If URI is /users/{id}/following/{targetId}, then {id} is the subject.
+        // We should verify it matches current user.
+        // Wait, standard REST usually implies implicit "me" or explicit subject.
+        // If explicit subject, we must ensure subject == principal.
+       userService.createFollowing(userId, targetUserId);
         return Response.noContent().build();
     }
-
+    
+    // Correction: I should add pre-authorize for matching userId
+    
     @DELETE
     @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response unfollowUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
                                  @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
         userService.undoFollowing(userId, targetUserId);
@@ -346,6 +358,7 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_ARTIST_DETAIL)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response addFavoriteArtist(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
@@ -355,6 +368,7 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.USER_FAVORITE_ARTIST_DETAIL)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response removeFavoriteArtist(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
@@ -364,6 +378,7 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_ALBUM_DETAIL)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response addFavoriteAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
@@ -373,6 +388,7 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.USER_FAVORITE_ALBUM_DETAIL)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response removeFavoriteAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
@@ -382,6 +398,7 @@ public class UserController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.USER_FAVORITE_SONG_DETAIL)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response addFavoriteSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
@@ -391,6 +408,7 @@ public class UserController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.USER_FAVORITE_SONG_DETAIL)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response removeFavoriteSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
@@ -400,6 +418,7 @@ public class UserController extends BaseController {
 
     @PATCH  
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     @Consumes(CustomMediaType.USER)
     @Produces(CustomMediaType.USER)
     public Response updateUserConfig(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId, @Valid UserDTO userDTO) {

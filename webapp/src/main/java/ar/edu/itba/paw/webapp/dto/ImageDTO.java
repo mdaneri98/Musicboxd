@@ -34,4 +34,9 @@ public class ImageDTO {
     public void setLinks(ImageLinksDTO links) {
         this.links = links;
     }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

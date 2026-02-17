@@ -11,6 +11,7 @@ import ar.edu.itba.paw.models.StatusType;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -31,6 +32,7 @@ public class NotificationController extends BaseController {
     private NotificationDtoMapper notificationDtoMapper;
 
     @GET
+    @PreAuthorize("isAuthenticated()")
     @Produces(CustomMediaType.NOTIFICATION_LIST)
     public Response getNotifications(
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
@@ -79,6 +81,7 @@ public class NotificationController extends BaseController {
 
     @PUT
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("@securityServiceImpl.isNotificationOwner(#id, authentication)")
     @Consumes(CustomMediaType.NOTIFICATION)
     @Produces(CustomMediaType.NOTIFICATION)
     public Response updateNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
@@ -92,6 +95,7 @@ public class NotificationController extends BaseController {
 
     @DELETE
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("@securityServiceImpl.isNotificationOwner(#id, authentication)")
     public Response deleteNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         notificationService.delete(id);
         return Response.noContent().build();
@@ -99,6 +103,7 @@ public class NotificationController extends BaseController {
 
     @PATCH
     @Path(ApiUriConstants.ID)
+    @PreAuthorize("@securityServiceImpl.isNotificationOwner(#id, authentication)")
     @Consumes(CustomMediaType.NOTIFICATION)
     @Produces(CustomMediaType.NOTIFICATION)
     public Response markAsRead(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
@@ -113,6 +118,7 @@ public class NotificationController extends BaseController {
     }
 
     @PATCH
+    @PreAuthorize("isAuthenticated()")
     @Consumes(CustomMediaType.NOTIFICATION)
     public Response markAllAsRead(@Valid NotificationDTO notificationDTO) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
