@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.persistence.ImageDao;
 import ar.edu.itba.paw.exception.not_found.ImageNotFoundException;
+import ar.edu.itba.paw.services.utils.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class ImageServiceImpl implements ImageService {
     private final Long DEFAULT_IMAGE_ID = 1L;
     private final Long DEFAULT_PROFILE_IMAGE_ID = 2L;
 
+    private static final int MAX_WIDTH = 800;
+    private static final int MAX_HEIGHT = 800;
+
     public ImageServiceImpl(ImageDao imageDao) {
         this.imageDao = imageDao;
     }
@@ -34,7 +38,9 @@ public class ImageServiceImpl implements ImageService {
         if (bytes == null || bytes.length == 0) {
             LOGGER.debug("No image value for save!.");
         }
-        return imageDao.create(new Image(bytes));
+        
+        byte[] resizedBytes = ImageUtils.resizeImage(bytes, MAX_WIDTH, MAX_HEIGHT);
+        return imageDao.create(new Image(resizedBytes));
     }
 
     @Transactional
@@ -43,6 +49,9 @@ public class ImageServiceImpl implements ImageService {
             LOGGER.debug("Image {} not updated. File empty", image.getId());
             return findById(image.getId());
         }
+
+        byte[] resizedBytes = ImageUtils.resizeImage(image.getBytes(), MAX_WIDTH, MAX_HEIGHT);
+        image.setBytes(resizedBytes);
 
         if(image.getId() == DEFAULT_IMAGE_ID || image.getId() == DEFAULT_PROFILE_IMAGE_ID) {
             LOGGER.debug("Image {} not updated. Cannot update default image", image.getId());
