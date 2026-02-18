@@ -97,7 +97,8 @@ describe('notificationSlice', () => {
             store = configureStore({
                 reducer: {
                     notifications: notificationReducer,
-                },
+                    auth: (state = { currentUser: { id: 1 } }) => state,
+                } as any,
             });
             nock.cleanAll();
         });
@@ -108,15 +109,10 @@ describe('notificationSlice', () => {
 
         describe('fetchNotificationsAsync', () => {
             it('should fetch notifications successfully', async () => {
-                const responseData = {
-                    items: [{ data: mockNotification }],
-                    currentPage: 1,
-                    pageSize: 10,
-                    totalCount: 1,
-                };
+                const responseData = [mockNotification];
 
                 nock(API_BASE_URL)
-                    .get('/notifications')
+                    .get('/users/1/notifications')
                     .query({ page: 1, size: 10 })
                     .reply(200, responseData);
 
@@ -131,7 +127,7 @@ describe('notificationSlice', () => {
 
             it('should handle fetch failure', async () => {
                 nock(API_BASE_URL)
-                    .get('/notifications')
+                    .get('/users/1/notifications')
                     .query({ page: 1, size: 10 })
                     .reply(500, { message: 'Server Error' });
 
@@ -147,7 +143,10 @@ describe('notificationSlice', () => {
             it('should append notifications successfully', async () => {
                 // Preload state
                 store = configureStore({
-                    reducer: { notifications: notificationReducer },
+                    reducer: {
+                        notifications: notificationReducer,
+                        auth: (state = { currentUser: { id: 1 } }) => state,
+                    } as any,
                     preloadedState: {
                         notifications: {
                             ...initialState,
@@ -159,17 +158,14 @@ describe('notificationSlice', () => {
                 });
 
                 const newNotification = { ...mockNotification, id: 2 };
-                const responseData = {
-                    items: [{ data: newNotification }],
-                    currentPage: 2,
-                    pageSize: 10,
-                    totalCount: 2,
-                };
+                const responseData = [newNotification];
 
                 nock(API_BASE_URL)
-                    .get('/notifications')
+                    .get('/users/1/notifications')
                     .query({ page: 2, size: 10 })
-                    .reply(200, responseData);
+                    .reply(200, responseData, {
+                        'Link': '<http://localhost:8080/api/users/1/notifications?page=2&size=10>; rel="last", <http://localhost:8080/api/users/1/notifications?page=1&size=10>; rel="prev"'
+                    });
 
                 await store.dispatch(fetchMoreNotificationsAsync({ page: 2, size: 10 }));
 
@@ -182,7 +178,7 @@ describe('notificationSlice', () => {
 
             it('should handle fetch more failure', async () => {
                 nock(API_BASE_URL)
-                    .get('/notifications')
+                    .get('/users/1/notifications')
                     .query({ page: 2, size: 10 })
                     .reply(500);
 
@@ -198,17 +194,14 @@ describe('notificationSlice', () => {
             it('should fetch unread count successfully', async () => {
                 // Mock getUnreadCount doing GET notifications?status=UNREAD&page=1&size=1
                 // The repo implementation calls getNotifications(1, 1, UNREAD)
-                const responseData = {
-                    items: [],
-                    currentPage: 1,
-                    pageSize: 1,
-                    totalCount: 5, // unread count from metadata
-                };
+                const responseData = [mockNotification];
 
                 nock(API_BASE_URL)
-                    .get('/notifications')
+                    .get('/users/1/notifications')
                     .query({ page: 1, size: 1, status: 'UNREAD' })
-                    .reply(200, responseData);
+                    .reply(200, responseData, {
+                        'Link': '<http://localhost:8080/api/users/1/notifications?page=5&size=1&status=UNREAD>; rel="last"'
+                    });
 
                 await store.dispatch(fetchUnreadCountAsync());
 
@@ -219,7 +212,7 @@ describe('notificationSlice', () => {
 
             it('should handle unread count failure', async () => {
                 nock(API_BASE_URL)
-                    .get('/notifications')
+                    .get('/users/1/notifications')
                     .query(true) // match any query
                     .reply(500);
 
@@ -268,7 +261,10 @@ describe('notificationSlice', () => {
         describe('markAllAsReadAsync', () => {
             it('should mark all as read successfully', async () => {
                 store = configureStore({
-                    reducer: { notifications: notificationReducer },
+                    reducer: {
+                        notifications: notificationReducer,
+                        auth: (state = { currentUser: { id: 1 } }) => state
+                    } as any,
                     preloadedState: {
                         notifications: {
                             ...initialState,
@@ -282,7 +278,7 @@ describe('notificationSlice', () => {
                 });
 
                 nock(API_BASE_URL)
-                    .patch('/notifications', { is_read: true })
+                    .patch('/users/1/notifications', { is_read: true })
                     .reply(200, {});
 
                 await store.dispatch(markAllAsReadAsync());
@@ -295,7 +291,7 @@ describe('notificationSlice', () => {
 
             it('should handle mark all read failure', async () => {
                 nock(API_BASE_URL)
-                    .patch('/notifications', { is_read: true })
+                    .patch('/users/1/notifications', { is_read: true })
                     .reply(500);
 
                 await store.dispatch(markAllAsReadAsync());

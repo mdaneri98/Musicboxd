@@ -74,7 +74,7 @@ export const fetchNotificationsAsync = createAsyncThunk<
       return rejectWithValue('User not authenticated');
     }
 
-    const response = await notificationRepository.getNotifications(page, size);
+    const response = await notificationRepository.getNotifications(userId, page, size);
     return response as Collection<HALResource<Notification>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch notifications');
@@ -97,7 +97,7 @@ export const fetchMoreNotificationsAsync = createAsyncThunk<
       return rejectWithValue('User not authenticated');
     }
 
-    const response = await notificationRepository.getNotifications(page, size);
+    const response = await notificationRepository.getNotifications(userId, page, size);
     return response as Collection<HALResource<Notification>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch more notifications');
@@ -120,7 +120,7 @@ export const fetchUnreadCountAsync = createAsyncThunk<
       return rejectWithValue('User not authenticated');
     }
 
-    const response = await notificationRepository.getUnreadCount();
+    const response = await notificationRepository.getUnreadCount(userId);
     return response as number;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch unread count');
@@ -159,7 +159,7 @@ export const markAllAsReadAsync = createAsyncThunk<
       return rejectWithValue('User not authenticated');
     }
 
-    await notificationRepository.markAllAsRead();
+    await notificationRepository.markAllAsRead(userId);
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to mark all notifications as read');
   }

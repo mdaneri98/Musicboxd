@@ -27,7 +27,7 @@ interface NotificationParams extends PaginationParams {
 // ============================================================================
 
 const NOTIFICATION_ENDPOINTS = {
-  NOTIFICATIONS: '/notifications',
+  USER_NOTIFICATIONS: (userId: number) => `/users/${userId}/notifications`,
   NOTIFICATION_BY_ID: (id: number) => `/notifications/${id}`,
 };
 
@@ -44,6 +44,7 @@ class NotificationRepository {
    * @returns Collection of notifications with pagination metadata
    */
   async getNotifications(
+    userId: number,
     page: number = 1,
     size: number = 10,
     status?: NotificationStatusEnum
@@ -53,7 +54,7 @@ class NotificationRepository {
       if (status) {
         params.status = status;
       }
-      const url = buildUrl(NOTIFICATION_ENDPOINTS.NOTIFICATIONS, params as Record<string, string | number | boolean>);
+      const url = buildUrl(NOTIFICATION_ENDPOINTS.USER_NOTIFICATIONS(userId), params as Record<string, string | number | boolean>);
       const response: Collection<HALResource<Notification>> = await apiClient.getCollection<Notification>(url);
 
       if (!response) {
@@ -165,9 +166,9 @@ class NotificationRepository {
   /**
    * Mark all notifications as read
    */
-  async markAllAsRead(): Promise<void> {
+  async markAllAsRead(userId: number): Promise<void> {
     try {
-      await apiClient.patchResource<Notification>(NOTIFICATION_ENDPOINTS.NOTIFICATIONS, { is_read: true }, { headers: { 'Content-Type': CustomMediaType.NOTIFICATION } });
+      await apiClient.patchResource<Notification>(NOTIFICATION_ENDPOINTS.USER_NOTIFICATIONS(userId), { is_read: true }, { headers: { 'Content-Type': CustomMediaType.NOTIFICATION } });
     } catch (error) {
       console.error('Mark all notifications as read error:', error);
       throw error;
@@ -179,10 +180,10 @@ class NotificationRepository {
    * Uses the notifications endpoint with status=UNREAD and extracts totalCount
    * @returns Unread count
    */
-  async getUnreadCount(): Promise<number> {
+  async getUnreadCount(userId: number): Promise<number> {
     try {
       // Fetch notifications with status=UNREAD, only need 1 item to get totalCount
-      const response = await this.getNotifications(1, 1, NotificationStatusEnum.UNREAD);
+      const response = await this.getNotifications(userId, 1, 1, NotificationStatusEnum.UNREAD);
       return response.totalCount ?? 0;
     } catch (error) {
       console.error('Get unread count error:', error);
