@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.NotificationService;
 import ar.edu.itba.paw.webapp.dto.*;
 import ar.edu.itba.paw.webapp.form.UserForm;
@@ -10,12 +11,6 @@ import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
-import ar.edu.itba.paw.models.VerificationType;
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.UserService;
@@ -442,9 +437,9 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.STATUS_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_STATUS_STRING) String status) {
 
-        ar.edu.itba.paw.models.StatusType statusType = ar.edu.itba.paw.models.StatusType.fromString(status);
+        StatusType statusType = StatusType.fromString(status);
 
-        List<ar.edu.itba.paw.models.Notification> notifications = notificationService.getUserNotifications(userId, page, size, statusType);
+        List<Notification> notifications = notificationService.getUserNotifications(userId, page, size, statusType);
         Long totalCount = notificationService.countByUserId(userId, statusType);
 
         if (notifications.isEmpty()) {
