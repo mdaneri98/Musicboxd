@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
-import { commentRepository, reviewRepository } from '@/repositories';
+import { commentRepository, reviewRepository, userRepository } from '@/repositories';
 import { Review, User, Comment, Collection, HALResource, ReviewFormData, CommentFormData } from '@/types';
 import type { RootState } from '../index';
 
@@ -124,6 +124,38 @@ export const fetchMoreReviewsAsync = createAsyncThunk<
     return response as Collection<HALResource<Review>>;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to fetch more reviews');
+  }
+});
+
+/**
+ * Fetch reviews from followed users (replaces existing data - for initial load)
+ */
+export const fetchFollowingReviewsAsync = createAsyncThunk<
+  Collection<HALResource<Review>>,
+  { userId: number; page?: number; size?: number },
+  { rejectValue: string }
+>('reviews/fetchFollowingReviews', async ({ userId, page = 1, size = 10 }, { rejectWithValue }) => {
+  try {
+    const response = await userRepository.getFollowingReviews(userId, page, size);
+    return response as Collection<HALResource<Review>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch following reviews');
+  }
+});
+
+/**
+ * Fetch more reviews from followed users (appends to existing data - for infinite scroll)
+ */
+export const fetchMoreFollowingReviewsAsync = createAsyncThunk<
+  Collection<HALResource<Review>>,
+  { userId: number; page: number; size?: number },
+  { rejectValue: string }
+>('reviews/fetchMoreFollowingReviews', async ({ userId, page, size = 10 }, { rejectWithValue }) => {
+  try {
+    const response = await userRepository.getFollowingReviews(userId, page, size);
+    return response as Collection<HALResource<Review>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch more following reviews');
   }
 });
 
@@ -476,6 +508,60 @@ const reviewSlice = createSlice({
       .addCase(fetchMoreReviewsAsync.rejected, (state, action) => {
         state.loadingMore = false;
         state.error = action.payload || 'Failed to fetch more reviews';
+      });
+
+    // Fetch Following Reviews (initial load - replaces data)
+    builder
+      .addCase(fetchFollowingReviewsAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchFollowingReviewsAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.reviews = {};
+        state.orderedReviewsIds = [];
+        action.payload.items.forEach((review) => {
+          state.reviews[review.id] = review as Review;
+          state.orderedReviewsIds.push(review.id);
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.pagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchFollowingReviewsAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to fetch following reviews';
+      });
+
+    // Fetch More Following Reviews (infinite scroll - appends data)
+    builder
+      .addCase(fetchMoreFollowingReviewsAsync.pending, (state) => {
+        state.loadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreFollowingReviewsAsync.fulfilled, (state, action) => {
+        state.loadingMore = false;
+        action.payload.items.forEach((review) => {
+          if (!state.reviews[review.id]) {
+            state.reviews[review.id] = review as Review;
+            state.orderedReviewsIds.push(review.id);
+          }
+        });
+        const hasMore = action.payload.currentPage * action.payload.pageSize < action.payload.totalCount;
+        state.pagination = {
+          page: action.payload.currentPage,
+          size: action.payload.pageSize,
+          totalCount: action.payload.totalCount,
+          hasMore,
+        };
+      })
+      .addCase(fetchMoreFollowingReviewsAsync.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.error = action.payload || 'Failed to fetch more following reviews';
       });
 
     // Fetch Review By ID

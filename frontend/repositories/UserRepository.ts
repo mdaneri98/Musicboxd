@@ -32,6 +32,7 @@ const USER_ENDPOINTS = {
   USER_FOLLOWERS: (id: number) => `/users/${id}/followers`,
   USER_FOLLOWING: (id: number) => `/users/${id}/followings`,
   USER_FOLLOWING_DETAIL: (userId: number, targetUserId: number) => `/users/${userId}/followings/${targetUserId}`,
+  USER_FOLLOWING_REVIEWS: (id: number) => `/users/${id}/followings/reviews`,
   USER_FAVORITE_ARTISTS: (id: number) => `/users/${id}/favorites/artists`,
   USER_FAVORITE_ALBUMS: (id: number) => `/users/${id}/favorites/albums`,
   USER_FAVORITE_SONGS: (id: number) => `/users/${id}/favorites/songs`,
@@ -246,6 +247,34 @@ class UserRepository {
       return response as Collection<HALResource<User>>;
     } catch (error) {
       console.error(`Get user ${id} following error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get reviews from users that this user follows
+   * @param id User ID
+   * @param page Page number
+   * @param size Page size
+   * @returns Collection of reviews from followed users
+   */
+  async getFollowingReviews(
+    id: number,
+    page: number = 1,
+    size: number = 10
+  ): Promise<Collection<HALResource<Review>>> {
+    try {
+      const params: PaginationParams = { page, size };
+      const url = buildUrl(USER_ENDPOINTS.USER_FOLLOWING_REVIEWS(id), params as Record<string, string | number | boolean>);
+      const response: Collection<HALResource<Review>> = await apiClient.getCollection<Review>(url);
+
+      if (!response) {
+        throw new Error('Invalid following reviews response: missing data');
+      }
+
+      return response as Collection<HALResource<Review>>;
+    } catch (error) {
+      console.error(`Get user ${id} following reviews error:`, error);
       throw error;
     }
   }

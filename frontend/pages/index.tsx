@@ -1,5 +1,6 @@
 
 
+
 import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +12,11 @@ import { useInfiniteScroll } from '@/hooks';
 import {
   selectIsAuthenticated,
   selectAuthInitializing,
+  selectUserId,
   fetchReviewsAsync,
   fetchMoreReviewsAsync,
+  fetchFollowingReviewsAsync,
+  fetchMoreFollowingReviewsAsync,
   clearReviews,
   selectOrderedReviews,
   selectReviewLoading,
@@ -29,6 +33,7 @@ const HomePage = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const authInitializing = useAppSelector(selectAuthInitializing);
+  const userId = useAppSelector(selectUserId);
   const reviews = useAppSelector(selectOrderedReviews);
   const loading = useAppSelector(selectReviewLoading);
   const loadingMore = useAppSelector(selectReviewLoadingMore);
@@ -36,7 +41,7 @@ const HomePage = () => {
   const hasMore = useAppSelector(selectReviewsHasMore);
 
   const [activeTab, setActiveTab] = useState<HomeTabEnum>(HomeTabEnum.FOR_YOU);
-  const filter = activeTab === HomeTabEnum.FOR_YOU ? FilterTypeEnum.LIKES : FilterTypeEnum.FOLLOWING;
+  const isFollowingTab = activeTab === HomeTabEnum.FOLLOWING;
 
   // Redirect to landing page if not authenticated (after auth initialization is complete)
   useEffect(() => {
@@ -48,26 +53,38 @@ const HomePage = () => {
     }
   }, [authInitializing, isAuthenticated, router]);
 
-  // Initial data fetch when tab/filter changes
+  // Initial data fetch when tab changes
   useEffect(() => {
     if (!isAuthenticated) return;
 
     // Clear existing reviews and fetch fresh data
     dispatch(clearReviews());
-    dispatch(fetchReviewsAsync({ page: 1, size: 10, filter }));
-  }, [isAuthenticated, filter, dispatch]);
+    if (isFollowingTab && userId) {
+      dispatch(fetchFollowingReviewsAsync({ userId, page: 1, size: 10 }));
+    } else {
+      dispatch(fetchReviewsAsync({ page: 1, size: 10, filter: FilterTypeEnum.LIKES }));
+    }
+  }, [isAuthenticated, isFollowingTab, userId, dispatch]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!hasMore || loadingMore) return;
 
     const nextPage = pagination.page + 1;
-    await dispatch(fetchMoreReviewsAsync({
-      page: nextPage,
-      size: pagination.size,
-      filter
-    }));
-  }, [dispatch, pagination.page, pagination.size, filter, hasMore, loadingMore]);
+    if (isFollowingTab && userId) {
+      await dispatch(fetchMoreFollowingReviewsAsync({
+        userId,
+        page: nextPage,
+        size: pagination.size,
+      }));
+    } else {
+      await dispatch(fetchMoreReviewsAsync({
+        page: nextPage,
+        size: pagination.size,
+        filter: FilterTypeEnum.LIKES,
+      }));
+    }
+  }, [dispatch, pagination.page, pagination.size, isFollowingTab, userId, hasMore, loadingMore]);
 
   // Infinite scroll hook
   const { sentinelRef, isFetchingMore } = useInfiniteScroll({

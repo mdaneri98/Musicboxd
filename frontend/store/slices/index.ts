@@ -197,6 +197,8 @@ export {
 export {
   fetchReviewsAsync,
   fetchMoreReviewsAsync,
+  fetchFollowingReviewsAsync,
+  fetchMoreFollowingReviewsAsync,
   fetchReviewByIdAsync,
   createReviewAsync,
   updateReviewAsync,

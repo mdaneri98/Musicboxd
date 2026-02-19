@@ -263,23 +263,41 @@ public class UserController extends BaseController {
         return responseBuilder.build();
     }
 
+    @GET
+    @Path(ApiUriConstants.USER_FOLLOWING_REVIEWS)
+    @Produces(CustomMediaType.REVIEW_LIST)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#id, authentication)")
+    public Response getUserFollowingReviews(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
+
+        List<Review> reviews = reviewService.getReviewsFromFollowedUsersPaginated(page, size, id);
+        Long totalCount = reviewService.countReviewsFromFollowedUsers(id);
+
+        if (reviews.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
+
+        Response.ResponseBuilder responseBuilder = Response.ok(
+                new GenericEntity<List<ReviewDTO>>(reviewDTOs) {}
+        );
+
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+        return responseBuilder.build();
+    }
+
     @PUT
     @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
-    @PreAuthorize("isAuthenticated()") 
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
                                @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
-        // userId in path must match current user? 
-        // Logic: Who is "userId"? It's the user DOING the following.
-        // If URI is /users/{id}/following/{targetId}, then {id} is the subject.
-        // We should verify it matches current user.
-        // Wait, standard REST usually implies implicit "me" or explicit subject.
-        // If explicit subject, we must ensure subject == principal.
        userService.createFollowing(userId, targetUserId);
         return Response.noContent().build();
     }
-    
-    // Correction: I should add pre-authorize for matching userId
-    
+
     @DELETE
     @Path(ApiUriConstants.USER_FOLLOWING_DETAIL)
     @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
