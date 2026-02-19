@@ -71,9 +71,12 @@ const axiosInstance: AxiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = tokenStorage.getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const isRetry = (config as any)._retry;
+    if (!isRetry) {
+      const token = tokenStorage.getAccessToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -81,6 +84,16 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+
+// ============================================================================
+// Login Redirect Helper
+// ============================================================================
+
+const getLoginUrl = (): string => {
+  const basePath = process.env.NODE_ENV === 'production' ? '/paw-2024b-02' : '';
+  return `${basePath}/login`;
+};
 
 // ============================================================================
 // Response Interceptor - Handle Token Refresh
@@ -135,7 +148,7 @@ axiosInstance.interceptors.response.use(
       if (!refreshToken) {
         tokenStorage.clearTokens();
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          window.location.href = getLoginUrl();
         }
         return Promise.reject(error);
       }
@@ -160,7 +173,7 @@ axiosInstance.interceptors.response.use(
         processQueue(refreshError as Error, null);
         tokenStorage.clearTokens();
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          window.location.href = getLoginUrl();
         }
         return Promise.reject(refreshError);
       } finally {

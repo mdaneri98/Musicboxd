@@ -58,20 +58,14 @@ describe('ApiClient', () => {
                 .matchHeader('Authorization', 'Bearer expired-access-token')
                 .reply(401);
 
-            // 2. Refresh token request (token sent in Authorization header)
-            nock(API_BASE_URL)
-                .post('/auth/refresh', {})
-                .matchHeader('Authorization', 'Bearer valid-refresh-token')
-                .reply(200, {
-                    access_token: 'new-access-token',
-                    refresh_token: 'new-refresh-token',
-                });
-
-            // 3. Retry of initial request with new token
+            // 2. Retry with refresh token — backend detects it, returns new tokens in headers
             nock(API_BASE_URL)
                 .get('/resource')
-                .matchHeader('Authorization', 'Bearer new-access-token')
-                .reply(200, { data: 'success' });
+                .matchHeader('Authorization', 'Bearer valid-refresh-token')
+                .reply(200, { data: 'success' }, {
+                    'X-JWT-Token': 'new-access-token',
+                    'X-JWT-Refresh-Token': 'new-refresh-token',
+                });
 
             // Execute request
             const result = await apiClient.get(`${API_BASE_URL}/resource`);
@@ -91,20 +85,14 @@ describe('ApiClient', () => {
                 .matchHeader('Authorization', 'Bearer expired-access-token')
                 .reply(403);
 
-            // 2. Refresh token request (token sent in Authorization header)
-            nock(API_BASE_URL)
-                .post('/auth/refresh', {})
-                .matchHeader('Authorization', 'Bearer valid-refresh-token')
-                .reply(200, {
-                    access_token: 'new-access-token',
-                    refresh_token: 'new-refresh-token',
-                });
-
-            // 3. Retry of initial request with new token
+            // 2. Retry with refresh token — backend detects it, returns new tokens in headers
             nock(API_BASE_URL)
                 .get('/resource')
-                .matchHeader('Authorization', 'Bearer new-access-token')
-                .reply(200, { data: 'success' });
+                .matchHeader('Authorization', 'Bearer valid-refresh-token')
+                .reply(200, { data: 'success' }, {
+                    'X-JWT-Token': 'new-access-token',
+                    'X-JWT-Refresh-Token': 'new-refresh-token',
+                });
 
             // Execute request
             const result = await apiClient.get(`${API_BASE_URL}/resource`);
@@ -117,21 +105,24 @@ describe('ApiClient', () => {
         it('should queue multiple requests while refreshing', async () => {
             tokenStorage.setTokens('expired-access-token', 'valid-refresh-token');
 
-            // Initial requests
+            // Initial requests fail with 401
             nock(API_BASE_URL).get('/resource1').reply(401);
             nock(API_BASE_URL).get('/resource2').reply(401);
 
-            // Refresh request (should be called only once)
+            // Retry of first request with refresh token — returns new tokens
             nock(API_BASE_URL)
-                .post('/auth/refresh')
-                .reply(200, {
-                    access_token: 'new-access-token',
-                    refresh_token: 'new-refresh-token',
+                .get('/resource1')
+                .matchHeader('Authorization', 'Bearer valid-refresh-token')
+                .reply(200, { id: 1 }, {
+                    'X-JWT-Token': 'new-access-token',
+                    'X-JWT-Refresh-Token': 'new-refresh-token',
                 });
 
-            // Retries
-            nock(API_BASE_URL).get('/resource1').matchHeader('Authorization', 'Bearer new-access-token').reply(200, { id: 1 });
-            nock(API_BASE_URL).get('/resource2').matchHeader('Authorization', 'Bearer new-access-token').reply(200, { id: 2 });
+            // Queued second request retried with new access token
+            nock(API_BASE_URL)
+                .get('/resource2')
+                .matchHeader('Authorization', 'Bearer new-access-token')
+                .reply(200, { id: 2 });
 
             const [res1, res2] = await Promise.all([
                 apiClient.get(`${API_BASE_URL}/resource1`),
@@ -145,8 +136,32 @@ describe('ApiClient', () => {
         it('should logout if refresh fails', async () => {
             tokenStorage.setTokens('expired-access-token', 'invalid-refresh-token');
 
+            // Initial request fails with 401
             nock(API_BASE_URL).get('/resource').reply(401);
-            nock(API_BASE_URL).post('/auth/refresh').reply(400);
+
+            // Retry with refresh token also fails
+            nock(API_BASE_URL)
+                .get('/resource')
+                .matchHeader('Authorization', 'Bearer invalid-refresh-token')
+                .reply(401);
+
+            try {
+                await apiClient.get(`${API_BASE_URL}/resource`);
+                fail('Should have thrown');
+            } catch (e) {
+                expect(e).toBeDefined();
+            }
+
+            expect(tokenStorage.getAccessToken()).toBeNull();
+            // In test env (non-production), basePath is empty, so redirect is '/login'
+            expect(window.location.href).toBe('/login');
+        });
+
+        it('should redirect to login without basePath in non-production when no refresh token', async () => {
+            // Only set access token, no refresh token
+            tokenStorage.setAccessToken('expired-access-token');
+
+            nock(API_BASE_URL).get('/resource').reply(401);
 
             try {
                 await apiClient.get(`${API_BASE_URL}/resource`);
