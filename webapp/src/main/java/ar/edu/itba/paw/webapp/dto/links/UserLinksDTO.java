@@ -14,6 +14,7 @@ public class UserLinksDTO {
     private URI favoriteArtists;
     private URI favoriteAlbums;
     private URI favoriteSongs;
+    private URI likedReviews;
 
     public UserLinksDTO() {
     }
@@ -80,5 +81,13 @@ public class UserLinksDTO {
 
     public void setFavoriteSongs(URI favoriteSongs) {
         this.favoriteSongs = favoriteSongs;
+    }
+
+    public URI getLikedReviews() {
+        return likedReviews;
+    }
+
+    public void setLikedReviews(URI likedReviews) {
+        this.likedReviews = likedReviews;
     }
 }

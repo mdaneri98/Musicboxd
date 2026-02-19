@@ -296,12 +296,11 @@ export const fetchReviewLikedStatusAsync = createAsyncThunk<
   { rejectValue: string }
 >('reviews/fetchLikedStatus', async ({ reviewIds, userId }, { rejectWithValue }) => {
   try {
+    const likedIds = await userRepository.getUserLikedReviewIds(userId, reviewIds);
     const results: Record<number, boolean> = {};
-    await Promise.all(
-      reviewIds.map(async (id) => {
-        results[id] = await reviewRepository.checkReviewLiked(id, userId);
-      })
-    );
+    reviewIds.forEach((id) => {
+      results[id] = likedIds.includes(id);
+    });
     return results;
   } catch (error: any) {
     return rejectWithValue(error.message || 'Failed to check liked status');

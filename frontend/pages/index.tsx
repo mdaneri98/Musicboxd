@@ -17,6 +17,7 @@ import {
   fetchMoreReviewsAsync,
   fetchFollowingReviewsAsync,
   fetchMoreFollowingReviewsAsync,
+  fetchReviewLikedStatusAsync,
   clearReviews,
   selectOrderedReviews,
   selectReviewLoading,
@@ -65,6 +66,19 @@ const HomePage = () => {
       dispatch(fetchReviewsAsync({ page: 1, size: 10, filter: FilterTypeEnum.LIKES }));
     }
   }, [isAuthenticated, isFollowingTab, userId, dispatch]);
+
+  // Batch fetch liked status for visible reviews
+  useEffect(() => {
+    if (!isAuthenticated || !userId || reviews.length === 0) return;
+
+    const idsWithoutLikedStatus = reviews
+      .filter((r) => r.liked === undefined)
+      .map((r) => r.id);
+
+    if (idsWithoutLikedStatus.length > 0) {
+      dispatch(fetchReviewLikedStatusAsync({ reviewIds: idsWithoutLikedStatus, userId }));
+    }
+  }, [isAuthenticated, userId, reviews, dispatch]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {

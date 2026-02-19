@@ -40,6 +40,7 @@ const USER_ENDPOINTS = {
   USER_FAVORITE_ARTIST_DETAIL: (userId: number, artistId: number) => `/users/${userId}/favorites/artists/${artistId}`,
   USER_FAVORITE_ALBUM_DETAIL: (userId: number, albumId: number) => `/users/${userId}/favorites/albums/${albumId}`,
   USER_FAVORITE_SONG_DETAIL: (userId: number, songId: number) => `/users/${userId}/favorites/songs/${songId}`,
+  USER_LIKES: (id: number) => `/users/${id}/likes`,
 };
 
 // ============================================================================
@@ -471,6 +472,23 @@ class UserRepository {
       return response as HALResource<User>;
     } catch (error) {
       console.error(`Update user ${userId} config error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get review IDs that a user has liked from a given list
+   * @param userId User ID
+   * @param reviewIds Array of review IDs to check
+   * @returns Array of review IDs that the user has liked
+   */
+  async getUserLikedReviewIds(userId: number, reviewIds: number[]): Promise<number[]> {
+    try {
+      const params = reviewIds.map(id => `reviewIds=${id}`).join('&');
+      const url = `${USER_ENDPOINTS.USER_LIKES(userId)}?${params}`;
+      return await apiClient.get<number[]>(url);
+    } catch (error) {
+      console.error(`Get user ${userId} liked review IDs error:`, error);
       throw error;
     }
   }

@@ -23,7 +23,7 @@ public final class ControllerUtils {
     public static final String SONG_ID_PARAM_NAME = "songId";
     public static final String USER_ID_PARAM_NAME = "userId";
     public static final String TARGET_USER_ID_PARAM_NAME = "targetUserId";
-
+    public static final String REVIEW_IDS_PARAM_NAME = "reviewIds";
 
     // Default values
     public static final Integer FIRST_PAGE = 1;

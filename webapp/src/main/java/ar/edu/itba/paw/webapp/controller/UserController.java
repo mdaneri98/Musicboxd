@@ -469,6 +469,25 @@ public class UserController extends BaseController {
         return Response.ok(updatedUserDTO).build();
     }
 
+    // ==================== User Likes ====================
+
+    @GET
+    @Path(ApiUriConstants.USER_LIKES)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUserLikedReviewIds(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
+            @QueryParam(ControllerUtils.REVIEW_IDS_PARAM_NAME) List<Long> reviewIds) {
+
+        if (reviewIds == null || reviewIds.isEmpty()) {
+            return Response.ok(List.of()).build();
+        }
+
+        List<Long> likedIds = reviewService.getLikedReviewIds(userId, reviewIds);
+        return Response.ok(new GenericEntity<List<Long>>(likedIds) {
+        }).build();
+    }
+
     // ==================== User Notifications ====================
     
     @GET
