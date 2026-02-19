@@ -59,6 +59,6 @@ public interface UserService {
     Integer getFavoriteSongsCount(Long userId);
     
     List<User> getRecommendedUsers(Long userId, Integer pageNumber, Integer pageSize);
-
+    Long countRecommendedUsers(Long userId);
 
 }

@@ -438,4 +438,21 @@ public class UserJpaDao implements UserDao {
         return query.getResultList();
     }
 
+    @Override
+    public Long countRecommendedUsers(Long userId) {
+        Query query = em.createNativeQuery(
+                "SELECT COUNT(DISTINCT u.id) FROM cuser u " +
+                "WHERE u.id IN (" +
+                "   SELECT f2.following FROM follower f1 " +
+                "    JOIN follower f2 ON f1.following = f2.user_id " +
+                "    WHERE f1.user_id = :userId " +
+                "    AND f2.following != :userId " +
+                "    AND f2.following NOT IN (" +
+                "        SELECT f3.following FROM follower f3 " +
+                "        WHERE f3.user_id = :userId))"
+        );
+        query.setParameter("userId", userId);
+        return ((Number) query.getSingleResult()).longValue();
+    }
+
 }

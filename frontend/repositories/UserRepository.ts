@@ -33,6 +33,7 @@ const USER_ENDPOINTS = {
   USER_FOLLOWING: (id: number) => `/users/${id}/followings`,
   USER_FOLLOWING_DETAIL: (userId: number, targetUserId: number) => `/users/${userId}/followings/${targetUserId}`,
   USER_FOLLOWING_REVIEWS: (id: number) => `/users/${id}/followings/reviews`,
+  USER_RECOMMENDED: (id: number) => `/users/${id}/recommended`,
   USER_FAVORITE_ARTISTS: (id: number) => `/users/${id}/favorites/artists`,
   USER_FAVORITE_ALBUMS: (id: number) => `/users/${id}/favorites/albums`,
   USER_FAVORITE_SONGS: (id: number) => `/users/${id}/favorites/songs`,
@@ -275,6 +276,34 @@ class UserRepository {
       return response as Collection<HALResource<Review>>;
     } catch (error) {
       console.error(`Get user ${id} following reviews error:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get recommended users for a user (friends of friends not yet followed)
+   * @param userId User ID
+   * @param page Page number
+   * @param size Page size
+   * @returns Collection of recommended users
+   */
+  async getRecommendedUsers(
+    userId: number,
+    page: number = 1,
+    size: number = 10
+  ): Promise<Collection<HALResource<User>>> {
+    try {
+      const params: PaginationParams = { page, size };
+      const url = buildUrl(USER_ENDPOINTS.USER_RECOMMENDED(userId), params as Record<string, string | number | boolean>);
+      const response: Collection<HALResource<User>> = await apiClient.getCollection<User>(url);
+
+      if (!response) {
+        throw new Error('Invalid recommended users response: missing data');
+      }
+
+      return response as Collection<HALResource<User>>;
+    } catch (error) {
+      console.error(`Get user ${userId} recommended users error:`, error);
       throw error;
     }
   }

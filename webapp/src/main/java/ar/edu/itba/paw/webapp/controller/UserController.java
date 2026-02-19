@@ -308,6 +308,32 @@ public class UserController extends BaseController {
     }
 
     @GET
+    @Path(ApiUriConstants.USER_RECOMMENDED)
+    @Produces(CustomMediaType.USER_LIST)
+    @PreAuthorize("@securityServiceImpl.isCurrentUser(#id, authentication)")
+    public Response getRecommendedUsers(
+            @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
+            @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
+            @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
+
+        List<User> users = userService.getRecommendedUsers(id, page, size);
+        Long totalCount = userService.countRecommendedUsers(id);
+
+        if (users.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        List<UserDTO> userDTOs = userDtoMapper.toDTOList(users, uriInfo);
+
+        Response.ResponseBuilder responseBuilder = Response.ok(
+                new GenericEntity<List<UserDTO>>(userDTOs) {}
+        );
+
+        PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+        return responseBuilder.build();
+    }
+
+    @GET
     @Path(ApiUriConstants.USER_FAVORITE_ARTISTS)
     @Produces(CustomMediaType.ARTIST_LIST)
     public Response getUserFavoriteArtists(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {

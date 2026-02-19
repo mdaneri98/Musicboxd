@@ -145,6 +145,22 @@ export const fetchUsersAsync = createAsyncThunk<
 });
 
 /**
+ * Fetch recommended users for the current user
+ */
+export const fetchRecommendedUsersAsync = createAsyncThunk<
+  Collection<HALResource<User>>,
+  { userId: number; page?: number; size?: number },
+  { rejectValue: string }
+>('users/fetchRecommendedUsers', async ({ userId, page = 1, size = 10 }, { rejectWithValue }) => {
+  try {
+    const response = await userRepository.getRecommendedUsers(userId, page, size);
+    return response as Collection<HALResource<User>>;
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch recommended users');
+  }
+});
+
+/**
  * Fetch user by ID
  */
 export const fetchUserByIdAsync = createAsyncThunk<

@@ -5,9 +5,9 @@ import { Layout } from '@/components/layout';
 import { UserCard } from '@/components/cards';
 import { LoadingSpinner } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectIsAuthenticated, fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, fetchUsersAsync } from '@/store/slices';
+import { selectIsAuthenticated, selectUserId, fetchArtistsAsync, fetchAlbumsAsync, fetchSongsAsync, fetchUsersAsync, fetchRecommendedUsersAsync } from '@/store/slices';
 import { imageRepository } from '@/repositories';
-import { Artist, Album, Song, User, HALResource, SearchTypeEnum, SearchTabEnum, FilterTypeEnum } from '@/types';
+import { Artist, Album, Song, User, HALResource, SearchTypeEnum, SearchTabEnum } from '@/types';
 
 type SearchResultItem = {
   id: number;
@@ -23,6 +23,7 @@ export default function SearchPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const userId = useAppSelector(selectUserId);
 
   const [activeTab, setActiveTab] = useState<SearchTabEnum>(SearchTabEnum.MUSIC);
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,10 +39,11 @@ export default function SearchPage() {
 
   // Fetch recommended users on mount
   useEffect(() => {
-    const fetchRecommendedUsers = async () => {
+    const fetchRecommended = async () => {
+      if (!userId) return;
       setLoadingRecommended(true);
       try {
-        const usersData = await dispatch(fetchUsersAsync({ page: 1, size: 6, filter: FilterTypeEnum.RECOMMENDED })).unwrap();
+        const usersData = await dispatch(fetchRecommendedUsersAsync({ userId, page: 1, size: 6 })).unwrap();
         setRecommendedUsers(usersData.items as User[]);
       } catch (error) {
         console.error('Failed to fetch recommended users:', error);
@@ -50,10 +52,10 @@ export default function SearchPage() {
       }
     };
 
-    if (isAuthenticated) {
-      fetchRecommendedUsers();
+    if (isAuthenticated && userId) {
+      fetchRecommended();
     }
-  }, [isAuthenticated, dispatch]);
+  }, [isAuthenticated, userId, dispatch]);
 
   // Close results when clicking outside
   useEffect(() => {

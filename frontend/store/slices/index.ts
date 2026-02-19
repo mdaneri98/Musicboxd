@@ -26,6 +26,7 @@ export {
 // User Slice
 export {
   fetchUsersAsync,
+  fetchRecommendedUsersAsync,
   fetchUserByIdAsync,
   updateUserAsync,
   updateUserConfigAsync,

@@ -25,6 +25,7 @@ public class ApiUriConstants {
     public static final String USER_FAVORITE_ALBUM_DETAIL = USER_FAVORITE_ALBUMS + "/{" + ControllerUtils.ALBUM_ID_PARAM_NAME + ":\\d+}";
     public static final String USER_FAVORITE_SONG_DETAIL = USER_FAVORITE_SONGS + "/{" + ControllerUtils.SONG_ID_PARAM_NAME + ":\\d+}";
 
+    public static final String USER_RECOMMENDED = ID + "/recommended";
     public static final String USER_NOTIFICATIONS = ID + "/notifications";
 
     /* ARTISTS */
