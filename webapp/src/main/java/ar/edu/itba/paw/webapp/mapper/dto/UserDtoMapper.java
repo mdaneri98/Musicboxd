@@ -71,9 +71,6 @@ public class UserDtoMapper {
             links.setFavoriteSongs(uriInfo.getBaseUriBuilder()
                     .path("users").path(String.valueOf(user.getId())).path("favorites").path("songs").build());
 
-            links.setLikedReviews(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("likes").build());
-
             dto.setLinks(links);
         }
 
