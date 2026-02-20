@@ -43,10 +43,10 @@ public class EmailServiceImpl implements EmailService {
 
     private final String MUSICBOXD_MAIL = "info.musicboxd@gmail.com";
 
-
     public void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                "UTF-8");
 
         helper.setTo(to);
         helper.setFrom(MUSICBOXD_MAIL);
@@ -56,7 +56,8 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(message);
     }
 
-    private void sendMessageUsingThymeleafTemplate(String template, String to, String subject, Map<String, Object> params, Locale locale) throws MessagingException {
+    private void sendMessageUsingThymeleafTemplate(String template, String to, String subject,
+            Map<String, Object> params, Locale locale) throws MessagingException {
         Context thymeleafContext = new Context(locale);
         thymeleafContext.setVariables(params);
         String htmlBody = thymeleafTemplateEngine.process(template, thymeleafContext);
@@ -80,17 +81,20 @@ public class EmailServiceImpl implements EmailService {
 
         switch (type) {
             case VERIFY_EMAIL -> {
-                verificationURL = frontendUrl + "/verify-email/?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
+                verificationURL = frontendUrl + "/verify-email/?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8)
+                        + "&userId=" + to.getId();
                 template = "user_verification";
                 emailSubject = "verification.email";
             }
             case VERIFY_FORGOT_PASSWORD -> {
-                verificationURL = frontendUrl + "/reset-password/?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
+                verificationURL = frontendUrl + "/reset-password/?code="
+                        + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
                 template = "create_password";
                 emailSubject = "verification.password";
             }
             case VERIFY_GENERAL -> {
-                verificationURL = frontendUrl + "/general-verification/?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
+                verificationURL = frontendUrl + "/general-verification/?code="
+                        + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
                 template = "general_verification";
                 emailSubject = "verification.general";
             }
@@ -105,14 +109,14 @@ public class EmailServiceImpl implements EmailService {
                 to.getEmail(),
                 emailSubject,
                 params,
-                currentLocale
-        );
+                currentLocale);
         return null;
     }
 
     @Override
     @Async
-    public Void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, String reviewTitle, String reviewName, String reviewType) throws MessagingException {
+    public Void sendReviewAcknowledgement(ReviewAcknowledgementType type, User to, String reviewTitle,
+            String reviewName, String reviewType) throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
         Locale currentLocale = new Locale.Builder().setLanguage(to.getPreferredLanguage()).build();
@@ -141,14 +145,15 @@ public class EmailServiceImpl implements EmailService {
                 to.getEmail(),
                 emailSubject,
                 params,
-                currentLocale
-        );
+                currentLocale);
         return null;
     }
 
     @Override
     @Async
-    public Void sendNotificationEmail(Notification.NotificationType type, User recipientUser, User triggerUser, Long reviewId, String reviewTitle, String itemName, String itemType, Integer rating) throws MessagingException {
+    public Void sendNotificationEmail(Notification.NotificationType type, User recipientUser, User triggerUser,
+            Long reviewId, String reviewTitle, String itemName, String itemType, Integer rating)
+            throws MessagingException {
         final Map<String, Object> params = new HashMap<>();
 
         Locale currentLocale = new Locale.Builder().setLanguage(recipientUser.getPreferredLanguage()).build();
@@ -167,7 +172,7 @@ public class EmailServiceImpl implements EmailService {
                 emailSubject = "notification.like";
                 params.put("reviewTitle", reviewTitle);
                 params.put("itemName", itemName);
-                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId + "/");
                 break;
 
             case COMMENT:
@@ -175,13 +180,13 @@ public class EmailServiceImpl implements EmailService {
                 emailSubject = "notification.comment";
                 params.put("reviewTitle", reviewTitle);
                 params.put("itemName", itemName);
-                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId + "/");
                 break;
 
             case FOLLOW:
                 template = "notification_follow";
                 emailSubject = "notification.follow";
-                params.put("profileUrl", frontendUrl + "/users/" + triggerUser.getId());
+                params.put("profileUrl", frontendUrl + "/users/" + triggerUser.getId() + "/");
                 break;
 
             case NEW_REVIEW:
@@ -190,21 +195,21 @@ public class EmailServiceImpl implements EmailService {
                 params.put("reviewTitle", reviewTitle);
                 params.put("itemName", itemName);
                 params.put("rating", rating);
-                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId + "/");
                 break;
             case REVIEW_BLOCKED:
                 template = "blocked_review";
                 emailSubject = "notification.review.blocked";
                 params.put("reviewTitle", reviewTitle);
                 params.put("itemName", itemName);
-                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId + "/");
                 break;
             case REVIEW_UNBLOCKED:
                 template = "unblocked_review";
                 emailSubject = "notification.review.unblocked";
                 params.put("reviewTitle", reviewTitle);
                 params.put("itemName", itemName);
-                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId);
+                params.put("reviewUrl", frontendUrl + "/reviews/" + reviewId + "/");
                 break;
         }
 
@@ -215,8 +220,7 @@ public class EmailServiceImpl implements EmailService {
                 recipientUser.getEmail(),
                 emailSubject,
                 params,
-                currentLocale
-        );
+                currentLocale);
 
         return null;
     }
