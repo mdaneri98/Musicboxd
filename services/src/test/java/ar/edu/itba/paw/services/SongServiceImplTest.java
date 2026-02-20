@@ -36,7 +36,7 @@ public class SongServiceImplTest {
     private static final String DURATION = "3:00";
 
     @InjectMocks
-    private SongServiceImpl songService;
+    private SongService songService;
 
     @Mock
     private SongDao songDao;

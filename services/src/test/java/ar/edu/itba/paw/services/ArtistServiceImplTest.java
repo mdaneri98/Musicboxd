@@ -36,7 +36,7 @@ public class ArtistServiceImplTest {
     private static final long CUSTOM_IMG_ID = 5L;
 
     @InjectMocks
-    private ArtistServiceImpl artistService;
+    private ArtistService artistService;
 
     @Mock
     private ArtistDao artistDao;

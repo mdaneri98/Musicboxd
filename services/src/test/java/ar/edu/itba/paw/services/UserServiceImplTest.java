@@ -39,7 +39,7 @@ public class UserServiceImplTest {
     private static final Long DEFAULT_PROFILE_IMG_ID = 2L;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @Mock
     private UserDao userDao;
