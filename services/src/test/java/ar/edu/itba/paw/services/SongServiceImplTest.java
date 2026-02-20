@@ -4,8 +4,6 @@ import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.persistence.SongDao;
 import ar.edu.itba.paw.persistence.AlbumDao;

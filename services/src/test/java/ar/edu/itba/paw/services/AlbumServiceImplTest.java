@@ -4,9 +4,6 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.persistence.AlbumDao;
 import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
@@ -59,8 +56,8 @@ public class AlbumServiceImplTest {
 
     @Before
     public void setUp() {
-        defaultImage = new Image(DEFAULT_IMG_ID, new byte[]{});
-        customImage = new Image(CUSTOM_IMG_ID, new byte[]{1, 2, 3});
+        defaultImage = new Image(DEFAULT_IMG_ID, new byte[] {});
+        customImage = new Image(CUSTOM_IMG_ID, new byte[] { 1, 2, 3 });
         testArtist = new Artist(ARTIST_ID, "Test Artist", "Bio", defaultImage);
         testAlbum = new Album(ALBUM_ID);
         testAlbum.setTitle(TITLE);

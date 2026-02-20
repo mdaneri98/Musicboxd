@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -36,15 +35,12 @@ public class AlbumJpaDaoTest {
     private static final long PRE_EXISTING_USER_ID = 200;
     private static final long PRE_EXISTING_ARTIST_ID = 300;
     private static final long PRE_EXISTING_ARTIST_2_ID = 301;
-    private static final long PRE_EXISTING_REVIEW_ID = 400;
     private static final long PRE_EXISTING_ALBUM_ID = 500;
     private static final long PRE_EXISTING_ALBUM_2_ID = 501;
-    private static final long PRE_EXISTING_SONG_ID = 600;
 
     private static final long NEW_IMAGE_ID = 1000;
     private static final long NEW_ARTIST_ID = 1000;
     private static final long NEW_ALBUM_ID = 1000;
-    private static final long NEW_SONG_ID = 1000;
 
     private static final byte[] BYTES = new byte[] { (byte) 0xbe, (byte) 0xef };
 
@@ -111,11 +107,11 @@ public class AlbumJpaDaoTest {
         // 1. Pre-conditions - 5 albums exist in database
 
         // 2. Execute
-        List<Album> albumList = albumDao.findPaginated(FilterType.RATING, 3,1);
+        List<Album> albumList = albumDao.findPaginated(FilterType.RATING, 3, 1);
 
         // 3. Post-conditions
-        assertEquals(3, albumList.size()); //Correct limit
-        assertEquals(PRE_EXISTING_ALBUM_2_ID, albumList.getFirst().getId().longValue());  //Correct offset
+        assertEquals(3, albumList.size()); // Correct limit
+        assertEquals(PRE_EXISTING_ALBUM_2_ID, albumList.getFirst().getId().longValue()); // Correct offset
     }
 
     @Test
@@ -123,7 +119,7 @@ public class AlbumJpaDaoTest {
         // 1. Pre-conditions - 5 albums exist in database
 
         // 2. Execute
-        List<Album> albumList = albumDao.findPaginated(FilterType.RATING, 3,3);
+        List<Album> albumList = albumDao.findPaginated(FilterType.RATING, 3, 3);
 
         // 3. Post-conditions
         assertEquals(2, albumList.size());
@@ -134,7 +130,7 @@ public class AlbumJpaDaoTest {
         // 1. Pre-conditions - album does not exist with substring
 
         // 2 . Execute
-        List<Album> albumList = albumDao.findByTitleContaining("Nothing",10,1);
+        List<Album> albumList = albumDao.findByTitleContaining("Nothing", 10, 1);
 
         // 3. Post-conditions
         assertEquals(0, albumList.size());
@@ -180,26 +176,26 @@ public class AlbumJpaDaoTest {
         assertEquals(album.getReleaseDate(), albumCreated.getReleaseDate());
         assertEquals(album.getImage().getId(), albumCreated.getImage().getId());
         assertEquals(PRE_EXISTING_ARTIST_ID, albumCreated.getArtist().getId().longValue());
-        assertEquals(0, albumCreated.getAvgRating(),0);
+        assertEquals(0, albumCreated.getAvgRating(), 0);
         assertEquals(0, albumCreated.getRatingCount().intValue());
 
         // check if album is saved correctly in database
-        assertEquals(1,em.createQuery("SELECT COUNT(a) FROM Album a " +
+        assertEquals(1, em.createQuery("SELECT COUNT(a) FROM Album a " +
                 "JOIN a.artist " +
                 "JOIN a.image " +
-                    "WHERE a.title = :title " +
-                      "AND a.genre = :genre " +
-                      "AND a.releaseDate = :releaseDate " +
-                      "AND a.avgRating = 0 " +
-                      "AND a.ratingCount = 0 " +
-                      "AND a.image.id = :image_id " +
-                      "AND a.artist.id = :artist_id",
+                "WHERE a.title = :title " +
+                "AND a.genre = :genre " +
+                "AND a.releaseDate = :releaseDate " +
+                "AND a.avgRating = 0 " +
+                "AND a.ratingCount = 0 " +
+                "AND a.image.id = :image_id " +
+                "AND a.artist.id = :artist_id",
                 Long.class)
-                    .setParameter("title", NEW_ALBUM_TITLE)
-                    .setParameter("genre", NEW_ALBUM_GENRE)
-                    .setParameter("releaseDate", NEW_ALBUM_RELEASE_DATE)
-                    .setParameter("image_id", NEW_IMAGE_ID)
-                    .setParameter("artist_id", PRE_EXISTING_ARTIST_ID)
+                .setParameter("title", NEW_ALBUM_TITLE)
+                .setParameter("genre", NEW_ALBUM_GENRE)
+                .setParameter("releaseDate", NEW_ALBUM_RELEASE_DATE)
+                .setParameter("image_id", NEW_IMAGE_ID)
+                .setParameter("artist_id", PRE_EXISTING_ARTIST_ID)
                 .getSingleResult().intValue());
     }
 
@@ -208,7 +204,8 @@ public class AlbumJpaDaoTest {
         // 1. Pre-conditions - the album exist
         Image image = new Image(PRE_EXISTING_IMAGE_ID, BYTES);
         Artist artist = new Artist(PRE_EXISTING_ARTIST_ID, PRE_EXISTING_ARTIST_NAME, PRE_EXISTING_ARTIST_BIO, image);
-        Album album = new Album(PRE_EXISTING_ALBUM_ID, NEW_ALBUM_TITLE, NEW_ALBUM_GENRE, NEW_ALBUM_RELEASE_DATE, image, artist, NEW_ALBUM_RATING_AMOUNT, NEW_ALBUM_AVG_RATING);
+        Album album = new Album(PRE_EXISTING_ALBUM_ID, NEW_ALBUM_TITLE, NEW_ALBUM_GENRE, NEW_ALBUM_RELEASE_DATE, image,
+                artist, NEW_ALBUM_RATING_AMOUNT, NEW_ALBUM_AVG_RATING);
 
         // 2. Execute
         Album albumUpdated = albumDao.update(album);
@@ -221,21 +218,21 @@ public class AlbumJpaDaoTest {
         assertEquals(album.getReleaseDate(), albumUpdated.getReleaseDate());
         assertEquals(album.getImage().getId(), albumUpdated.getImage().getId());
         assertEquals(PRE_EXISTING_ARTIST_ID, albumUpdated.getArtist().getId().longValue());
-        assertEquals(NEW_ALBUM_AVG_RATING, albumUpdated.getAvgRating(),0);
+        assertEquals(NEW_ALBUM_AVG_RATING, albumUpdated.getAvgRating(), 0);
         assertEquals(NEW_ALBUM_RATING_AMOUNT, albumUpdated.getRatingCount().intValue());
 
         // Check if album is saved correctly in database
-        assertEquals(1,em.createQuery("SELECT COUNT(a) FROM Album a " +
+        assertEquals(1, em.createQuery("SELECT COUNT(a) FROM Album a " +
                 "JOIN a.artist " +
                 "JOIN a.image " +
-                    "WHERE a.id = :albumId " +
-                      "AND a.title = :title " +
-                      "AND a.genre = :genre " +
-                      "AND a.releaseDate = :releaseDate " +
-                      "AND a.avgRating = :avgRating " +
-                      "AND a.ratingCount = :ratingCount " +
-                      "AND a.image.id = :image_id " +
-                      "AND a.artist.id = :artist_id",
+                "WHERE a.id = :albumId " +
+                "AND a.title = :title " +
+                "AND a.genre = :genre " +
+                "AND a.releaseDate = :releaseDate " +
+                "AND a.avgRating = :avgRating " +
+                "AND a.ratingCount = :ratingCount " +
+                "AND a.image.id = :image_id " +
+                "AND a.artist.id = :artist_id",
                 Long.class)
                 .setParameter("albumId", PRE_EXISTING_ALBUM_ID)
                 .setParameter("title", NEW_ALBUM_TITLE)
@@ -257,11 +254,11 @@ public class AlbumJpaDaoTest {
 
         // 3. Post-conditions
         assertTrue(updated);
-        assertEquals(1,em.createQuery("SELECT COUNT(a) FROM Album a " +
-                                "WHERE a.id = :albumId " +
-                                "AND a.avgRating = :avgRating " +
-                                "AND a.ratingCount = :ratingCount",
-                        Long.class)
+        assertEquals(1, em.createQuery("SELECT COUNT(a) FROM Album a " +
+                "WHERE a.id = :albumId " +
+                "AND a.avgRating = :avgRating " +
+                "AND a.ratingCount = :ratingCount",
+                Long.class)
                 .setParameter("albumId", PRE_EXISTING_ALBUM_ID)
                 .setParameter("avgRating", NEW_ALBUM_AVG_RATING)
                 .setParameter("ratingCount", NEW_ALBUM_RATING_AMOUNT)

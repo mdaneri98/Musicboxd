@@ -2,9 +2,7 @@ package ar.edu.itba.paw.webapp.exception.mapper;
 
 import ar.edu.itba.paw.webapp.dto.ErrorResponseDTO;
 import ar.edu.itba.paw.webapp.exception.ErrorResponseBuilder;
-import ar.edu.itba.paw.exception.conflict.ConflictException; 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ar.edu.itba.paw.exception.conflict.ConflictException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -15,6 +13,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.core.MediaType;
+
 /**
  * Mapper para ConflictException y todas sus subclases.
  * Maneja excepciones de conflicto de recursos (409).
@@ -28,22 +27,19 @@ import javax.ws.rs.core.MediaType;
 @Component
 public class ConflictExceptionMapper implements ExceptionMapper<ConflictException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConflictExceptionMapper.class);
-
     @Context
     private UriInfo uriInfo;
 
     @Autowired
     private ErrorResponseBuilder errorResponseBuilder;
 
-    @Override 
+    @Override
     public Response toResponse(ConflictException exception) {
         ErrorResponseDTO error = errorResponseBuilder.buildFromException(
                 HttpStatus.CONFLICT,
                 exception,
                 "exception.BadRequest",
-                uriInfo
-        );
+                uriInfo);
 
         return Response.status(Response.Status.CONFLICT)
                 .type(MediaType.APPLICATION_JSON_TYPE)
@@ -51,4 +47,3 @@ public class ConflictExceptionMapper implements ExceptionMapper<ConflictExceptio
                 .build();
     }
 }
-

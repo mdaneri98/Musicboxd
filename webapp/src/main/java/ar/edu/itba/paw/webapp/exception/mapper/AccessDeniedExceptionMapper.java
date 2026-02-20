@@ -2,8 +2,6 @@ package ar.edu.itba.paw.webapp.exception.mapper;
 
 import ar.edu.itba.paw.webapp.exception.ErrorResponseBuilder;
 import ar.edu.itba.paw.webapp.dto.ErrorResponseDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -21,7 +19,6 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Component
 public class AccessDeniedExceptionMapper implements ExceptionMapper<AccessDeniedException> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccessDeniedExceptionMapper.class);
 
 	@Autowired
 	private ErrorResponseBuilder errorResponseBuilder;
@@ -41,8 +38,7 @@ public class AccessDeniedExceptionMapper implements ExceptionMapper<AccessDenied
 				springStatus,
 				exception,
 				authenticated ? "exception.AccessDeniedException" : "exception.AuthenticationException",
-				uriInfo
-		);
+				uriInfo);
 
 		Response.ResponseBuilder builder = Response.status(status)
 				.type(MediaType.APPLICATION_JSON_TYPE)
@@ -55,5 +51,3 @@ public class AccessDeniedExceptionMapper implements ExceptionMapper<AccessDenied
 		return builder.build();
 	}
 }
-
-

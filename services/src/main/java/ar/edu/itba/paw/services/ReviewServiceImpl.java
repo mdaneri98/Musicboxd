@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.exception.conflict.ReviewNotOwnedByUserException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
@@ -46,7 +45,9 @@ public class ReviewServiceImpl implements ReviewService {
     private final NotificationService notificationService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, ArtistDao artistDao, AlbumDao albumDao, SongDao songDao, SongService songService, ArtistService artistService, AlbumService albumService, UserService userService, EmailService emailService, NotificationService notificationService) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, ArtistDao artistDao, AlbumDao albumDao,
+            SongDao songDao, SongService songService, ArtistService artistService, AlbumService albumService,
+            UserService userService, EmailService emailService, NotificationService notificationService) {
         this.reviewDao = reviewDao;
         this.userDao = userDao;
         this.artistDao = artistDao;
@@ -84,8 +85,6 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDao.findPaginated(filterType, page, pageSize);
     }
 
-
-
     @Override
     @Transactional
     public Review create(Review reviewInput) {
@@ -106,10 +105,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review createArtistReview(Review reviewInput) {
         ArtistReview entity = new ArtistReview();
-        entity.setUser(userDao.findById(reviewInput.getUser().getId()).orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
-        entity.setArtist(artistDao.findById(reviewInput.getItemId()).orElseThrow(() -> new ArtistNotFoundException(reviewInput.getItemId())));
+        entity.setUser(userDao.findById(reviewInput.getUser().getId())
+                .orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
+        entity.setArtist(artistDao.findById(reviewInput.getItemId())
+                .orElseThrow(() -> new ArtistNotFoundException(reviewInput.getItemId())));
         if (artistService.hasUserReviewed(reviewInput.getUser().getId(), reviewInput.getItemId())) {
-            throw new UserAlreadyReviewedException(reviewInput.getUser().getId(), reviewInput.getItemId(), ReviewType.ARTIST.toString());
+            throw new UserAlreadyReviewedException(reviewInput.getUser().getId(), reviewInput.getItemId(),
+                    ReviewType.ARTIST.toString());
         }
         mergeReviewFields(entity, reviewInput);
         Review createdReview = reviewDao.create(entity);
@@ -121,8 +123,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review createAlbumReview(Review reviewInput) {
         AlbumReview entity = new AlbumReview();
-        entity.setUser(userDao.findById(reviewInput.getUser().getId()).orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
-        entity.setAlbum(albumDao.findById(reviewInput.getItemId()).orElseThrow(() -> new AlbumNotFoundException(reviewInput.getItemId())));
+        entity.setUser(userDao.findById(reviewInput.getUser().getId())
+                .orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
+        entity.setAlbum(albumDao.findById(reviewInput.getItemId())
+                .orElseThrow(() -> new AlbumNotFoundException(reviewInput.getItemId())));
         if (albumService.hasUserReviewed(reviewInput.getUser().getId(), reviewInput.getItemId())) {
             throw new UserAlreadyReviewedException(reviewInput.getUser().getId(), reviewInput.getItemId(), "Album");
         }
@@ -136,8 +140,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review createSongReview(Review reviewInput) {
         SongReview entity = new SongReview();
-        entity.setUser(userDao.findById(reviewInput.getUser().getId()).orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
-        entity.setSong(songDao.findById(reviewInput.getItemId()).orElseThrow(() -> new SongNotFoundException(reviewInput.getItemId())));
+        entity.setUser(userDao.findById(reviewInput.getUser().getId())
+                .orElseThrow(() -> new UserNotFoundException(reviewInput.getUser().getId())));
+        entity.setSong(songDao.findById(reviewInput.getItemId())
+                .orElseThrow(() -> new SongNotFoundException(reviewInput.getItemId())));
         if (songService.hasUserReviewed(reviewInput.getUser().getId(), reviewInput.getItemId())) {
             throw new UserAlreadyReviewedException(reviewInput.getUser().getId(), reviewInput.getItemId(), "Song");
         }
@@ -149,13 +155,19 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void mergeReviewFields(Review target, Review source) {
-        if (source.getTitle() != null) target.setTitle(source.getTitle());
-        if (source.getDescription() != null) target.setDescription(source.getDescription());
-        if (source.getRating() != null) target.setRating(source.getRating());
+        if (source.getTitle() != null)
+            target.setTitle(source.getTitle());
+        if (source.getDescription() != null)
+            target.setDescription(source.getDescription());
+        if (source.getRating() != null)
+            target.setRating(source.getRating());
         target.setCreatedAt(LocalDateTime.now());
-        if (source.getLikes() != null) target.setLikes(source.getLikes());
-        if (source.isBlocked() != null) target.setBlocked(source.isBlocked());
-        if (source.getCommentAmount() != null) target.setCommentAmount(source.getCommentAmount());
+        if (source.getLikes() != null)
+            target.setLikes(source.getLikes());
+        if (source.isBlocked() != null)
+            target.setBlocked(source.isBlocked());
+        if (source.getCommentAmount() != null)
+            target.setCommentAmount(source.getCommentAmount());
     }
 
     private void updateUserReviewAmount(Long userId) {
@@ -198,14 +210,16 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public Review update(Review reviewInput) {
         LOGGER.info("Updating review with ID: {}", reviewInput.getId());
-        Review reviewEntity = reviewDao.findById(reviewInput.getId()).orElseThrow(() -> new ReviewNotFoundException(reviewInput.getId()));
+        Review reviewEntity = reviewDao.findById(reviewInput.getId())
+                .orElseThrow(() -> new ReviewNotFoundException(reviewInput.getId()));
 
         Boolean oldBlockedStatus = reviewEntity.isBlocked();
 
         mergeReviewFields(reviewEntity, reviewInput);
         Review updatedReview = reviewDao.update(reviewEntity);
 
-        Notification.NotificationType notificationType = blockStatusChanged(oldBlockedStatus, updatedReview.isBlocked());
+        Notification.NotificationType notificationType = blockStatusChanged(oldBlockedStatus,
+                updatedReview.isBlocked());
         if (notificationType != null) {
             notificationService.notifyReviewBlockStatusChange(updatedReview, notificationType);
         } else {
@@ -220,10 +234,17 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateRatingForItem(Review review) {
         switch (review.getItemType()) {
-            case ARTIST : updateArtistRating(review.getItemId()); break;
-            case ALBUM : updateAlbumRating(review.getItemId()); break;
-            case SONG : updateSongRating(review.getItemId()); break;
-            default : throw new UnkownReviewTypeException(review.getItemType().toString());
+            case ARTIST:
+                updateArtistRating(review.getItemId());
+                break;
+            case ALBUM:
+                updateAlbumRating(review.getItemId());
+                break;
+            case SONG:
+                updateSongRating(review.getItemId());
+                break;
+            default:
+                throw new UnkownReviewTypeException(review.getItemType().toString());
         }
     }
 
@@ -235,8 +256,10 @@ public class ReviewServiceImpl implements ReviewService {
         Boolean res = reviewDao.delete(id);
         updateRatingForItem(review);
         updateUserReviewAmount(review.getUser().getId());
-        if (res) LOGGER.info("Review with ID: {} deleted successfully", id);
-        else LOGGER.warn("Failed to delete review with ID: {}", id);
+        if (res)
+            LOGGER.info("Review with ID: {} deleted successfully", id);
+        else
+            LOGGER.warn("Failed to delete review with ID: {}", id);
         return res;
     }
 
@@ -260,19 +283,22 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public Review findArtistReviewByUserId(Long userId, Long artistId) {
-        return reviewDao.findArtistReviewByUserId(userId, artistId).orElseThrow(() -> new ReviewNotFoundException(userId, artistId, ReviewType.ARTIST.toString()));
+        return reviewDao.findArtistReviewByUserId(userId, artistId)
+                .orElseThrow(() -> new ReviewNotFoundException(userId, artistId, ReviewType.ARTIST.toString()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findAlbumReviewByUserId(Long userId, Long albumId) {
-        return reviewDao.findAlbumReviewByUserId(userId, albumId).orElseThrow(() -> new ReviewNotFoundException(userId, albumId, "Album"));
+        return reviewDao.findAlbumReviewByUserId(userId, albumId)
+                .orElseThrow(() -> new ReviewNotFoundException(userId, albumId, "Album"));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findSongReviewByUserId(Long userId, Long songId) {
-        return reviewDao.findSongReviewByUserId(userId, songId).orElseThrow(() -> new ReviewNotFoundException(userId, songId, "Song"));
+        return reviewDao.findSongReviewByUserId(userId, songId)
+                .orElseThrow(() -> new ReviewNotFoundException(userId, songId, "Song"));
     }
 
     @Override
@@ -288,8 +314,9 @@ public class ReviewServiceImpl implements ReviewService {
 
         User user = userDao.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Review review = reviewDao.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
-        if (isLiked(userId, reviewId)) throw new LikeAlreadyExistsException(userId, reviewId);
- 
+        if (isLiked(userId, reviewId))
+            throw new LikeAlreadyExistsException(userId, reviewId);
+
         reviewDao.createLike(userId, reviewId);
         reviewDao.updateLikeCount(reviewId);
         notificationService.notifyLike(review, user);
@@ -382,7 +409,8 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewDao.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
         User user = review.getUser();
         try {
-            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.getTitle(), review.getItemName(), review.getItemType().toString());
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.getTitle(),
+                    review.getItemName(), review.getItemType().toString());
             LOGGER.info("Acknowledgement email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
@@ -402,7 +430,8 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewDao.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
         User user = review.getUser();
         try {
-            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.getTitle(), review.getItemName(), review.getItemType().toString());
+            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.getTitle(),
+                    review.getItemName(), review.getItemType().toString());
             LOGGER.info("Acknowledgement email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send acknowledgement email to user: {}", user.getEmail(), e);
@@ -425,8 +454,6 @@ public class ReviewServiceImpl implements ReviewService {
     public Long countReviewsFromFollowedUsers(Long loggedUserId) {
         return reviewDao.countReviewsFromFollowedUsers(loggedUserId);
     }
-
-
 
     private Notification.NotificationType blockStatusChanged(Boolean wasBlocked, Boolean isBlocked) {
         if (wasBlocked == null || isBlocked == null || wasBlocked.equals(isBlocked)) {

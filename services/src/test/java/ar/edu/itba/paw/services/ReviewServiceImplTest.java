@@ -5,15 +5,10 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.models.reviews.ReviewType;
 import ar.edu.itba.paw.persistence.*;
-import ar.edu.itba.paw.exception.email.AcknowledgementEmailException;
 import ar.edu.itba.paw.exception.conflict.UserAlreadyReviewedException;
 import ar.edu.itba.paw.exception.not_found.ReviewNotFoundException;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
-import ar.edu.itba.paw.exception.not_found.ArtistNotFoundException;
-import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
-import ar.edu.itba.paw.exception.not_found.SongNotFoundException;
 import ar.edu.itba.paw.exception.conflict.LikeAlreadyExistsException;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +20,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.mail.MessagingException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -36,7 +30,6 @@ public class ReviewServiceImplTest {
 
     private static final Long REVIEW_ID = 1L;
     private static final Long USER_ID = 100L;
-    private static final Long OTHER_USER_ID = 200L;
     private static final Long ARTIST_ID = 10L;
     private static final Long ALBUM_ID = 20L;
     private static final Long SONG_ID = 30L;
@@ -283,8 +276,7 @@ public class ReviewServiceImplTest {
                 any(User.class),
                 anyString(),
                 anyString(),
-                anyString()
-        );
+                anyString());
 
         // 2. Execute
         reviewService.block(REVIEW_ID);
@@ -296,8 +288,7 @@ public class ReviewServiceImplTest {
                 eq(testUser),
                 eq(REVIEW_TITLE),
                 anyString(),
-                anyString()
-        );
+                anyString());
     }
 
     @Test
@@ -309,8 +300,7 @@ public class ReviewServiceImplTest {
                 any(User.class),
                 anyString(),
                 anyString(),
-                anyString()
-        );
+                anyString());
 
         // 2. Execute
         reviewService.unblock(REVIEW_ID);
@@ -322,7 +312,6 @@ public class ReviewServiceImplTest {
                 eq(testUser),
                 eq(REVIEW_TITLE),
                 anyString(),
-                anyString()
-        );
+                anyString());
     }
 }

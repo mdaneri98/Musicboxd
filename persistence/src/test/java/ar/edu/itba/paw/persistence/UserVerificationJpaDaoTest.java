@@ -31,16 +31,12 @@ public class UserVerificationJpaDaoTest {
     private static final long PRE_EXISTING_USER_ID = 200;
     private static final long PRE_EXISTING_USER_2_ID = 201;
     private static final long PRE_EXISTING_USER_3_ID = 202;
-    private static final String VALID_EMAIL_CODE = "valid_code_1";
     private static final String VALID_PASSWORD_CODE = "valid_code_2";
     private static final String EXPIRED_CODE = "expired_code";
     private static final String NEW_CODE = "new_verification_code";
 
     @Autowired
     private UserVerificationDao userVerificationDao;
-
-    @Autowired
-    private UserDao userDao;
 
     @PersistenceContext
     private EntityManager em;

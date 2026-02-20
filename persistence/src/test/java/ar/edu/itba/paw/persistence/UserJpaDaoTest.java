@@ -2,7 +2,6 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistence.config.TestConfig;
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -34,7 +31,6 @@ public class UserJpaDaoTest {
     private static final long PRE_EXISTING_USER_2_ID = 201;
     private static final long PRE_EXISTING_ARTIST_ID = 300;
     private static final long PRE_EXISTING_ARTIST_2_ID = 301;
-    private static final long PRE_EXISTING_REVIEW_ID = 400;
     private static final long PRE_EXISTING_ALBUM_ID = 500;
     private static final long PRE_EXISTING_ALBUM_2_ID = 501;
     private static final long PRE_EXISTING_SONG_ID = 600;
@@ -129,7 +125,7 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertTrue(optionalUser.isPresent());
         User updatedUser = optionalUser.get();
-        
+
         // Basic field validations
         assertEquals(NEW_USERNAME, updatedUser.getUsername());
         assertEquals(NEW_EMAIL, updatedUser.getEmail());
@@ -146,19 +142,19 @@ public class UserJpaDaoTest {
 
         // check if user is saved correctly in database
         assertEquals(1, em.createQuery("SELECT COUNT(u) FROM User u " +
-                                "WHERE u.id = :userId " +
-                                "AND u.username = :username " +
-                                "AND u.email = :email " +
-                                "AND u.password = :password " +
-                                "AND u.name = :name " +
-                                "AND u.bio = :bio " +
-                                "AND u.followersAmount = :followersAmount " +
-                                "AND u.followingAmount = :followingAmount " +
-                                "AND u.reviewAmount = :reviewAmount " +
-                                "AND u.verified = :verified " +
-                                "AND u.moderator = :moderator " +
-                                "AND u.preferredLanguage = :preferredLanguage ",
-                        Long.class)
+                "WHERE u.id = :userId " +
+                "AND u.username = :username " +
+                "AND u.email = :email " +
+                "AND u.password = :password " +
+                "AND u.name = :name " +
+                "AND u.bio = :bio " +
+                "AND u.followersAmount = :followersAmount " +
+                "AND u.followingAmount = :followingAmount " +
+                "AND u.reviewAmount = :reviewAmount " +
+                "AND u.verified = :verified " +
+                "AND u.moderator = :moderator " +
+                "AND u.preferredLanguage = :preferredLanguage ",
+                Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("username", NEW_USERNAME)
                 .setParameter("email", NEW_EMAIL)
@@ -175,7 +171,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_deleteById () {
+    public void test_deleteById() {
         // 1. Pre-conditions - user exists
 
         // 2. Execute
@@ -187,7 +183,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_deleteById_NoUser () {
+    public void test_deleteById_NoUser() {
         // 1. Pre-conditions - user does not exists
 
         // 2. Execute
@@ -199,7 +195,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_findByEmail () {
+    public void test_findByEmail() {
         // 1. Pre-conditions - user exists
 
         // 2. Execute
@@ -211,7 +207,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_findByEmail_NewEmail () {
+    public void test_findByEmail_NewEmail() {
         // 1. Pre-conditions - user does not exist
 
         // 2. Execute
@@ -222,7 +218,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_findByUsername () {
+    public void test_findByUsername() {
         // 1. Pre-conditions - user exists
 
         // 2. Execute
@@ -234,7 +230,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_findByUsername_NewUsername () {
+    public void test_findByUsername_NewUsername() {
         // 1. Pre-conditions - user does not exist
 
         // 2. Execute
@@ -272,12 +268,12 @@ public class UserJpaDaoTest {
         // Set imageId to avoid null constraint violation and persist the change
         user.setImage(image);
         em.flush(); // Force the change to be persisted
-        
+
         // Basic validations
         assertEquals(NEW_USERNAME, user.getUsername());
         assertEquals(NEW_EMAIL, user.getEmail());
         assertEquals(NEW_PASSWORD, user.getPassword());
-        
+
         // Default values
         assertNull(user.getName());
         assertNull(user.getBio());
@@ -289,15 +285,15 @@ public class UserJpaDaoTest {
         assertEquals("es", user.getPreferredLanguage());
 
         // check if user is saved correctly in database
-        assertEquals(1,em.createQuery("SELECT COUNT(u) FROM User u " +
-                                "WHERE u.username = :username " +
-                                "AND u.email = :email " +
-                                "AND u.password = :password " +
-                                "AND u.followersAmount = 0 " +
-                                "AND u.followingAmount = 0 " +
-                                "AND u.verified = false " +
-                                "AND u.moderator = false ",
-                        Long.class)
+        assertEquals(1, em.createQuery("SELECT COUNT(u) FROM User u " +
+                "WHERE u.username = :username " +
+                "AND u.email = :email " +
+                "AND u.password = :password " +
+                "AND u.followersAmount = 0 " +
+                "AND u.followingAmount = 0 " +
+                "AND u.verified = false " +
+                "AND u.moderator = false ",
+                Long.class)
                 .setParameter("username", NEW_USERNAME)
                 .setParameter("email", NEW_EMAIL)
                 .setParameter("password", NEW_PASSWORD)
@@ -305,9 +301,10 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_createFollowing () {
+    public void test_createFollowing() {
         // 1. Pre-conditions - first user is not following second user
-        User user1 = new User(PRE_EXISTING_USER_2_ID, PRE_EXISTING_USERNAME_2, PRE_EXISTING_EMAIL_2, PRE_EXISTING_PASSWORD);
+        User user1 = new User(PRE_EXISTING_USER_2_ID, PRE_EXISTING_USERNAME_2, PRE_EXISTING_EMAIL_2,
+                PRE_EXISTING_PASSWORD);
         User user2 = new User(PRE_EXISTING_USER_ID, PRE_EXISTING_USERNAME, PRE_EXISTING_EMAIL, PRE_EXISTING_PASSWORD);
 
         // 2. Execute
@@ -315,34 +312,33 @@ public class UserJpaDaoTest {
 
         // 3. Post-conditions
         assertEquals(1, em.createQuery("SELECT COUNT(f) FROM User u " +
-                                "JOIN u.followers f " +
-                                "WHERE u.id = :userId AND f.id = :following",
-                        Long.class)
+                "JOIN u.followers f " +
+                "WHERE u.id = :userId AND f.id = :following",
+                Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("following", PRE_EXISTING_USER_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
         assertEquals(1, rowsChanged);
     }
 
     @Test
-    public void test_createFollowing_AlreadyFollowing () {
+    public void test_createFollowing_AlreadyFollowing() {
         // 1. Pre-conditions - first user is following second user
         User user1 = new User(PRE_EXISTING_USER_ID, PRE_EXISTING_USERNAME, PRE_EXISTING_EMAIL, PRE_EXISTING_PASSWORD);
-        User user2 = new User(PRE_EXISTING_USER_2_ID, PRE_EXISTING_USERNAME_2, PRE_EXISTING_EMAIL_2, PRE_EXISTING_PASSWORD);
+        User user2 = new User(PRE_EXISTING_USER_2_ID, PRE_EXISTING_USERNAME_2, PRE_EXISTING_EMAIL_2,
+                PRE_EXISTING_PASSWORD);
 
         // 2. Execute
         int rowsChanged = userDao.createFollowing(user1, user2);
 
         // 3. Post-conditions
         assertEquals(1, em.createQuery("SELECT COUNT(f) FROM User u " +
-                                "JOIN u.followers f " +
-                                "WHERE u.id = :userId AND f.id = :following",
-                        Long.class)
+                "JOIN u.followers f " +
+                "WHERE u.id = :userId AND f.id = :following",
+                Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_2_ID)
                 .setParameter("following", PRE_EXISTING_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
         assertEquals(0, rowsChanged);
     }
 
@@ -369,30 +365,31 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_undoFollowing () {
+    public void test_undoFollowing() {
         // 1. Pre-conditions - first user is following the second user
         User user1 = new User(PRE_EXISTING_USER_ID, PRE_EXISTING_USERNAME, PRE_EXISTING_EMAIL, PRE_EXISTING_PASSWORD);
-        User user2 = new User(PRE_EXISTING_USER_2_ID, PRE_EXISTING_USERNAME_2, PRE_EXISTING_EMAIL_2, PRE_EXISTING_PASSWORD);
+        User user2 = new User(PRE_EXISTING_USER_2_ID, PRE_EXISTING_USERNAME_2, PRE_EXISTING_EMAIL_2,
+                PRE_EXISTING_PASSWORD);
 
         // 2. Execute
         int rowsChanged = userDao.undoFollowing(user1, user2);
 
         // 3. Post-conditions
         assertEquals(0, em.createQuery("SELECT COUNT(f) FROM User u " +
-                                "Join u.followers f " +
-                                "WHERE u.id = :userId AND f.id = :following",
-                        Long.class)
+                "Join u.followers f " +
+                "WHERE u.id = :userId AND f.id = :following",
+                Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_2_ID)
                 .setParameter("following", PRE_EXISTING_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
         assertEquals(1, rowsChanged);
     }
 
     @Test
-    public void test_undoFollowing_AlreadyNotFollowing () {
+    public void test_undoFollowing_AlreadyNotFollowing() {
         // 1. Pre-conditions - first user is not following the second user
-        User user1 = new User(PRE_EXISTING_USER_2_ID, PRE_EXISTING_USERNAME_2, PRE_EXISTING_EMAIL_2, PRE_EXISTING_PASSWORD);
+        User user1 = new User(PRE_EXISTING_USER_2_ID, PRE_EXISTING_USERNAME_2, PRE_EXISTING_EMAIL_2,
+                PRE_EXISTING_PASSWORD);
         User user2 = new User(PRE_EXISTING_USER_ID, PRE_EXISTING_USERNAME, PRE_EXISTING_EMAIL, PRE_EXISTING_PASSWORD);
 
         // 2. Execute
@@ -400,13 +397,12 @@ public class UserJpaDaoTest {
 
         // 3. Post-conditions
         assertEquals(0, em.createQuery("SELECT COUNT(f) FROM User u " +
-                                "Join u.followers f " +
-                                "WHERE u.id = :userId AND f.id = :following",
-                        Long.class)
+                "Join u.followers f " +
+                "WHERE u.id = :userId AND f.id = :following",
+                Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("following", PRE_EXISTING_USER_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
         assertEquals(0, rowsChanged);
     }
 
@@ -455,7 +451,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_getFollowers () {
+    public void test_getFollowers() {
         // 1. Pre-conditions - user has 3 followers
 
         // 2. Execute
@@ -466,7 +462,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_getFollowing () {
+    public void test_getFollowing() {
         // 1. Pre-conditions - user is following 3 other users
 
         // 2. Execute
@@ -477,7 +473,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_updateUserReviewAmount () {
+    public void test_updateUserReviewAmount() {
         // 1. Pre-conditions - user exists with 3 reviews
 
         // 2. Execute
@@ -485,23 +481,23 @@ public class UserJpaDaoTest {
 
         // 3. Post-conditions
         assertEquals(2, em.createQuery("SELECT COUNT(r) FROM Review r " +
-                                "JOIN r.user " +
-                                "WHERE r.user.id = :userId " +
-                                "AND r.isBlocked = false",
-                        Long.class)
+                "JOIN r.user " +
+                "WHERE r.user.id = :userId " +
+                "AND r.isBlocked = false",
+                Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
     public void test_getRecommendedUsers() {
         // 1. Pre-conditions
-        /* for User 200:
-            - follows: 201
-            - Is followed by: 202, 203, 204
-            - User 201 follows: 202, 203, 204 (these are potential recommendations)
-        */
+        /*
+         * for User 200:
+         * - follows: 201
+         * - Is followed by: 202, 203, 204
+         * - User 201 follows: 202, 203, 204 (these are potential recommendations)
+         */
         int pageNumber = 1;
         int pageSize = 10;
 
@@ -561,10 +557,10 @@ public class UserJpaDaoTest {
         assertEquals(1, recommendedUsers.size()); // Only one user left on second page
     }
 
-    //============================ FAVORITE ARTISTS ============================
-    //----------------- Get ------------------------
+    // ============================ FAVORITE ARTISTS ============================
+    // ----------------- Get ------------------------
     @Test
-    public void test_getFavoriteArtists () {
+    public void test_getFavoriteArtists() {
         // 1. Pre-conditions - user exists and has 1 favorite artist
 
         // 2. Execute
@@ -575,7 +571,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_getFavoriteArtists_NoUser () {
+    public void test_getFavoriteArtists_NoUser() {
         // 1. Pre-conditions - user does not exists
 
         // 2. Execute
@@ -585,9 +581,9 @@ public class UserJpaDaoTest {
         assertEquals(0, artistList.size());
     }
 
-    //----------------- Add ------------------------
+    // ----------------- Add ------------------------
     @Test
-    public void test_addFavoriteArtist () {
+    public void test_addFavoriteArtist() {
         // 1. Pre-conditions - user exists and artist is not favorite
 
         // 2. Execute
@@ -596,17 +592,16 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertTrue(updated);
         assertEquals(1, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId " +
-                          "AND a.id = :artistId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :artistId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("artistId", PRE_EXISTING_ARTIST_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
-    public void test_addFavoriteArtist_NoUser () {
+    public void test_addFavoriteArtist_NoUser() {
         // 1. Pre-conditions - user does not exist
 
         // 2. Execute
@@ -615,17 +610,16 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(updated);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :artistId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :artistId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
                 .setParameter("artistId", PRE_EXISTING_ARTIST_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
-    public void test_addFavoriteArtist_NoArtist () {
+    public void test_addFavoriteArtist_NoArtist() {
         // 1. Pre-conditions - artist does not exist
 
         // 2. Execute
@@ -634,16 +628,15 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(updated);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :artistId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :artistId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("artistId", NEW_ARTIST_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
-    //----------------- Remove ------------------------
+    // ----------------- Remove ------------------------
     @Test
     public void test_removeFavoriteArtist() {
         // 1. Pre-conditions - user exists and artist is favorite
@@ -655,13 +648,12 @@ public class UserJpaDaoTest {
         assertTrue(removed);
         // Verify the specific relationship was removed
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :artistId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :artistId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("artistId", PRE_EXISTING_ARTIST_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
         // Verify artist still exists
         assertNotNull(em.find(Artist.class, PRE_EXISTING_ARTIST_ID));
         // Verify user still exists
@@ -678,13 +670,12 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :artistId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :artistId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
                 .setParameter("artistId", PRE_EXISTING_ARTIST_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -697,13 +688,12 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :artistId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :artistId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("artistId", NEW_ARTIST_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -716,16 +706,15 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :artistId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :artistId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("artistId", PRE_EXISTING_ARTIST_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
-    //----------------- Get Count ------------------------
+    // ----------------- Get Count ------------------------
     @Test
     public void test_getFavoriteArtistsCount() {
         // 1. Pre-conditions - user exists and has 1 favorite artist
@@ -736,11 +725,10 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertEquals(1, count);
         assertEquals(1, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -753,11 +741,10 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertEquals(0, count);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteArtists a " +
-                        "WHERE u.id = :userId", Long.class)
+                "JOIN u.favoriteArtists a " +
+                "WHERE u.id = :userId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -771,11 +758,11 @@ public class UserJpaDaoTest {
         assertEquals(5, count);
         // Verify the actual artists
         List<Artist> favorites = em.createQuery(
-                "SELECT a FROM User u JOIN u.favoriteArtists a WHERE u.id = :userId ORDER BY a.id", 
+                "SELECT a FROM User u JOIN u.favoriteArtists a WHERE u.id = :userId ORDER BY a.id",
                 Artist.class)
                 .setParameter("userId", PRE_EXISTING_USER_2_ID)
                 .getResultList();
-        
+
         assertEquals(5, favorites.size());
         assertEquals(PRE_EXISTING_ARTIST_ID + 1, favorites.get(0).getId().longValue());
         assertEquals(PRE_EXISTING_ARTIST_ID + 2, favorites.get(1).getId().longValue());
@@ -784,7 +771,7 @@ public class UserJpaDaoTest {
         assertEquals(PRE_EXISTING_ARTIST_ID + 5, favorites.get(4).getId().longValue());
     }
 
-    //----------------- Is ------------------------
+    // ----------------- Is ------------------------
     @Test
     public void test_isArtistFavorite_Yes() {
         // 1. Pre-conditions - artist is user favorite
@@ -829,10 +816,10 @@ public class UserJpaDaoTest {
         assertFalse(favorite);
     }
 
-    //============================ FAVORITE ALBUMS ============================
-    //----------------- Get ------------------------
+    // ============================ FAVORITE ALBUMS ============================
+    // ----------------- Get ------------------------
     @Test
-    public void test_getFavoriteAlbums () {
+    public void test_getFavoriteAlbums() {
         // 1. Pre-conditions - user exists and has 1 favorite album
 
         // 2. Execute
@@ -843,7 +830,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_getFavoriteAlbums_NoUser () {
+    public void test_getFavoriteAlbums_NoUser() {
         // 1. Pre-conditions - user does not exists
 
         // 2. Execute
@@ -853,9 +840,9 @@ public class UserJpaDaoTest {
         assertEquals(0, albumList.size());
     }
 
-    //----------------- Add ------------------------
+    // ----------------- Add ------------------------
     @Test
-    public void test_addFavoriteAlbum () {
+    public void test_addFavoriteAlbum() {
         // 1. Pre-conditions - user exists and album is not favorite yet
 
         // 2. Execute
@@ -864,17 +851,16 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertTrue(updated);
         assertEquals(1, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :albumId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :albumId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("albumId", PRE_EXISTING_ALBUM_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
-    public void test_addFavoriteAlbum_NoUser () {
+    public void test_addFavoriteAlbum_NoUser() {
         // 1. Pre-conditions - user does not exist
 
         // 2. Execute
@@ -883,17 +869,16 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(updated);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :albumId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :albumId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
                 .setParameter("albumId", PRE_EXISTING_ALBUM_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
-    public void test_addFavoriteAlbum_NoAlbum () {
+    public void test_addFavoriteAlbum_NoAlbum() {
         // 1. Pre-conditions - Album does not exist
 
         // 2. Execute
@@ -902,16 +887,15 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(updated);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :albumId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :albumId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("albumId", NEW_ALBUM_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
-    //----------------- Remove ------------------------
+    // ----------------- Remove ------------------------
     @Test
     public void test_removeFavoriteAlbum() {
         // 1. Pre-conditions - user exists and album is favorite
@@ -922,13 +906,12 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertTrue(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :albumId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :albumId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("albumId", PRE_EXISTING_ALBUM_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -941,13 +924,12 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :albumId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :albumId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
                 .setParameter("albumId", PRE_EXISTING_ALBUM_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -960,13 +942,12 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :albumId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :albumId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("albumId", NEW_ALBUM_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -979,16 +960,15 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId " +
-                        "AND a.id = :albumId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId " +
+                "AND a.id = :albumId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("albumId", PRE_EXISTING_ALBUM_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
-    //----------------- Get Count ------------------------
+    // ----------------- Get Count ------------------------
     @Test
     public void test_getFavoriteAlbumsCount() {
         // 1. Pre-conditions - user exists and has 1 favorite album
@@ -999,11 +979,10 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertEquals(1, count);
         assertEquals(1, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -1016,11 +995,10 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertEquals(0, count);
         assertEquals(0, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -1033,14 +1011,13 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertEquals(5, count);
         assertEquals(5, em.createQuery("SELECT COUNT(a) FROM User u " +
-                        "JOIN u.favoriteAlbums a " +
-                        "WHERE u.id = :userId", Long.class)
+                "JOIN u.favoriteAlbums a " +
+                "WHERE u.id = :userId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
-    //----------------- Is ------------------------
+    // ----------------- Is ------------------------
     @Test
     public void test_isAlbumFavorite_Yes() {
         // 1. Pre-conditions - album is user favorite
@@ -1085,10 +1062,10 @@ public class UserJpaDaoTest {
         assertFalse(favorite);
     }
 
-    //============================ FAVORITE SONGS ============================
-    //----------------- Get ------------------------
+    // ============================ FAVORITE SONGS ============================
+    // ----------------- Get ------------------------
     @Test
-    public void test_getFavoriteSongs () {
+    public void test_getFavoriteSongs() {
         // 1. Pre-conditions - user exists and has 1 favorite song
 
         // 2. Execute
@@ -1099,7 +1076,7 @@ public class UserJpaDaoTest {
     }
 
     @Test
-    public void test_getFavoriteSongs_NoUser () {
+    public void test_getFavoriteSongs_NoUser() {
         // 1. Pre-conditions - user does not exists
 
         // 2. Execute
@@ -1109,9 +1086,9 @@ public class UserJpaDaoTest {
         assertEquals(0, songList.size());
     }
 
-    //----------------- Add ------------------------
+    // ----------------- Add ------------------------
     @Test
-    public void test_addFavoriteSong () {
+    public void test_addFavoriteSong() {
         // 1. Pre-conditions - user exists and song is not favorite yet
 
         // 2. Execute
@@ -1120,17 +1097,16 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertTrue(updated);
         assertEquals(1, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId " +
-                        "AND s.id = :songId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId " +
+                "AND s.id = :songId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("songId", PRE_EXISTING_SONG_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
-    public void test_addFavoriteSong_NoUser () {
+    public void test_addFavoriteSong_NoUser() {
         // 1. Pre-conditions - user does not exist
 
         // 2. Execute
@@ -1139,17 +1115,16 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(updated);
         assertEquals(0, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId " +
-                        "AND s.id = :songId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId " +
+                "AND s.id = :songId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
                 .setParameter("songId", PRE_EXISTING_SONG_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
-    public void test_addFavoriteSong_NoSong () {
+    public void test_addFavoriteSong_NoSong() {
         // 1. Pre-conditions - Song does not exist
 
         // 2. Execute
@@ -1158,16 +1133,15 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(updated);
         assertEquals(0, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId " +
-                        "AND s.id = :songId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId " +
+                "AND s.id = :songId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("songId", NEW_SONG_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
-    //----------------- Remove ------------------------
+    // ----------------- Remove ------------------------
     @Test
     public void test_removeFavoriteSong() {
         // 1. Pre-conditions - user exists and song is favorite
@@ -1178,13 +1152,12 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertTrue(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId " +
-                        "AND s.id = :songId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId " +
+                "AND s.id = :songId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("songId", PRE_EXISTING_SONG_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -1197,13 +1170,12 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId " +
-                        "AND s.id = :songId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId " +
+                "AND s.id = :songId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
                 .setParameter("songId", PRE_EXISTING_SONG_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -1216,13 +1188,12 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId " +
-                        "AND s.id = :songId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId " +
+                "AND s.id = :songId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("songId", NEW_SONG_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -1235,16 +1206,15 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertFalse(removed);
         assertEquals(0, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId " +
-                        "AND s.id = :songId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId " +
+                "AND s.id = :songId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
                 .setParameter("songId", PRE_EXISTING_SONG_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
-    //----------------- Get Count ------------------------
+    // ----------------- Get Count ------------------------
     @Test
     public void test_getFavoriteSongsCount() {
         // 1. Pre-conditions - user exists and has 1 favorite song
@@ -1255,11 +1225,10 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertEquals(1, count);
         assertEquals(1, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -1272,11 +1241,10 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertEquals(0, count);
         assertEquals(0, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId", Long.class)
                 .setParameter("userId", NEW_USER_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
     @Test
@@ -1289,14 +1257,13 @@ public class UserJpaDaoTest {
         // 3. Post-conditions
         assertEquals(5, count);
         assertEquals(5, em.createQuery("SELECT COUNT(s) FROM User u " +
-                        "JOIN u.favoriteSongs s " +
-                        "WHERE u.id = :userId", Long.class)
+                "JOIN u.favoriteSongs s " +
+                "WHERE u.id = :userId", Long.class)
                 .setParameter("userId", PRE_EXISTING_USER_2_ID)
-                .getSingleResult().intValue()
-        );
+                .getSingleResult().intValue());
     }
 
-    //----------------- Is ------------------------
+    // ----------------- Is ------------------------
     @Test
     public void test_isSongFavorite_Yes() {
         // 1. Pre-conditions - song is user favorite

@@ -32,11 +32,9 @@ import static org.junit.Assert.assertEquals;
 @Sql(scripts = "classpath:song_setUp.sql")
 public class SongJpaDaoTest {
 
-    private static final long PRE_EXISTING_IMAGE_ID = 100;
     private static final long PRE_EXISTING_USER_ID = 200;
     private static final long PRE_EXISTING_ARTIST_ID = 300;
     private static final long PRE_EXISTING_ARTIST_2_ID = 301;
-    private static final long PRE_EXISTING_REVIEW_ID = 400;
     private static final long PRE_EXISTING_ALBUM_ID = 500;
     private static final long PRE_EXISTING_ALBUM_2_ID = 501;
     private static final long PRE_EXISTING_SONG_ID = 600;
@@ -96,7 +94,7 @@ public class SongJpaDaoTest {
         int pageSize = 10;
 
         // 2. Execute
-        List<Song> songList = songDao.findByArtistId(PRE_EXISTING_ARTIST_2_ID, FilterType.POPULAR,pageSize, offset);
+        List<Song> songList = songDao.findByArtistId(PRE_EXISTING_ARTIST_2_ID, FilterType.POPULAR, pageSize, offset);
 
         // 3. Post-conditions
         assertEquals(5, songList.size());
@@ -109,7 +107,7 @@ public class SongJpaDaoTest {
         int pageSize = 10;
 
         // 2. Execute
-        List<Song> songList = songDao.findByArtistId(NEW_ARTIST_ID, FilterType.POPULAR,pageSize, page);
+        List<Song> songList = songDao.findByArtistId(NEW_ARTIST_ID, FilterType.POPULAR, pageSize, page);
 
         // 3. Post-conditions
         assertEquals(0, songList.size());
@@ -142,12 +140,14 @@ public class SongJpaDaoTest {
         // 1. Pre-conditions - song with substring exists
 
         // 2. Execute
-        List<Song> songList = songDao.findByTitleContaining(PRE_EXISTING_SONG_TITLE.substring(3,7), 1, 10); // mySo - page=1, size=10
+        List<Song> songList = songDao.findByTitleContaining(PRE_EXISTING_SONG_TITLE.substring(3, 7), 1, 10); // mySo -
+                                                                                                             // page=1,
+                                                                                                             // size=10
 
         // 3. Post-conditions
         assertEquals(4, songList.size());
         for (Song song : songList) {
-            assertTrue(song.getTitle().contains(PRE_EXISTING_SONG_TITLE.substring(3,7)));
+            assertTrue(song.getTitle().contains(PRE_EXISTING_SONG_TITLE.substring(3, 7)));
         }
     }
 
@@ -178,11 +178,11 @@ public class SongJpaDaoTest {
         // 1. Pre-conditions - 5 songs exist in database
 
         // 2. Execute
-        List<Song> songList = songDao.findPaginated(FilterType.RATING, 3,1);
+        List<Song> songList = songDao.findPaginated(FilterType.RATING, 3, 1);
 
         // 3. Post-conditions
-        assertEquals(3, songList.size()); //Correct limit
-        assertEquals(PRE_EXISTING_SONG_2_ID, songList.getFirst().getId().longValue());  //Correct offset
+        assertEquals(3, songList.size()); // Correct limit
+        assertEquals(PRE_EXISTING_SONG_2_ID, songList.getFirst().getId().longValue()); // Correct offset
     }
 
     @Test
@@ -190,19 +190,17 @@ public class SongJpaDaoTest {
         // 1. Pre-conditions - 5 songs exist in database
 
         // 2. Execute
-        List<Song> songList = songDao.findPaginated(FilterType.RATING, 4,3);
+        List<Song> songList = songDao.findPaginated(FilterType.RATING, 4, 3);
 
         // 3. Post-conditions
         assertEquals(3, songList.size());
     }
 
-
-
     @Test
     public void test_create() {
         // 1. Pre-conditions - the
         Album album = new Album(PRE_EXISTING_ALBUM_ID);
-        Song song = new Song(NEW_SONG_TITLE, NEW_SONG_DURATION, NEW_SONG_TRACK_NUMBER, album,0,0.0);
+        Song song = new Song(NEW_SONG_TITLE, NEW_SONG_DURATION, NEW_SONG_TRACK_NUMBER, album, 0, 0.0);
 
         // 2. Execute
         Song songCreated = songDao.create(song);
@@ -214,17 +212,17 @@ public class SongJpaDaoTest {
         assertEquals(song.getDuration(), songCreated.getDuration());
         assertEquals(song.getTrackNumber(), songCreated.getTrackNumber());
         assertEquals(PRE_EXISTING_ALBUM_ID, songCreated.getAlbum().getId().longValue());
-        assertEquals(0, songCreated.getAvgRating(),0);
+        assertEquals(0, songCreated.getAvgRating(), 0);
         assertEquals(0, songCreated.getRatingCount().intValue());
 
         // check if song is saved correctly in database
-        assertEquals(1,em.createQuery("SELECT COUNT(s) FROM Song s " +
-                                "WHERE s.title = :title " +
-                                "AND s.duration = :duration " +
-                                "AND s.trackNumber = :trackNumber " +
-                                "AND s.avgRating = 0 " +
-                                "AND s.ratingCount = 0",
-                        Long.class)
+        assertEquals(1, em.createQuery("SELECT COUNT(s) FROM Song s " +
+                "WHERE s.title = :title " +
+                "AND s.duration = :duration " +
+                "AND s.trackNumber = :trackNumber " +
+                "AND s.avgRating = 0 " +
+                "AND s.ratingCount = 0",
+                Long.class)
                 .setParameter("title", NEW_SONG_TITLE)
                 .setParameter("duration", NEW_SONG_DURATION)
                 .setParameter("trackNumber", NEW_SONG_TRACK_NUMBER)
@@ -256,11 +254,12 @@ public class SongJpaDaoTest {
         // 3. Post-conditions
         assertEquals(1, rowsChanged);
 
-        TypedQuery<Song> query = em.createQuery("SELECT s FROM Song s JOIN s.artists WHERE s.id = :songId", Song.class).setParameter("songId", PRE_EXISTING_SONG_ID);
+        TypedQuery<Song> query = em.createQuery("SELECT s FROM Song s JOIN s.artists WHERE s.id = :songId", Song.class)
+                .setParameter("songId", PRE_EXISTING_SONG_ID);
         boolean isDuplicate = false;
-        for(Artist a : query.getSingleResult().getArtists()) {
-            if(a.getId().equals(PRE_EXISTING_ARTIST_ID)) {
-                if(isDuplicate) {
+        for (Artist a : query.getSingleResult().getArtists()) {
+            if (a.getId().equals(PRE_EXISTING_ARTIST_ID)) {
+                if (isDuplicate) {
                     assertTrue(isDuplicate);
                 }
                 isDuplicate = true;
@@ -272,7 +271,8 @@ public class SongJpaDaoTest {
     public void test_update() {
         // 1. Pre-conditions - the song exist
         Album album = new Album(PRE_EXISTING_ALBUM_ID);
-        Song song = new Song(PRE_EXISTING_SONG_ID, NEW_SONG_TITLE, NEW_SONG_DURATION, NEW_SONG_TRACK_NUMBER, album, NEW_SONG_RATING_AMOUNT, NEW_SONG_AVG_RATING);
+        Song song = new Song(PRE_EXISTING_SONG_ID, NEW_SONG_TITLE, NEW_SONG_DURATION, NEW_SONG_TRACK_NUMBER, album,
+                NEW_SONG_RATING_AMOUNT, NEW_SONG_AVG_RATING);
 
         // 2. Execute
         Song songUpdated = songDao.update(song);
@@ -288,16 +288,16 @@ public class SongJpaDaoTest {
         assertEquals(song.getRatingCount(), songUpdated.getRatingCount());
 
         // Check if song is saved correctly in database
-        assertEquals(1,em.createQuery("SELECT COUNT(s) FROM Song s " +
-                            "JOIN s.album " +
-                                "WHERE s.id = :songId " +
-                                "AND s.title = :title " +
-                                "AND s.duration = :duration " +
-                                "AND s.trackNumber = :trackNumber " +
-                                "AND s.ratingCount = :ratingCount " +
-                                "AND s.avgRating = :avgRating " +
-                                "AND s.album.id = :albumId",
-                        Long.class)
+        assertEquals(1, em.createQuery("SELECT COUNT(s) FROM Song s " +
+                "JOIN s.album " +
+                "WHERE s.id = :songId " +
+                "AND s.title = :title " +
+                "AND s.duration = :duration " +
+                "AND s.trackNumber = :trackNumber " +
+                "AND s.ratingCount = :ratingCount " +
+                "AND s.avgRating = :avgRating " +
+                "AND s.album.id = :albumId",
+                Long.class)
                 .setParameter("songId", PRE_EXISTING_SONG_ID)
                 .setParameter("title", NEW_SONG_TITLE)
                 .setParameter("duration", NEW_SONG_DURATION)
@@ -317,11 +317,11 @@ public class SongJpaDaoTest {
 
         // 3. Post-conditions
         assertTrue(updated);
-        assertEquals(1,em.createQuery("SELECT COUNT(s) FROM Song s " +
-                                "WHERE s.id = :songId " +
-                                "AND s.avgRating = :avgRating " +
-                                "AND s.ratingCount = :ratingCount",
-                        Long.class)
+        assertEquals(1, em.createQuery("SELECT COUNT(s) FROM Song s " +
+                "WHERE s.id = :songId " +
+                "AND s.avgRating = :avgRating " +
+                "AND s.ratingCount = :ratingCount",
+                Long.class)
                 .setParameter("songId", PRE_EXISTING_SONG_ID)
                 .setParameter("avgRating", NEW_SONG_AVG_RATING)
                 .setParameter("ratingCount", NEW_SONG_RATING_AMOUNT)

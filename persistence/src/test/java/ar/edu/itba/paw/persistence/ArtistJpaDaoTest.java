@@ -34,8 +34,6 @@ public class ArtistJpaDaoTest {
     private static final long PRE_EXISTING_USER_ID = 200;
     private static final long PRE_EXISTING_ARTIST_ID = 300;
     private static final long PRE_EXISTING_ARTIST_2_ID = 301;
-    private static final long PRE_EXISTING_REVIEW_ID = 400;
-    private static final long PRE_EXISTING_ALBUM_ID = 500;
     private static final long PRE_EXISTING_SONG_ID = 600;
 
     private static final long NEW_IMAGE_ID = 1000;
@@ -45,7 +43,6 @@ public class ArtistJpaDaoTest {
     private static final byte[] BYTES = new byte[] { (byte) 0xde, (byte) 0xad };
 
     private static final String PRE_EXISTING_ARTIST_NAME = "DummyName";
-    private static final String PRE_EXISTING_ARTIST_BIO = "DummyBio";
 
     private static final String NEW_ARTIST_NAME = "DummyX";
     private static final String NEW_ARTIST_BIO = "This is a description of DummyX";
@@ -100,11 +97,11 @@ public class ArtistJpaDaoTest {
         // 1. Pre-conditions - 5 artists exist in database
 
         // 2. Execute
-        List<Artist> artistList = artistDao.findPaginated(FilterType.RATING, 3,1);
+        List<Artist> artistList = artistDao.findPaginated(FilterType.RATING, 3, 1);
 
         // 3. Post-conditions
-        assertEquals(3, artistList.size()); //Correct limit
-        assertEquals(PRE_EXISTING_ARTIST_2_ID, artistList.getFirst().getId().longValue());  //Correct offset
+        assertEquals(3, artistList.size()); // Correct limit
+        assertEquals(PRE_EXISTING_ARTIST_2_ID, artistList.getFirst().getId().longValue()); // Correct offset
     }
 
     @Test
@@ -112,7 +109,7 @@ public class ArtistJpaDaoTest {
         // 1. Pre-conditions - 5 artists exist in database
 
         // 2. Execute
-        List<Artist> artistList = artistDao.findPaginated(FilterType.RATING, 3,3);
+        List<Artist> artistList = artistDao.findPaginated(FilterType.RATING, 3, 3);
 
         // 3. Post-conditions
         assertEquals(2, artistList.size());
@@ -145,7 +142,7 @@ public class ArtistJpaDaoTest {
         // 1. Pre-conditions - artist does not exist with substring
 
         // 2. Execute
-        List<Artist> artistList = artistDao.findByNameContaining("Nothing",10,1); // myNa
+        List<Artist> artistList = artistDao.findByNameContaining("Nothing", 10, 1); // myNa
 
         // 3. Post-conditions
         assertEquals(0, artistList.size());
@@ -167,17 +164,17 @@ public class ArtistJpaDaoTest {
         assertEquals(artist.getBio(), artistCreated.getBio());
         assertEquals(artist.getImage().getId(), artistCreated.getImage().getId());
         assertEquals(0, artistCreated.getRatingCount().intValue());
-        assertEquals(0, artistCreated.getAvgRating(),0);
+        assertEquals(0, artistCreated.getAvgRating(), 0);
 
         // check if artist is saved correctly in database
-        assertEquals(1,em.createQuery("SELECT COUNT(a) FROM Artist a " +
-                                "JOIN a.image " +
-                                "WHERE a.name = :name " +
-                                "AND a.bio = :bio " +
-                                "AND a.avgRating = 0 " +
-                                "AND a.ratingCount = 0 " +
-                                "AND a.image.id = :image_id",
-                        Long.class)
+        assertEquals(1, em.createQuery("SELECT COUNT(a) FROM Artist a " +
+                "JOIN a.image " +
+                "WHERE a.name = :name " +
+                "AND a.bio = :bio " +
+                "AND a.avgRating = 0 " +
+                "AND a.ratingCount = 0 " +
+                "AND a.image.id = :image_id",
+                Long.class)
                 .setParameter("name", NEW_ARTIST_NAME)
                 .setParameter("bio", NEW_ARTIST_BIO)
                 .setParameter("image_id", NEW_IMAGE_ID)
@@ -188,7 +185,8 @@ public class ArtistJpaDaoTest {
     public void test_update() {
         // 1. Pre-conditions - the artist exist
         Image image = new Image(PRE_EXISTING_IMAGE_ID, BYTES);
-        Artist artist = new Artist(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_NAME, NEW_ARTIST_BIO, image, NEW_ARTIST_RATING_AMOUNT, NEW_ARTIST_AVG_RATING);
+        Artist artist = new Artist(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_NAME, NEW_ARTIST_BIO, image,
+                NEW_ARTIST_RATING_AMOUNT, NEW_ARTIST_AVG_RATING);
 
         // 2. Execute
         Artist artistUpdated = artistDao.update(artist);
@@ -199,18 +197,18 @@ public class ArtistJpaDaoTest {
         assertEquals(artist.getName(), artistUpdated.getName());
         assertEquals(artist.getBio(), artistUpdated.getBio());
         assertEquals(artist.getImage().getId(), artistUpdated.getImage().getId());
-        assertEquals(NEW_ARTIST_AVG_RATING, artistUpdated.getAvgRating(),0);
+        assertEquals(NEW_ARTIST_AVG_RATING, artistUpdated.getAvgRating(), 0);
         assertEquals(NEW_ARTIST_RATING_AMOUNT, artistUpdated.getRatingCount().intValue());
 
         // Check if artist is saved correctly in database
-        assertEquals(1,em.createQuery("SELECT COUNT(a) FROM Artist a " +
+        assertEquals(1, em.createQuery("SELECT COUNT(a) FROM Artist a " +
                 "JOIN a.image " +
-                    "WHERE a.id = :artistId " +
-                      "AND a.name = :name " +
-                      "AND a.bio = :bio " +
-                      "AND a.avgRating = :avgRating " +
-                      "AND a.ratingCount = :ratingCount " +
-                      "AND a.image.id = :image_id",
+                "WHERE a.id = :artistId " +
+                "AND a.name = :name " +
+                "AND a.bio = :bio " +
+                "AND a.avgRating = :avgRating " +
+                "AND a.ratingCount = :ratingCount " +
+                "AND a.image.id = :image_id",
                 Long.class)
                 .setParameter("artistId", PRE_EXISTING_ARTIST_ID)
                 .setParameter("name", NEW_ARTIST_NAME)
@@ -226,15 +224,16 @@ public class ArtistJpaDaoTest {
         // 1. Pre-conditions - the artist exist
 
         // 2. Execute
-        boolean updated = artistDao.updateRating(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_AVG_RATING, NEW_ARTIST_RATING_AMOUNT);
+        boolean updated = artistDao.updateRating(PRE_EXISTING_ARTIST_ID, NEW_ARTIST_AVG_RATING,
+                NEW_ARTIST_RATING_AMOUNT);
 
         // 3. Post-conditions
         assertTrue(updated);
-        assertEquals(1,em.createQuery("SELECT COUNT(a) FROM Artist a " +
-                                "WHERE a.id = :artistId " +
-                                "AND a.avgRating = :avgRating " +
-                                "AND a.ratingCount = :ratingCount",
-                        Long.class)
+        assertEquals(1, em.createQuery("SELECT COUNT(a) FROM Artist a " +
+                "WHERE a.id = :artistId " +
+                "AND a.avgRating = :avgRating " +
+                "AND a.ratingCount = :ratingCount",
+                Long.class)
                 .setParameter("artistId", PRE_EXISTING_ARTIST_ID)
                 .setParameter("avgRating", NEW_ARTIST_AVG_RATING)
                 .setParameter("ratingCount", NEW_ARTIST_RATING_AMOUNT)
