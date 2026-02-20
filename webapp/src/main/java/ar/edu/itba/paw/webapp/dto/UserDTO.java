@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import java.net.URI;
+import ar.edu.itba.paw.webapp.dto.links.UserLinksDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 
 public class UserDTO {
 
@@ -26,17 +26,11 @@ public class UserDTO {
     private Boolean hasCommentsNotificationsEnabled;
     private Boolean hasReviewsNotificationsEnabled;
 
-    // HATEOAS links
-    private URI self;
-    private URI image;
-    private URI reviews;
-    private URI followers;
-    private URI following;
-    private URI favoriteArtists;
-    private URI favoriteAlbums;
-    private URI favoriteSongs;
+    @JsonProperty("_links")
+    private UserLinksDTO links;
 
-    public UserDTO() {}
+    public UserDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -182,74 +176,18 @@ public class UserDTO {
         this.hasReviewsNotificationsEnabled = hasReviewsNotificationsEnabled;
     }
 
-    // HATEOAS getters and setters
-    public URI getSelf() {
-        return self;
+    public UserLinksDTO getLinks() {
+        return links;
     }
 
-    public void setSelf(URI self) {
-        this.self = self;
-    }
-
-    public URI getImage() {
-        return image;
-    }
-
-    public void setImage(URI image) {
-        this.image = image;
-    }
-
-    public URI getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(URI reviews) {
-        this.reviews = reviews;
-    }
-
-    public URI getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(URI followers) {
-        this.followers = followers;
-    }
-
-    public URI getFollowing() {
-        return following;
-    }
-
-    public void setFollowing(URI following) {
-        this.following = following;
-    }
-
-    public URI getFavoriteArtists() {
-        return favoriteArtists;
-    }
-
-    public void setFavoriteArtists(URI favoriteArtists) {
-        this.favoriteArtists = favoriteArtists;
-    }
-
-    public URI getFavoriteAlbums() {
-        return favoriteAlbums;
-    }
-
-    public void setFavoriteAlbums(URI favoriteAlbums) {
-        this.favoriteAlbums = favoriteAlbums;
-    }
-
-    public URI getFavoriteSongs() {
-        return favoriteSongs;
-    }
-
-    public void setFavoriteSongs(URI favoriteSongs) {
-        this.favoriteSongs = favoriteSongs;
+    public void setLinks(UserLinksDTO links) {
+        this.links = links;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, name, bio, imageId, followersAmount, followingAmount, reviewAmount, createdAt, updatedAt, isVerified, isModerator, preferredLanguage, preferredTheme, hasFollowNotificationsEnabled, hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled, hasReviewsNotificationsEnabled);
+        return Objects.hash(id, username, name, bio, imageId, followersAmount, followingAmount, reviewAmount, createdAt,
+                updatedAt, isVerified, isModerator, preferredLanguage, preferredTheme, hasFollowNotificationsEnabled,
+                hasLikeNotificationsEnabled, hasCommentsNotificationsEnabled, hasReviewsNotificationsEnabled);
     }
 }
-

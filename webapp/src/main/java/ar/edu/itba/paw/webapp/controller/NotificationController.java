@@ -5,9 +5,6 @@ import ar.edu.itba.paw.webapp.mapper.dto.NotificationDtoMapper;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
-import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
-import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
-import ar.edu.itba.paw.models.StatusType;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Path(ApiUriConstants.NOTIFICATIONS_BASE)
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,7 +25,6 @@ public class NotificationController extends BaseController {
 
     @Autowired
     private NotificationDtoMapper notificationDtoMapper;
-
 
     @POST
     @Consumes(CustomMediaType.NOTIFICATION)
@@ -45,6 +39,7 @@ public class NotificationController extends BaseController {
     @GET
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.NOTIFICATION)
+    @PreAuthorize("@securityServiceImpl.isNotificationOwner(#id, authentication)")
     public Response getNotification(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         Notification notification = notificationService.findById(id);
         NotificationDTO notificationDTO = notificationDtoMapper.toDTO(notification, uriInfo);
