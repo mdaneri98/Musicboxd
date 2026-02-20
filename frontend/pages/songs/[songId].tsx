@@ -29,6 +29,7 @@ import {
   selectFavoriteSongs,
   clearCurrentSong,
   showError,
+  fetchReviewLikedStatusAsync,
 } from '@/store/slices';
 import type { Album, Artist } from '@/types';
 import { formatDate } from '@/utils/timeUtils';
@@ -108,6 +109,19 @@ const SongDetailPage = () => {
     const songIdNum = parseInt(songId as string);
     setIsFavorite(favoriteSongs.some(s => s.id === songIdNum));
   }, [songId, favoriteSongs]);
+
+  // Batch fetch liked status for reviews
+  useEffect(() => {
+    if (!isAuthenticated || !currentUser || reviews.length === 0) return;
+
+    const idsWithoutLikedStatus = reviews
+      .filter((r) => r.liked === undefined)
+      .map((r) => r.id);
+
+    if (idsWithoutLikedStatus.length > 0) {
+      dispatch(fetchReviewLikedStatusAsync({ reviewIds: idsWithoutLikedStatus, userId: currentUser.id }));
+    }
+  }, [isAuthenticated, currentUser, reviews, dispatch]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {

@@ -5,24 +5,25 @@ import { Layout, UserInfo } from '@/components/layout';
 import { FavoritesSection, ReviewsSection } from '@/components/profile';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useInfiniteScroll } from '@/hooks';
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  getCurrentUserAsync, 
-  selectUserReviewsPagination, 
-  fetchFavoriteArtistsAsync, 
-  fetchFavoriteAlbumsAsync, 
-  fetchFavoriteSongsAsync, 
-  fetchUserReviewsAsync, 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  getCurrentUserAsync,
+  selectUserReviewsPagination,
+  fetchFavoriteArtistsAsync,
+  fetchFavoriteAlbumsAsync,
+  fetchFavoriteSongsAsync,
+  fetchUserReviewsAsync,
   fetchMoreUserReviewsAsync,
-  selectFavoriteArtists, 
-  selectFavoriteAlbums, 
-  selectFavoriteSongs, 
-  selectUserReviews, 
-  selectLoadingFavorites, 
+  selectFavoriteArtists,
+  selectFavoriteAlbums,
+  selectFavoriteSongs,
+  selectUserReviews,
+  selectLoadingFavorites,
   selectLoadingReviews,
   selectLoadingMoreReviews,
   selectUserReviewsHasMore,
+  fetchReviewLikedStatusAsync,
 } from '@/store/slices';
 import { ProfileTabEnum } from '@/types';
 
@@ -34,7 +35,7 @@ const ProfilePage = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  
+
   const [activeTab, setActiveTab] = useState<ProfileTabEnum>(queryTab ? queryTab as ProfileTabEnum : ProfileTabEnum.FAVORITES);
   const favoriteArtists = useAppSelector(selectFavoriteArtists);
   const favoriteAlbums = useAppSelector(selectFavoriteAlbums);
@@ -66,15 +67,28 @@ const ProfilePage = () => {
     }
   }, [currentUser, dispatch]);
 
+  // Batch fetch liked status for reviews
+  useEffect(() => {
+    if (!isAuthenticated || !currentUser || reviews.length === 0) return;
+
+    const idsWithoutLikedStatus = reviews
+      .filter((r) => r.liked === undefined)
+      .map((r) => r.id);
+
+    if (idsWithoutLikedStatus.length > 0) {
+      dispatch(fetchReviewLikedStatusAsync({ reviewIds: idsWithoutLikedStatus, userId: currentUser.id }));
+    }
+  }, [isAuthenticated, currentUser, reviews, dispatch]);
+
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
     if (!currentUser || !hasMoreReviews || loadingMoreReviews) return;
-    
+
     const nextPage = pagination.page + 1;
-    await dispatch(fetchMoreUserReviewsAsync({ 
-      userId: currentUser.id, 
-      page: nextPage, 
-      size: pagination.size 
+    await dispatch(fetchMoreUserReviewsAsync({
+      userId: currentUser.id,
+      page: nextPage,
+      size: pagination.size
     }));
   }, [dispatch, currentUser, pagination.page, pagination.size, hasMoreReviews, loadingMoreReviews]);
 
@@ -98,7 +112,7 @@ const ProfilePage = () => {
     <Layout title="Musicboxd - My Profile">
       <div className="content-wrapper">
         {/* User Info Header */}
-        <UserInfo user={currentUser} isOwnProfile={true} isAuthenticated={isAuthenticated} isFollowing={false} followLoading={false} onFollowToggle={() => {}} />
+        <UserInfo user={currentUser} isOwnProfile={true} isAuthenticated={isAuthenticated} isFollowing={false} followLoading={false} onFollowToggle={() => { }} />
 
         {/* Tabs */}
         <div className="tabs">

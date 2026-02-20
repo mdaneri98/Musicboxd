@@ -31,7 +31,8 @@ import {
   selectLoadingMoreReviews,
   selectLoadingFavorites,
   selectUserError,
-  selectLoadingProfile
+  selectLoadingProfile,
+  fetchReviewLikedStatusAsync,
 } from '@/store/slices';
 import { ProfileTabEnum } from '@/types';
 
@@ -95,6 +96,19 @@ const UserProfilePage = () => {
     const userIdNum = parseInt(userId as string);
     setIsFollowing(followingList.some(u => u.id === userIdNum));
   }, [userId, followingList]);
+
+  // Batch fetch liked status for reviews
+  useEffect(() => {
+    if (!isAuthenticated || !loggedUser || reviews.length === 0) return;
+
+    const idsWithoutLikedStatus = reviews
+      .filter((r) => r.liked === undefined)
+      .map((r) => r.id);
+
+    if (idsWithoutLikedStatus.length > 0) {
+      dispatch(fetchReviewLikedStatusAsync({ reviewIds: idsWithoutLikedStatus, userId: loggedUser.id }));
+    }
+  }, [isAuthenticated, loggedUser, reviews, dispatch]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {

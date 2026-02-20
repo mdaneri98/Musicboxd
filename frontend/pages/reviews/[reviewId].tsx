@@ -30,7 +30,8 @@ import {
   selectLikesHasMore,
   clearCurrentReview,
   selectReviewById,
-  selectReviewError
+  selectReviewError,
+  fetchReviewLikedStatusAsync,
 } from '@/store/slices';
 import type { Comment, CommentFormData } from '@/types';
 import { ReviewTab } from '@/types/enums';
@@ -81,6 +82,12 @@ const ReviewDetailPage = () => {
     dispatch(fetchReviewCommentsAsync({ reviewId: reviewIdNum, page: 1, size: 10 }));
     dispatch(fetchReviewLikesAsync({ reviewId: reviewIdNum, page: 1, size: 10 }));
   }, [reviewId, dispatch, review]);
+
+  // Batch fetch liked status for the review
+  useEffect(() => {
+    if (!isAuthenticated || !currentUser || !review || review.liked !== undefined) return;
+    dispatch(fetchReviewLikedStatusAsync({ reviewIds: [review.id], userId: currentUser.id }));
+  }, [isAuthenticated, currentUser, review, dispatch]);
 
   // Load more comments callback
   const handleLoadMoreComments = useCallback(async () => {

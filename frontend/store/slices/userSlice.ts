@@ -7,7 +7,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { userRepository } from '@/repositories';
 import { User, Artist, Album, Song, Review, Collection, HALResource, EditProfileFormData, UserConfigFormData } from '@/types';
 import type { RootState } from '../index';
-import { likeReviewAsync, unlikeReviewAsync } from './reviewSlice';
+import { likeReviewAsync, unlikeReviewAsync, fetchReviewLikedStatusAsync } from './reviewSlice';
 
 // ============================================================================
 // State Interface
@@ -784,6 +784,19 @@ const userSlice = createSlice({
           state.userReviews[index].likes = Math.max(0, (state.userReviews[index].likes || 0) - 1);
           state.userReviews[index].liked = false;
         }
+      });
+
+    // Batch fetch liked status - Update userReviews list
+    builder
+      .addCase(fetchReviewLikedStatusAsync.fulfilled, (state, action) => {
+        const results = action.payload;
+        Object.entries(results).forEach(([reviewIdStr, isLiked]) => {
+          const reviewId = parseInt(reviewIdStr);
+          const index = state.userReviews.findIndex((r) => r.id === reviewId);
+          if (index !== -1) {
+            state.userReviews[index].liked = isLiked;
+          }
+        });
       });
   },
 });

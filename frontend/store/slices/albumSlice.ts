@@ -7,7 +7,7 @@ import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@r
 import { albumRepository, reviewRepository, userRepository } from '@/repositories';
 import { Album, Song, Review, Collection, HALResource, EditAlbumFormData, CreateAlbumFormData, ReviewFormData } from '@/types';
 import type { RootState } from '../index';
-import { blockReviewAsync, unblockReviewAsync, likeReviewAsync, unlikeReviewAsync } from './reviewSlice';
+import { blockReviewAsync, unblockReviewAsync, likeReviewAsync, unlikeReviewAsync, fetchReviewLikedStatusAsync } from './reviewSlice';
 
 // ============================================================================
 // State Interface
@@ -524,6 +524,19 @@ const albumSlice = createSlice({
           state.albumReviews[index].likes = Math.max(0, (state.albumReviews[index].likes || 0) - 1);
           state.albumReviews[index].liked = false;
         }
+      });
+
+    // Batch fetch liked status - Update albumReviews list
+    builder
+      .addCase(fetchReviewLikedStatusAsync.fulfilled, (state, action) => {
+        const results = action.payload;
+        Object.entries(results).forEach(([reviewIdStr, isLiked]) => {
+          const reviewId = parseInt(reviewIdStr);
+          const index = state.albumReviews.findIndex((r) => r.id === reviewId);
+          if (index !== -1) {
+            state.albumReviews[index].liked = isLiked;
+          }
+        });
       });
   },
 });

@@ -30,6 +30,7 @@ import {
   selectFavoriteAlbums,
   clearCurrentAlbum,
   showError,
+  fetchReviewLikedStatusAsync,
 } from '@/store/slices';
 import type { Artist } from '@/types';
 
@@ -116,6 +117,19 @@ const AlbumDetailPage = () => {
     const albumIdNum = parseInt(albumId as string);
     setIsFavorite(favoriteAlbums.some(a => a.id === albumIdNum));
   }, [albumId, favoriteAlbums]);
+
+  // Batch fetch liked status for reviews
+  useEffect(() => {
+    if (!isAuthenticated || !currentUser || reviews.length === 0) return;
+
+    const idsWithoutLikedStatus = reviews
+      .filter((r) => r.liked === undefined)
+      .map((r) => r.id);
+
+    if (idsWithoutLikedStatus.length > 0) {
+      dispatch(fetchReviewLikedStatusAsync({ reviewIds: idsWithoutLikedStatus, userId: currentUser.id }));
+    }
+  }, [isAuthenticated, currentUser, reviews, dispatch]);
 
   // Load more callback for infinite scroll
   const handleLoadMore = useCallback(async () => {
