@@ -12,8 +12,8 @@ public abstract class BaseController {
     @Context
     protected UriInfo uriInfo;
 
-
     // https://howtodoinjava.com/resteasy/jax-rs-resteasy-cache-control-with-etag-example/
+
     public static <T> Response buildResponseUsingEtag(Request request, Supplier<T> dtoSupplier) {
         final T dto = dtoSupplier.get();
         final EntityTag eTag = new EntityTag(Integer.toString(dto.hashCode()));
@@ -30,6 +30,5 @@ public abstract class BaseController {
                 .cacheControl(cacheControl)
                 .build();
     }
-
 
 }

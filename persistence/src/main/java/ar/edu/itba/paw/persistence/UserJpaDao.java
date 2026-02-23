@@ -20,7 +20,7 @@ public class UserJpaDao implements UserDao {
     @PersistenceContext
     private EntityManager em;
 
-    //============================ C.R.U.D ============================
+    // ============================ C.R.U.D ============================
     @Override
     public Optional<User> findById(Long id) {
         return Optional.ofNullable(em.find(User.class, id));
@@ -46,7 +46,7 @@ public class UserJpaDao implements UserDao {
         @SuppressWarnings("unchecked")
         final List<Object> rawResults = nativeQuery.getResultList();
         final List<Long> idList = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
@@ -77,7 +77,7 @@ public class UserJpaDao implements UserDao {
         return 1;
     }
 
-    //============================ QUERIES ============================
+    // ============================ QUERIES ============================
     @Override
     public Optional<User> findByEmail(String email) {
         TypedQuery<User> query = em.createQuery("FROM User WHERE email = :email", User.class);
@@ -106,29 +106,27 @@ public class UserJpaDao implements UserDao {
     public List<User> findByUsernameContaining(String sub, Integer pageNumber, Integer pageSize) {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
-                "SELECT id FROM cuser WHERE LOWER(username) LIKE LOWER(:substring) ORDER BY username"
-        );
+                "SELECT id FROM cuser WHERE LOWER(username) LIKE LOWER(:substring) ORDER BY username");
         nativeQuery.setParameter("substring", "%" + sub + "%");
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
         nativeQuery.setMaxResults(pageSize);
-        
+
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> userIds = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (userIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         // Query 2: JPQL para obtener entidades completas
         TypedQuery<User> query = em.createQuery(
                 "FROM User u WHERE u.id IN :ids ORDER BY u.username",
-                User.class
-        );
+                User.class);
         query.setParameter("ids", userIds);
-        
+
         return query.getResultList();
     }
 
@@ -141,7 +139,8 @@ public class UserJpaDao implements UserDao {
         return Optional.of(user);
     }
 
-    //============================ FOLLOWERS & FOLLOWINGS ============================
+    // ============================ FOLLOWERS & FOLLOWINGS
+    // ============================
     @Override
     public Integer createFollowing(User loggedUser, User following) {
         User user = em.find(User.class, loggedUser.getId());
@@ -210,7 +209,7 @@ public class UserJpaDao implements UserDao {
         @SuppressWarnings("unchecked")
         final List<Object> rawResults = nativeQuery.getResultList();
         final List<Long> idList = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
@@ -233,7 +232,7 @@ public class UserJpaDao implements UserDao {
         @SuppressWarnings("unchecked")
         final List<Object> rawResults = nativeQuery.getResultList();
         final List<Long> idList = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
 
         // Sino el siguiente query falla, no te deja hacer IN de una lista vacía.
@@ -246,7 +245,7 @@ public class UserJpaDao implements UserDao {
         return query.getResultList();
     }
 
-    //============================ FAVORITE ARTISTS ============================
+    // ============================ FAVORITE ARTISTS ============================
     @Override
     public List<Artist> getFavoriteArtists(Long userId) {
         User user = em.find(User.class, userId);
@@ -292,7 +291,7 @@ public class UserJpaDao implements UserDao {
         return user.getFavoriteArtists().contains(artist);
     }
 
-    //============================ FAVORITE ALBUMS ============================
+    // ============================ FAVORITE ALBUMS ============================
     @Override
     public List<Album> getFavoriteAlbums(Long userId) {
         User user = em.find(User.class, userId);
@@ -338,7 +337,7 @@ public class UserJpaDao implements UserDao {
         return user.getFavoriteAlbums().contains(album);
     }
 
-    //============================ FAVORITE SONGS ============================
+    // ============================ FAVORITE SONGS ============================
     @Override
     public List<Song> getFavoriteSongs(Long userId) {
         User user = em.find(User.class, userId);
@@ -384,12 +383,11 @@ public class UserJpaDao implements UserDao {
         return user.getFavoriteSongs().contains(song);
     }
 
-    //============================ Reviews ============================
+    // ============================ Reviews ============================
     @Override
     public Void updateUserReviewAmount(Long userId) {
         Query countQuery = em.createQuery(
-                "SELECT COUNT(r) FROM Review r WHERE r.user.id = :userId AND r.isBlocked = false"
-        );
+                "SELECT COUNT(r) FROM Review r WHERE r.user.id = :userId AND r.isBlocked = false");
         countQuery.setParameter("userId", userId);
         Integer reviewCount = ((Number) countQuery.getSingleResult()).intValue();
 
@@ -405,15 +403,14 @@ public class UserJpaDao implements UserDao {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT DISTINCT u.id FROM cuser u " +
-                "WHERE u.id IN (" +
-                "   SELECT f2.following FROM follower f1 " +
-                "    JOIN follower f2 ON f1.following = f2.user_id " +
-                "    WHERE f1.user_id = :userId " +
-                "    AND f2.following != :userId " +
-                "    AND f2.following NOT IN (" +
-                "        SELECT f3.following FROM follower f3 " +
-                "        WHERE f3.user_id = :userId))"
-        );
+                        "WHERE u.id IN (" +
+                        "   SELECT f2.following FROM follower f1 " +
+                        "    JOIN follower f2 ON f1.following = f2.user_id " +
+                        "    WHERE f1.user_id = :userId " +
+                        "    AND f2.following != :userId " +
+                        "    AND f2.following NOT IN (" +
+                        "        SELECT f3.following FROM follower f3 " +
+                        "        WHERE f3.user_id = :userId))");
         nativeQuery.setParameter("userId", userId);
         nativeQuery.setFirstResult((pageNumber - 1) * pageSize);
         nativeQuery.setMaxResults(pageSize);
@@ -421,18 +418,17 @@ public class UserJpaDao implements UserDao {
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> userIds = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (userIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         // Query 2: JPQL para obtener entidades completas
         TypedQuery<User> query = em.createQuery(
                 "FROM User u WHERE u.id IN :ids ORDER BY u.username",
-                User.class
-        );
+                User.class);
         query.setParameter("ids", userIds);
 
         return query.getResultList();
@@ -442,15 +438,14 @@ public class UserJpaDao implements UserDao {
     public Long countRecommendedUsers(Long userId) {
         Query query = em.createNativeQuery(
                 "SELECT COUNT(DISTINCT u.id) FROM cuser u " +
-                "WHERE u.id IN (" +
-                "   SELECT f2.following FROM follower f1 " +
-                "    JOIN follower f2 ON f1.following = f2.user_id " +
-                "    WHERE f1.user_id = :userId " +
-                "    AND f2.following != :userId " +
-                "    AND f2.following NOT IN (" +
-                "        SELECT f3.following FROM follower f3 " +
-                "        WHERE f3.user_id = :userId))"
-        );
+                        "WHERE u.id IN (" +
+                        "   SELECT f2.following FROM follower f1 " +
+                        "    JOIN follower f2 ON f1.following = f2.user_id " +
+                        "    WHERE f1.user_id = :userId " +
+                        "    AND f2.following != :userId " +
+                        "    AND f2.following NOT IN (" +
+                        "        SELECT f3.following FROM follower f3 " +
+                        "        WHERE f3.user_id = :userId))");
         query.setParameter("userId", userId);
         return ((Number) query.getSingleResult()).longValue();
     }

@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.persistence;
 
-
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
@@ -42,22 +41,23 @@ public class ArtistJpaDao implements ArtistDao {
         Query nativeQuery = entityManager.createNativeQuery(nativeSQL)
                 .setFirstResult(offset)
                 .setMaxResults(limit);
-        
+
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> artistIds = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (artistIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
-        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
-        String entityJpql = "SELECT a FROM Artist a WHERE a.id IN :ids " + filterType.getFilter();
+
+        // Query 2: JPQL para obtener entidades completas manteniendo el orden del
+        // filtro
+        String entityJpql = "SELECT a FROM Artist a WHERE a.id IN :ids ";
         TypedQuery<Artist> query = entityManager.createQuery(entityJpql, Artist.class)
                 .setParameter("ids", artistIds);
-        
+
         return query.getResultList();
     }
 
@@ -74,29 +74,28 @@ public class ArtistJpaDao implements ArtistDao {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = entityManager.createNativeQuery(
                 "SELECT a.id FROM artist a " +
-                "WHERE LOWER(a.name) LIKE LOWER(:name) " +
-                "ORDER BY a.name"
-        );
+                        "WHERE LOWER(a.name) LIKE LOWER(:name) " +
+                        "ORDER BY a.name");
         nativeQuery.setParameter("name", "%" + sub + "%");
         nativeQuery.setMaxResults(size);
         nativeQuery.setFirstResult((page - 1) * size);
-        
+
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> artistIds = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (artistIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         // Query 2: JPQL para obtener entidades completas
         TypedQuery<Artist> query = entityManager.createQuery(
-                "FROM Artist a WHERE a.id IN :ids ORDER BY a.name", 
+                "FROM Artist a WHERE a.id IN :ids ORDER BY a.name",
                 Artist.class);
         query.setParameter("ids", artistIds);
-        
+
         return query.getResultList();
     }
 
@@ -108,7 +107,7 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public Artist update(Artist artist) {
-        return entityManager.merge(artist);  // Updates the existing entity
+        return entityManager.merge(artist); // Updates the existing entity
     }
 
     @Override
@@ -152,11 +151,10 @@ public class ArtistJpaDao implements ArtistDao {
     }
 
     @Override
-        public List<ArtistReview> findReviewsByArtistId(Long artistId) {
+    public List<ArtistReview> findReviewsByArtistId(Long artistId) {
         final TypedQuery<ArtistReview> query = entityManager.createQuery(
                 "FROM ArtistReview review WHERE review.artist.id = :artistId AND review.isBlocked = false ORDER BY review.createdAt DESC",
-                ArtistReview.class
-        );
+                ArtistReview.class);
         query.setParameter("artistId", artistId);
         return query.getResultList();
     }

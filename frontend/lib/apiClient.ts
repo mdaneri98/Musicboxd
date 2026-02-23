@@ -539,23 +539,23 @@ export const apiClient = new ApiClient();
 // Development Mode Logging
 // ============================================================================
 
-// if (process.env.NODE_ENV === 'development') {
-//   axiosInstance.interceptors.request.use((config) => {
-//     console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
-//     return config;
-//   });
+if (process.env.NODE_ENV === 'development') {
+  axiosInstance.interceptors.request.use((config) => {
+    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
+    return config;
+  });
 
-//   axiosInstance.interceptors.response.use(
-//     (response) => {
-//       console.log(`[API Response] ${response.status} ${response.config.url}`);
-//       return response;
-//     },
-//     (error) => {
-//       console.error(
-//         `[API Error] ${error.response?.status || 'Network Error'} ${error.config?.url}`
-//       );
-//       return Promise.reject(error);
-//     }
-//   );
-// }
+  axiosInstance.interceptors.response.use(
+    (response) => {
+      console.log(`[API Response] ${response.status} ${response.config.url}`);
+      return response;
+    },
+    (error) => {
+      console.error(
+        `[API Error] ${error.response?.status || 'Network Error'} ${error.config?.url}`
+      );
+      return Promise.reject(error);
+    }
+  );
+}
 

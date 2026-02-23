@@ -42,22 +42,23 @@ public class AlbumJpaDao implements AlbumDao {
         Query nativeQuery = entityManager.createNativeQuery(nativeSQL);
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(limit);
-        
+
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> albumIds = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (albumIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
-        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
-        String entityQuery = "SELECT a FROM Album a WHERE a.id IN :ids " + filterType.getFilter();
+
+        // Query 2: JPQL para obtener entidades completas manteniendo el orden del
+        // filtro
+        String entityQuery = "SELECT a FROM Album a WHERE a.id IN :ids ";
         TypedQuery<Album> query = entityManager.createQuery(entityQuery, Album.class);
         query.setParameter("ids", albumIds);
-        
+
         return query.getResultList();
     }
 
@@ -66,29 +67,28 @@ public class AlbumJpaDao implements AlbumDao {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = entityManager.createNativeQuery(
                 "SELECT a.id FROM album a " +
-                "WHERE LOWER(a.title) LIKE LOWER(:sub) " +
-                "ORDER BY a.title"
-        );
+                        "WHERE LOWER(a.title) LIKE LOWER(:sub) " +
+                        "ORDER BY a.title");
         nativeQuery.setParameter("sub", "%" + sub + "%");
         nativeQuery.setMaxResults(size);
         nativeQuery.setFirstResult((page - 1) * size);
-        
+
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> albumIds = rawResults.stream()
-                .map(n -> ((Number)n).longValue())
+                .map(n -> ((Number) n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (albumIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         // Query 2: JPQL para obtener entidades completas
         TypedQuery<Album> query = entityManager.createQuery(
-                "SELECT a FROM Album a JOIN FETCH a.artist WHERE a.id IN :ids ORDER BY a.title", 
+                "SELECT a FROM Album a JOIN FETCH a.artist WHERE a.id IN :ids ORDER BY a.title",
                 Album.class);
         query.setParameter("ids", albumIds);
-        
+
         return query.getResultList();
     }
 
@@ -130,8 +130,7 @@ public class AlbumJpaDao implements AlbumDao {
         // Comprobar si un usuario ha revisado un álbum
         TypedQuery<Long> query = entityManager.createQuery(
                 "SELECT COUNT(ar) FROM AlbumReview ar WHERE ar.user.id = :userId AND ar.album.id = :albumId AND ar.isBlocked = false",
-                Long.class
-        );
+                Long.class);
         query.setParameter("userId", userId);
         query.setParameter("albumId", albumId);
         long count = query.getSingleResult();
@@ -162,8 +161,7 @@ public class AlbumJpaDao implements AlbumDao {
     public List<AlbumReview> findReviewsByAlbumId(Long albumId) {
         final TypedQuery<AlbumReview> query = entityManager.createQuery(
                 "FROM AlbumReview ar WHERE ar.album.id = :albumId AND ar.isBlocked = false ORDER BY ar.createdAt DESC",
-                AlbumReview.class
-        );
+                AlbumReview.class);
         query.setParameter("albumId", albumId);
         return query.getResultList();
     }
