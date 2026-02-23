@@ -34,29 +34,31 @@ public class SongJpaDao implements SongDao {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT s.id FROM song s " +
-                        "JOIN album a ON s.album_id = a.id " +
-                        "WHERE a.artist_id = :artistId " +
-                        filterType.getFilter().replace("ORDER BY ", "ORDER BY s."));
+                "JOIN album a ON s.album_id = a.id " +
+                "WHERE a.artist_id = :artistId " +
+                filterType.getFilter().replace("ORDER BY ", "ORDER BY s.") // Force ORDER BY to act on the song to remove ambiguity
+        );
         nativeQuery.setParameter("artistId", artistId);
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
-
+        
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> songIds = rawResults.stream()
-                .map(n -> ((Number) n).longValue())
+                .map(n -> ((Number)n).longValue())
                 .collect(Collectors.toList());
-
+        
         if (songIds.isEmpty()) {
             return Collections.emptyList();
         }
-
+        
         // Query 2: JPQL para obtener entidades completas
         TypedQuery<Song> query = em.createQuery(
                 "FROM Song s WHERE s.id IN :ids ORDER BY s.avgRating DESC",
-                Song.class);
+                Song.class
+        );
         query.setParameter("ids", songIds);
-
+        
         return query.getResultList();
     }
 
@@ -73,31 +75,31 @@ public class SongJpaDao implements SongDao {
         // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT s.id FROM song s " +
-                        "WHERE LOWER(s.title) LIKE LOWER(:sub) " +
-                        "ORDER BY s.title");
+                "WHERE LOWER(s.title) LIKE LOWER(:sub) " +
+                "ORDER BY s.title"
+        );
         nativeQuery.setParameter("sub", "%" + sub + "%");
         nativeQuery.setMaxResults(size); // Límite de resultados
         nativeQuery.setFirstResult((page - 1) * size);
-
+        
         // #region agent log
         int offset = (page - 1) * size;
-        System.out.println(
-                "[DEBUG-H4] Pagination calc - offset: " + offset + " (from page=" + page + ", size=" + size + ")");
+        System.out.println("[DEBUG-H4] Pagination calc - offset: " + offset + " (from page=" + page + ", size=" + size + ")");
         // #endregion
-
+        
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
-
+        
         List<Long> songIds = rawResults.stream()
-                .map(n -> ((Number) n).longValue())
+                .map(n -> ((Number)n).longValue())
                 .collect(Collectors.toList());
 
         if (songIds.isEmpty()) {
-            return Collections.emptyList();
+           return Collections.emptyList();
         }
         // Query 2: JPQL para obtener entidades completas
         TypedQuery<Song> query = em.createQuery(
-                "FROM Song s WHERE s.id IN :ids ORDER BY s.title",
+                "FROM Song s WHERE s.id IN :ids ORDER BY s.title", 
                 Song.class);
         query.setParameter("ids", songIds);
         List<Song> result = query.getResultList();
@@ -117,22 +119,21 @@ public class SongJpaDao implements SongDao {
         Query nativeQuery = em.createNativeQuery(nativeSQL)
                 .setFirstResult(offset)
                 .setMaxResults(limit);
-
+        
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> songIds = rawResults.stream()
-                .map(n -> ((Number) n).longValue())
+                .map(n -> ((Number)n).longValue())
                 .collect(Collectors.toList());
-
+        
         if (songIds.isEmpty()) {
             return Collections.emptyList();
         }
-        // Query 2: JPQL para obtener entidades completas manteniendo el orden del
-        // filtro
-        String entityQuery = "SELECT s FROM Song s WHERE s.id IN :ids ";
+        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
+        String entityQuery = "SELECT s FROM Song s WHERE s.id IN :ids " + filterType.getFilter();
         TypedQuery<Song> query = em.createQuery(entityQuery, Song.class)
                 .setParameter("ids", songIds);
-
+        
         return query.getResultList();
     }
 
@@ -211,11 +212,13 @@ public class SongJpaDao implements SongDao {
         return query.executeUpdate() >= 1;
     }
 
+
     @Override
     public List<SongReview> findReviewsBySongId(Long songId) {
         final TypedQuery<SongReview> query = em.createQuery(
                 "FROM SongReview sr WHERE sr.song.id = :songId AND sr.isBlocked = false ORDER BY sr.createdAt DESC",
-                SongReview.class);
+                SongReview.class
+        );
         query.setParameter("songId", songId);
         return query.getResultList();
     }
@@ -227,3 +230,4 @@ public class SongJpaDao implements SongDao {
     }
 
 }
+
