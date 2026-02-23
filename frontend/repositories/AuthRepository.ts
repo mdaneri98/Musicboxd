@@ -57,7 +57,7 @@ class AuthRepository {
       const refreshToken = response.headers['x-jwt-refresh-token'];
 
       if (!accessToken || !refreshToken) {
-        throw new Error('Login failed: No tokens received in headers');
+        throw new Error('Incorrect username or password.');
       }
 
       tokenStorage.setTokens(accessToken, refreshToken);

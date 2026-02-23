@@ -34,7 +34,7 @@ const RatingCard = ({
         <div className="rating-stat-item">
           <div className="rating-value">
             <span className="star filled">&#9733;</span>
-            {averageRating.toFixed(2)}
+            {averageRating.toFixed(1)}
             <span className="rating-max">/ 5</span>
           </div>
           <div className="rating-label">{t("common.averageRating")}</div>
