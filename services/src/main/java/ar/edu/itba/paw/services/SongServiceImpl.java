@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.domain.services.RatingService;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
@@ -23,11 +24,13 @@ public class SongServiceImpl implements SongService {
     private final SongDao songDao;
     private final AlbumDao albumDao;
     private final UserService userService;
+    private final RatingService ratingService;
 
-    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService) {
+    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService, RatingService ratingService) {
         this.songDao = songDao;
         this.albumDao = albumDao;
         this.userService = userService;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -186,15 +189,13 @@ public class SongServiceImpl implements SongService {
     @Transactional
     public Boolean updateRating(Long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
-        
-        List<Review> reviews = findReviewsBySongId(songId);
-        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        int ratingAmount = reviews.size();
-        Boolean updated = songDao.updateRating(songId, roundedAvgRating, ratingAmount);
 
-        if (updated) LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        else LOGGER.error("Song rating not updated. average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        List<Review> reviews = findReviewsBySongId(songId);
+        RatingService.RatingResult result = ratingService.calculate(reviews);
+        Boolean updated = songDao.updateRating(songId, result.average(), result.count());
+
+        if (updated) LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", result.average(), result.count());
+        else LOGGER.error("Song rating not updated. average rating: {}, Total reviews: {}", result.average(), result.count());
         return updated;
     }
 

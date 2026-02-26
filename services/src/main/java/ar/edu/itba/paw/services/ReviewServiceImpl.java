@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.domain.services.RatingService;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
@@ -7,6 +8,7 @@ import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.SongReview;
 import ar.edu.itba.paw.models.reviews.ReviewType;
 import ar.edu.itba.paw.persistence.*;
+import ar.edu.itba.paw.ports.output.EmailSender;
 import ar.edu.itba.paw.exception.email.AcknowledgementEmailException;
 import ar.edu.itba.paw.exception.conflict.UserAlreadyReviewedException;
 import ar.edu.itba.paw.exception.not_found.ReviewNotFoundException;
@@ -41,13 +43,15 @@ public class ReviewServiceImpl implements ReviewService {
     private final ArtistService artistService;
     private final AlbumService albumService;
     private final UserService userService;
-    private final EmailService emailService;
+    private final EmailSender emailSender;
     private final NotificationService notificationService;
+    private final RatingService ratingService;
 
     @Autowired
     public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, ArtistDao artistDao, AlbumDao albumDao,
             SongDao songDao, SongService songService, ArtistService artistService, AlbumService albumService,
-            UserService userService, EmailService emailService, NotificationService notificationService) {
+            UserService userService, EmailSender emailSender, NotificationService notificationService,
+            RatingService ratingService) {
         this.reviewDao = reviewDao;
         this.userDao = userDao;
         this.artistDao = artistDao;
@@ -57,8 +61,9 @@ public class ReviewServiceImpl implements ReviewService {
         this.artistService = artistService;
         this.albumService = albumService;
         this.userService = userService;
-        this.emailService = emailService;
+        this.emailSender = emailSender;
         this.notificationService = notificationService;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -178,32 +183,26 @@ public class ReviewServiceImpl implements ReviewService {
 
     private void updateArtistRating(Long artistId) {
         LOGGER.info("Updating rating for artist ID: {}", artistId);
-        List<Review> reviews = new ArrayList<>(artistService.findReviewsByArtistId(artistId));
-        double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        Integer ratingAmount = reviews.size();
-        artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
-        LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        List<Review> reviews = artistService.findReviewsByArtistId(artistId);
+        RatingService.RatingResult result = ratingService.calculate(reviews);
+        artistDao.updateRating(artistId, result.average(), result.count());
+        LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", result.average(), result.count());
     }
 
     private void updateAlbumRating(Long albumId) {
         LOGGER.info("Updating rating for album ID: {}", albumId);
-        List<Review> reviews = new ArrayList<>(albumService.findReviewsByAlbumId(albumId));
-        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        Integer ratingAmount = reviews.size();
-        albumDao.updateRating(albumId, roundedAvgRating, ratingAmount);
-        LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        List<Review> reviews = albumService.findReviewsByAlbumId(albumId);
+        RatingService.RatingResult result = ratingService.calculate(reviews);
+        albumDao.updateRating(albumId, result.average(), result.count());
+        LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", result.average(), result.count());
     }
 
     private void updateSongRating(Long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
-        List<Review> reviews = new ArrayList<>(songService.findReviewsBySongId(songId));
-        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        Integer ratingAmount = reviews.size();
-        songDao.updateRating(songId, roundedAvgRating, ratingAmount);
-        LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        List<Review> reviews = songService.findReviewsBySongId(songId);
+        RatingService.RatingResult result = ratingService.calculate(reviews);
+        songDao.updateRating(songId, result.average(), result.count());
+        LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", result.average(), result.count());
     }
 
     @Override
@@ -409,7 +408,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewDao.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
         User user = review.getUser();
         try {
-            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.getTitle(),
+            emailSender.sendReviewAcknowledgement(ReviewAcknowledgementType.BLOCKED, user, review.getTitle(),
                     review.getItemName(), review.getItemType().toString());
             LOGGER.info("Acknowledgement email sent successfully");
         } catch (MessagingException e) {
@@ -430,7 +429,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewDao.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
         User user = review.getUser();
         try {
-            emailService.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.getTitle(),
+            emailSender.sendReviewAcknowledgement(ReviewAcknowledgementType.UNBLOCKED, user, review.getTitle(),
                     review.getItemName(), review.getItemType().toString());
             LOGGER.info("Acknowledgement email sent successfully");
         } catch (MessagingException e) {

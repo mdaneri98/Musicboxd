@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.persistence.NotificationDao;
+import ar.edu.itba.paw.ports.output.EmailSender;
 import ar.edu.itba.paw.exception.not_found.NotificationNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +21,12 @@ public class NotificationServiceImpl implements NotificationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
     private final NotificationDao notificationDao;
-    private final EmailService emailService;
+    private final EmailSender emailSender;
 
     @Autowired
-    public NotificationServiceImpl(NotificationDao notificationDao, EmailService emailService){
+    public NotificationServiceImpl(NotificationDao notificationDao, EmailSender emailSender){
         this.notificationDao = notificationDao;
-        this.emailService = emailService;
+        this.emailSender = emailSender;
     }
 
     @Transactional
@@ -43,7 +44,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             if (targetUser.getLikeNotificationsEnabled()) {
                 try {
-                    emailService.sendNotificationEmail(
+                    emailSender.sendNotificationEmail(
                             Notification.NotificationType.LIKE,
                             targetUser,
                             likedByUser,
@@ -76,7 +77,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             if (targetUser.getCommentNotificationsEnabled()) {
                 try {
-                    emailService.sendNotificationEmail(
+                    emailSender.sendNotificationEmail(
                             Notification.NotificationType.COMMENT,
                             targetUser,
                             commentedByUser,
@@ -107,7 +108,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (followedUser.getFollowNotificationsEnabled()) {
             try {
-                emailService.sendNotificationEmail(
+                emailSender.sendNotificationEmail(
                     Notification.NotificationType.FOLLOW,
                     followedUser,
                     follower,
@@ -141,7 +142,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             if (follower.getReviewNotificationsEnabled()) {
                 try {
-                    emailService.sendNotificationEmail(
+                    emailSender.sendNotificationEmail(
                         Notification.NotificationType.NEW_REVIEW,
                         follower,
                         reviewer,
@@ -185,7 +186,7 @@ public class NotificationServiceImpl implements NotificationService {
         );
 
         try {
-            emailService.sendReviewAcknowledgement(
+            emailSender.sendReviewAcknowledgement(
                     emailType,
                     targetUser,
                     review.getTitle(),

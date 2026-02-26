@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models.reviews;
 
+import ar.edu.itba.paw.domain.review.Rating;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Notification;
@@ -168,6 +169,26 @@ public abstract class Review {
 
     public void setRating(Integer rating) {
         this.rating = rating;
+    }
+
+    /**
+     * Domain method: Gets the rating as a Value Object.
+     * Part of the Hexagonal Architecture migration (Phase 2).
+     *
+     * @return Rating value object
+     */
+    public Rating getRatingValue() {
+        return new Rating(this.rating);
+    }
+
+    /**
+     * Domain method: Sets the rating from a Value Object.
+     * Part of the Hexagonal Architecture migration (Phase 2).
+     *
+     * @param rating Rating value object
+     */
+    public void setRatingValue(Rating rating) {
+        this.rating = rating.getValue();
     }
 
     public LocalDateTime getCreatedAt() {

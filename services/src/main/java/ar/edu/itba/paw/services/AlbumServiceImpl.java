@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.domain.services.RatingService;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.persistence.AlbumDao;
@@ -22,12 +23,15 @@ public class AlbumServiceImpl implements AlbumService {
     private final ImageService imageService;
     private final SongService songService;
     private final UserService userService;
+    private final RatingService ratingService;
 
-    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UserService userService) {
+    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UserService userService,
+                            RatingService ratingService) {
         this.albumDao = albumDao;
         this.imageService = imageService;
         this.songService = songService;
         this.userService = userService;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -177,14 +181,12 @@ public class AlbumServiceImpl implements AlbumService {
         LOGGER.info("Updating rating for album ID: {}", albumId);
 
         List<Review> reviews = findReviewsByAlbumId(albumId);
-        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        int ratingAmount = reviews.size();
-        Boolean updated = albumDao.updateRating(albumId, roundedAvgRating, ratingAmount);
+        RatingService.RatingResult result = ratingService.calculate(reviews);
+        Boolean updated = albumDao.updateRating(albumId, result.average(), result.count());
 
-        if (updated) LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        else LOGGER.error("Album rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        
+        if (updated) LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", result.average(), result.count());
+        else LOGGER.error("Album rating not updated. New average rating: {}, Total reviews: {}", result.average(), result.count());
+
         return updated;
     }
 

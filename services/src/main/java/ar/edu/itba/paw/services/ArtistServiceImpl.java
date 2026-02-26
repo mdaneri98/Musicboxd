@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.domain.services.RatingService;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.Image;
@@ -22,12 +23,15 @@ public class ArtistServiceImpl implements ArtistService {
     private final ImageService imageService;
     private final AlbumService albumService;
     private final UserService userService;
+    private final RatingService ratingService;
 
-    public ArtistServiceImpl(ArtistDao artistDao, ImageService imageService, AlbumService albumService, UserService userService) {
+    public ArtistServiceImpl(ArtistDao artistDao, ImageService imageService, AlbumService albumService, UserService userService,
+                             RatingService ratingService) {
         this.artistDao = artistDao;
         this.imageService = imageService;
         this.albumService = albumService;
         this.userService = userService;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -65,13 +69,11 @@ public class ArtistServiceImpl implements ArtistService {
     public Boolean updateRating(Long artistId) {
         LOGGER.info("Updating rating for artist ID: {}", artistId);
         List<Review> reviews = findReviewsByArtistId(artistId);
-        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        Integer ratingAmount = reviews.size();
-        Boolean updated = artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
-        
-        if (updated) LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
-        else LOGGER.error("Artist rating not updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        RatingService.RatingResult result = ratingService.calculate(reviews);
+        Boolean updated = artistDao.updateRating(artistId, result.average(), result.count());
+
+        if (updated) LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", result.average(), result.count());
+        else LOGGER.error("Artist rating not updated. New average rating: {}, Total reviews: {}", result.average(), result.count());
         return updated;
     }
 

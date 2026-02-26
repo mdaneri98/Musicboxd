@@ -4,6 +4,7 @@ import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.ReviewAcknowledgementType;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.VerificationType;
+import ar.edu.itba.paw.ports.output.EmailSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import java.util.Map;
 import java.util.Locale;
 
 @Service
-public class EmailServiceImpl implements EmailService {
+public class EmailServiceImpl implements EmailService, EmailSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 

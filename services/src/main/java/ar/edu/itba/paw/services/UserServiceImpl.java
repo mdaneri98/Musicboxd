@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.persistence.UserVerificationDao;
+import ar.edu.itba.paw.ports.output.EmailSender;
 import ar.edu.itba.paw.exception.conflict.UserAlreadyExistsException;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
 import ar.edu.itba.paw.exception.email.VerificationEmailException;
@@ -28,16 +29,16 @@ public class UserServiceImpl implements UserService {
     private final UserVerificationDao userVerificationDao;
     private final PasswordEncoder passwordEncoder;
 
-    private final EmailService emailService;
+    private final EmailSender emailSender;
     private final NotificationService notificationService;
     private final ImageService imageService;
 
-    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder, 
-                          EmailService emailService, NotificationService notificationService, ImageService imageService) {
+    public UserServiceImpl(UserDao userDao, UserVerificationDao userVerificationDao, PasswordEncoder passwordEncoder,
+                          EmailSender emailSender, NotificationService notificationService, ImageService imageService) {
         this.userDao = userDao;
         this.userVerificationDao = userVerificationDao;
         this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
+        this.emailSender = emailSender;
         this.notificationService = notificationService;
         this.imageService = imageService;
     }
@@ -193,7 +194,7 @@ public class UserServiceImpl implements UserService {
             String encodedVerificationCode = URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
             userVerificationDao.startVerification(type, user, encodedVerificationCode);
 
-            emailService.sendVerification(type, user, encodedVerificationCode);
+            emailSender.sendVerification(type, user, encodedVerificationCode);
             LOGGER.info("Verification created and email sent successfully");
         } catch (MessagingException e) {
             LOGGER.error("Failed to send verification email to user: {}", user.getEmail(), e);
