@@ -18,13 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * JPA implementation of AlbumDao.
- * Migrated to use AlbumJpaEntity internally while maintaining backward compatibility
- * with the legacy Album model via LegacyAlbumMapper.
- *
- * Part of the Hexagonal Architecture migration (Phase 4).
- */
 @Primary
 @Repository
 public class AlbumJpaDao implements AlbumDao {
@@ -32,29 +25,30 @@ public class AlbumJpaDao implements AlbumDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private final LegacyAlbumMapper mapper;
+
     @Autowired
-    private LegacyAlbumMapper legacyAlbumMapper;
+    public AlbumJpaDao(LegacyAlbumMapper mapper) {
+        this.mapper = mapper;
+    }
 
     @Override
     public Optional<Album> findById(Long id) {
-        // Buscar una entidad por su clave primaria
         AlbumJpaEntity entity = entityManager.find(AlbumJpaEntity.class, id);
-        return Optional.ofNullable(legacyAlbumMapper.toLegacy(entity));
+        return Optional.ofNullable(entity).map(mapper::toLegacy);
     }
 
     @Override
     public List<Album> findAll() {
-        // Consultar todos los álbumes
         TypedQuery<AlbumJpaEntity> query = entityManager.createQuery(
                 "SELECT a FROM AlbumJpaEntity a JOIN FETCH a.artist", AlbumJpaEntity.class);
         return query.getResultList().stream()
-                .map(legacyAlbumMapper::toLegacy)
+                .map(mapper::toLegacy)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Album> findPaginated(FilterType filterType, Integer limit, Integer offset) {
-        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         String nativeSQL = "SELECT a.id FROM album a " + filterType.getFilter();
         Query nativeQuery = entityManager.createNativeQuery(nativeSQL);
         nativeQuery.setFirstResult(offset);
@@ -70,19 +64,17 @@ public class AlbumJpaDao implements AlbumDao {
             return Collections.emptyList();
         }
 
-        // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
         String entityQuery = "SELECT a FROM AlbumJpaEntity a WHERE a.id IN :ids " + filterType.getFilter();
         TypedQuery<AlbumJpaEntity> query = entityManager.createQuery(entityQuery, AlbumJpaEntity.class);
         query.setParameter("ids", albumIds);
 
         return query.getResultList().stream()
-                .map(legacyAlbumMapper::toLegacy)
+                .map(mapper::toLegacy)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Album> findByTitleContaining(String sub, Integer page, Integer size) {
-        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = entityManager.createNativeQuery(
                 "SELECT a.id FROM album a " +
                 "WHERE LOWER(a.title) LIKE LOWER(:sub) " +
@@ -102,42 +94,39 @@ public class AlbumJpaDao implements AlbumDao {
             return Collections.emptyList();
         }
 
-        // Query 2: JPQL para obtener entidades completas
         TypedQuery<AlbumJpaEntity> query = entityManager.createQuery(
                 "SELECT a FROM AlbumJpaEntity a JOIN FETCH a.artist WHERE a.id IN :ids ORDER BY a.title",
                 AlbumJpaEntity.class);
         query.setParameter("ids", albumIds);
 
         return query.getResultList().stream()
-                .map(legacyAlbumMapper::toLegacy)
+                .map(mapper::toLegacy)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Album> findByArtistId(Long artistId) {
-        // Buscar álbumes por el ID del artista
         TypedQuery<AlbumJpaEntity> query = entityManager.createQuery(
                 "SELECT a FROM AlbumJpaEntity a JOIN FETCH a.artist WHERE a.artist.id = :artistId",
                 AlbumJpaEntity.class);
         query.setParameter("artistId", artistId);
         return query.getResultList().stream()
-                .map(legacyAlbumMapper::toLegacy)
+                .map(mapper::toLegacy)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Album create(Album album) {
-        AlbumJpaEntity entity = legacyAlbumMapper.toEntity(album);
+        AlbumJpaEntity entity = mapper.toEntity(album);
         entityManager.persist(entity);
-        return legacyAlbumMapper.toLegacy(entity);
+        return mapper.toLegacy(entity);
     }
 
     @Override
     public Album update(Album album) {
-        // Actualizar una entidad existente
-        AlbumJpaEntity entity = legacyAlbumMapper.toEntity(album);
+        AlbumJpaEntity entity = mapper.toEntity(album);
         AlbumJpaEntity merged = entityManager.merge(entity);
-        return legacyAlbumMapper.toLegacy(merged);
+        return mapper.toLegacy(merged);
     }
 
     @Override

@@ -17,8 +17,15 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.models.reviews.ReviewType;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
+import ar.edu.itba.paw.usecases.CreateAlbumReview;
+import ar.edu.itba.paw.usecases.CreateAlbumReview.CreateAlbumReviewCommand;
+import ar.edu.itba.paw.usecases.CreateArtistReview;
+import ar.edu.itba.paw.usecases.CreateArtistReview.CreateArtistReviewCommand;
+import ar.edu.itba.paw.usecases.CreateSongReview;
+import ar.edu.itba.paw.usecases.CreateSongReview.CreateSongReviewCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -42,6 +49,15 @@ public class ReviewController extends BaseController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private CreateAlbumReview createAlbumReview;
+
+    @Autowired
+    private CreateArtistReview createArtistReview;
+
+    @Autowired
+    private CreateSongReview createSongReview;
 
     @Autowired
     private ReviewFormMapper reviewFormMapper;
@@ -91,8 +107,42 @@ public class ReviewController extends BaseController {
     @Produces(CustomMediaType.REVIEW)
     public Response createReview(@Valid ReviewForm reviewForm) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, reviewForm.getItemId().longValue());
-        Review review = reviewService.create(reviewInput);
+
+        Review review;
+        String itemType = reviewForm.getItemType();
+
+        if ("ALBUM".equalsIgnoreCase(itemType)) {
+            CreateAlbumReviewCommand command = new CreateAlbumReviewCommand(
+                loggedUserId,
+                reviewForm.getItemId().longValue(),
+                reviewForm.getTitle(),
+                reviewForm.getDescription(),
+                reviewForm.getRating()
+            );
+            review = createAlbumReview.execute(command);
+        } else if ("ARTIST".equalsIgnoreCase(itemType)) {
+            CreateArtistReviewCommand command = new CreateArtistReviewCommand(
+                loggedUserId,
+                reviewForm.getItemId().longValue(),
+                reviewForm.getTitle(),
+                reviewForm.getDescription(),
+                reviewForm.getRating()
+            );
+            review = createArtistReview.execute(command);
+        } else if ("SONG".equalsIgnoreCase(itemType)) {
+            CreateSongReviewCommand command = new CreateSongReviewCommand(
+                loggedUserId,
+                reviewForm.getItemId().longValue(),
+                reviewForm.getTitle(),
+                reviewForm.getDescription(),
+                reviewForm.getRating()
+            );
+            review = createSongReview.execute(command);
+        } else {
+            Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, reviewForm.getItemId().longValue());
+            review = reviewService.create(reviewInput);
+        }
+
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, uriInfo);
         return Response.created(reviewDTO.getLinks().getSelf()).entity(reviewDTO).build();
     }

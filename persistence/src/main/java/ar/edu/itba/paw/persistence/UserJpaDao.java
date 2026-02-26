@@ -324,17 +324,15 @@ public class UserJpaDao implements UserDao {
         User user = em.find(User.class, userId);
         if (user == null)
             return 0;
-        // Consideramos un maximo de 5 artistas.
         return user.getFavoriteAlbums().size();
     }
 
     @Override
     public Boolean isAlbumFavorite(Long userId, Long albumId) {
         User user = em.find(User.class, userId);
-        Album album = em.find(Album.class, albumId);
+        ar.edu.itba.paw.infrastructure.jpa.AlbumJpaEntity album = em.find(ar.edu.itba.paw.infrastructure.jpa.AlbumJpaEntity.class, albumId);
         if (user == null || album == null)
             return false;
-        // Consideramos un maximo de 5 artistas.
         return user.getFavoriteAlbums().contains(album);
     }
 
