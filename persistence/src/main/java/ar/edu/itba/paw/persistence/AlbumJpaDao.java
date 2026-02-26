@@ -1,9 +1,12 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.infrastructure.jpa.AlbumJpaEntity;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
+import ar.edu.itba.paw.persistence.mappers.LegacyAlbumMapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
@@ -15,6 +18,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * JPA implementation of AlbumDao.
+ * Migrated to use AlbumJpaEntity internally while maintaining backward compatibility
+ * with the legacy Album model via LegacyAlbumMapper.
+ *
+ * Part of the Hexagonal Architecture migration (Phase 4).
+ */
 @Primary
 @Repository
 public class AlbumJpaDao implements AlbumDao {
@@ -22,17 +32,24 @@ public class AlbumJpaDao implements AlbumDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private LegacyAlbumMapper legacyAlbumMapper;
+
     @Override
     public Optional<Album> findById(Long id) {
         // Buscar una entidad por su clave primaria
-        return Optional.ofNullable(entityManager.find(Album.class, id));
+        AlbumJpaEntity entity = entityManager.find(AlbumJpaEntity.class, id);
+        return Optional.ofNullable(legacyAlbumMapper.toLegacy(entity));
     }
 
     @Override
     public List<Album> findAll() {
         // Consultar todos los álbumes
-        TypedQuery<Album> query = entityManager.createQuery("SELECT a FROM Album a JOIN FETCH a.artist", Album.class);
-        return query.getResultList();
+        TypedQuery<AlbumJpaEntity> query = entityManager.createQuery(
+                "SELECT a FROM AlbumJpaEntity a JOIN FETCH a.artist", AlbumJpaEntity.class);
+        return query.getResultList().stream()
+                .map(legacyAlbumMapper::toLegacy)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -42,23 +59,25 @@ public class AlbumJpaDao implements AlbumDao {
         Query nativeQuery = entityManager.createNativeQuery(nativeSQL);
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(limit);
-        
+
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> albumIds = rawResults.stream()
                 .map(n -> ((Number)n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (albumIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         // Query 2: JPQL para obtener entidades completas manteniendo el orden del filtro
-        String entityQuery = "SELECT a FROM Album a WHERE a.id IN :ids " + filterType.getFilter();
-        TypedQuery<Album> query = entityManager.createQuery(entityQuery, Album.class);
+        String entityQuery = "SELECT a FROM AlbumJpaEntity a WHERE a.id IN :ids " + filterType.getFilter();
+        TypedQuery<AlbumJpaEntity> query = entityManager.createQuery(entityQuery, AlbumJpaEntity.class);
         query.setParameter("ids", albumIds);
-        
-        return query.getResultList();
+
+        return query.getResultList().stream()
+                .map(legacyAlbumMapper::toLegacy)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -72,51 +91,59 @@ public class AlbumJpaDao implements AlbumDao {
         nativeQuery.setParameter("sub", "%" + sub + "%");
         nativeQuery.setMaxResults(size);
         nativeQuery.setFirstResult((page - 1) * size);
-        
+
         @SuppressWarnings("unchecked")
         List<Object> rawResults = nativeQuery.getResultList();
         List<Long> albumIds = rawResults.stream()
                 .map(n -> ((Number)n).longValue())
                 .collect(Collectors.toList());
-        
+
         if (albumIds.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         // Query 2: JPQL para obtener entidades completas
-        TypedQuery<Album> query = entityManager.createQuery(
-                "SELECT a FROM Album a JOIN FETCH a.artist WHERE a.id IN :ids ORDER BY a.title", 
-                Album.class);
+        TypedQuery<AlbumJpaEntity> query = entityManager.createQuery(
+                "SELECT a FROM AlbumJpaEntity a JOIN FETCH a.artist WHERE a.id IN :ids ORDER BY a.title",
+                AlbumJpaEntity.class);
         query.setParameter("ids", albumIds);
-        
-        return query.getResultList();
+
+        return query.getResultList().stream()
+                .map(legacyAlbumMapper::toLegacy)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Album> findByArtistId(Long artistId) {
         // Buscar álbumes por el ID del artista
-        TypedQuery<Album> query = entityManager.createQuery(
-                "SELECT a FROM Album a JOIN FETCH a.artist WHERE a.artist.id = :artistId", Album.class);
+        TypedQuery<AlbumJpaEntity> query = entityManager.createQuery(
+                "SELECT a FROM AlbumJpaEntity a JOIN FETCH a.artist WHERE a.artist.id = :artistId",
+                AlbumJpaEntity.class);
         query.setParameter("artistId", artistId);
-        return query.getResultList();
+        return query.getResultList().stream()
+                .map(legacyAlbumMapper::toLegacy)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Album create(Album album) {
-        entityManager.persist(album);
-        return album;
+        AlbumJpaEntity entity = legacyAlbumMapper.toEntity(album);
+        entityManager.persist(entity);
+        return legacyAlbumMapper.toLegacy(entity);
     }
 
     @Override
     public Album update(Album album) {
         // Actualizar una entidad existente
-        return entityManager.merge(album);
+        AlbumJpaEntity entity = legacyAlbumMapper.toEntity(album);
+        AlbumJpaEntity merged = entityManager.merge(entity);
+        return legacyAlbumMapper.toLegacy(merged);
     }
 
     @Override
     public Boolean updateRating(Long albumId, Double newRating, Integer newRatingAmount) {
         // Actualizar la calificación del álbum
-        Album album = entityManager.find(Album.class, albumId);
+        AlbumJpaEntity album = entityManager.find(AlbumJpaEntity.class, albumId);
         if (album != null) {
             album.setAvgRating(newRating);
             album.setRatingCount(newRatingAmount);
@@ -141,7 +168,7 @@ public class AlbumJpaDao implements AlbumDao {
     @Override
     public Boolean delete(Long id) {
         // Eliminar un álbum por su ID
-        Album album = entityManager.find(Album.class, id);
+        AlbumJpaEntity album = entityManager.find(AlbumJpaEntity.class, id);
         if (album != null) {
             entityManager.remove(album);
             return true;
@@ -170,7 +197,7 @@ public class AlbumJpaDao implements AlbumDao {
 
     @Override
     public Long countAll() {
-        Query query = entityManager.createQuery("SELECT COUNT(a) FROM Album a");
+        Query query = entityManager.createQuery("SELECT COUNT(a) FROM AlbumJpaEntity a");
         return (Long) query.getSingleResult();
     }
 

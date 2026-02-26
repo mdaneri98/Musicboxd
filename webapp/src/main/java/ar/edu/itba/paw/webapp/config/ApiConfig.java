@@ -36,6 +36,7 @@ import java.util.Properties;
         "ar.edu.itba.paw.webapp",
         "ar.edu.itba.paw.services",
         "ar.edu.itba.paw.persistence",
+        "ar.edu.itba.paw.domain.services" // Domain services (Phase 3)
 })
 @PropertySource("classpath:application.properties")
 @Configuration
