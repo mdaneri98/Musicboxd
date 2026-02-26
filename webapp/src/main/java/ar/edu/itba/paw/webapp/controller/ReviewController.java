@@ -20,12 +20,18 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ReviewType;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
+import ar.edu.itba.paw.usecases.BlockReview;
+import ar.edu.itba.paw.usecases.BlockReview.BlockReviewCommand;
 import ar.edu.itba.paw.usecases.CreateAlbumReview;
 import ar.edu.itba.paw.usecases.CreateAlbumReview.CreateAlbumReviewCommand;
 import ar.edu.itba.paw.usecases.CreateArtistReview;
 import ar.edu.itba.paw.usecases.CreateArtistReview.CreateArtistReviewCommand;
 import ar.edu.itba.paw.usecases.CreateSongReview;
 import ar.edu.itba.paw.usecases.CreateSongReview.CreateSongReviewCommand;
+import ar.edu.itba.paw.usecases.DeleteReview;
+import ar.edu.itba.paw.usecases.DeleteReview.DeleteReviewCommand;
+import ar.edu.itba.paw.usecases.UpdateReview;
+import ar.edu.itba.paw.usecases.UpdateReview.UpdateReviewCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -58,6 +64,15 @@ public class ReviewController extends BaseController {
 
     @Autowired
     private CreateSongReview createSongReview;
+
+    @Autowired
+    private UpdateReview updateReview;
+
+    @Autowired
+    private DeleteReview deleteReview;
+
+    @Autowired
+    private BlockReview blockReview;
 
     @Autowired
     private ReviewFormMapper reviewFormMapper;
@@ -159,7 +174,9 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("@securityServiceImpl.isReviewOwner(#id, authentication) or hasRole('MODERATOR')")
     public Response deleteReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        reviewService.delete(id);
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        DeleteReviewCommand command = new DeleteReviewCommand(id, loggedUserId);
+        deleteReview.execute(command);
         return Response.noContent().build();
     }
 
@@ -169,8 +186,15 @@ public class ReviewController extends BaseController {
     @Consumes(CustomMediaType.REVIEW)
     @Produces(CustomMediaType.REVIEW)
     public Response updateReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ReviewForm reviewForm) {
-        Review reviewToUpdate = reviewFormMapper.toModel(id, reviewForm);
-        Review updatedReview = reviewService.update(reviewToUpdate);
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        UpdateReviewCommand command = new UpdateReviewCommand(
+            id,
+            loggedUserId,
+            reviewForm.getTitle(),
+            reviewForm.getDescription(),
+            reviewForm.getRating()
+        );
+        Review updatedReview = updateReview.execute(command);
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(updatedReview, uriInfo);
         return Response.ok(reviewDTO).build();
     }
@@ -258,5 +282,29 @@ public class ReviewController extends BaseController {
                                  @PathParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
         reviewService.removeLike(userId, reviewId);
         return Response.noContent().build();
+    }
+
+    @PATCH
+    @Path(ApiUriConstants.ID + "/block")
+    @PreAuthorize("hasRole('MODERATOR')")
+    @Produces(CustomMediaType.REVIEW)
+    public Response blockReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        BlockReviewCommand command = new BlockReviewCommand(id, loggedUserId, true);
+        Review blockedReview = blockReview.execute(command);
+        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(blockedReview, uriInfo);
+        return Response.ok(reviewDTO).build();
+    }
+
+    @PATCH
+    @Path(ApiUriConstants.ID + "/unblock")
+    @PreAuthorize("hasRole('MODERATOR')")
+    @Produces(CustomMediaType.REVIEW)
+    public Response unblockReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
+        Long loggedUserId = SecurityContextUtils.getCurrentUserId();
+        BlockReviewCommand command = new BlockReviewCommand(id, loggedUserId, false);
+        Review unblockedReview = blockReview.execute(command);
+        ReviewDTO reviewDTO = reviewDtoMapper.toDTO(unblockedReview, uriInfo);
+        return Response.ok(reviewDTO).build();
     }
 }
