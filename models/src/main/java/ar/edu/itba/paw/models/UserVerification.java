@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -23,13 +25,13 @@ public class UserVerification {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserJpaEntity user;
 
     public UserVerification() {
         // Constructor vacío necesario para JPA
     }
 
-    public UserVerification(Long id, String code, LocalDateTime expireDate, String verificationType, User user) {
+    public UserVerification(Long id, String code, LocalDateTime expireDate, String verificationType, UserJpaEntity user) {
         this.id = id;
         this.code = code;
         this.expireDate = expireDate;
@@ -57,11 +59,11 @@ public class UserVerification {
         return verificationType;
     }
 
-    public User getUser() {
+    public UserJpaEntity getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserJpaEntity user) {
         this.user = user;
     }
 

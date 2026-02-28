@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.models.Notification;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.persistence.mappers.LegacyUserMapper;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,15 +19,20 @@ import java.util.stream.Collectors;
 
 @Repository
 public class NotificationJpaDao implements NotificationDao {
-    
+
     @PersistenceContext
     private EntityManager em;
+
+    private final LegacyUserMapper userMapper = new LegacyUserMapper();
 
     @Override
     public Notification create(Notification.NotificationType type, User recipientUser,
                                User triggerUser, Review review, String message) {
-        final Notification notification = new Notification(null, type, recipientUser,
-                triggerUser, review, LocalDateTime.now(), false, message);
+        UserJpaEntity recipientEntity = userMapper.toJpaEntity(recipientUser);
+        UserJpaEntity triggerEntity = userMapper.toJpaEntity(triggerUser);
+
+        final Notification notification = new Notification(null, type, recipientEntity,
+                triggerEntity, review, LocalDateTime.now(), false, message);
         em.persist(notification);
         return notification;
     }

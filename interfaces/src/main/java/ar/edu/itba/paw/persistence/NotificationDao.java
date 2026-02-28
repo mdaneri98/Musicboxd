@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.domain.user.User;
 import ar.edu.itba.paw.models.Notification;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import java.util.List;
 

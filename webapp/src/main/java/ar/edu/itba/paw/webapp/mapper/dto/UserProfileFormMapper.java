@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.webapp.dto.UserDTO;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
 import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.User;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,20 +12,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserProfileFormMapper {
 
-    public User toModel(UserProfileForm form) {
+    public UserJpaEntity toModel(UserProfileForm form) {
         if (form == null) {
             return null;
         }
 
-        User user = new User();
+        UserJpaEntity user = new UserJpaEntity();
         user.setUsername(form.getUsername());
         user.setName(form.getName());
         user.setBio(form.getBio());
-
-        if (form.getImageId() != null) {
-            Image image = new Image(form.getImageId(), null);
-            user.setImage(image);
-        }
+        user.setImageId(form.getImageId());
 
         return user;
     }

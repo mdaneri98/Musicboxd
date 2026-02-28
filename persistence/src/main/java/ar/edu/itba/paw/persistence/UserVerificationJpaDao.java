@@ -1,8 +1,12 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.domain.user.UserId;
+import ar.edu.itba.paw.domain.user.UserRepository;
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.models.UserVerification;
 import ar.edu.itba.paw.models.VerificationType;
+import ar.edu.itba.paw.persistence.mappers.LegacyUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -19,7 +23,9 @@ public class UserVerificationJpaDao implements UserVerificationDao {
     private EntityManager em;
 
     @Autowired
-    private UserDao userDao;
+    private UserRepository userRepository;
+
+    private final LegacyUserMapper userMapper = new LegacyUserMapper();
 
 
     @Override
@@ -27,11 +33,12 @@ public class UserVerificationJpaDao implements UserVerificationDao {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expireDateTime = now.plusHours(6);
 
-        Optional<User> optionalUser = userDao.findById(user.getId());
+        Optional<User> optionalUser = userRepository.findById(user.getId());
         if (optionalUser.isPresent()) {
+            UserJpaEntity userEntity = userMapper.toJpaEntity(user);
             final UserVerification vf = new UserVerification();
             vf.setCode(code);
-            vf.setUser(user);
+            vf.setUser(userEntity);
             vf.setExpireDate(expireDateTime);
             vf.setVerificationType(type.toString());
 
@@ -52,12 +59,12 @@ public class UserVerificationJpaDao implements UserVerificationDao {
             UserVerification verification = query.getSingleResult();
 
             if (verification.getExpireDate().isAfter(now)) {
-                User user = verification.getUser();
-                user.setVerified(true);
-                em.merge(user);  // Actualiza el usuario en la base de datos
+                UserJpaEntity userEntity = verification.getUser();
+                userEntity.setVerified(true);
+                em.merge(userEntity);
 
                 em.remove(verification);
-                return user.getId();
+                return userEntity.getId();
             }
         } catch (NoResultException e) {
             return 0L;

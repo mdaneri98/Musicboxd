@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.domain.user.User;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.ReviewAcknowledgementType;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.VerificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,31 +82,31 @@ public class EmailServiceImpl implements EmailService {
         switch (type) {
             case VERIFY_EMAIL -> {
                 verificationURL = frontendUrl + "/verify-email/?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8)
-                        + "&userId=" + to.getId();
+                        + "&userId=" + to.getId().getValue();
                 template = "user_verification";
                 emailSubject = "verification.email";
             }
             case VERIFY_FORGOT_PASSWORD -> {
                 verificationURL = frontendUrl + "/reset-password/?code="
-                        + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
+                        + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId().getValue();
                 template = "create_password";
                 emailSubject = "verification.password";
             }
             case VERIFY_GENERAL -> {
                 verificationURL = frontendUrl + "/general-verification/?code="
-                        + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId();
+                        + URLEncoder.encode(code, StandardCharsets.UTF_8) + "&userId=" + to.getId().getValue();
                 template = "general_verification";
                 emailSubject = "verification.general";
             }
         }
 
-        LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, to.getEmail());
+        LOGGER.debug("Sending verification email. Type: {}, Email: {}", type, to.getEmail().getValue());
         LOGGER.debug("Verification URL: {}", verificationURL);
 
         params.put("verificationURL", verificationURL);
         this.sendMessageUsingThymeleafTemplate(
                 template,
-                to.getEmail(),
+                to.getEmail().getValue(),
                 emailSubject,
                 params,
                 currentLocale);
@@ -142,7 +142,7 @@ public class EmailServiceImpl implements EmailService {
 
         this.sendMessageUsingThymeleafTemplate(
                 template,
-                to.getEmail(),
+                to.getEmail().getValue(),
                 emailSubject,
                 params,
                 currentLocale);
@@ -186,7 +186,7 @@ public class EmailServiceImpl implements EmailService {
             case FOLLOW:
                 template = "notification_follow";
                 emailSubject = "notification.follow";
-                params.put("profileUrl", frontendUrl + "/users/" + triggerUser.getId() + "/");
+                params.put("profileUrl", frontendUrl + "/users/" + triggerUser.getId().getValue() + "/");
                 break;
 
             case NEW_REVIEW:
@@ -213,11 +213,11 @@ public class EmailServiceImpl implements EmailService {
                 break;
         }
 
-        LOGGER.debug("Sending notification email. Type: {}, Email: {}", type, recipientUser.getEmail());
+        LOGGER.debug("Sending notification email. Type: {}, Email: {}", type, recipientUser.getEmail().getValue());
 
         this.sendMessageUsingThymeleafTemplate(
                 template,
-                recipientUser.getEmail(),
+                recipientUser.getEmail().getValue(),
                 emailSubject,
                 params,
                 currentLocale);

@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.domain.user.User;
 import ar.edu.itba.paw.models.VerificationType;
 
 public interface UserVerificationDao {

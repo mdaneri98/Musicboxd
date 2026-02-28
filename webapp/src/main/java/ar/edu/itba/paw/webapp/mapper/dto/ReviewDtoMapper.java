@@ -1,13 +1,18 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
+import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.domain.user.UserId;
+import ar.edu.itba.paw.domain.user.UserRepository;
 import ar.edu.itba.paw.webapp.dto.ReviewDTO;
 import ar.edu.itba.paw.webapp.dto.links.ReviewLinksDTO;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ReviewType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -16,16 +21,26 @@ import java.util.stream.Collectors;
 @Component
 public class ReviewDtoMapper {
 
+    @Autowired
+    private UserRepository userRepository;
+
     public ReviewDTO toDTO(Review review, UriInfo uriInfo) {
         if (review == null) {
             return null;
         }
 
+        // Fetch user if userId exists
+        User user = null;
+        if (review.getUserId() != null) {
+            Optional<User> userOpt = userRepository.findById(new UserId(review.getUserId()));
+            user = userOpt.orElse(null);
+        }
+
         ReviewDTO dto = new ReviewDTO();
         dto.setId(review.getId());
-        dto.setUserId(review.getUser() != null ? review.getUser().getId() : null);
-        dto.setUserImageId(review.getUser() != null ? review.getUser().getImageId() : null);
-        dto.setUsername(review.getUser() != null ? review.getUser().getUsername() : null);
+        dto.setUserId(review.getUserId());
+        dto.setUserImageId(user != null ? user.getImageId() : null);
+        dto.setUsername(user != null ? user.getUsername() : null);
         dto.setTitle(review.getTitle());
         dto.setDescription(review.getDescription());
         dto.setRating(review.getRating());
@@ -37,8 +52,8 @@ public class ReviewDtoMapper {
         dto.setItemId(review.getItemId());
         dto.setItemName(review.getItemName());
         dto.setItemImageId(review.getItemImage() != null ? review.getItemImage().getId() : null);
-        dto.setUserModerator(review.getUser() != null ? review.getUser().getModerator() : null);
-        dto.setUserVerified(review.getUser() != null ? review.getUser().getVerified() : null);
+        dto.setUserModerator(user != null ? user.isModerator() : null);
+        dto.setUserVerified(user != null ? user.isVerified() : null);
 
         // Build HATEOAS links
         if (uriInfo != null) {
@@ -47,9 +62,9 @@ public class ReviewDtoMapper {
             links.setSelf(uriInfo.getBaseUriBuilder()
                     .path("reviews").path(String.valueOf(review.getId())).build());
 
-            if (review.getUser() != null) {
+            if (review.getUserId() != null) {
                 links.setUser(uriInfo.getBaseUriBuilder()
-                        .path("users").path(String.valueOf(review.getUser().getId())).build());
+                        .path("users").path(String.valueOf(review.getUserId())).build());
             }
 
             // Build item link based on type

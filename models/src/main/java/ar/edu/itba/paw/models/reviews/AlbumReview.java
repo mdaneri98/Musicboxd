@@ -2,7 +2,6 @@ package ar.edu.itba.paw.models.reviews;
 
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,13 +19,13 @@ public class AlbumReview extends Review {
         // Constructor vacío necesario para JPA
     }
 
-    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
-        super(user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
+    public AlbumReview(Long userId, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(userId, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.album = album;
     }
 
-    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
-        super(id, user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
+    public AlbumReview(Long id, Long userId, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(id, userId, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.album = album;
     }
 

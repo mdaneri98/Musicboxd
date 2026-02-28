@@ -3,7 +3,6 @@ package ar.edu.itba.paw.models.reviews;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Notification;
-import ar.edu.itba.paw.models.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,9 +18,8 @@ public abstract class Review {
     @SequenceGenerator(sequenceName = "review_id_seq", name = "review_id_seq", allocationSize = 1)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @Column(nullable = false, length = 50)
     private String title;
@@ -47,13 +45,6 @@ public abstract class Review {
     @OneToMany(mappedBy = "review", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Comment> comments;
 
-    @ManyToMany
-    @JoinTable(
-            name = "review_like",
-            joinColumns = @JoinColumn(name = "review_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    List<User> likedBy;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications;
@@ -72,8 +63,8 @@ public abstract class Review {
         // Constructor vacío necesario para JPA
     }
 
-    public Review(User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
-        this.user = user;
+    public Review(Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.rating = rating;
@@ -83,9 +74,9 @@ public abstract class Review {
         this.commentAmount = commentAmount;
     }
 
-    public Review(Long id, User user, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+    public Review(Long id, Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
         this.id = id;
-        this.user = user;
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.rating = rating;
@@ -127,12 +118,12 @@ public abstract class Review {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getTitle() {
@@ -147,12 +138,6 @@ public abstract class Review {
         return isBlocked;
     }
 
-    /*
-    -> No debe accederse, puede haber muchos usuarios.
-    public List<User> getLikedBy() {
-        return likedBy;
-    }
-     */
 
     public String getDescription() {
         return description;

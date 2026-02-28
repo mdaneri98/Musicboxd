@@ -1,8 +1,9 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
+import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.webapp.dto.UserDTO;
 import ar.edu.itba.paw.webapp.dto.links.UserLinksDTO;
-import ar.edu.itba.paw.models.User;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.UriInfo;
@@ -22,7 +23,7 @@ public class UserDtoMapper {
         }
 
         UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
+        dto.setId(user.getId().getValue());
         dto.setUsername(user.getUsername());
         dto.setName(user.getName());
         dto.setBio(user.getBio());
@@ -41,12 +42,11 @@ public class UserDtoMapper {
         dto.setHasCommentsNotificationsEnabled(user.getCommentNotificationsEnabled());
         dto.setHasReviewsNotificationsEnabled(user.getReviewNotificationsEnabled());
 
-        // Build HATEOAS links
         if (uriInfo != null) {
             UserLinksDTO links = new UserLinksDTO();
 
             links.setSelf(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).build());
+                    .path("users").path(String.valueOf(user.getId().getValue())).build());
 
             if (user.getImageId() != null) {
                 links.setImage(uriInfo.getBaseUriBuilder()
@@ -54,22 +54,22 @@ public class UserDtoMapper {
             }
 
             links.setReviews(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("reviews").build());
+                    .path("users").path(String.valueOf(user.getId().getValue())).path("reviews").build());
 
             links.setFollowers(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("followers").build());
+                    .path("users").path(String.valueOf(user.getId().getValue())).path("followers").build());
 
             links.setFollowing(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("followings").build());
+                    .path("users").path(String.valueOf(user.getId().getValue())).path("followings").build());
 
             links.setFavoriteArtists(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("artists").build());
+                    .path("users").path(String.valueOf(user.getId().getValue())).path("favorites").path("artists").build());
 
             links.setFavoriteAlbums(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("albums").build());
+                    .path("users").path(String.valueOf(user.getId().getValue())).path("favorites").path("albums").build());
 
             links.setFavoriteSongs(uriInfo.getBaseUriBuilder()
-                    .path("users").path(String.valueOf(user.getId())).path("favorites").path("songs").build());
+                    .path("users").path(String.valueOf(user.getId().getValue())).path("favorites").path("songs").build());
 
             dto.setLinks(links);
         }
@@ -87,23 +87,26 @@ public class UserDtoMapper {
                 .collect(Collectors.toList());
     }
 
-    public User toModel(UserDTO dto) {
+    public UserJpaEntity toModel(UserDTO dto) {
         if (dto == null) {
             return null;
         }
 
-        User user = new User();
+        UserJpaEntity user = new UserJpaEntity();
         user.setId(dto.getId());
         user.setUsername(dto.getUsername());
+        user.setEmail(dto.getUsername() + "@temp.com"); // Email not in DTO
+        user.setPassword(""); // Password not in DTO
         user.setName(dto.getName());
         user.setBio(dto.getBio());
-        user.setFollowersAmount(dto.getFollowersAmount());
+        user.setImageId(null); // Handle separately
+        user.setFollowerAmount(dto.getFollowersAmount());
         user.setFollowingAmount(dto.getFollowingAmount());
         user.setReviewAmount(dto.getReviewAmount());
         user.setCreatedAt(dto.getCreatedAt());
         user.setUpdatedAt(dto.getUpdatedAt());
         user.setVerified(dto.getVerified() != null ? dto.getVerified() : false);
-        user.setModerator(dto.getModerator());
+        user.setIsModerator(dto.getModerator());
         user.setPreferredLanguage(dto.getPreferredLanguage());
         user.setTheme(dto.getPreferredTheme());
         user.setFollowNotificationsEnabled(dto.getHasFollowNotificationsEnabled());
@@ -114,7 +117,7 @@ public class UserDtoMapper {
         return user;
     }
 
-    public List<User> toModelList(List<UserDTO> dtos) {
+    public List<UserJpaEntity> toModelList(List<UserDTO> dtos) {
         if (dtos == null) {
             return null;
         }
@@ -124,7 +127,7 @@ public class UserDtoMapper {
                 .collect(Collectors.toList());
     }
 
-    public static void mergeConfigToModel(User user, UserDTO dto) {
+    public static void mergeConfigToModel(UserJpaEntity user, UserDTO dto) {
         if (dto == null) {
             return;
         }
