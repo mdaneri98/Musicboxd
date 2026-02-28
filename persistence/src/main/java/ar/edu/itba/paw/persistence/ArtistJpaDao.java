@@ -36,7 +36,6 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public List<Artist> findPaginated(FilterType filterType, Integer limit, Integer offset) {
-        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         String nativeSQL = "SELECT a.id FROM artist a " + filterType.getFilter();
         Query nativeQuery = entityManager.createNativeQuery(nativeSQL)
                 .setFirstResult(offset)
@@ -52,8 +51,6 @@ public class ArtistJpaDao implements ArtistDao {
             return Collections.emptyList();
         }
 
-        // Query 2: JPQL para obtener entidades completas manteniendo el orden del
-        // filtro
         String entityJpql = "SELECT a FROM Artist a WHERE a.id IN :ids ";
         TypedQuery<Artist> query = entityManager.createQuery(entityJpql, Artist.class)
                 .setParameter("ids", artistIds);
@@ -71,7 +68,6 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public List<Artist> findByNameContaining(String sub, Integer page, Integer size) {
-        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = entityManager.createNativeQuery(
                 "SELECT a.id FROM artist a " +
                         "WHERE LOWER(a.name) LIKE LOWER(:name) " +
@@ -90,7 +86,6 @@ public class ArtistJpaDao implements ArtistDao {
             return Collections.emptyList();
         }
 
-        // Query 2: JPQL para obtener entidades completas
         TypedQuery<Artist> query = entityManager.createQuery(
                 "FROM Artist a WHERE a.id IN :ids ORDER BY a.name",
                 Artist.class);
@@ -107,7 +102,7 @@ public class ArtistJpaDao implements ArtistDao {
 
     @Override
     public Artist update(Artist artist) {
-        return entityManager.merge(artist); // Updates the existing entity
+        return entityManager.merge(artist);
     }
 
     @Override
@@ -164,5 +159,4 @@ public class ArtistJpaDao implements ArtistDao {
         Query query = entityManager.createQuery("SELECT COUNT(a) FROM Artist a");
         return (Long) query.getSingleResult();
     }
-
 }

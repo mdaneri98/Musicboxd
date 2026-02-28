@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.persistence;
 
-
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 
@@ -17,8 +16,6 @@ public interface ArtistDao extends CrudDao<Artist> {
     Boolean deleteReviewsFromArtist(Long artistId);
 
     List<ArtistReview> findReviewsByArtistId(Long artistId);
-    
-    // Count methods for pagination
+
     Long countAll();
 }
-

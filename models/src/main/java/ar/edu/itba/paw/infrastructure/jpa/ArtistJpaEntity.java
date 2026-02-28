@@ -1,13 +1,12 @@
-package ar.edu.itba.paw.models;
+package ar.edu.itba.paw.infrastructure.jpa;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "artist")
-public class Artist {
+public class ArtistJpaEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "artist_id_seq")
     @SequenceGenerator(sequenceName = "artist_id_seq", name = "artist_id_seq", allocationSize = 1)
@@ -25,9 +24,8 @@ public class Artist {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "img_id", referencedColumnName = "id", nullable = false)
-    private Image image;
+    @Column(name = "img_id", nullable = false)
+    private Long imageId;
 
     @Column(name = "rating_amount", nullable = false)
     private Integer ratingCount;
@@ -35,28 +33,7 @@ public class Artist {
     @Column(name = "avg_rating", nullable = false)
     private Double avgRating;
 
-    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Album> albums = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "artists")
-    private List<Song> songs = new ArrayList<>();
-
-    public Artist() {
-    }
-
-    public Artist(Long id) {
-        this.id = id;
-    }
-
-    public Artist(Long id, String name, String bio, LocalDateTime createdAt, LocalDateTime updatedAt, Image image, Integer ratingCount, Double avgRating) {
-        this.id = id;
-        this.name = name;
-        this.bio = bio;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.image = image;
-        this.ratingCount = ratingCount;
-        this.avgRating = avgRating;
+    public ArtistJpaEntity() {
     }
 
     public Long getId() {
@@ -99,12 +76,12 @@ public class Artist {
         this.updatedAt = updatedAt;
     }
 
-    public Image getImage() {
-        return image;
+    public Long getImageId() {
+        return imageId;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
     }
 
     public Integer getRatingCount() {
@@ -121,21 +98,5 @@ public class Artist {
 
     public void setAvgRating(Double avgRating) {
         this.avgRating = avgRating;
-    }
-
-    public List<Album> getAlbums() {
-        return albums;
-    }
-
-    public void setAlbums(List<Album> albums) {
-        this.albums = albums;
-    }
-
-    public List<Song> getSongs() {
-        return songs;
-    }
-
-    public void setSongs(List<Song> songs) {
-        this.songs = songs;
     }
 }
