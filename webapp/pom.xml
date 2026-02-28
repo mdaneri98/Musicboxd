@@ -183,7 +183,6 @@
             <groupId>${parent.groupId}</groupId>
             <artifactId>services</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
         </dependency>
         <!-- La dep. persistence no es una dependencia transitiva en 'service' pues ahí esta con scope runtime, y por ende, no se verá reflejada en este modulo webapp. -->
         <dependency>

@@ -33,61 +33,7 @@ import java.util.List;
 public class UserController extends BaseController {
 
     @Autowired
-    private GetUser getUser;
-
-    @Autowired
-    private GetAllUsers getAllUsers;
-
-    @Autowired
-    private CreateUser createUser;
-
-    @Autowired
-    private UpdateUserProfile updateUserProfile;
-
-    @Autowired
-    private UpdateUserConfig updateUserConfig;
-
-    @Autowired
-    private DeleteUser deleteUser;
-
-    @Autowired
-    private GetUserFollowers getUserFollowers;
-
-    @Autowired
-    private GetUserFollowing getUserFollowing;
-
-    @Autowired
-    private FollowUser followUser;
-
-    @Autowired
-    private UnfollowUser unfollowUser;
-
-    @Autowired
-    private GetUserFavoriteArtists getUserFavoriteArtists;
-
-    @Autowired
-    private GetUserFavoriteAlbums getUserFavoriteAlbums;
-
-    @Autowired
-    private GetUserFavoriteSongs getUserFavoriteSongs;
-
-    @Autowired
-    private AddFavoriteArtist addFavoriteArtist;
-
-    @Autowired
-    private RemoveFavoriteArtist removeFavoriteArtist;
-
-    @Autowired
-    private AddFavoriteAlbum addFavoriteAlbum;
-
-    @Autowired
-    private RemoveFavoriteAlbum removeFavoriteAlbum;
-
-    @Autowired
-    private AddFavoriteSong addFavoriteSong;
-
-    @Autowired
-    private RemoveFavoriteSong removeFavoriteSong;
+    private ar.edu.itba.paw.services.UserApplicationService userApplicationService;
 
     @Autowired
     private NotificationService notificationService;
@@ -127,8 +73,8 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<User> users = getAllUsers.execute(search, page, size);
-        Long totalCount = getAllUsers.count();
+        List<User> users = userApplicationService.getAllUsers(search, page, size);
+        Long totalCount = userApplicationService.countAllUsers();
 
         if (users.isEmpty()) {
             return Response.noContent().build();
@@ -148,7 +94,7 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.USER)
     public Response getUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        User user = getUser.execute(id);
+        User user = userApplicationService.getUser(id);
         return buildResponseUsingEtag(request, () -> userDtoMapper.toDTO(user, uriInfo));
     }
 
@@ -164,7 +110,7 @@ public class UserController extends BaseController {
             createUserDTO.getEmail(),
             createUserDTO.getPassword()
         );
-        User user = createUser.execute(command);
+        User user = userApplicationService.createUser(command);
         UserDTO userDTO = userDtoMapper.toDTO(user, uriInfo);
         return Response.created(userDTO.getLinks().getSelf()).entity(userDTO).build();
     }
@@ -229,7 +175,7 @@ public class UserController extends BaseController {
             userProfileForm.getBio(),
             userProfileForm.getImageId()
         );
-        User updatedUser = updateUserProfile.execute(command);
+        User updatedUser = userApplicationService.updateUserProfile(command);
         UserDTO userDTO = userDtoMapper.toDTO(updatedUser, uriInfo);
         return Response.ok(userDTO).build();
     }
@@ -239,7 +185,7 @@ public class UserController extends BaseController {
     @PreAuthorize("@securityServiceImpl.isCurrentUser(#id, authentication) or hasRole('MODERATOR')")
     public Response deleteUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
         DeleteUserCommand command = new DeleteUserCommand(id);
-        deleteUser.execute(command);
+        userApplicationService.deleteUser(command);
         return Response.noContent().build();
     }
 
@@ -278,8 +224,8 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<User> followers = getUserFollowers.execute(id, page, size);
-        Long totalCount = getUserFollowers.count(id);
+        List<User> followers = userApplicationService.getUserFollowers(id, page, size);
+        Long totalCount = userApplicationService.countUserFollowers(id);
 
         if (followers.isEmpty()) {
             return Response.noContent().build();
@@ -304,8 +250,8 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<User> following = getUserFollowing.execute(id, page, size);
-        Long totalCount = getUserFollowing.count(id);
+        List<User> following = userApplicationService.getUserFollowing(id, page, size);
+        Long totalCount = userApplicationService.countUserFollowing(id);
 
         if (following.isEmpty()) {
             return Response.noContent().build();
@@ -352,7 +298,7 @@ public class UserController extends BaseController {
     @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response followUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
-        followUser.execute(userId, targetUserId);
+        userApplicationService.followUser(userId, targetUserId);
         return Response.noContent().build();
     }
 
@@ -361,7 +307,7 @@ public class UserController extends BaseController {
     @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response unfollowUser(@PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.TARGET_USER_ID_PARAM_NAME) Long targetUserId) {
-        unfollowUser.execute(userId, targetUserId);
+        userApplicationService.unfollowUser(userId, targetUserId);
         return Response.noContent().build();
     }
 
@@ -383,7 +329,7 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FAVORITE_ARTISTS)
     @Produces(CustomMediaType.ARTIST_LIST)
     public Response getUserFavoriteArtists(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        List<Artist> artists = getUserFavoriteArtists.execute(id, null, null);
+        List<Artist> artists = userApplicationService.getUserFavoriteArtists(id, null, null);
 
         if (artists.isEmpty()) {
             return Response.noContent().build();
@@ -404,7 +350,7 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FAVORITE_ALBUMS)
     @Produces(CustomMediaType.ALBUM_LIST)
     public Response getUserFavoriteAlbums(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        List<Album> albums = getUserFavoriteAlbums.execute(id, null, null);
+        List<Album> albums = userApplicationService.getUserFavoriteAlbums(id, null, null);
 
         if (albums.isEmpty()) {
             return Response.noContent().build();
@@ -425,7 +371,7 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FAVORITE_SONGS)
     @Produces(CustomMediaType.SONG_LIST)
     public Response getUserFavoriteSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        List<Song> songs = getUserFavoriteSongs.execute(id, null, null);
+        List<Song> songs = userApplicationService.getUserFavoriteSongs(id, null, null);
 
         if (songs.isEmpty()) {
             return Response.noContent().build();
@@ -448,7 +394,7 @@ public class UserController extends BaseController {
     public Response addFavoriteArtist(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
-        addFavoriteArtist.execute(userId, artistId);
+        userApplicationService.addFavoriteArtist(userId, artistId);
         return Response.noContent().build();
     }
 
@@ -458,7 +404,7 @@ public class UserController extends BaseController {
     public Response removeFavoriteArtist(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ARTIST_ID_PARAM_NAME) Long artistId) {
-        removeFavoriteArtist.execute(userId, artistId);
+        userApplicationService.removeFavoriteArtist(userId, artistId);
         return Response.noContent().build();
     }
 
@@ -468,7 +414,7 @@ public class UserController extends BaseController {
     public Response addFavoriteAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
-        addFavoriteAlbum.execute(userId, albumId);
+        userApplicationService.addFavoriteAlbum(userId, albumId);
         return Response.noContent().build();
     }
 
@@ -478,7 +424,7 @@ public class UserController extends BaseController {
     public Response removeFavoriteAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.ALBUM_ID_PARAM_NAME) Long albumId) {
-        removeFavoriteAlbum.execute(userId, albumId);
+        userApplicationService.removeFavoriteAlbum(userId, albumId);
         return Response.noContent().build();
     }
 
@@ -488,7 +434,7 @@ public class UserController extends BaseController {
     public Response addFavoriteSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
-        addFavoriteSong.execute(userId, songId);
+        userApplicationService.addFavoriteSong(userId, songId);
         return Response.noContent().build();
     }
 
@@ -498,7 +444,7 @@ public class UserController extends BaseController {
     public Response removeFavoriteSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long userId,
             @PathParam(ControllerUtils.SONG_ID_PARAM_NAME) Long songId) {
-        removeFavoriteSong.execute(userId, songId);
+        userApplicationService.removeFavoriteSong(userId, songId);
         return Response.noContent().build();
     }
 
@@ -517,7 +463,7 @@ public class UserController extends BaseController {
             userDTO.getHasCommentsNotificationsEnabled(),
             userDTO.getHasReviewsNotificationsEnabled()
         );
-        User updatedUser = updateUserConfig.execute(command);
+        User updatedUser = userApplicationService.updateUserConfig(command);
         UserDTO updatedUserDTO = userDtoMapper.toDTO(updatedUser, uriInfo);
         return Response.ok(updatedUserDTO).build();
     }
