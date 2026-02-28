@@ -47,14 +47,14 @@ public class ReviewServiceImpl implements ReviewService {
     private final AlbumDao albumDao;
     private final AlbumRepository albumRepository;
     private final SongDao songDao;
-    private final SongService songService;
+    private final ar.edu.itba.paw.domain.song.SongRepository songRepository;
     private final UpdateUserReviewCount updateUserReviewCount;
     private final EmailService emailService;
     private final NotificationService notificationService;
 
     @Autowired
     public ReviewServiceImpl(ReviewDao reviewDao, UserRepository userRepository, ArtistDao artistDao, ArtistRepository artistRepository, AlbumDao albumDao, AlbumRepository albumRepository,
-            SongDao songDao, SongService songService,
+            SongDao songDao, ar.edu.itba.paw.domain.song.SongRepository songRepository,
             UpdateUserReviewCount updateUserReviewCount, EmailService emailService, NotificationService notificationService) {
         this.reviewDao = reviewDao;
         this.userRepository = userRepository;
@@ -63,7 +63,7 @@ public class ReviewServiceImpl implements ReviewService {
         this.albumDao = albumDao;
         this.albumRepository = albumRepository;
         this.songDao = songDao;
-        this.songService = songService;
+        this.songRepository = songRepository;
         this.updateUserReviewCount = updateUserReviewCount;
         this.emailService = emailService;
         this.notificationService = notificationService;
@@ -149,7 +149,7 @@ public class ReviewServiceImpl implements ReviewService {
         entity.setUserId(reviewInput.getUserId());
         entity.setSong(songDao.findById(reviewInput.getItemId())
                 .orElseThrow(() -> new SongNotFoundException(reviewInput.getItemId())));
-        if (songService.hasUserReviewed(reviewInput.getUserId(), reviewInput.getItemId())) {
+        if (songRepository.hasUserReviewed(reviewInput.getUserId(), reviewInput.getItemId())) {
             throw new UserAlreadyReviewedException(reviewInput.getUserId(), reviewInput.getItemId(), "Song");
         }
         mergeReviewFields(entity, reviewInput);
@@ -198,7 +198,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private void updateSongRating(Long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
-        List<Review> reviews = new ArrayList<>(songService.findReviewsBySongId(songId));
+        List<Review> reviews = new ArrayList<>(songDao.findReviewsBySongId(songId));
         Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
         Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
         Integer ratingAmount = reviews.size();

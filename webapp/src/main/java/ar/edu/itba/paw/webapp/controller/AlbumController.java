@@ -20,9 +20,11 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.services.AlbumApplicationService;
 import ar.edu.itba.paw.services.ReviewService;
-import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.SongApplicationService;
 import ar.edu.itba.paw.services.mappers.LegacyAlbumMapper;
+import ar.edu.itba.paw.services.mappers.LegacySongMapper;
 import ar.edu.itba.paw.usecases.album.*;
+import ar.edu.itba.paw.usecases.song.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -51,7 +53,10 @@ public class AlbumController extends BaseController {
     private ReviewService reviewService;
 
     @Autowired
-    private SongService songService;
+    private SongApplicationService songApplicationService;
+
+    @Autowired
+    private LegacySongMapper legacySongMapper;
 
     @Autowired
     private ModAlbumFormMapper modAlbumFormMapper;
@@ -211,8 +216,12 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
-        List<Song> songs = songService.findByAlbumId(id);
-        Long totalCount = songService.countAll();
+        List<ar.edu.itba.paw.domain.song.Song> domainSongs = songApplicationService.getByAlbumId(id);
+        Long totalCount = songApplicationService.count();
+
+        List<Song> songs = domainSongs.stream()
+            .map(legacySongMapper::toLegacyModel)
+            .toList();
 
         if (songs.isEmpty()) {
             return Response.noContent().build();
@@ -237,7 +246,19 @@ public class AlbumController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
         Song songInput = modSongFormMapper.toModel(modSongForm, id);
-        Song song = songService.create(songInput);
+
+        CreateSongCommand command = new CreateSongCommand(
+            songInput.getTitle(),
+            songInput.getDuration(),
+            songInput.getTrackNumber(),
+            id,
+            songInput.getArtists() != null ?
+                songInput.getArtists().stream().map(ar.edu.itba.paw.models.Artist::getId).toList() :
+                null
+        );
+
+        ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.create(command);
+        Song song = legacySongMapper.toLegacyModel(domainSong);
         SongDTO songDTO = songDtoMapper.toDTO(song, uriInfo);
         return Response.created(songDTO.getLinks().getSelf()).entity(songDTO).build();
     }

@@ -24,9 +24,10 @@ import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ArtistApplicationService;
 import ar.edu.itba.paw.services.AlbumApplicationService;
 import ar.edu.itba.paw.services.ReviewService;
-import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.SongApplicationService;
 import ar.edu.itba.paw.services.mappers.LegacyArtistMapper;
 import ar.edu.itba.paw.services.mappers.LegacyAlbumMapper;
+import ar.edu.itba.paw.services.mappers.LegacySongMapper;
 import ar.edu.itba.paw.usecases.artist.*;
 import ar.edu.itba.paw.usecases.album.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,10 @@ public class ArtistController extends BaseController {
     private ReviewService reviewService;
 
     @Autowired
-    private SongService songService;
+    private SongApplicationService songApplicationService;
+
+    @Autowired
+    private LegacySongMapper legacySongMapper;
 
     @Autowired
     private ModAlbumFormMapper modAlbumFormMapper;
@@ -275,8 +279,12 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.POPULAR_FILTER_STRING) FilterType filter) {
 
-        List<Song> songs = songService.findByArtistId(id, filter, page, size);
-        Long totalCount = songService.countAll();
+        List<ar.edu.itba.paw.domain.song.Song> domainSongs = songApplicationService.getByArtistId(id, filter, page, size);
+        Long totalCount = songApplicationService.count();
+
+        List<Song> songs = domainSongs.stream()
+            .map(legacySongMapper::toLegacyModel)
+            .toList();
 
         if (songs.isEmpty()) {
             return Response.noContent().build();
