@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.persistence.SongDao;
 import ar.edu.itba.paw.persistence.AlbumDao;
+import ar.edu.itba.paw.usecases.user.UpdateUserReviewCount;
 import ar.edu.itba.paw.exception.not_found.AlbumNotFoundException;
 import ar.edu.itba.paw.exception.not_found.SongNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,17 +18,17 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service 
+@Service
 public class SongServiceImpl implements SongService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SongServiceImpl.class);
     private final SongDao songDao;
     private final AlbumDao albumDao;
-    private final UserService userService;
+    private final UpdateUserReviewCount updateUserReviewCount;
 
-    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UserService userService) {
+    public SongServiceImpl(SongDao songDao, AlbumDao albumDao, UpdateUserReviewCount updateUserReviewCount) {
         this.songDao = songDao;
         this.albumDao = albumDao;
-        this.userService = userService;
+        this.updateUserReviewCount = updateUserReviewCount;
     }
 
     @Override
@@ -71,9 +72,9 @@ public class SongServiceImpl implements SongService {
     public Boolean delete(Long id) {
         LOGGER.info("Deleting song with ID: {}", id);
         List<Long> userIds = new ArrayList<>();
-        songDao.findReviewsBySongId(id).forEach(review -> userIds.add(review.getUser().getId()));
+        songDao.findReviewsBySongId(id).forEach(review -> userIds.add(review.getUserId()));
         songDao.deleteReviewsFromSong(id);
-        userIds.forEach(userService::updateUserReviewAmount);
+        userIds.forEach(updateUserReviewCount::decrement);
         boolean result = songDao.delete(id);
         if (result) LOGGER.info("Song deleted successfully");
         else LOGGER.warn("Failed to delete song with ID: {}", id);

@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.services.utils;
 
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.Artist;
@@ -11,31 +11,9 @@ import ar.edu.itba.paw.models.Notification;
 import java.time.LocalDateTime;
 
 public class MergeUtils {
-    
+
     private MergeUtils() {
         // throw new AssertionError("Utility class");
-    }
-
-    // User fields merge (Model to Model)
-    public static void mergeUserFields(User existingUser, User userUpdate) {
-        mergeBasicFields(existingUser, userUpdate);
-        mergeNotificationSettings(existingUser, userUpdate);
-        existingUser.setUpdatedAt(LocalDateTime.now());
-    }
-
-    private static void mergeBasicFields(User existingUser, User userUpdate) {
-        setFieldIfNotNull(existingUser::setEmail, userUpdate.getEmail());
-        setFieldIfNotNull(existingUser::setName, userUpdate.getName());
-        setFieldIfNotNull(existingUser::setBio, userUpdate.getBio());
-        setFieldIfNotNull(existingUser::setPreferredLanguage, userUpdate.getPreferredLanguage());
-        setFieldIfNotNull(existingUser::setTheme, userUpdate.getTheme());
-    }
-
-    private static void mergeNotificationSettings(User existingUser, User userUpdate) {
-        setFieldIfNotNull(existingUser::setFollowNotificationsEnabled, userUpdate.getFollowNotificationsEnabled());
-        setFieldIfNotNull(existingUser::setLikeNotificationsEnabled, userUpdate.getLikeNotificationsEnabled());
-        setFieldIfNotNull(existingUser::setCommentNotificationsEnabled, userUpdate.getCommentNotificationsEnabled());
-        setFieldIfNotNull(existingUser::setReviewNotificationsEnabled, userUpdate.getReviewNotificationsEnabled());
     }
 
     // Review fields merge (Model to Model)

@@ -42,7 +42,7 @@ public class SecurityServiceImpl implements SecurityService {
         try {
             Long principalId = Long.parseLong(authentication.getName());
             Review review = reviewService.findById(reviewId);
-            return review != null && review.getUser().getId().equals(principalId);
+            return review != null && review.getUserId().equals(principalId);
         } catch (NumberFormatException e) {
             return false;
         }

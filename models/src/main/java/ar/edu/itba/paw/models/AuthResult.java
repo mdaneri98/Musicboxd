@@ -1,11 +1,9 @@
 package ar.edu.itba.paw.models;
 
-/**
- * Result object for authentication operations.
- * Contains the authenticated user and generated tokens.
- */
+import ar.edu.itba.paw.domain.user.User;
+
 public class AuthResult {
-    
+
     private String accessToken;
     private String refreshToken;
     private User user;

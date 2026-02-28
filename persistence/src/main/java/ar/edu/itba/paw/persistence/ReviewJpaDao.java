@@ -1,11 +1,13 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.SongReview;
+import ar.edu.itba.paw.persistence.mappers.LegacyUserMapper;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +26,8 @@ public class ReviewJpaDao implements ReviewDao {
 
     @PersistenceContext
     private EntityManager em;
+
+    private final LegacyUserMapper userMapper = new LegacyUserMapper();
 
     // ============================ C.R.U.D ============================
     @Override
@@ -160,7 +164,6 @@ public class ReviewJpaDao implements ReviewDao {
 
     @Override
     public List<User> likedBy(Long reviewId, Integer pageNum, Integer pageSize) {
-        // Query 1: SQL nativo para obtener IDs paginados (garantiza paginación en BD)
         Query nativeQuery = em.createNativeQuery(
                 "SELECT DISTINCT u.id FROM cuser u " +
                         "JOIN review_like rl ON u.id = rl.user_id " +
@@ -180,13 +183,14 @@ public class ReviewJpaDao implements ReviewDao {
             return Collections.emptyList();
         }
 
-        // Query 2: JPQL para obtener entidades completas
-        TypedQuery<User> query = em.createQuery(
-                "FROM User u WHERE u.id IN :ids ORDER BY u.username",
-                User.class);
+        TypedQuery<UserJpaEntity> query = em.createQuery(
+                "FROM UserJpaEntity u WHERE u.id IN :ids ORDER BY u.username",
+                UserJpaEntity.class);
         query.setParameter("ids", userIds);
 
-        return query.getResultList();
+        return query.getResultList().stream()
+                .map(userMapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -1,12 +1,14 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.domain.user.UserId;
+import ar.edu.itba.paw.domain.user.UserRepository;
+import ar.edu.itba.paw.persistence.mappers.LegacyUserMapper;
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.persistence.CommentDao;
 import ar.edu.itba.paw.persistence.ReviewDao;
-import ar.edu.itba.paw.persistence.UserDao;
 import ar.edu.itba.paw.exception.not_found.CommentNotFoundException;
 import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
 import ar.edu.itba.paw.exception.not_found.ReviewNotFoundException;
@@ -22,15 +24,17 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentDao commentDao;
     private final ReviewDao reviewDao;
-    private final UserDao userDao;
+    private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final LegacyUserMapper legacyUserMapper;
 
     @Autowired
-    public CommentServiceImpl(final CommentDao commentDao, final ReviewDao reviewDao, final NotificationService notificationService, final UserDao userDao) {
+    public CommentServiceImpl(final CommentDao commentDao, final ReviewDao reviewDao, final NotificationService notificationService, final UserRepository userRepository, final LegacyUserMapper legacyUserMapper) {
         this.commentDao = commentDao;
         this.reviewDao = reviewDao;
         this.notificationService = notificationService;
-        this.userDao = userDao;
+        this.userRepository = userRepository;
+        this.legacyUserMapper = legacyUserMapper;
     }
 
     @Override
@@ -55,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
         }
         
         Comment updatedComment = commentDao.update(comment);
-        User user = comment.getUser();
+        User user = legacyUserMapper.toDomain(comment.getUser());
         Review review = comment.getReview();
         notificationService.notifyComment(review, user);
         return updatedComment;
@@ -83,13 +87,13 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("Review ID is required");
         }
 
-        User user = userDao.findById(commentInput.getUser().getId())
+        User user = userRepository.findById(new UserId(commentInput.getUser().getId()))
                 .orElseThrow(() -> new UserNotFoundException(commentInput.getUser().getId()));
         Review review = reviewDao.findById(commentInput.getReview().getId())
                 .orElseThrow(() -> new ReviewNotFoundException(commentInput.getReview().getId()));
-        
+
         Comment comment = new Comment();
-        comment.setUser(user);
+        comment.setUser(legacyUserMapper.toJpaEntity(user));
         comment.setReview(review);
         comment.setContent(commentInput.getContent());
         comment.setCreatedAt(LocalDateTime.now());

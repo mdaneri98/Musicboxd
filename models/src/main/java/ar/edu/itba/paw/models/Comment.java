@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models;
 
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.models.reviews.Review;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserJpaEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", nullable = false)
@@ -29,7 +30,7 @@ public class Comment {
 
     public Comment() { /* JPA needs it */ }
 
-    public Comment(Long id, User user, Review review, String content, LocalDateTime createdAt) {
+    public Comment(Long id, UserJpaEntity user, Review review, String content, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
         this.review = review;
@@ -37,14 +38,14 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
-    public Comment(User user, Review review, String content, LocalDateTime createdAt) {
+    public Comment(UserJpaEntity user, Review review, String content, LocalDateTime createdAt) {
         this.user = user;
         this.review = review;
         this.content = content;
         this.createdAt = createdAt;
     }
 
-    public Comment(User user, Review review, String content) {
+    public Comment(UserJpaEntity user, Review review, String content) {
         this.user = user;
         this.review = review;
         this.content = content;
@@ -68,11 +69,11 @@ public class Comment {
         this.id = id;
     }
 
-    public User getUser() {
+    public UserJpaEntity getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserJpaEntity user) {
         this.user = user;
     }
 

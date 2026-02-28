@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.persistence.AlbumDao;
+import ar.edu.itba.paw.usecases.user.UpdateUserReviewCount;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -21,13 +22,13 @@ public class AlbumServiceImpl implements AlbumService {
     private final AlbumDao albumDao;
     private final ImageService imageService;
     private final SongService songService;
-    private final UserService userService;
+    private final UpdateUserReviewCount updateUserReviewCount;
 
-    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UserService userService) {
+    public AlbumServiceImpl(AlbumDao albumDao, ImageService imageService, SongService songService, UpdateUserReviewCount updateUserReviewCount) {
         this.albumDao = albumDao;
         this.imageService = imageService;
         this.songService = songService;
-        this.userService = userService;
+        this.updateUserReviewCount = updateUserReviewCount;
     }
 
     @Override
@@ -71,9 +72,9 @@ public class AlbumServiceImpl implements AlbumService {
     public Boolean delete(Long id) {
         Album album = albumDao.findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
         List<Long> userIds = new ArrayList<>();
-        albumDao.findReviewsByAlbumId(id).forEach(review -> userIds.add(review.getUser().getId()));
+        albumDao.findReviewsByAlbumId(id).forEach(review -> userIds.add(review.getUserId()));
         albumDao.deleteReviewsFromAlbum(id);
-        userIds.forEach(userService::updateUserReviewAmount);
+        userIds.forEach(updateUserReviewCount::decrement);
         album.getSongs().forEach(song -> songService.delete(song.getId()));
         Boolean deleted = albumDao.delete(album.getId());
         imageService.delete(album.getImage().getId());

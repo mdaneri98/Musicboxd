@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.webapp.form.CommentForm;
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ReviewType;
 import org.springframework.stereotype.Component;
@@ -26,11 +26,11 @@ public class CommentFormMapper {
         }
         
         if (form.getUserId() != null) {
-            User user = new User();
+            UserJpaEntity user = new UserJpaEntity();
             user.setId(form.getUserId());
             comment.setUser(user);
         }
-        
+
         return comment;
     }
 
@@ -38,7 +38,7 @@ public class CommentFormMapper {
         Comment comment = toModel(form);
         if (comment != null) {
             if (userId != null) {
-                User user = new User();
+                UserJpaEntity user = new UserJpaEntity();
                 user.setId(userId);
                 comment.setUser(user);
             }

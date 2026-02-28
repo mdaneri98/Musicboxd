@@ -1,10 +1,10 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
 import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Artist;
 import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.*;
 import org.springframework.stereotype.Component;
 
@@ -45,10 +45,8 @@ public class ReviewFormMapper {
     public Review toModel(ReviewForm form, Long userId, Long itemId) {
         Review review = toModel(form);
         if (review != null) {
-            User user = new User();
-            user.setId(userId);
-            review.setUser(user);
-            
+            review.setUserId(userId);
+
             ReviewType type = ReviewType.valueOf(form.getItemType());
             setItemReference(review, itemId, type);
         }
