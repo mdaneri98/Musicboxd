@@ -22,11 +22,13 @@ import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ArtistApplicationService;
-import ar.edu.itba.paw.services.AlbumService;
+import ar.edu.itba.paw.services.AlbumApplicationService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
 import ar.edu.itba.paw.services.mappers.LegacyArtistMapper;
+import ar.edu.itba.paw.services.mappers.LegacyAlbumMapper;
 import ar.edu.itba.paw.usecases.artist.*;
+import ar.edu.itba.paw.usecases.album.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -52,7 +54,10 @@ public class ArtistController extends BaseController {
     private LegacyArtistMapper legacyArtistMapper;
 
     @Autowired
-    private AlbumService albumService;
+    private AlbumApplicationService albumApplicationService;
+
+    @Autowired
+    private LegacyAlbumMapper legacyAlbumMapper;
 
     @Autowired
     private ReviewService reviewService;
@@ -216,8 +221,12 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
-        List<Album> albums = albumService.findByArtistId(id);
-        Long totalCount = albumService.countAll();
+        List<ar.edu.itba.paw.domain.album.Album> domainAlbums = albumApplicationService.getByArtistId(id);
+        Long totalCount = albumApplicationService.count();
+
+        List<Album> albums = domainAlbums.stream()
+            .map(legacyAlbumMapper::toLegacyModel)
+            .toList();
 
         if (albums.isEmpty()) {
             return Response.noContent().build();
@@ -242,8 +251,17 @@ public class ArtistController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModAlbumForm modAlbumForm) {
         Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
-        albumInput.setArtist(new Artist(id));
-        Album album = albumService.create(albumInput);
+
+        CreateAlbumCommand command = new CreateAlbumCommand(
+            albumInput.getTitle(),
+            albumInput.getGenre(),
+            albumInput.getReleaseDate(),
+            albumInput.getImage() != null ? albumInput.getImage().getId() : null,
+            id
+        );
+
+        ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.create(command);
+        Album album = legacyAlbumMapper.toLegacyModel(domainAlbum);
         AlbumDTO albumDTO = albumDtoMapper.toDTO(album, uriInfo);
         return Response.created(albumDTO.getLinks().getSelf()).entity(albumDTO).build();
     }

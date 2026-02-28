@@ -18,9 +18,11 @@ import ar.edu.itba.paw.models.Album;
 import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.services.AlbumService;
+import ar.edu.itba.paw.services.AlbumApplicationService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.mappers.LegacyAlbumMapper;
+import ar.edu.itba.paw.usecases.album.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -40,7 +42,10 @@ import java.util.ArrayList;
 public class AlbumController extends BaseController {
 
     @Autowired
-    private AlbumService albumService;
+    private AlbumApplicationService albumApplicationService;
+
+    @Autowired
+    private LegacyAlbumMapper legacyAlbumMapper;
 
     @Autowired
     private ReviewService reviewService;
@@ -71,14 +76,18 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<Album> albums;
+        List<ar.edu.itba.paw.domain.album.Album> domainAlbums;
         if (search != null && !search.isEmpty()) {
-            albums = albumService.findByTitleContaining(search, page, size);
+            domainAlbums = albumApplicationService.searchByTitle(search, page, size);
         } else {
-            albums = albumService.findPaginated(filter, page, size);
+            domainAlbums = albumApplicationService.getAll(page - 1, size);
         }
 
-        Long totalCount = albumService.countAll();
+        Long totalCount = albumApplicationService.count();
+
+        List<Album> albums = domainAlbums.stream()
+            .map(legacyAlbumMapper::toLegacyModel)
+            .toList();
 
         if (albums.isEmpty()) {
             return Response.noContent().build();
@@ -99,8 +108,18 @@ public class AlbumController extends BaseController {
     @Consumes(CustomMediaType.ALBUM)
     @Produces(CustomMediaType.ALBUM)
     public Response createAlbum(@Valid ModAlbumForm modAlbumForm) {
-        Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
-        Album album = albumService.create(albumInput);
+        Album legacyInput = modAlbumFormMapper.toModel(modAlbumForm);
+
+        CreateAlbumCommand command = new CreateAlbumCommand(
+            legacyInput.getTitle(),
+            legacyInput.getGenre(),
+            legacyInput.getReleaseDate(),
+            legacyInput.getImage() != null ? legacyInput.getImage().getId() : null,
+            legacyInput.getArtist() != null ? legacyInput.getArtist().getId() : null
+        );
+
+        ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.create(command);
+        Album album = legacyAlbumMapper.toLegacyModel(domainAlbum);
         AlbumDTO albumDTO = albumDtoMapper.toDTO(album, uriInfo);
         return Response.created(albumDTO.getLinks().getSelf()).entity(albumDTO).build();
     }
@@ -109,7 +128,8 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.ALBUM)
     public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Album album = albumService.findById(id);
+        ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.getById(id);
+        Album album = legacyAlbumMapper.toLegacyModel(domainAlbum);
         return buildResponseUsingEtag(request, () -> albumDtoMapper.toDTO(album, uriInfo));
     }
 
@@ -119,9 +139,21 @@ public class AlbumController extends BaseController {
     @Consumes(CustomMediaType.ALBUM)
     @Produces(CustomMediaType.ALBUM)
     public Response updateAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModAlbumForm modAlbumForm) {
-        Album oldAlbum = albumService.findById(id);
+        ar.edu.itba.paw.domain.album.Album oldDomainAlbum = albumApplicationService.getById(id);
+        Album oldAlbum = legacyAlbumMapper.toLegacyModel(oldDomainAlbum);
         Album albumToUpdate = modAlbumFormMapper.mergeModel(oldAlbum, modAlbumForm);
-        Album updatedAlbum = albumService.update(albumToUpdate);
+
+        UpdateAlbumCommand command = new UpdateAlbumCommand(
+            id,
+            albumToUpdate.getTitle(),
+            albumToUpdate.getGenre(),
+            albumToUpdate.getReleaseDate(),
+            albumToUpdate.getImage() != null ? albumToUpdate.getImage().getId() : null,
+            albumToUpdate.getArtist() != null ? albumToUpdate.getArtist().getId() : null
+        );
+
+        ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.update(command);
+        Album updatedAlbum = legacyAlbumMapper.toLegacyModel(domainAlbum);
         AlbumDTO albumDTO = albumDtoMapper.toDTO(updatedAlbum, uriInfo);
         return Response.ok(albumDTO).build();
     }
@@ -130,7 +162,8 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        albumService.delete(id);
+        DeleteAlbumCommand command = new DeleteAlbumCommand(id);
+        albumApplicationService.delete(command);
         return Response.noContent().build();
     }
 
