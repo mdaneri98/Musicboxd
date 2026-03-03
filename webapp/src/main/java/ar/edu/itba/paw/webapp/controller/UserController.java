@@ -4,7 +4,12 @@ import ar.edu.itba.paw.domain.user.User;
 import ar.edu.itba.paw.usecases.user.*;
 import ar.edu.itba.paw.domain.user.UserId;
 import ar.edu.itba.paw.domain.user.Email;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.domain.artist.Artist;
+import ar.edu.itba.paw.domain.album.Album;
+import ar.edu.itba.paw.domain.song.Song;
+import ar.edu.itba.paw.models.Notification;
+import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.StatusType;
 import ar.edu.itba.paw.services.NotificationService;
 import ar.edu.itba.paw.webapp.dto.*;
 import ar.edu.itba.paw.webapp.form.UserForm;
@@ -34,6 +39,12 @@ public class UserController extends BaseController {
 
     @Autowired
     private ar.edu.itba.paw.services.UserApplicationService userApplicationService;
+
+    @Autowired
+    private ar.edu.itba.paw.services.AlbumApplicationService albumApplicationService;
+
+    @Autowired
+    private ar.edu.itba.paw.services.SongApplicationService songApplicationService;
 
     @Autowired
     private NotificationService notificationService;
@@ -350,20 +361,20 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FAVORITE_ALBUMS)
     @Produces(CustomMediaType.ALBUM_LIST)
     public Response getUserFavoriteAlbums(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        List<Album> albums = userApplicationService.getUserFavoriteAlbums(id, null, null);
+        List<ar.edu.itba.paw.views.AlbumView> albumViews = userApplicationService.getUserFavoriteAlbumsView(id, null, null);
 
-        if (albums.isEmpty()) {
+        if (albumViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums, uriInfo);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albumViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<AlbumDTO>>(albumDTOs) {
                 });
 
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo,
-                ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) albums.size());
+                ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) albumViews.size());
         return responseBuilder.build();
     }
 
@@ -371,20 +382,20 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FAVORITE_SONGS)
     @Produces(CustomMediaType.SONG_LIST)
     public Response getUserFavoriteSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        List<Song> songs = userApplicationService.getUserFavoriteSongs(id, null, null);
+        List<ar.edu.itba.paw.views.SongView> songViews = userApplicationService.getUserFavoriteSongsView(id, null, null);
 
-        if (songs.isEmpty()) {
+        if (songViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<SongDTO>>(songDTOs) {
                 });
 
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo,
-                ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) songs.size());
+                ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) songViews.size());
         return responseBuilder.build();
     }
 

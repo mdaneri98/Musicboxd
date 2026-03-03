@@ -1,10 +1,12 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.domain.user.User;
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.domain.album.Album;
+import ar.edu.itba.paw.domain.artist.Artist;
+import ar.edu.itba.paw.domain.song.Song;
 import ar.edu.itba.paw.usecases.user.*;
+import ar.edu.itba.paw.views.AlbumView;
+import ar.edu.itba.paw.views.SongView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ public class UserApplicationService {
     private final GetUserFavoriteArtists getUserFavoriteArtists;
     private final GetUserFavoriteAlbums getUserFavoriteAlbums;
     private final GetUserFavoriteSongs getUserFavoriteSongs;
+    private final GetUserFavoriteAlbumsView getUserFavoriteAlbumsView;
+    private final GetUserFavoriteSongsView getUserFavoriteSongsView;
     private final AddFavoriteArtist addFavoriteArtist;
     private final RemoveFavoriteArtist removeFavoriteArtist;
     private final AddFavoriteAlbum addFavoriteAlbum;
@@ -47,6 +51,8 @@ public class UserApplicationService {
                                    GetUserFavoriteArtists getUserFavoriteArtists,
                                    GetUserFavoriteAlbums getUserFavoriteAlbums,
                                    GetUserFavoriteSongs getUserFavoriteSongs,
+                                   GetUserFavoriteAlbumsView getUserFavoriteAlbumsView,
+                                   GetUserFavoriteSongsView getUserFavoriteSongsView,
                                    AddFavoriteArtist addFavoriteArtist,
                                    RemoveFavoriteArtist removeFavoriteArtist,
                                    AddFavoriteAlbum addFavoriteAlbum,
@@ -66,6 +72,8 @@ public class UserApplicationService {
         this.getUserFavoriteArtists = getUserFavoriteArtists;
         this.getUserFavoriteAlbums = getUserFavoriteAlbums;
         this.getUserFavoriteSongs = getUserFavoriteSongs;
+        this.getUserFavoriteAlbumsView = getUserFavoriteAlbumsView;
+        this.getUserFavoriteSongsView = getUserFavoriteSongsView;
         this.addFavoriteArtist = addFavoriteArtist;
         this.removeFavoriteArtist = removeFavoriteArtist;
         this.addFavoriteAlbum = addFavoriteAlbum;
@@ -136,6 +144,14 @@ public class UserApplicationService {
 
     public List<Song> getUserFavoriteSongs(Long userId, Integer page, Integer size) {
         return getUserFavoriteSongs.execute(userId, page, size);
+    }
+
+    public List<AlbumView> getUserFavoriteAlbumsView(Long userId, Integer page, Integer size) {
+        return getUserFavoriteAlbumsView.execute(userId, page, size);
+    }
+
+    public List<SongView> getUserFavoriteSongsView(Long userId, Integer page, Integer size) {
+        return getUserFavoriteSongsView.execute(userId, page, size);
     }
 
     public void addFavoriteArtist(Long userId, Long artistId) {

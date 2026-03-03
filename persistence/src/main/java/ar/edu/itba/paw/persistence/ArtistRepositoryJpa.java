@@ -14,7 +14,9 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -34,6 +36,25 @@ public class ArtistRepositoryJpa implements ArtistRepository {
     public Optional<Artist> findById(ArtistId id) {
         ArtistJpaEntity entity = em.find(ArtistJpaEntity.class, id.getValue());
         return Optional.ofNullable(entity).map(mapper::toDomain);
+    }
+
+    @Override
+    public Map<Long, Artist> findByIds(Set<Long> ids) {
+        if (ids.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        String jpql = "SELECT a FROM ArtistJpaEntity a WHERE a.id IN :ids";
+        List<ArtistJpaEntity> entities = em.createQuery(jpql, ArtistJpaEntity.class)
+            .setParameter("ids", ids)
+            .getResultList();
+
+        return entities.stream()
+            .map(mapper::toDomain)
+            .collect(Collectors.toMap(
+                artist -> artist.getId().getValue(),
+                artist -> artist
+            ));
     }
 
     @Override
