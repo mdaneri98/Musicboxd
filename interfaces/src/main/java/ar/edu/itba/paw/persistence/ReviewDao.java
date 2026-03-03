@@ -42,6 +42,10 @@ public interface ReviewDao extends CrudDao<Review> {
     List<AlbumReview> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize);
     List<SongReview> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize);
 
+    List<ArtistReview> findReviewsByArtistId(Long artistId);
+    List<AlbumReview> findReviewsByAlbumId(Long albumId);
+    List<SongReview> findReviewsBySongId(Long songId);
+
     List<Review> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize);
     List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize);
 

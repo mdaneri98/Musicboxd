@@ -8,6 +8,9 @@ import ar.edu.itba.paw.domain.artist.ArtistRepository;
 import ar.edu.itba.paw.domain.album.AlbumId;
 import ar.edu.itba.paw.domain.album.AlbumRepository;
 import ar.edu.itba.paw.usecases.user.UpdateUserReviewCount;
+import ar.edu.itba.paw.usecases.artist.UpdateArtistRating;
+import ar.edu.itba.paw.usecases.album.UpdateAlbumRating;
+import ar.edu.itba.paw.usecases.song.UpdateSongRating;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
@@ -42,29 +45,31 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewDao reviewDao;
     private final UserRepository userRepository;
-    private final ArtistDao artistDao;
     private final ArtistRepository artistRepository;
-    private final AlbumDao albumDao;
     private final AlbumRepository albumRepository;
-    private final SongDao songDao;
     private final ar.edu.itba.paw.domain.song.SongRepository songRepository;
     private final UpdateUserReviewCount updateUserReviewCount;
+    private final UpdateArtistRating updateArtistRating;
+    private final UpdateAlbumRating updateAlbumRating;
+    private final UpdateSongRating updateSongRating;
     private final EmailService emailService;
     private final NotificationService notificationService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserRepository userRepository, ArtistDao artistDao, ArtistRepository artistRepository, AlbumDao albumDao, AlbumRepository albumRepository,
-            SongDao songDao, ar.edu.itba.paw.domain.song.SongRepository songRepository,
-            UpdateUserReviewCount updateUserReviewCount, EmailService emailService, NotificationService notificationService) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserRepository userRepository, ArtistRepository artistRepository, AlbumRepository albumRepository,
+            ar.edu.itba.paw.domain.song.SongRepository songRepository,
+            UpdateUserReviewCount updateUserReviewCount, UpdateArtistRating updateArtistRating,
+            UpdateAlbumRating updateAlbumRating, UpdateSongRating updateSongRating,
+            EmailService emailService, NotificationService notificationService) {
         this.reviewDao = reviewDao;
         this.userRepository = userRepository;
-        this.artistDao = artistDao;
         this.artistRepository = artistRepository;
-        this.albumDao = albumDao;
         this.albumRepository = albumRepository;
-        this.songDao = songDao;
         this.songRepository = songRepository;
         this.updateUserReviewCount = updateUserReviewCount;
+        this.updateArtistRating = updateArtistRating;
+        this.updateAlbumRating = updateAlbumRating;
+        this.updateSongRating = updateSongRating;
         this.emailService = emailService;
         this.notificationService = notificationService;
     }
@@ -114,9 +119,16 @@ public class ReviewServiceImpl implements ReviewService {
     public Review createArtistReview(Review reviewInput) {
         ArtistReview entity = new ArtistReview();
         entity.setUserId(reviewInput.getUserId());
-        entity.setArtist(artistDao.findById(reviewInput.getItemId())
-                .orElseThrow(() -> new ArtistNotFoundException(reviewInput.getItemId())));
-        if (artistRepository.hasUserReviewed(reviewInput.getUserId(), new ArtistId(reviewInput.getItemId()))) {
+
+        ArtistId artistId = new ArtistId(reviewInput.getItemId());
+        artistRepository.findById(artistId)
+                .orElseThrow(() -> new ArtistNotFoundException(reviewInput.getItemId()));
+
+        ar.edu.itba.paw.infrastructure.jpa.ArtistJpaEntity artistEntity = new ar.edu.itba.paw.infrastructure.jpa.ArtistJpaEntity();
+        artistEntity.setId(reviewInput.getItemId());
+        entity.setArtist(artistEntity);
+
+        if (artistRepository.hasUserReviewed(reviewInput.getUserId(), artistId)) {
             throw new UserAlreadyReviewedException(reviewInput.getUserId(), reviewInput.getItemId(),
                     ReviewType.ARTIST.toString());
         }
@@ -131,9 +143,16 @@ public class ReviewServiceImpl implements ReviewService {
     public Review createAlbumReview(Review reviewInput) {
         AlbumReview entity = new AlbumReview();
         entity.setUserId(reviewInput.getUserId());
-        entity.setAlbum(albumDao.findById(reviewInput.getItemId())
-                .orElseThrow(() -> new AlbumNotFoundException(reviewInput.getItemId())));
-        if (albumRepository.hasUserReviewed(reviewInput.getUserId(), new AlbumId(reviewInput.getItemId()))) {
+
+        AlbumId albumId = new AlbumId(reviewInput.getItemId());
+        albumRepository.findById(albumId)
+                .orElseThrow(() -> new AlbumNotFoundException(reviewInput.getItemId()));
+
+        ar.edu.itba.paw.infrastructure.jpa.AlbumJpaEntity albumEntity = new ar.edu.itba.paw.infrastructure.jpa.AlbumJpaEntity();
+        albumEntity.setId(reviewInput.getItemId());
+        entity.setAlbum(albumEntity);
+
+        if (albumRepository.hasUserReviewed(reviewInput.getUserId(), albumId)) {
             throw new UserAlreadyReviewedException(reviewInput.getUserId(), reviewInput.getItemId(), "Album");
         }
         mergeReviewFields(entity, reviewInput);
@@ -147,8 +166,15 @@ public class ReviewServiceImpl implements ReviewService {
     public Review createSongReview(Review reviewInput) {
         SongReview entity = new SongReview();
         entity.setUserId(reviewInput.getUserId());
-        entity.setSong(songDao.findById(reviewInput.getItemId())
-                .orElseThrow(() -> new SongNotFoundException(reviewInput.getItemId())));
+
+        ar.edu.itba.paw.domain.song.SongId songId = new ar.edu.itba.paw.domain.song.SongId(reviewInput.getItemId());
+        songRepository.findById(songId)
+                .orElseThrow(() -> new SongNotFoundException(reviewInput.getItemId()));
+
+        ar.edu.itba.paw.infrastructure.jpa.SongJpaEntity songEntity = new ar.edu.itba.paw.infrastructure.jpa.SongJpaEntity();
+        songEntity.setId(reviewInput.getItemId());
+        entity.setSong(songEntity);
+
         if (songRepository.hasUserReviewed(reviewInput.getUserId(), reviewInput.getItemId())) {
             throw new UserAlreadyReviewedException(reviewInput.getUserId(), reviewInput.getItemId(), "Song");
         }
@@ -178,32 +204,20 @@ public class ReviewServiceImpl implements ReviewService {
 
     private void updateArtistRating(Long artistId) {
         LOGGER.info("Updating rating for artist ID: {}", artistId);
-        List<Review> reviews = new ArrayList<>(artistDao.findReviewsByArtistId(artistId));
-        double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        Integer ratingAmount = reviews.size();
-        artistDao.updateRating(artistId, roundedAvgRating, ratingAmount);
-        LOGGER.info("Artist rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        updateArtistRating.execute(artistId);
+        LOGGER.info("Artist rating updated successfully");
     }
 
     private void updateAlbumRating(Long albumId) {
         LOGGER.info("Updating rating for album ID: {}", albumId);
-        List<Review> reviews = new ArrayList<>(albumDao.findReviewsByAlbumId(albumId));
-        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        Integer ratingAmount = reviews.size();
-        albumDao.updateRating(albumId, roundedAvgRating, ratingAmount);
-        LOGGER.info("Album rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        updateAlbumRating.execute(albumId);
+        LOGGER.info("Album rating updated successfully");
     }
 
     private void updateSongRating(Long songId) {
         LOGGER.info("Updating rating for song ID: {}", songId);
-        List<Review> reviews = new ArrayList<>(songDao.findReviewsBySongId(songId));
-        Double avgRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        Double roundedAvgRating = Math.round(avgRating * 100.0) / 100.0;
-        Integer ratingAmount = reviews.size();
-        songDao.updateRating(songId, roundedAvgRating, ratingAmount);
-        LOGGER.info("Song rating updated. New average rating: {}, Total reviews: {}", roundedAvgRating, ratingAmount);
+        updateSongRating.execute(songId);
+        LOGGER.info("Song rating updated successfully");
     }
 
     @Override

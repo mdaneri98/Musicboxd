@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.models.reviews;
 
-import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.infrastructure.jpa.ArtistJpaEntity;
 import ar.edu.itba.paw.models.Image;
 
 import javax.persistence.*;
@@ -13,18 +13,18 @@ public class ArtistReview extends Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", nullable = false)
-    private Artist artist;
+    private ArtistJpaEntity artist;
 
     public ArtistReview() {
         // Constructor vacío necesario para JPA
     }
 
-    public ArtistReview(Long userId, Artist artist,String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked, Integer commentAmount) {
+    public ArtistReview(Long userId, ArtistJpaEntity artist,String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked, Integer commentAmount) {
         super(userId, title, description, rating, createdAt, likes, blocked, commentAmount);
         this.artist = artist;
     }
 
-    public ArtistReview(Long id, Artist artist, Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked, Integer commentAmount) {
+    public ArtistReview(Long id, ArtistJpaEntity artist, Long userId, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean blocked, Integer commentAmount) {
         super(id, userId, title, description, rating, createdAt, likes, blocked, commentAmount);
         this.artist = artist;
     }
@@ -41,7 +41,10 @@ public class ArtistReview extends Review {
 
     @Override
     public Image getItemImage() {
-        return artist.getImage();
+        if (artist.getImageId() != null) {
+            return new Image(artist.getImageId(), null);
+        }
+        return null;
     }
 
     @Override
@@ -49,11 +52,11 @@ public class ArtistReview extends Review {
         return ReviewType.ARTIST;
     }
 
-    public Artist getArtist() {
+    public ArtistJpaEntity getArtist() {
         return artist;
     }
 
-    public void setArtist(Artist artist) {
+    public void setArtist(ArtistJpaEntity artist) {
         this.artist = artist;
     }
 }

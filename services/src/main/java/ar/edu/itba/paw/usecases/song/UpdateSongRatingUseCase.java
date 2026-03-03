@@ -2,7 +2,7 @@ package ar.edu.itba.paw.usecases.song;
 
 import ar.edu.itba.paw.domain.song.SongRepository;
 import ar.edu.itba.paw.models.reviews.SongReview;
-import ar.edu.itba.paw.persistence.SongDao;
+import ar.edu.itba.paw.persistence.ReviewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,18 +13,18 @@ import java.util.List;
 public class UpdateSongRatingUseCase implements UpdateSongRating {
 
     private final SongRepository songRepository;
-    private final SongDao songDao;
+    private final ReviewDao reviewDao;
 
     @Autowired
-    public UpdateSongRatingUseCase(SongRepository songRepository, SongDao songDao) {
+    public UpdateSongRatingUseCase(SongRepository songRepository, ReviewDao reviewDao) {
         this.songRepository = songRepository;
-        this.songDao = songDao;
+        this.reviewDao = reviewDao;
     }
 
     @Override
     @Transactional
     public void execute(Long songId) {
-        List<SongReview> reviews = songDao.findReviewsBySongId(songId);
+        List<SongReview> reviews = reviewDao.findReviewsBySongId(songId);
 
         if (reviews.isEmpty()) {
             songRepository.updateRating(songId, 0.0, 0);

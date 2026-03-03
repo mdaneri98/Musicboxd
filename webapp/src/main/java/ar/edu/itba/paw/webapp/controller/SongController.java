@@ -4,14 +4,12 @@ import ar.edu.itba.paw.webapp.dto.ReviewDTO;
 import ar.edu.itba.paw.webapp.dto.SongDTO;
 import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModSongFormMapper;
 import ar.edu.itba.paw.webapp.form.ModSongForm;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongApplicationService;
@@ -39,9 +37,6 @@ public class SongController extends BaseController {
 
     @Autowired
     private ReviewService reviewService;
-
-    @Autowired
-    private ModSongFormMapper modSongFormMapper;
 
     @Autowired
     private SongDtoMapper songDtoMapper;
@@ -85,16 +80,12 @@ public class SongController extends BaseController {
     @Consumes(CustomMediaType.SONG)
     @Produces(CustomMediaType.SONG)
     public Response createSong(@Valid ModSongForm modSongForm) {
-        Song legacyInput = modSongFormMapper.toModel(modSongForm);
-
         CreateSongCommand command = new CreateSongCommand(
-            legacyInput.getTitle(),
-            legacyInput.getDuration(),
-            legacyInput.getTrackNumber(),
-            legacyInput.getAlbum() != null ? legacyInput.getAlbum().getId() : null,
-            legacyInput.getArtists() != null ?
-                legacyInput.getArtists().stream().map(ar.edu.itba.paw.models.Artist::getId).toList() :
-                null
+            modSongForm.getTitle(),
+            modSongForm.getDuration(),
+            modSongForm.getTrackNumber(),
+            modSongForm.getAlbumId(),
+            null
         );
 
         ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.create(command);
@@ -120,17 +111,14 @@ public class SongController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
         ar.edu.itba.paw.domain.song.Song oldDomainSong = songApplicationService.getById(id);
-        Song legacyInput = modSongFormMapper.toModel(modSongForm);
 
         UpdateSongCommand command = new UpdateSongCommand(
             id,
-            legacyInput.getTitle(),
-            legacyInput.getDuration(),
-            legacyInput.getTrackNumber(),
-            legacyInput.getAlbum() != null ? legacyInput.getAlbum().getId() : null,
-            legacyInput.getArtists() != null ?
-                legacyInput.getArtists().stream().map(ar.edu.itba.paw.models.Artist::getId).toList() :
-                null
+            modSongForm.getTitle(),
+            modSongForm.getDuration(),
+            modSongForm.getTrackNumber(),
+            modSongForm.getAlbumId(),
+            null
         );
 
         ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.update(command);

@@ -8,17 +8,12 @@ import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ArtistDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModAlbumFormMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModArtistFormMapper;
 import ar.edu.itba.paw.webapp.form.ModAlbumForm;
 import ar.edu.itba.paw.webapp.form.ModArtistForm;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ArtistApplicationService;
@@ -56,12 +51,6 @@ public class ArtistController extends BaseController {
 
     @Autowired
     private SongApplicationService songApplicationService;
-
-    @Autowired
-    private ModAlbumFormMapper modAlbumFormMapper;
-
-    @Autowired
-    private ModArtistFormMapper modArtistFormMapper;
 
     @Autowired
     private ArtistDtoMapper artistDtoMapper;
@@ -111,12 +100,10 @@ public class ArtistController extends BaseController {
     @Consumes(CustomMediaType.ARTIST)
     @Produces(CustomMediaType.ARTIST)
     public Response createArtist(@Valid ModArtistForm modArtistForm) {
-        Artist legacyInput = modArtistFormMapper.toModel(modArtistForm);
-
         CreateArtistCommand command = new CreateArtistCommand(
-            legacyInput.getName(),
-            legacyInput.getBio(),
-            legacyInput.getImage() != null ? legacyInput.getImage().getId() : null
+            modArtistForm.getName(),
+            modArtistForm.getBio(),
+            modArtistForm.getArtistImgId()
         );
 
         ar.edu.itba.paw.domain.artist.Artist domainArtist = artistApplicationService.create(command);
@@ -139,13 +126,11 @@ public class ArtistController extends BaseController {
     @Produces(CustomMediaType.ARTIST)
     public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModArtistForm modArtistForm) {
-        Artist form = modArtistFormMapper.toModel(modArtistForm);
-
         UpdateArtistCommand command = new UpdateArtistCommand(
             id,
-            form.getName(),
-            form.getBio(),
-            form.getImage() != null ? form.getImage().getId() : null
+            modArtistForm.getName(),
+            modArtistForm.getBio(),
+            modArtistForm.getArtistImgId()
         );
 
         ar.edu.itba.paw.domain.artist.Artist domainArtist = artistApplicationService.update(command);
@@ -231,13 +216,11 @@ public class ArtistController extends BaseController {
     public Response createArtistAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModAlbumForm modAlbumForm) {
-        Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
-
         CreateAlbumCommand command = new CreateAlbumCommand(
-            albumInput.getTitle(),
-            albumInput.getGenre(),
-            albumInput.getReleaseDate(),
-            albumInput.getImage() != null ? albumInput.getImage().getId() : null,
+            modAlbumForm.getTitle(),
+            modAlbumForm.getGenre(),
+            modAlbumForm.getReleaseDate(),
+            modAlbumForm.getAlbumImageId(),
             id
         );
 

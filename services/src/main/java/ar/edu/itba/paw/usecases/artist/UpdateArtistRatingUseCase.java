@@ -5,7 +5,7 @@ import ar.edu.itba.paw.domain.artist.ArtistId;
 import ar.edu.itba.paw.domain.artist.ArtistRepository;
 import ar.edu.itba.paw.exception.not_found.ArtistNotFoundException;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
-import ar.edu.itba.paw.persistence.ArtistDao;
+import ar.edu.itba.paw.persistence.ReviewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +17,12 @@ import java.util.List;
 public class UpdateArtistRatingUseCase implements UpdateArtistRating {
 
     private final ArtistRepository artistRepository;
-    private final ArtistDao artistDao;
+    private final ReviewDao reviewDao;
 
     @Autowired
-    public UpdateArtistRatingUseCase(ArtistRepository artistRepository, ArtistDao artistDao) {
+    public UpdateArtistRatingUseCase(ArtistRepository artistRepository, ReviewDao reviewDao) {
         this.artistRepository = artistRepository;
-        this.artistDao = artistDao;
+        this.reviewDao = reviewDao;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class UpdateArtistRatingUseCase implements UpdateArtistRating {
         Artist artist = artistRepository.findById(id)
             .orElseThrow(() -> new ArtistNotFoundException(artistId));
 
-        List<ArtistReview> reviews = artistDao.findReviewsByArtistId(artistId);
+        List<ArtistReview> reviews = reviewDao.findReviewsByArtistId(artistId);
 
         double avgRating = reviews.stream()
             .mapToInt(ArtistReview::getRating)

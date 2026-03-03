@@ -6,16 +6,12 @@ import ar.edu.itba.paw.webapp.dto.SongDTO;
 import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModAlbumFormMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModSongFormMapper;
 import ar.edu.itba.paw.webapp.form.ModAlbumForm;
 import ar.edu.itba.paw.webapp.form.ModSongForm;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.services.AlbumApplicationService;
@@ -49,12 +45,6 @@ public class AlbumController extends BaseController {
 
     @Autowired
     private SongApplicationService songApplicationService;
-
-    @Autowired
-    private ModAlbumFormMapper modAlbumFormMapper;
-
-    @Autowired
-    private ModSongFormMapper modSongFormMapper;
 
     @Autowired
     private AlbumDtoMapper albumDtoMapper;
@@ -101,14 +91,12 @@ public class AlbumController extends BaseController {
     @Consumes(CustomMediaType.ALBUM)
     @Produces(CustomMediaType.ALBUM)
     public Response createAlbum(@Valid ModAlbumForm modAlbumForm) {
-        Album legacyInput = modAlbumFormMapper.toModel(modAlbumForm);
-
         CreateAlbumCommand command = new CreateAlbumCommand(
-            legacyInput.getTitle(),
-            legacyInput.getGenre(),
-            legacyInput.getReleaseDate(),
-            legacyInput.getImage() != null ? legacyInput.getImage().getId() : null,
-            legacyInput.getArtist() != null ? legacyInput.getArtist().getId() : null
+            modAlbumForm.getTitle(),
+            modAlbumForm.getGenre(),
+            modAlbumForm.getReleaseDate(),
+            modAlbumForm.getAlbumImageId(),
+            modAlbumForm.getArtistId()
         );
 
         ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.create(command);
@@ -224,16 +212,12 @@ public class AlbumController extends BaseController {
     public Response createAlbumSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
-        Song songInput = modSongFormMapper.toModel(modSongForm, id);
-
         CreateSongCommand command = new CreateSongCommand(
-            songInput.getTitle(),
-            songInput.getDuration(),
-            songInput.getTrackNumber(),
+            modSongForm.getTitle(),
+            modSongForm.getDuration(),
+            modSongForm.getTrackNumber(),
             id,
-            songInput.getArtists() != null ?
-                songInput.getArtists().stream().map(ar.edu.itba.paw.models.Artist::getId).toList() :
-                null
+            null
         );
 
         ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.create(command);
