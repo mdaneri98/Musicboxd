@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.usecases.user;
 
-import ar.edu.itba.paw.models.Song;
+import ar.edu.itba.paw.domain.song.Song;
 import java.util.List;
 
 public interface GetUserFavoriteSongs {

@@ -21,8 +21,6 @@ import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.services.AlbumApplicationService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongApplicationService;
-import ar.edu.itba.paw.services.mappers.LegacyAlbumMapper;
-import ar.edu.itba.paw.services.mappers.LegacySongMapper;
 import ar.edu.itba.paw.usecases.album.*;
 import ar.edu.itba.paw.usecases.song.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,16 +45,10 @@ public class AlbumController extends BaseController {
     private AlbumApplicationService albumApplicationService;
 
     @Autowired
-    private LegacyAlbumMapper legacyAlbumMapper;
-
-    @Autowired
     private ReviewService reviewService;
 
     @Autowired
     private SongApplicationService songApplicationService;
-
-    @Autowired
-    private LegacySongMapper legacySongMapper;
 
     @Autowired
     private ModAlbumFormMapper modAlbumFormMapper;
@@ -81,24 +73,20 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<ar.edu.itba.paw.domain.album.Album> domainAlbums;
+        List<ar.edu.itba.paw.views.AlbumView> albumViews;
         if (search != null && !search.isEmpty()) {
-            domainAlbums = albumApplicationService.searchByTitle(search, page, size);
+            albumViews = albumApplicationService.searchViewByTitle(search, page, size);
         } else {
-            domainAlbums = albumApplicationService.getAll(page - 1, size);
+            albumViews = albumApplicationService.getAllViews(page - 1, size);
         }
 
         Long totalCount = albumApplicationService.count();
 
-        List<Album> albums = domainAlbums.stream()
-            .map(legacyAlbumMapper::toLegacyModel)
-            .toList();
-
-        if (albums.isEmpty()) {
+        if (albumViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums, uriInfo);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albumViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<AlbumDTO>>(albumDTOs) {
@@ -124,8 +112,8 @@ public class AlbumController extends BaseController {
         );
 
         ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.create(command);
-        Album album = legacyAlbumMapper.toLegacyModel(domainAlbum);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, uriInfo);
+        ar.edu.itba.paw.views.AlbumView albumView = albumApplicationService.getViewById(domainAlbum.getId().getValue());
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(albumView, uriInfo);
         return Response.created(albumDTO.getLinks().getSelf()).entity(albumDTO).build();
     }
 
@@ -133,9 +121,8 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.ALBUM)
     public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.getById(id);
-        Album album = legacyAlbumMapper.toLegacyModel(domainAlbum);
-        return buildResponseUsingEtag(request, () -> albumDtoMapper.toDTO(album, uriInfo));
+        ar.edu.itba.paw.views.AlbumView albumView = albumApplicationService.getViewById(id);
+        return buildResponseUsingEtag(request, () -> albumDtoMapper.toDTO(albumView, uriInfo));
     }
 
     @PUT
@@ -144,22 +131,18 @@ public class AlbumController extends BaseController {
     @Consumes(CustomMediaType.ALBUM)
     @Produces(CustomMediaType.ALBUM)
     public Response updateAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModAlbumForm modAlbumForm) {
-        ar.edu.itba.paw.domain.album.Album oldDomainAlbum = albumApplicationService.getById(id);
-        Album oldAlbum = legacyAlbumMapper.toLegacyModel(oldDomainAlbum);
-        Album albumToUpdate = modAlbumFormMapper.mergeModel(oldAlbum, modAlbumForm);
-
         UpdateAlbumCommand command = new UpdateAlbumCommand(
             id,
-            albumToUpdate.getTitle(),
-            albumToUpdate.getGenre(),
-            albumToUpdate.getReleaseDate(),
-            albumToUpdate.getImage() != null ? albumToUpdate.getImage().getId() : null,
-            albumToUpdate.getArtist() != null ? albumToUpdate.getArtist().getId() : null
+            modAlbumForm.getTitle(),
+            modAlbumForm.getGenre(),
+            modAlbumForm.getReleaseDate(),
+            modAlbumForm.getAlbumImageId(),
+            modAlbumForm.getArtistId()
         );
 
         ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.update(command);
-        Album updatedAlbum = legacyAlbumMapper.toLegacyModel(domainAlbum);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(updatedAlbum, uriInfo);
+        ar.edu.itba.paw.views.AlbumView albumView = albumApplicationService.getViewById(domainAlbum.getId().getValue());
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(albumView, uriInfo);
         return Response.ok(albumDTO).build();
     }
 
@@ -216,18 +199,14 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
-        List<ar.edu.itba.paw.domain.song.Song> domainSongs = songApplicationService.getByAlbumId(id);
+        List<ar.edu.itba.paw.views.SongView> songViews = songApplicationService.getViewsByAlbumId(id);
         Long totalCount = songApplicationService.count();
 
-        List<Song> songs = domainSongs.stream()
-            .map(legacySongMapper::toLegacyModel)
-            .toList();
-
-        if (songs.isEmpty()) {
+        if (songViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<SongDTO>>(songDTOs) {
@@ -258,8 +237,8 @@ public class AlbumController extends BaseController {
         );
 
         ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.create(command);
-        Song song = legacySongMapper.toLegacyModel(domainSong);
-        SongDTO songDTO = songDtoMapper.toDTO(song, uriInfo);
+        ar.edu.itba.paw.views.SongView songView = songApplicationService.getViewById(domainSong.getId().getValue());
+        SongDTO songDTO = songDtoMapper.toDTO(songView, uriInfo);
         return Response.created(songDTO.getLinks().getSelf()).entity(songDTO).build();
     }
 }

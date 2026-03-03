@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.domain.song.Song;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.usecases.song.*;
+import ar.edu.itba.paw.views.SongView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,11 @@ public class SongApplicationService {
     private final GetSongsByAlbumId getSongsByAlbumId;
     private final SearchSongsByTitle searchSongsByTitle;
     private final UpdateSongRating updateSongRating;
+    private final GetSongView getSongView;
+    private final GetAllSongsView getAllSongsView;
+    private final SearchSongsByTitleView searchSongsByTitleView;
+    private final GetSongsByAlbumIdView getSongsByAlbumIdView;
+    private final GetSongsByArtistIdView getSongsByArtistIdView;
 
     @Autowired
     public SongApplicationService(GetSong getSong,
@@ -30,7 +36,12 @@ public class SongApplicationService {
                                    GetSongsByArtistId getSongsByArtistId,
                                    GetSongsByAlbumId getSongsByAlbumId,
                                    SearchSongsByTitle searchSongsByTitle,
-                                   UpdateSongRating updateSongRating) {
+                                   UpdateSongRating updateSongRating,
+                                   GetSongView getSongView,
+                                   GetAllSongsView getAllSongsView,
+                                   SearchSongsByTitleView searchSongsByTitleView,
+                                   GetSongsByAlbumIdView getSongsByAlbumIdView,
+                                   GetSongsByArtistIdView getSongsByArtistIdView) {
         this.getSong = getSong;
         this.getAllSongs = getAllSongs;
         this.createSong = createSong;
@@ -40,6 +51,11 @@ public class SongApplicationService {
         this.getSongsByAlbumId = getSongsByAlbumId;
         this.searchSongsByTitle = searchSongsByTitle;
         this.updateSongRating = updateSongRating;
+        this.getSongView = getSongView;
+        this.getAllSongsView = getAllSongsView;
+        this.searchSongsByTitleView = searchSongsByTitleView;
+        this.getSongsByAlbumIdView = getSongsByAlbumIdView;
+        this.getSongsByArtistIdView = getSongsByArtistIdView;
     }
 
     public Song getById(Long songId) {
@@ -80,5 +96,25 @@ public class SongApplicationService {
 
     public void updateRating(Long songId) {
         updateSongRating.execute(songId);
+    }
+
+    public SongView getViewById(Long songId) {
+        return getSongView.execute(songId);
+    }
+
+    public List<SongView> getAllViews(int page, int size) {
+        return getAllSongsView.execute(page, size);
+    }
+
+    public List<SongView> searchViewByTitle(String titleSubstring, int page, int size) {
+        return searchSongsByTitleView.execute(titleSubstring, page, size);
+    }
+
+    public List<SongView> getViewsByAlbumId(Long albumId) {
+        return getSongsByAlbumIdView.execute(albumId);
+    }
+
+    public List<SongView> getViewsByArtistId(Long artistId, FilterType filterType, int page, int size) {
+        return getSongsByArtistIdView.execute(artistId, filterType, page, size);
     }
 }

@@ -15,7 +15,6 @@ import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongApplicationService;
-import ar.edu.itba.paw.services.mappers.LegacySongMapper;
 import ar.edu.itba.paw.usecases.song.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,9 +38,6 @@ public class SongController extends BaseController {
     private SongApplicationService songApplicationService;
 
     @Autowired
-    private LegacySongMapper legacySongMapper;
-
-    @Autowired
     private ReviewService reviewService;
 
     @Autowired
@@ -61,24 +57,20 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<ar.edu.itba.paw.domain.song.Song> domainSongs;
+        List<ar.edu.itba.paw.views.SongView> songViews;
         if (search != null && !search.isEmpty()) {
-            domainSongs = songApplicationService.searchByTitle(search, page, size);
+            songViews = songApplicationService.searchViewByTitle(search, page, size);
         } else {
-            domainSongs = songApplicationService.getAll(page - 1, size);
+            songViews = songApplicationService.getAllViews(page - 1, size);
         }
 
         Long totalCount = songApplicationService.count();
 
-        List<Song> songs = domainSongs.stream()
-            .map(legacySongMapper::toLegacyModel)
-            .toList();
-
-        if (songs.isEmpty()) {
+        if (songViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<SongDTO>>(songDTOs) {
@@ -106,8 +98,8 @@ public class SongController extends BaseController {
         );
 
         ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.create(command);
-        Song song = legacySongMapper.toLegacyModel(domainSong);
-        SongDTO songDTO = songDtoMapper.toDTO(song, uriInfo);
+        ar.edu.itba.paw.views.SongView songView = songApplicationService.getViewById(domainSong.getId().getValue());
+        SongDTO songDTO = songDtoMapper.toDTO(songView, uriInfo);
         return Response.created(songDTO.getLinks().getSelf()).entity(songDTO).build();
     }
 
@@ -115,9 +107,8 @@ public class SongController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.SONG)
     public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.getById(id);
-        Song song = legacySongMapper.toLegacyModel(domainSong);
-        return buildResponseUsingEtag(request, () -> songDtoMapper.toDTO(song, uriInfo));
+        ar.edu.itba.paw.views.SongView songView = songApplicationService.getViewById(id);
+        return buildResponseUsingEtag(request, () -> songDtoMapper.toDTO(songView, uriInfo));
     }
 
     @PUT
@@ -129,23 +120,22 @@ public class SongController extends BaseController {
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
         ar.edu.itba.paw.domain.song.Song oldDomainSong = songApplicationService.getById(id);
-        Song oldSong = legacySongMapper.toLegacyModel(oldDomainSong);
-        Song songToUpdate = modSongFormMapper.mergeModel(oldSong, modSongForm);
+        Song legacyInput = modSongFormMapper.toModel(modSongForm);
 
         UpdateSongCommand command = new UpdateSongCommand(
             id,
-            songToUpdate.getTitle(),
-            songToUpdate.getDuration(),
-            songToUpdate.getTrackNumber(),
-            songToUpdate.getAlbum() != null ? songToUpdate.getAlbum().getId() : null,
-            songToUpdate.getArtists() != null ?
-                songToUpdate.getArtists().stream().map(ar.edu.itba.paw.models.Artist::getId).toList() :
+            legacyInput.getTitle(),
+            legacyInput.getDuration(),
+            legacyInput.getTrackNumber(),
+            legacyInput.getAlbum() != null ? legacyInput.getAlbum().getId() : null,
+            legacyInput.getArtists() != null ?
+                legacyInput.getArtists().stream().map(ar.edu.itba.paw.models.Artist::getId).toList() :
                 null
         );
 
         ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.update(command);
-        Song updatedSong = legacySongMapper.toLegacyModel(domainSong);
-        SongDTO songDTO = songDtoMapper.toDTO(updatedSong, uriInfo);
+        ar.edu.itba.paw.views.SongView songView = songApplicationService.getViewById(domainSong.getId().getValue());
+        SongDTO songDTO = songDtoMapper.toDTO(songView, uriInfo);
         return Response.ok(songDTO).build();
     }
 

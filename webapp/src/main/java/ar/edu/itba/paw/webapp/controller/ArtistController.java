@@ -25,9 +25,6 @@ import ar.edu.itba.paw.services.ArtistApplicationService;
 import ar.edu.itba.paw.services.AlbumApplicationService;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongApplicationService;
-import ar.edu.itba.paw.services.mappers.LegacyArtistMapper;
-import ar.edu.itba.paw.services.mappers.LegacyAlbumMapper;
-import ar.edu.itba.paw.services.mappers.LegacySongMapper;
 import ar.edu.itba.paw.usecases.artist.*;
 import ar.edu.itba.paw.usecases.album.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,22 +49,13 @@ public class ArtistController extends BaseController {
     private ArtistApplicationService artistApplicationService;
 
     @Autowired
-    private LegacyArtistMapper legacyArtistMapper;
-
-    @Autowired
     private AlbumApplicationService albumApplicationService;
-
-    @Autowired
-    private LegacyAlbumMapper legacyAlbumMapper;
 
     @Autowired
     private ReviewService reviewService;
 
     @Autowired
     private SongApplicationService songApplicationService;
-
-    @Autowired
-    private LegacySongMapper legacySongMapper;
 
     @Autowired
     private ModAlbumFormMapper modAlbumFormMapper;
@@ -104,15 +92,11 @@ public class ArtistController extends BaseController {
 
         Long totalCount = artistApplicationService.count();
 
-        List<Artist> artists = domainArtists.stream()
-            .map(legacyArtistMapper::toLegacyModel)
-            .toList();
-
-        if (artists.isEmpty()) {
+        if (domainArtists.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists, uriInfo);
+        List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(domainArtists, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ArtistDTO>>(artistDTOs) {
@@ -136,8 +120,7 @@ public class ArtistController extends BaseController {
         );
 
         ar.edu.itba.paw.domain.artist.Artist domainArtist = artistApplicationService.create(command);
-        Artist artist = legacyArtistMapper.toLegacyModel(domainArtist);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist, uriInfo);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(domainArtist, uriInfo);
         return Response.created(artistDTO.getLinks().getSelf()).entity(artistDTO).build();
     }
 
@@ -146,8 +129,7 @@ public class ArtistController extends BaseController {
     @Produces(CustomMediaType.ARTIST)
     public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
         ar.edu.itba.paw.domain.artist.Artist domainArtist = artistApplicationService.getById(id);
-        Artist artist = legacyArtistMapper.toLegacyModel(domainArtist);
-        return buildResponseUsingEtag(request, () -> artistDtoMapper.toDTO(artist, uriInfo));
+        return buildResponseUsingEtag(request, () -> artistDtoMapper.toDTO(domainArtist, uriInfo));
     }
 
     @PUT
@@ -167,8 +149,7 @@ public class ArtistController extends BaseController {
         );
 
         ar.edu.itba.paw.domain.artist.Artist domainArtist = artistApplicationService.update(command);
-        Artist updatedArtist = legacyArtistMapper.toLegacyModel(domainArtist);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(updatedArtist, uriInfo);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(domainArtist, uriInfo);
         return Response.ok(artistDTO).build();
     }
 
@@ -225,18 +206,14 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
-        List<ar.edu.itba.paw.domain.album.Album> domainAlbums = albumApplicationService.getByArtistId(id);
+        List<ar.edu.itba.paw.views.AlbumView> albumViews = albumApplicationService.getViewsByArtistId(id);
         Long totalCount = albumApplicationService.count();
 
-        List<Album> albums = domainAlbums.stream()
-            .map(legacyAlbumMapper::toLegacyModel)
-            .toList();
-
-        if (albums.isEmpty()) {
+        if (albumViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums, uriInfo);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albumViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<AlbumDTO>>(albumDTOs) {
@@ -265,8 +242,8 @@ public class ArtistController extends BaseController {
         );
 
         ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.create(command);
-        Album album = legacyAlbumMapper.toLegacyModel(domainAlbum);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, uriInfo);
+        ar.edu.itba.paw.views.AlbumView albumView = albumApplicationService.getViewById(domainAlbum.getId().getValue());
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(albumView, uriInfo);
         return Response.created(albumDTO.getLinks().getSelf()).entity(albumDTO).build();
     }
 
@@ -279,18 +256,14 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.POPULAR_FILTER_STRING) FilterType filter) {
 
-        List<ar.edu.itba.paw.domain.song.Song> domainSongs = songApplicationService.getByArtistId(id, filter, page, size);
+        List<ar.edu.itba.paw.views.SongView> songViews = songApplicationService.getViewsByArtistId(id, filter, page, size);
         Long totalCount = songApplicationService.count();
 
-        List<Song> songs = domainSongs.stream()
-            .map(legacySongMapper::toLegacyModel)
-            .toList();
-
-        if (songs.isEmpty()) {
+        if (songViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<SongDTO>>(songDTOs) {
