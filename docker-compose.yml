@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -17,7 +15,7 @@ services:
     networks:
       - musicboxd-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U musicboxd"]
+      test: ["CMD-SHELL", "pg_isready -U musicboxd -d postgres"]
       interval: 5s
       timeout: 5s
       retries: 5

@@ -16,9 +16,10 @@ COPY models/ ./models/
 COPY interfaces/ ./interfaces/
 COPY persistence/ ./persistence/
 COPY services/ ./services/
-COPY webapp/ ./webapp/
+COPY frontend/ ./frontend/
 COPY --from=frontend-builder /app/frontend/out ./frontend/out
-RUN mvn clean package -DskipTests
+COPY webapp/ ./webapp/
+RUN mvn clean package -DskipTests -pl !frontend
 
 # Stage 3: Runtime (Tomcat)
 FROM tomcat:10.1-jdk21-temurin-jammy
