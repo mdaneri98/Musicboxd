@@ -16,9 +16,13 @@ import ar.edu.itba.paw.webapp.utils.SecurityContextUtils;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.domain.user.User;
-import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.domain.review.Review;
+import ar.edu.itba.paw.domain.review.ReviewType;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.ReviewService;
+import ar.edu.itba.paw.usecases.review.CreateReviewCommand;
+import ar.edu.itba.paw.usecases.review.ReviewApplicationService;
+import ar.edu.itba.paw.usecases.review.UpdateReviewCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -44,6 +48,9 @@ public class ReviewController extends BaseController {
     private CommentService commentService;
 
     @Autowired
+    private ReviewApplicationService reviewApplicationService;
+
+    @Autowired
     private ReviewFormMapper reviewFormMapper;
 
     @Autowired
@@ -65,12 +72,20 @@ public class ReviewController extends BaseController {
 
         List<Review> reviews;
         if (search != null && !search.isEmpty()) {
-            reviews = reviewService.findBySubstring(search, page, size);
+            List<ar.edu.itba.paw.models.reviews.Review> legacyReviews = reviewService.findBySubstring(search, page, size);
+            Long totalCount = reviewService.countAll();
+            if (legacyReviews.isEmpty()) {
+                return Response.noContent().build();
+            }
+            List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOListLegacy(legacyReviews, uriInfo);
+            Response.ResponseBuilder responseBuilder = Response.ok(new GenericEntity<List<ReviewDTO>>(reviewDTOs) {});
+            PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo, page, size, totalCount);
+            return responseBuilder.build();
         } else {
-            reviews = reviewService.findPaginated(filter, page, size);
+            reviews = reviewApplicationService.getAllReviews(page, size);
         }
 
-        Long totalCount = reviewService.countAll();
+        Long totalCount = reviewApplicationService.countAllReviews();
 
         if (reviews.isEmpty()) {
             return Response.noContent().build();
@@ -91,8 +106,16 @@ public class ReviewController extends BaseController {
     @Produces(CustomMediaType.REVIEW)
     public Response createReview(@Valid ReviewForm reviewForm) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        Review reviewInput = reviewFormMapper.toModel(reviewForm, loggedUserId, reviewForm.getItemId().longValue());
-        Review review = reviewService.create(reviewInput);
+        ReviewType reviewType = ReviewType.valueOf(reviewForm.getItemType());
+        CreateReviewCommand command = new CreateReviewCommand(
+            loggedUserId,
+            reviewForm.getTitle(),
+            reviewForm.getDescription(),
+            reviewForm.getRating(),
+            reviewType,
+            reviewForm.getItemId().longValue()
+        );
+        Review review = reviewApplicationService.createReview(command);
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(review, uriInfo);
         return Response.created(reviewDTO.getLinks().getSelf()).entity(reviewDTO).build();
     }
@@ -101,7 +124,7 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.REVIEW)
     public Response getReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Review review = reviewService.findById(id);
+        Review review = reviewApplicationService.getReviewById(id);
         return buildResponseUsingEtag(request, () -> reviewDtoMapper.toDTO(review, uriInfo));
     }
 
@@ -109,7 +132,7 @@ public class ReviewController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("@securityServiceImpl.isReviewOwner(#id, authentication) or hasRole('MODERATOR')")
     public Response deleteReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        reviewService.delete(id);
+        reviewApplicationService.deleteReview(id);
         return Response.noContent().build();
     }
 
@@ -119,8 +142,13 @@ public class ReviewController extends BaseController {
     @Consumes(CustomMediaType.REVIEW)
     @Produces(CustomMediaType.REVIEW)
     public Response updateReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ReviewForm reviewForm) {
-        Review reviewToUpdate = reviewFormMapper.toModel(id, reviewForm);
-        Review updatedReview = reviewService.update(reviewToUpdate);
+        UpdateReviewCommand command = new UpdateReviewCommand(
+            id,
+            reviewForm.getTitle(),
+            reviewForm.getDescription(),
+            reviewForm.getRating()
+        );
+        Review updatedReview = reviewApplicationService.updateReview(command);
         ReviewDTO reviewDTO = reviewDtoMapper.toDTO(updatedReview, uriInfo);
         return Response.ok(reviewDTO).build();
     }
@@ -158,7 +186,7 @@ public class ReviewController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
-        Review review = reviewService.findById(reviewId);
+        Review review = reviewApplicationService.getReviewById(reviewId);
         List<User> users = reviewService.likedBy(reviewId, page, size);
         Integer totalCount = review.getLikes();
 
@@ -181,7 +209,7 @@ public class ReviewController extends BaseController {
     public Response getReviewLikeByUser(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId,
             @PathParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
-        if (reviewService.isLiked(userId, reviewId)) {
+        if (reviewApplicationService.isReviewLiked(reviewId, userId)) {
             return Response.noContent().build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
@@ -192,7 +220,7 @@ public class ReviewController extends BaseController {
     @PreAuthorize("hasRole('USER')")
     public Response likeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId) {
         Long loggedUserId = SecurityContextUtils.getCurrentUserId();
-        reviewService.createLike(loggedUserId, reviewId);
+        reviewApplicationService.likeReview(reviewId, loggedUserId);
 
         URI location = uriInfo.getBaseUriBuilder()
                 .path("reviews").path(String.valueOf(reviewId))
@@ -206,7 +234,7 @@ public class ReviewController extends BaseController {
     @PreAuthorize("@securityServiceImpl.isCurrentUser(#userId, authentication)")
     public Response unlikeReview(@PathParam(ControllerUtils.ID_PARAM_NAME) Long reviewId,
                                  @PathParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
-        reviewService.removeLike(userId, reviewId);
+        reviewApplicationService.unlikeReview(reviewId, userId);
         return Response.noContent().build();
     }
 }

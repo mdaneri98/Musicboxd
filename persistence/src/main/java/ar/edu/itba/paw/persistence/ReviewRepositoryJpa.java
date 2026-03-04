@@ -68,7 +68,7 @@ public class ReviewRepositoryJpa implements ReviewRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
@@ -90,7 +90,7 @@ public class ReviewRepositoryJpa implements ReviewRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .map(r -> (ArtistReview) r)
             .collect(Collectors.toList());
@@ -107,7 +107,7 @@ public class ReviewRepositoryJpa implements ReviewRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .map(r -> (AlbumReview) r)
             .collect(Collectors.toList());
@@ -124,7 +124,7 @@ public class ReviewRepositoryJpa implements ReviewRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .map(r -> (SongReview) r)
             .collect(Collectors.toList());
@@ -141,7 +141,7 @@ public class ReviewRepositoryJpa implements ReviewRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
@@ -266,7 +266,7 @@ public class ReviewRepositoryJpa implements ReviewRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }

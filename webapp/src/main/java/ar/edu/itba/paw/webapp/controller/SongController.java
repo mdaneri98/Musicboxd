@@ -11,8 +11,10 @@ import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.domain.review.SongReview;
 import ar.edu.itba.paw.services.ReviewService;
 import ar.edu.itba.paw.services.SongApplicationService;
+import ar.edu.itba.paw.usecases.review.ReviewApplicationService;
 import ar.edu.itba.paw.usecases.song.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +39,9 @@ public class SongController extends BaseController {
 
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private ReviewApplicationService reviewApplicationService;
 
     @Autowired
     private SongDtoMapper songDtoMapper;
@@ -145,24 +150,23 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
 
-        List<Review> reviews;
+        List<ReviewDTO> reviewDTOs;
+        Long totalCount;
+
         if (userId != null) {
-            reviews = new ArrayList<>();
-            Review review = reviewService.findSongReviewByUserId(userId, id);
-            if (review != null) {
-                reviews.add(review);
-            }
+            List<SongReview> domainReviews = new ArrayList<>();
+            reviewApplicationService.getReviewByUserAndSong(userId, id).ifPresent(domainReviews::add);
+            reviewDTOs = reviewDtoMapper.toDTOList(new ArrayList<>(domainReviews), uriInfo);
+            totalCount = reviewApplicationService.countAllReviews();
         } else {
-            reviews = reviewService.findSongReviewsPaginated(id, page, size);
+            List<SongReview> domainReviews = reviewApplicationService.getReviewsBySongId(id, page, size);
+            reviewDTOs = reviewDtoMapper.toDTOList(new ArrayList<>(domainReviews), uriInfo);
+            totalCount = reviewApplicationService.countAllReviews();
         }
 
-        Long totalCount = reviewService.countAll();
-
-        if (reviews.isEmpty()) {
+        if (reviewDTOs.isEmpty()) {
             return Response.noContent().build();
         }
-
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ReviewDTO>>(reviewDTOs) {

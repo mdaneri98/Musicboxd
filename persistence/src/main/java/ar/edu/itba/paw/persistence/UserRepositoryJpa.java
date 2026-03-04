@@ -89,7 +89,7 @@ public class UserRepositoryJpa implements UserRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
@@ -105,7 +105,7 @@ public class UserRepositoryJpa implements UserRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
@@ -153,7 +153,7 @@ public class UserRepositoryJpa implements UserRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(UserId::new)
             .collect(Collectors.toList());
     }

@@ -298,21 +298,21 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public Review findArtistReviewByUserId(Long userId, Long artistId) {
         return reviewDao.findArtistReviewByUserId(userId, artistId)
-                .orElseThrow(() -> new ReviewNotFoundException(userId, artistId, ReviewType.ARTIST.toString()));
+                .orElse(null);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findAlbumReviewByUserId(Long userId, Long albumId) {
         return reviewDao.findAlbumReviewByUserId(userId, albumId)
-                .orElseThrow(() -> new ReviewNotFoundException(userId, albumId, "Album"));
+                .orElse(null);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Review findSongReviewByUserId(Long userId, Long songId) {
         return reviewDao.findSongReviewByUserId(userId, songId)
-                .orElseThrow(() -> new ReviewNotFoundException(userId, songId, "Song"));
+                .orElse(null);
     }
 
     @Override

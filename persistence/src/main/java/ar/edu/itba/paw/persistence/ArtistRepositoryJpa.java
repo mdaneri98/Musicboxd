@@ -89,7 +89,7 @@ public class ArtistRepositoryJpa implements ArtistRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
@@ -116,7 +116,7 @@ public class ArtistRepositoryJpa implements ArtistRepository {
         String jpql = "SELECT a FROM ArtistJpaEntity a WHERE a.id IN :ids ORDER BY a.name";
         return em.createQuery(jpql, ArtistJpaEntity.class)
             .setParameter("ids", artistIds)
-            .getResultStream()
+            .getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
@@ -150,7 +150,7 @@ public class ArtistRepositoryJpa implements ArtistRepository {
             ArtistJpaEntity.class);
         query.setParameter("ids", artistIds);
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }

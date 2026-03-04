@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.usecases.user.*;
+import ar.edu.itba.paw.usecases.review.ReviewApplicationService;
 import ar.edu.itba.paw.domain.user.UserId;
 import ar.edu.itba.paw.domain.user.Email;
 import ar.edu.itba.paw.domain.artist.Artist;
@@ -10,7 +12,6 @@ import ar.edu.itba.paw.domain.song.Song;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.StatusType;
-import ar.edu.itba.paw.services.NotificationService;
 import ar.edu.itba.paw.webapp.dto.*;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
@@ -20,7 +21,6 @@ import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.validation.Valid;
@@ -38,13 +38,7 @@ import java.util.List;
 public class UserController extends BaseController {
 
     @Autowired
-    private ar.edu.itba.paw.services.UserApplicationService userApplicationService;
-
-    @Autowired
-    private ar.edu.itba.paw.services.AlbumApplicationService albumApplicationService;
-
-    @Autowired
-    private ar.edu.itba.paw.services.SongApplicationService songApplicationService;
+    private UserApplicationService userApplicationService;
 
     @Autowired
     private NotificationService notificationService;
@@ -53,10 +47,10 @@ public class UserController extends BaseController {
     private ReviewService reviewService;
 
     @Autowired
-    private UserFormMapper userFormMapper;
+    private ReviewApplicationService reviewApplicationService;
 
     @Autowired
-    private UserProfileFormMapper userProfileFormMapper;
+    private UserFormMapper userFormMapper;
 
     @Autowired
     private UserDtoMapper userDtoMapper;
@@ -209,14 +203,14 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<Review> reviews = reviewService.findReviewsByUserPaginated(id, page, size);
-        Long totalCount = reviewService.countReviewsByUser(id);
+        List<ar.edu.itba.paw.domain.review.Review> domainReviews = reviewApplicationService.getReviewsByUserId(id, page, size);
+        Long totalCount = reviewApplicationService.countReviewsByUserId(id);
 
-        if (reviews.isEmpty()) {
+        if (domainReviews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(domainReviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
@@ -294,7 +288,7 @@ public class UserController extends BaseController {
             return Response.noContent().build();
         }
 
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOListLegacy(reviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ReviewDTO>>(reviewDTOs) {

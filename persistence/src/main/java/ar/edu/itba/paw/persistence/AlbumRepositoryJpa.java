@@ -89,7 +89,7 @@ public class AlbumRepositoryJpa implements AlbumRepository {
             query.setMaxResults(size);
         }
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
@@ -99,7 +99,7 @@ public class AlbumRepositoryJpa implements AlbumRepository {
         String jpql = "SELECT a FROM AlbumJpaEntity a WHERE a.artistId = :artistId ORDER BY a.title";
         return em.createQuery(jpql, AlbumJpaEntity.class)
             .setParameter("artistId", artistId)
-            .getResultStream()
+            .getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
@@ -133,7 +133,7 @@ public class AlbumRepositoryJpa implements AlbumRepository {
             AlbumJpaEntity.class);
         query.setParameter("ids", albumIds);
 
-        return query.getResultStream()
+        return query.getResultList().stream()
             .map(mapper::toDomain)
             .collect(Collectors.toList());
     }
