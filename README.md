@@ -99,60 +99,6 @@ MAILER_EMAIL=your-email@gmail.com
 MAILER_PASSWORD=your-app-password
 ```
 
-### Instalación manual (sin Docker)
-
-Si prefieres no usar Docker o necesitas desarrollar directamente con Maven:
-
-#### 1. Base de datos
-
-```bash
-# Crear base de datos PostgreSQL
-createdb musicboxd
-
-# Ejecutar schema (desde la raíz del proyecto)
-psql -U postgres -d musicboxd -f persistence/src/main/resources/schemas.sql
-
-# (Opcional) Cargar datos de prueba
-psql -U postgres -d musicboxd -f persistence/src/main/resources/queries.sql
-```
-
-#### 2. Configurar credenciales
-
-Editar `webapp/src/main/resources/application.properties`:
-
-```properties
-database.url=jdbc:postgresql://localhost:5432/musicboxd
-database.username=tu-usuario
-database.password=tu-password
-```
-
-#### 3. Compilar e instalar
-
-```bash
-mvn clean install
-```
-
-**Nota:** Este comando también construye el frontend automáticamente via frontend-maven-plugin.
-
-#### 4. Ejecutar backend
-
-```bash
-cd webapp
-mvn jetty:run
-```
-
-La API estará disponible en `http://localhost:8080/paw-2024b-02`
-
-#### 5. Ejecutar tests
-
-```bash
-mvn test
-```
-
----
-
-**Compatibilidad:** Docker y Maven pueden usarse simultáneamente sin conflictos. Los cambios en `application.properties` afectan solo a la ejecución local, mientras que Docker usa variables de entorno.
-
 ## Estado de Arquitectura Hexagonal
 
 El proyecto se está migrando desde una arquitectura en capas tradicional hacia arquitectura hexagonal (puertos y adaptadores) para mejorar la separación de responsabilidades y la testabilidad.
