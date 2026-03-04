@@ -62,14 +62,20 @@ public class ApiConfig {
         return messageSource;
     }
 
+    private String getProperty(String key) {
+        String envKey = key.toUpperCase().replace('.', '_');
+        String envValue = System.getenv(envKey);
+        return envValue != null ? envValue : environment.getProperty(key);
+    }
+
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
         ds.setDriverClass(org.postgresql.Driver.class);
 
-        ds.setUrl(environment.getProperty("database.url"));
-        ds.setUsername(environment.getProperty("database.username"));
-        ds.setPassword(environment.getProperty("database.password"));
+        ds.setUrl(getProperty("database.url"));
+        ds.setUsername(getProperty("database.username"));
+        ds.setPassword(getProperty("database.password"));
         return ds;
     }
 

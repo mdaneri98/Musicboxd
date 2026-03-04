@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: musicboxd-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: musicboxd
+      POSTGRES_PASSWORD: musicboxd
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./persistence/src/main/resources/schemas.sql:/docker-entrypoint-initdb.d/01-schemas.sql:ro
+      - ./persistence/src/main/resources/queries.sql:/docker-entrypoint-initdb.d/02-queries.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - musicboxd-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U musicboxd"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:8080/api
+    container_name: musicboxd-backend
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/postgres
+      DATABASE_USERNAME: musicboxd
+      DATABASE_PASSWORD: musicboxd
+      JWT_SECRET: ${JWT_SECRET:-658f29aa9b4881aa4e3367853abe87ac4abae2d89601dc23b78396ab7abf150e}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-480000}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-86400000}
+      JWT_ISSUER: musicboxd
+      MAILER_HOST: ${MAILER_HOST:-smtp.gmail.com}
+      MAILER_PORT: ${MAILER_PORT:-25}
+      MAILER_EMAIL: ${MAILER_EMAIL:-info.musicboxd@gmail.com}
+      MAILER_PASSWORD: ${MAILER_PASSWORD:-none}
+      APP_URL_BASE: http://localhost:8080
+      APP_FRONTEND: http://localhost:3000
+      APP_BACKEND: http://localhost:8080/api
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - musicboxd-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: musicboxd-frontend-dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8080/api
+    ports:
+      - "3000:3000"
+    networks:
+      - musicboxd-network
+    profiles:
+      - dev
+
+volumes:
+  postgres-data:
+
+networks:
+  musicboxd-network:
+    driver: bridge
