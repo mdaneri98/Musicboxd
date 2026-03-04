@@ -3,9 +3,6 @@ package ar.edu.itba.paw.services.utils;
 import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.Notification;
 
 import java.time.LocalDateTime;
@@ -52,40 +49,6 @@ public class MergeUtils {
         setter.accept(value);
     }
 
-    // Artist fields merge (Model to Model)
-    public static void mergeArtistFields(Artist existingArtist, Artist artistUpdate) {
-        mergeBasicFields(existingArtist, artistUpdate);
-        existingArtist.setUpdatedAt(LocalDateTime.now());
-    }
-
-    private static void mergeBasicFields(Artist existingArtist, Artist artistUpdate) {
-        setFieldIfNotNull(existingArtist::setName, artistUpdate.getName());
-        setFieldIfNotNull(existingArtist::setBio, artistUpdate.getBio());
-    }
-
-    // Album fields merge (Model to Model)
-    public static void mergeAlbumFields(Album existingAlbum, Album albumUpdate) {
-        mergeBasicFields(existingAlbum, albumUpdate);
-        existingAlbum.setUpdatedAt(LocalDateTime.now());
-    }
-
-    private static void mergeBasicFields(Album existingAlbum, Album albumUpdate) {
-        setFieldIfNotNull(existingAlbum::setTitle, albumUpdate.getTitle());
-        setFieldIfNotNull(existingAlbum::setGenre, albumUpdate.getGenre());
-        setFieldIfNotNull(existingAlbum::setReleaseDate, albumUpdate.getReleaseDate());
-    }
-
-    // Song fields merge (Model to Model)
-    public static void mergeSongFields(Song existingSong, Song songUpdate) {
-        mergeBasicFields(existingSong, songUpdate);
-        existingSong.setUpdatedAt(LocalDateTime.now());
-    }
-
-    private static void mergeBasicFields(Song existingSong, Song songUpdate) {
-        setFieldIfNotNull(existingSong::setTitle, songUpdate.getTitle());
-        setFieldIfNotNull(existingSong::setDuration, songUpdate.getDuration());
-        setFieldIfNotNull(existingSong::setTrackNumber, songUpdate.getTrackNumber());
-    }
 
     // Notification fields merge (Model to Model)
     public static void mergeNotificationFields(Notification existingNotification, Notification notificationUpdate) {

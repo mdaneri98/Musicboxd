@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.usecases.user;
 
-import ar.edu.itba.paw.models.Artist;
+import ar.edu.itba.paw.domain.artist.Artist;
 import java.util.List;
 
 public interface GetUserFavoriteArtists {

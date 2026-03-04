@@ -6,21 +6,21 @@ import ar.edu.itba.paw.webapp.dto.SongDTO;
 import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModAlbumFormMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModSongFormMapper;
 import ar.edu.itba.paw.webapp.form.ModAlbumForm;
 import ar.edu.itba.paw.webapp.form.ModSongForm;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.domain.review.AlbumReview;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.services.AlbumService;
+import ar.edu.itba.paw.services.AlbumApplicationService;
 import ar.edu.itba.paw.services.ReviewService;
-import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.SongApplicationService;
+import ar.edu.itba.paw.usecases.review.ReviewApplicationService;
+import ar.edu.itba.paw.usecases.album.*;
+import ar.edu.itba.paw.usecases.song.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -40,19 +40,16 @@ import java.util.ArrayList;
 public class AlbumController extends BaseController {
 
     @Autowired
-    private AlbumService albumService;
+    private AlbumApplicationService albumApplicationService;
 
     @Autowired
     private ReviewService reviewService;
 
     @Autowired
-    private SongService songService;
+    private ReviewApplicationService reviewApplicationService;
 
     @Autowired
-    private ModAlbumFormMapper modAlbumFormMapper;
-
-    @Autowired
-    private ModSongFormMapper modSongFormMapper;
+    private SongApplicationService songApplicationService;
 
     @Autowired
     private AlbumDtoMapper albumDtoMapper;
@@ -71,20 +68,20 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<Album> albums;
+        List<ar.edu.itba.paw.views.AlbumView> albumViews;
         if (search != null && !search.isEmpty()) {
-            albums = albumService.findByTitleContaining(search, page, size);
+            albumViews = albumApplicationService.searchViewByTitle(search, page, size);
         } else {
-            albums = albumService.findPaginated(filter, page, size);
+            albumViews = albumApplicationService.getAllViews(page - 1, size);
         }
 
-        Long totalCount = albumService.countAll();
+        Long totalCount = albumApplicationService.count();
 
-        if (albums.isEmpty()) {
+        if (albumViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums, uriInfo);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albumViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<AlbumDTO>>(albumDTOs) {
@@ -99,9 +96,17 @@ public class AlbumController extends BaseController {
     @Consumes(CustomMediaType.ALBUM)
     @Produces(CustomMediaType.ALBUM)
     public Response createAlbum(@Valid ModAlbumForm modAlbumForm) {
-        Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
-        Album album = albumService.create(albumInput);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, uriInfo);
+        CreateAlbumCommand command = new CreateAlbumCommand(
+            modAlbumForm.getTitle(),
+            modAlbumForm.getGenre(),
+            modAlbumForm.getReleaseDate(),
+            modAlbumForm.getAlbumImageId(),
+            modAlbumForm.getArtistId()
+        );
+
+        ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.create(command);
+        ar.edu.itba.paw.views.AlbumView albumView = albumApplicationService.getViewById(domainAlbum.getId().getValue());
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(albumView, uriInfo);
         return Response.created(albumDTO.getLinks().getSelf()).entity(albumDTO).build();
     }
 
@@ -109,8 +114,8 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.ALBUM)
     public Response getAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Album album = albumService.findById(id);
-        return buildResponseUsingEtag(request, () -> albumDtoMapper.toDTO(album, uriInfo));
+        ar.edu.itba.paw.views.AlbumView albumView = albumApplicationService.getViewById(id);
+        return buildResponseUsingEtag(request, () -> albumDtoMapper.toDTO(albumView, uriInfo));
     }
 
     @PUT
@@ -119,10 +124,18 @@ public class AlbumController extends BaseController {
     @Consumes(CustomMediaType.ALBUM)
     @Produces(CustomMediaType.ALBUM)
     public Response updateAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Valid ModAlbumForm modAlbumForm) {
-        Album oldAlbum = albumService.findById(id);
-        Album albumToUpdate = modAlbumFormMapper.mergeModel(oldAlbum, modAlbumForm);
-        Album updatedAlbum = albumService.update(albumToUpdate);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(updatedAlbum, uriInfo);
+        UpdateAlbumCommand command = new UpdateAlbumCommand(
+            id,
+            modAlbumForm.getTitle(),
+            modAlbumForm.getGenre(),
+            modAlbumForm.getReleaseDate(),
+            modAlbumForm.getAlbumImageId(),
+            modAlbumForm.getArtistId()
+        );
+
+        ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.update(command);
+        ar.edu.itba.paw.views.AlbumView albumView = albumApplicationService.getViewById(domainAlbum.getId().getValue());
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(albumView, uriInfo);
         return Response.ok(albumDTO).build();
     }
 
@@ -130,7 +143,8 @@ public class AlbumController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteAlbum(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        albumService.delete(id);
+        DeleteAlbumCommand command = new DeleteAlbumCommand(id);
+        albumApplicationService.delete(command);
         return Response.noContent().build();
     }
 
@@ -143,24 +157,23 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
 
-        List<Review> reviews;
+        List<ReviewDTO> reviewDTOs;
+        Long totalCount;
+
         if (userId != null) {
-            reviews = new ArrayList<>();
-            Review review = reviewService.findAlbumReviewByUserId(userId, id);
-            if (review != null) {
-                reviews.add(review);
-            }
+            List<AlbumReview> domainReviews = new ArrayList<>();
+            reviewApplicationService.getReviewByUserAndAlbum(userId, id).ifPresent(domainReviews::add);
+            reviewDTOs = reviewDtoMapper.toDTOList(new ArrayList<>(domainReviews), uriInfo);
+            totalCount = reviewApplicationService.countAllReviews();
         } else {
-            reviews = reviewService.findAlbumReviewsPaginated(id, page, size);
+            List<AlbumReview> domainReviews = reviewApplicationService.getReviewsByAlbumId(id, page, size);
+            reviewDTOs = reviewDtoMapper.toDTOList(new ArrayList<>(domainReviews), uriInfo);
+            totalCount = reviewApplicationService.countAllReviews();
         }
 
-        Long totalCount = reviewService.countAll();
-
-        if (reviews.isEmpty()) {
+        if (reviewDTOs.isEmpty()) {
             return Response.noContent().build();
         }
-
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
@@ -178,14 +191,14 @@ public class AlbumController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
-        List<Song> songs = songService.findByAlbumId(id);
-        Long totalCount = songService.countAll();
+        List<ar.edu.itba.paw.views.SongView> songViews = songApplicationService.getViewsByAlbumId(id);
+        Long totalCount = songApplicationService.count();
 
-        if (songs.isEmpty()) {
+        if (songViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<SongDTO>>(songDTOs) {
@@ -203,9 +216,17 @@ public class AlbumController extends BaseController {
     public Response createAlbumSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
-        Song songInput = modSongFormMapper.toModel(modSongForm, id);
-        Song song = songService.create(songInput);
-        SongDTO songDTO = songDtoMapper.toDTO(song, uriInfo);
+        CreateSongCommand command = new CreateSongCommand(
+            modSongForm.getTitle(),
+            modSongForm.getDuration(),
+            modSongForm.getTrackNumber(),
+            id,
+            null
+        );
+
+        ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.create(command);
+        ar.edu.itba.paw.views.SongView songView = songApplicationService.getViewById(domainSong.getId().getValue());
+        SongDTO songDTO = songDtoMapper.toDTO(songView, uriInfo);
         return Response.created(songDTO.getLinks().getSelf()).entity(songDTO).build();
     }
 }

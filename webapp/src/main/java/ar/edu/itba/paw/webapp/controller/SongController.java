@@ -4,17 +4,18 @@ import ar.edu.itba.paw.webapp.dto.ReviewDTO;
 import ar.edu.itba.paw.webapp.dto.SongDTO;
 import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModSongFormMapper;
 import ar.edu.itba.paw.webapp.form.ModSongForm;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import ar.edu.itba.paw.models.FilterType;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.reviews.Review;
+import ar.edu.itba.paw.domain.review.SongReview;
 import ar.edu.itba.paw.services.ReviewService;
-import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.SongApplicationService;
+import ar.edu.itba.paw.usecases.review.ReviewApplicationService;
+import ar.edu.itba.paw.usecases.song.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -34,13 +35,13 @@ import java.util.ArrayList;
 public class SongController extends BaseController {
 
     @Autowired
-    private SongService songService;
+    private SongApplicationService songApplicationService;
 
     @Autowired
     private ReviewService reviewService;
 
     @Autowired
-    private ModSongFormMapper modSongFormMapper;
+    private ReviewApplicationService reviewApplicationService;
 
     @Autowired
     private SongDtoMapper songDtoMapper;
@@ -56,20 +57,20 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<Song> songs;
+        List<ar.edu.itba.paw.views.SongView> songViews;
         if (search != null && !search.isEmpty()) {
-            songs = songService.findByTitleContaining(search, page, size);
+            songViews = songApplicationService.searchViewByTitle(search, page, size);
         } else {
-            songs = songService.findPaginated(filter, page, size);
+            songViews = songApplicationService.getAllViews(page - 1, size);
         }
 
-        Long totalCount = songService.countAll();
+        Long totalCount = songApplicationService.count();
 
-        if (songs.isEmpty()) {
+        if (songViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<SongDTO>>(songDTOs) {
@@ -84,9 +85,17 @@ public class SongController extends BaseController {
     @Consumes(CustomMediaType.SONG)
     @Produces(CustomMediaType.SONG)
     public Response createSong(@Valid ModSongForm modSongForm) {
-        Song songInput = modSongFormMapper.toModel(modSongForm);
-        Song song = songService.create(songInput);
-        SongDTO songDTO = songDtoMapper.toDTO(song, uriInfo);
+        CreateSongCommand command = new CreateSongCommand(
+            modSongForm.getTitle(),
+            modSongForm.getDuration(),
+            modSongForm.getTrackNumber(),
+            modSongForm.getAlbumId(),
+            null
+        );
+
+        ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.create(command);
+        ar.edu.itba.paw.views.SongView songView = songApplicationService.getViewById(domainSong.getId().getValue());
+        SongDTO songDTO = songDtoMapper.toDTO(songView, uriInfo);
         return Response.created(songDTO.getLinks().getSelf()).entity(songDTO).build();
     }
 
@@ -94,8 +103,8 @@ public class SongController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.SONG)
     public Response getSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Song song = songService.findById(id);
-        return buildResponseUsingEtag(request, () -> songDtoMapper.toDTO(song, uriInfo));
+        ar.edu.itba.paw.views.SongView songView = songApplicationService.getViewById(id);
+        return buildResponseUsingEtag(request, () -> songDtoMapper.toDTO(songView, uriInfo));
     }
 
     @PUT
@@ -106,10 +115,20 @@ public class SongController extends BaseController {
     public Response updateSong(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModSongForm modSongForm) {
-        Song oldSong = songService.findById(id);
-        Song songToUpdate = modSongFormMapper.mergeModel(oldSong, modSongForm);
-        Song updatedSong = songService.update(songToUpdate);
-        SongDTO songDTO = songDtoMapper.toDTO(updatedSong, uriInfo);
+        ar.edu.itba.paw.domain.song.Song oldDomainSong = songApplicationService.getById(id);
+
+        UpdateSongCommand command = new UpdateSongCommand(
+            id,
+            modSongForm.getTitle(),
+            modSongForm.getDuration(),
+            modSongForm.getTrackNumber(),
+            modSongForm.getAlbumId(),
+            null
+        );
+
+        ar.edu.itba.paw.domain.song.Song domainSong = songApplicationService.update(command);
+        ar.edu.itba.paw.views.SongView songView = songApplicationService.getViewById(domainSong.getId().getValue());
+        SongDTO songDTO = songDtoMapper.toDTO(songView, uriInfo);
         return Response.ok(songDTO).build();
     }
 
@@ -117,7 +136,8 @@ public class SongController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteSong(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        songService.delete(id);
+        DeleteSongCommand command = new DeleteSongCommand(id);
+        songApplicationService.delete(command);
         return Response.noContent().build();
     }
 
@@ -130,24 +150,23 @@ public class SongController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
 
-        List<Review> reviews;
+        List<ReviewDTO> reviewDTOs;
+        Long totalCount;
+
         if (userId != null) {
-            reviews = new ArrayList<>();
-            Review review = reviewService.findSongReviewByUserId(userId, id);
-            if (review != null) {
-                reviews.add(review);
-            }
+            List<SongReview> domainReviews = new ArrayList<>();
+            reviewApplicationService.getReviewByUserAndSong(userId, id).ifPresent(domainReviews::add);
+            reviewDTOs = reviewDtoMapper.toDTOList(new ArrayList<>(domainReviews), uriInfo);
+            totalCount = reviewApplicationService.countAllReviews();
         } else {
-            reviews = reviewService.findSongReviewsPaginated(id, page, size);
+            List<SongReview> domainReviews = reviewApplicationService.getReviewsBySongId(id, page, size);
+            reviewDTOs = reviewDtoMapper.toDTOList(new ArrayList<>(domainReviews), uriInfo);
+            totalCount = reviewApplicationService.countAllReviews();
         }
 
-        Long totalCount = reviewService.countAll();
-
-        if (reviews.isEmpty()) {
+        if (reviewDTOs.isEmpty()) {
             return Response.noContent().build();
         }
-
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ReviewDTO>>(reviewDTOs) {

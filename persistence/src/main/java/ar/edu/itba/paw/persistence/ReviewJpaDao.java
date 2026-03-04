@@ -518,4 +518,31 @@ public class ReviewJpaDao implements ReviewDao {
         return ((Number) nativeQuery.getSingleResult()).longValue();
     }
 
+    @Override
+    public List<ArtistReview> findReviewsByArtistId(Long artistId) {
+        final TypedQuery<ArtistReview> query = em.createQuery(
+                "FROM ArtistReview review WHERE review.artist.id = :artistId AND review.isBlocked = false ORDER BY review.createdAt DESC",
+                ArtistReview.class);
+        query.setParameter("artistId", artistId);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<AlbumReview> findReviewsByAlbumId(Long albumId) {
+        final TypedQuery<AlbumReview> query = em.createQuery(
+                "FROM AlbumReview review WHERE review.album.id = :albumId AND review.isBlocked = false ORDER BY review.createdAt DESC",
+                AlbumReview.class);
+        query.setParameter("albumId", albumId);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<SongReview> findReviewsBySongId(Long songId) {
+        final TypedQuery<SongReview> query = em.createQuery(
+                "FROM SongReview review WHERE review.song.id = :songId AND review.isBlocked = false ORDER BY review.createdAt DESC",
+                SongReview.class);
+        query.setParameter("songId", songId);
+        return query.getResultList();
+    }
+
 }

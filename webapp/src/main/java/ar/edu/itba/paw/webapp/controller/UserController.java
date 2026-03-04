@@ -1,11 +1,17 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.usecases.user.*;
+import ar.edu.itba.paw.usecases.review.ReviewApplicationService;
 import ar.edu.itba.paw.domain.user.UserId;
 import ar.edu.itba.paw.domain.user.Email;
-import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.services.NotificationService;
+import ar.edu.itba.paw.domain.artist.Artist;
+import ar.edu.itba.paw.domain.album.Album;
+import ar.edu.itba.paw.domain.song.Song;
+import ar.edu.itba.paw.models.Notification;
+import ar.edu.itba.paw.models.FilterType;
+import ar.edu.itba.paw.models.StatusType;
 import ar.edu.itba.paw.webapp.dto.*;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import ar.edu.itba.paw.webapp.form.UserProfileForm;
@@ -15,7 +21,6 @@ import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import javax.validation.Valid;
@@ -33,7 +38,7 @@ import java.util.List;
 public class UserController extends BaseController {
 
     @Autowired
-    private ar.edu.itba.paw.services.UserApplicationService userApplicationService;
+    private UserApplicationService userApplicationService;
 
     @Autowired
     private NotificationService notificationService;
@@ -42,10 +47,10 @@ public class UserController extends BaseController {
     private ReviewService reviewService;
 
     @Autowired
-    private UserFormMapper userFormMapper;
+    private ReviewApplicationService reviewApplicationService;
 
     @Autowired
-    private UserProfileFormMapper userProfileFormMapper;
+    private UserFormMapper userFormMapper;
 
     @Autowired
     private UserDtoMapper userDtoMapper;
@@ -198,14 +203,14 @@ public class UserController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<Review> reviews = reviewService.findReviewsByUserPaginated(id, page, size);
-        Long totalCount = reviewService.countReviewsByUser(id);
+        List<ar.edu.itba.paw.domain.review.Review> domainReviews = reviewApplicationService.getReviewsByUserId(id, page, size);
+        Long totalCount = reviewApplicationService.countReviewsByUserId(id);
 
-        if (reviews.isEmpty()) {
+        if (domainReviews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(domainReviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
@@ -283,7 +288,7 @@ public class UserController extends BaseController {
             return Response.noContent().build();
         }
 
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
+        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOListLegacy(reviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
@@ -350,20 +355,20 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FAVORITE_ALBUMS)
     @Produces(CustomMediaType.ALBUM_LIST)
     public Response getUserFavoriteAlbums(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        List<Album> albums = userApplicationService.getUserFavoriteAlbums(id, null, null);
+        List<ar.edu.itba.paw.views.AlbumView> albumViews = userApplicationService.getUserFavoriteAlbumsView(id, null, null);
 
-        if (albums.isEmpty()) {
+        if (albumViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums, uriInfo);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albumViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<AlbumDTO>>(albumDTOs) {
                 });
 
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo,
-                ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) albums.size());
+                ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) albumViews.size());
         return responseBuilder.build();
     }
 
@@ -371,20 +376,20 @@ public class UserController extends BaseController {
     @Path(ApiUriConstants.USER_FAVORITE_SONGS)
     @Produces(CustomMediaType.SONG_LIST)
     public Response getUserFavoriteSongs(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        List<Song> songs = userApplicationService.getUserFavoriteSongs(id, null, null);
+        List<ar.edu.itba.paw.views.SongView> songViews = userApplicationService.getUserFavoriteSongsView(id, null, null);
 
-        if (songs.isEmpty()) {
+        if (songViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<SongDTO>>(songDTOs) {
                 });
 
         PaginationHeadersBuilder.addPaginationHeaders(responseBuilder, uriInfo,
-                ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) songs.size());
+                ControllerUtils.FIRST_PAGE, ControllerUtils.FAVORITE_SIZE, (long) songViews.size());
         return responseBuilder.build();
     }
 
