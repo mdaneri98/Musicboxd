@@ -1,10 +1,9 @@
 package ar.edu.itba.paw.webapp.mapper.dto;
 
+import ar.edu.itba.paw.infrastructure.jpa.ArtistJpaEntity;
+import ar.edu.itba.paw.infrastructure.jpa.AlbumJpaEntity;
+import ar.edu.itba.paw.infrastructure.jpa.SongJpaEntity;
 import ar.edu.itba.paw.webapp.form.ReviewForm;
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.reviews.*;
 import org.springframework.stereotype.Component;
 
@@ -45,10 +44,8 @@ public class ReviewFormMapper {
     public Review toModel(ReviewForm form, Long userId, Long itemId) {
         Review review = toModel(form);
         if (review != null) {
-            User user = new User();
-            user.setId(userId);
-            review.setUser(user);
-            
+            review.setUserId(userId);
+
             ReviewType type = ReviewType.valueOf(form.getItemType());
             setItemReference(review, itemId, type);
         }
@@ -59,17 +56,23 @@ public class ReviewFormMapper {
         switch (type) {
             case ARTIST -> {
                 if (review instanceof ArtistReview ar) {
-                    ar.setArtist(new Artist(itemId));
+                    ArtistJpaEntity artist = new ArtistJpaEntity();
+                    artist.setId(itemId);
+                    ar.setArtist(artist);
                 }
             }
             case ALBUM -> {
                 if (review instanceof AlbumReview alr) {
-                    alr.setAlbum(new Album(itemId));
+                    AlbumJpaEntity album = new AlbumJpaEntity();
+                    album.setId(itemId);
+                    alr.setAlbum(album);
                 }
             }
             case SONG -> {
                 if (review instanceof SongReview sr) {
-                    sr.setSong(new Song(itemId));
+                    SongJpaEntity song = new SongJpaEntity();
+                    song.setId(itemId);
+                    sr.setSong(song);
                 }
             }
         }

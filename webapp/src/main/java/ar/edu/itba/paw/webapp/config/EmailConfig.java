@@ -31,16 +31,21 @@ public class EmailConfig {
     @Autowired
     private MessageSource messageSource;
 
+    private String getProperty(String key) {
+        String envKey = key.toUpperCase().replace('.', '_');
+        String envValue = System.getenv(envKey);
+        return envValue != null ? envValue : environment.getProperty(key);
+    }
 
     // Retrieved from: https://howtodoinjava.com/spring-core/send-email-with-spring-javamailsenderimpl-example/
     @Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(environment.getProperty("mailer.host"));
-        mailSender.setPort(Integer.parseInt(environment.getProperty("mailer.port")));
+        mailSender.setHost(getProperty("mailer.host"));
+        mailSender.setPort(Integer.parseInt(getProperty("mailer.port")));
 
-        mailSender.setUsername(environment.getProperty("mailer.email"));
-        mailSender.setPassword(environment.getProperty("mailer.password"));
+        mailSender.setUsername(getProperty("mailer.email"));
+        mailSender.setPassword(getProperty("mailer.password"));
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

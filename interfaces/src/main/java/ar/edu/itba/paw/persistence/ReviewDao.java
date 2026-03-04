@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.domain.user.User;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.models.reviews.ArtistReview;
 import ar.edu.itba.paw.models.reviews.AlbumReview;
@@ -41,6 +41,10 @@ public interface ReviewDao extends CrudDao<Review> {
     List<ArtistReview> findArtistReviewsPaginated(Long artistId, Integer page, Integer pageSize);
     List<AlbumReview> findAlbumReviewsPaginated(Long albumId, Integer page, Integer pageSize);
     List<SongReview> findSongReviewsPaginated(Long songId, Integer page, Integer pageSize);
+
+    List<ArtistReview> findReviewsByArtistId(Long artistId);
+    List<AlbumReview> findReviewsByAlbumId(Long albumId);
+    List<SongReview> findReviewsBySongId(Long songId);
 
     List<Review> getReviewsFromFollowedUsersPaginated(Long userId, Integer page, Integer pageSize);
     List<Review> findReviewsByUserPaginated(Long userId, Integer page, Integer pageSize);

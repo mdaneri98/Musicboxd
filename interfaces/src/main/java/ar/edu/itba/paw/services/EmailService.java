@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.domain.user.User;
 import ar.edu.itba.paw.models.Notification;
 import ar.edu.itba.paw.models.ReviewAcknowledgementType;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.VerificationType;
 
 

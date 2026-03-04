@@ -1,8 +1,7 @@
 package ar.edu.itba.paw.models.reviews;
 
+import ar.edu.itba.paw.infrastructure.jpa.SongJpaEntity;
 import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.Song;
-import ar.edu.itba.paw.models.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,19 +13,19 @@ public class SongReview extends Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id", nullable = false)
-    private Song song;
+    private SongJpaEntity song;
 
     public SongReview() {
         // Constructor vacío necesario para JPA
     }
 
-    public SongReview(User user, Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
-        super(user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
+    public SongReview(Long userId, SongJpaEntity song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(userId, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.song = song;
     }
 
-    public SongReview(Long id, User user,Song song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
-        super(id, user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
+    public SongReview(Long id, Long userId,SongJpaEntity song, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(id, userId, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.song = song;
     }
 
@@ -42,7 +41,7 @@ public class SongReview extends Review {
 
     @Override
     public Image getItemImage() {
-        return song.getAlbum().getImage();
+        return null;
     }
 
     @Override
@@ -50,11 +49,11 @@ public class SongReview extends Review {
         return ReviewType.SONG;
     }
 
-    public Song getSong() {
+    public SongJpaEntity getSong() {
         return song;
     }
 
-    public void setSong(Song song) {
+    public void setSong(SongJpaEntity song) {
         this.song = song;
     }
 }

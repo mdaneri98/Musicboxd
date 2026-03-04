@@ -1,8 +1,7 @@
 package ar.edu.itba.paw.models.reviews;
 
-import ar.edu.itba.paw.models.Album;
+import ar.edu.itba.paw.infrastructure.jpa.AlbumJpaEntity;
 import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,19 +13,19 @@ public class AlbumReview extends Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id", nullable = false)
-    private Album album;
+    private AlbumJpaEntity album;
 
     public AlbumReview() {
         // Constructor vacío necesario para JPA
     }
 
-    public AlbumReview(User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
-        super(user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
+    public AlbumReview(Long userId, AlbumJpaEntity album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(userId, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.album = album;
     }
 
-    public AlbumReview(Long id, User user, Album album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
-        super(id, user, title, description, rating, createdAt, likes, isBlocked, commentAmount);
+    public AlbumReview(Long id, Long userId, AlbumJpaEntity album, String title, String description, Integer rating, LocalDateTime createdAt, Integer likes, Boolean isBlocked, Integer commentAmount) {
+        super(id, userId, title, description, rating, createdAt, likes, isBlocked, commentAmount);
         this.album = album;
     }
 
@@ -42,7 +41,10 @@ public class AlbumReview extends Review {
 
     @Override
     public Image getItemImage() {
-        return album.getImage();
+        if (album.getImageId() != null) {
+            return new Image(album.getImageId(), null);
+        }
+        return null;
     }
 
     @Override
@@ -50,11 +52,11 @@ public class AlbumReview extends Review {
         return ReviewType.ALBUM;
     }
 
-    public Album getAlbum() {
+    public AlbumJpaEntity getAlbum() {
         return album;
     }
 
-    public void setAlbum(Album album) {
+    public void setAlbum(AlbumJpaEntity album) {
         this.album = album;
     }
 }

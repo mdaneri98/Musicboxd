@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import ar.edu.itba.paw.models.reviews.ReviewType;
+import ar.edu.itba.paw.domain.review.ReviewType;
 import ar.edu.itba.paw.webapp.dto.links.ReviewLinksDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;

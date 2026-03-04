@@ -35,6 +35,7 @@ import java.util.Properties;
 @ComponentScan({
         "ar.edu.itba.paw.webapp",
         "ar.edu.itba.paw.services",
+        "ar.edu.itba.paw.usecases",
         "ar.edu.itba.paw.persistence",
 })
 @PropertySource("classpath:application.properties")
@@ -61,14 +62,20 @@ public class ApiConfig {
         return messageSource;
     }
 
+    private String getProperty(String key) {
+        String envKey = key.toUpperCase().replace('.', '_');
+        String envValue = System.getenv(envKey);
+        return envValue != null ? envValue : environment.getProperty(key);
+    }
+
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
         ds.setDriverClass(org.postgresql.Driver.class);
 
-        ds.setUrl(environment.getProperty("database.url"));
-        ds.setUsername(environment.getProperty("database.username"));
-        ds.setPassword(environment.getProperty("database.password"));
+        ds.setUrl(getProperty("database.url"));
+        ds.setUsername(getProperty("database.username"));
+        ds.setPassword(getProperty("database.password"));
         return ds;
     }
 
@@ -80,7 +87,7 @@ public class ApiConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
-        factoryBean.setPackagesToScan("ar.edu.itba.paw.models");
+        factoryBean.setPackagesToScan("ar.edu.itba.paw.models", "ar.edu.itba.paw.infrastructure.jpa");
         factoryBean.setDataSource(dataSource());
 
         final JpaVendorAdapter jpaAdapter = new HibernateJpaVendorAdapter();

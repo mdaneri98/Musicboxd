@@ -1,9 +1,13 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.domain.user.User;
+import ar.edu.itba.paw.domain.user.UserId;
+import ar.edu.itba.paw.domain.user.UserRepository;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.persistence.NotificationDao;
 import ar.edu.itba.paw.exception.not_found.NotificationNotFoundException;
+import ar.edu.itba.paw.exception.not_found.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +25,20 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationDao notificationDao;
     private final EmailService emailService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public NotificationServiceImpl(NotificationDao notificationDao, EmailService emailService){
+    public NotificationServiceImpl(NotificationDao notificationDao, EmailService emailService, UserRepository userRepository){
         this.notificationDao = notificationDao;
         this.emailService = emailService;
+        this.userRepository = userRepository;
     }
 
     @Transactional
     @Override
     public Void notifyLike(Review review, User likedByUser) {
-        User targetUser = review.getUser();
+        User targetUser = userRepository.findById(new UserId(review.getUserId()))
+            .orElseThrow(() -> new UserNotFoundException(review.getUserId()));
         if (!Objects.equals(targetUser.getId(), likedByUser.getId())) {
             notificationDao.create(
                 Notification.NotificationType.LIKE,
@@ -54,7 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
                             review.getRating()
                     );
                 } catch (MessagingException e) {
-                    LOGGER.error("Failed to send like notification email to user: {}", targetUser.getEmail(), e);
+                    LOGGER.error("Failed to send like notification email to user: {}", targetUser.getEmail().getValue(), e);
                 }
             }
         }
@@ -64,7 +71,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     @Override
     public Void notifyComment(Review review, User commentedByUser) {
-        User targetUser = review.getUser();
+        User targetUser = userRepository.findById(new UserId(review.getUserId()))
+            .orElseThrow(() -> new UserNotFoundException(review.getUserId()));
         if (!Objects.equals(targetUser.getId(), commentedByUser.getId())) {
             notificationDao.create(
                     Notification.NotificationType.COMMENT,
@@ -87,7 +95,7 @@ public class NotificationServiceImpl implements NotificationService {
                             review.getRating()
                     );
                 } catch (MessagingException e) {
-                    LOGGER.error("Failed to send comment notification email to user: {}", targetUser.getEmail(), e);
+                    LOGGER.error("Failed to send comment notification email to user: {}", targetUser.getEmail().getValue(), e);
                 }
             }
         }
@@ -118,7 +126,7 @@ public class NotificationServiceImpl implements NotificationService {
                     null
                 );
             } catch (MessagingException e) {
-                LOGGER.error("Failed to send follow notification email to user: {}", followedUser.getEmail(), e);
+                LOGGER.error("Failed to send follow notification email to user: {}", followedUser.getEmail().getValue(), e);
             }
         }
         return null;
@@ -127,7 +135,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     @Override
     public Void notifyNewReview(Review review) {
-        User reviewer = review.getUser();
+        User reviewer = userRepository.findById(new UserId(review.getUserId()))
+            .orElseThrow(() -> new UserNotFoundException(review.getUserId()));
         List<User> followers = reviewer.getFollowers();
 
         for (User follower : followers) {
@@ -152,7 +161,7 @@ public class NotificationServiceImpl implements NotificationService {
                         review.getRating()
                     );
                 } catch (MessagingException e) {
-                    LOGGER.error("Failed to send new review notification email to user: {}", follower.getEmail(), e);
+                    LOGGER.error("Failed to send new review notification email to user: {}", follower.getEmail().getValue(), e);
                 }
             }
         }
@@ -162,18 +171,19 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     @Override
     public Void notifyReviewBlockStatusChange(Review review, Notification.NotificationType notificationType) {
-        User targetUser = review.getUser();
+        User targetUser = userRepository.findById(new UserId(review.getUserId()))
+            .orElseThrow(() -> new UserNotFoundException(review.getUserId()));
         String messageKey = "";
         ReviewAcknowledgementType emailType = null;
 
         if (notificationType.equals(Notification.NotificationType.REVIEW_BLOCKED)) {
             messageKey = "notification.review.blocked";
             emailType = ReviewAcknowledgementType.BLOCKED;
-            LOGGER.info("Review {} was blocked, notifying user {}", review.getId(), targetUser.getEmail());
+            LOGGER.info("Review {} was blocked, notifying user {}", review.getId(), targetUser.getEmail().getValue());
         } else if (notificationType.equals(Notification.NotificationType.REVIEW_UNBLOCKED)) {
             messageKey = "notification.review.unblocked";
             emailType = ReviewAcknowledgementType.UNBLOCKED;
-            LOGGER.info("Review {} was unblocked, notifying user {}", review.getId(), targetUser.getEmail());
+            LOGGER.info("Review {} was unblocked, notifying user {}", review.getId(), targetUser.getEmail().getValue());
         }
 
         notificationDao.create(
@@ -192,9 +202,9 @@ public class NotificationServiceImpl implements NotificationService {
                     review.getItemName(),
                     review.getItemType().toString()
             );
-            LOGGER.info("Acknowledgement email sent successfully to user: {}", targetUser.getEmail());
+            LOGGER.info("Acknowledgement email sent successfully to user: {}", targetUser.getEmail().getValue());
         } catch (MessagingException e) {
-            LOGGER.error("Failed to send acknowledgement email to user: {}", targetUser.getEmail(), e);
+            LOGGER.error("Failed to send acknowledgement email to user: {}", targetUser.getEmail().getValue(), e);
         }
         return null;
     }

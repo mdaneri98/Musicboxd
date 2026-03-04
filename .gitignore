@@ -1,6 +1,5 @@
 
 
-docker-compose.yml
 */target
 webapp/.settings
 .settings
@@ -94,3 +93,9 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
+
+##############################
+## Docker
+##############################
+.env
+.env.local

@@ -8,23 +8,22 @@ import ar.edu.itba.paw.webapp.mapper.dto.AlbumDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ArtistDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.SongDtoMapper;
 import ar.edu.itba.paw.webapp.mapper.dto.ReviewDtoMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModAlbumFormMapper;
-import ar.edu.itba.paw.webapp.mapper.dto.ModArtistFormMapper;
 import ar.edu.itba.paw.webapp.form.ModAlbumForm;
 import ar.edu.itba.paw.webapp.form.ModArtistForm;
 import ar.edu.itba.paw.webapp.utils.ApiUriConstants;
 import ar.edu.itba.paw.webapp.utils.ControllerUtils;
 import ar.edu.itba.paw.webapp.utils.CustomMediaType;
 import ar.edu.itba.paw.webapp.utils.PaginationHeadersBuilder;
-import ar.edu.itba.paw.models.Album;
-import ar.edu.itba.paw.models.Artist;
-import ar.edu.itba.paw.models.Song;
 import ar.edu.itba.paw.models.FilterType;
 import ar.edu.itba.paw.models.reviews.Review;
-import ar.edu.itba.paw.services.ArtistService;
-import ar.edu.itba.paw.services.AlbumService;
+import ar.edu.itba.paw.domain.review.ArtistReview;
+import ar.edu.itba.paw.services.ArtistApplicationService;
+import ar.edu.itba.paw.services.AlbumApplicationService;
 import ar.edu.itba.paw.services.ReviewService;
-import ar.edu.itba.paw.services.SongService;
+import ar.edu.itba.paw.services.SongApplicationService;
+import ar.edu.itba.paw.usecases.review.ReviewApplicationService;
+import ar.edu.itba.paw.usecases.artist.*;
+import ar.edu.itba.paw.usecases.album.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -44,22 +43,19 @@ import java.util.ArrayList;
 public class ArtistController extends BaseController {
 
     @Autowired
-    private ArtistService artistService;
+    private ArtistApplicationService artistApplicationService;
 
     @Autowired
-    private AlbumService albumService;
+    private AlbumApplicationService albumApplicationService;
 
     @Autowired
     private ReviewService reviewService;
 
     @Autowired
-    private SongService songService;
+    private ReviewApplicationService reviewApplicationService;
 
     @Autowired
-    private ModAlbumFormMapper modAlbumFormMapper;
-
-    @Autowired
-    private ModArtistFormMapper modArtistFormMapper;
+    private SongApplicationService songApplicationService;
 
     @Autowired
     private ArtistDtoMapper artistDtoMapper;
@@ -81,20 +77,20 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_FILTER_STRING) FilterType filter) {
 
-        List<Artist> artists;
+        List<ar.edu.itba.paw.domain.artist.Artist> domainArtists;
         if (search != null && !search.isEmpty()) {
-            artists = artistService.findByNameContaining(search, page, size);
+            domainArtists = artistApplicationService.searchByName(search, page, size);
         } else {
-            artists = artistService.findPaginated(filter, page, size);
+            domainArtists = artistApplicationService.getAll(page - 1, size);
         }
 
-        Long totalCount = artistService.countAll();
+        Long totalCount = artistApplicationService.count();
 
-        if (artists.isEmpty()) {
+        if (domainArtists.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(artists, uriInfo);
+        List<ArtistDTO> artistDTOs = artistDtoMapper.toDTOList(domainArtists, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ArtistDTO>>(artistDTOs) {
@@ -109,9 +105,14 @@ public class ArtistController extends BaseController {
     @Consumes(CustomMediaType.ARTIST)
     @Produces(CustomMediaType.ARTIST)
     public Response createArtist(@Valid ModArtistForm modArtistForm) {
-        Artist artistInput = modArtistFormMapper.toModel(modArtistForm);
-        Artist artist = artistService.create(artistInput);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(artist, uriInfo);
+        CreateArtistCommand command = new CreateArtistCommand(
+            modArtistForm.getName(),
+            modArtistForm.getBio(),
+            modArtistForm.getArtistImgId()
+        );
+
+        ar.edu.itba.paw.domain.artist.Artist domainArtist = artistApplicationService.create(command);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(domainArtist, uriInfo);
         return Response.created(artistDTO.getLinks().getSelf()).entity(artistDTO).build();
     }
 
@@ -119,8 +120,8 @@ public class ArtistController extends BaseController {
     @Path(ApiUriConstants.ID)
     @Produces(CustomMediaType.ARTIST)
     public Response getArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id, @Context Request request) {
-        Artist artist = artistService.findById(id);
-        return buildResponseUsingEtag(request, () -> artistDtoMapper.toDTO(artist, uriInfo));
+        ar.edu.itba.paw.domain.artist.Artist domainArtist = artistApplicationService.getById(id);
+        return buildResponseUsingEtag(request, () -> artistDtoMapper.toDTO(domainArtist, uriInfo));
     }
 
     @PUT
@@ -130,9 +131,15 @@ public class ArtistController extends BaseController {
     @Produces(CustomMediaType.ARTIST)
     public Response updateArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModArtistForm modArtistForm) {
-        Artist form = modArtistFormMapper.toModel(modArtistForm);
-        Artist updatedArtist = artistService.update(form);
-        ArtistDTO artistDTO = artistDtoMapper.toDTO(updatedArtist, uriInfo);
+        UpdateArtistCommand command = new UpdateArtistCommand(
+            id,
+            modArtistForm.getName(),
+            modArtistForm.getBio(),
+            modArtistForm.getArtistImgId()
+        );
+
+        ar.edu.itba.paw.domain.artist.Artist domainArtist = artistApplicationService.update(command);
+        ArtistDTO artistDTO = artistDtoMapper.toDTO(domainArtist, uriInfo);
         return Response.ok(artistDTO).build();
     }
 
@@ -140,7 +147,8 @@ public class ArtistController extends BaseController {
     @Path(ApiUriConstants.ID)
     @PreAuthorize("hasRole('MODERATOR')")
     public Response deleteArtist(@PathParam(ControllerUtils.ID_PARAM_NAME) Long id) {
-        artistService.delete(id);
+        DeleteArtistCommand command = new DeleteArtistCommand(id);
+        artistApplicationService.delete(command);
         return Response.noContent().build();
     }
 
@@ -153,24 +161,23 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.USER_ID_PARAM_NAME) Long userId) {
 
-        List<Review> reviews;
+        List<ReviewDTO> reviewDTOs;
+        Long totalCount;
+
         if (userId != null) {
-            reviews = new ArrayList<>();
-            Review review = reviewService.findArtistReviewByUserId(userId, id);
-            if (review != null) {
-                reviews.add(review);
-            }
+            List<ArtistReview> domainReviews = new ArrayList<>();
+            reviewApplicationService.getReviewByUserAndArtist(userId, id).ifPresent(domainReviews::add);
+            reviewDTOs = reviewDtoMapper.toDTOList(new ArrayList<>(domainReviews), uriInfo);
+            totalCount = reviewApplicationService.countAllReviews();
         } else {
-            reviews = reviewService.findArtistReviewsPaginated(id, page, size);
+            List<ArtistReview> domainReviews = reviewApplicationService.getReviewsByArtistId(id, page, size);
+            reviewDTOs = reviewDtoMapper.toDTOList(new ArrayList<>(domainReviews), uriInfo);
+            totalCount = reviewApplicationService.countAllReviews();
         }
 
-        Long totalCount = reviewService.countAll();
-
-        if (reviews.isEmpty()) {
+        if (reviewDTOs.isEmpty()) {
             return Response.noContent().build();
         }
-
-        List<ReviewDTO> reviewDTOs = reviewDtoMapper.toDTOList(reviews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<ReviewDTO>>(reviewDTOs) {
@@ -188,14 +195,14 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.PAGE_PARAM_NAME) @DefaultValue(ControllerUtils.FIRST_PAGE_STRING) Integer page,
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size) {
 
-        List<Album> albums = albumService.findByArtistId(id);
-        Long totalCount = albumService.countAll();
+        List<ar.edu.itba.paw.views.AlbumView> albumViews = albumApplicationService.getViewsByArtistId(id);
+        Long totalCount = albumApplicationService.count();
 
-        if (albums.isEmpty()) {
+        if (albumViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albums, uriInfo);
+        List<AlbumDTO> albumDTOs = albumDtoMapper.toDTOList(albumViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<AlbumDTO>>(albumDTOs) {
@@ -213,10 +220,17 @@ public class ArtistController extends BaseController {
     public Response createArtistAlbum(
             @PathParam(ControllerUtils.ID_PARAM_NAME) Long id,
             @Valid ModAlbumForm modAlbumForm) {
-        Album albumInput = modAlbumFormMapper.toModel(modAlbumForm);
-        albumInput.setArtist(new Artist(id));
-        Album album = albumService.create(albumInput);
-        AlbumDTO albumDTO = albumDtoMapper.toDTO(album, uriInfo);
+        CreateAlbumCommand command = new CreateAlbumCommand(
+            modAlbumForm.getTitle(),
+            modAlbumForm.getGenre(),
+            modAlbumForm.getReleaseDate(),
+            modAlbumForm.getAlbumImageId(),
+            id
+        );
+
+        ar.edu.itba.paw.domain.album.Album domainAlbum = albumApplicationService.create(command);
+        ar.edu.itba.paw.views.AlbumView albumView = albumApplicationService.getViewById(domainAlbum.getId().getValue());
+        AlbumDTO albumDTO = albumDtoMapper.toDTO(albumView, uriInfo);
         return Response.created(albumDTO.getLinks().getSelf()).entity(albumDTO).build();
     }
 
@@ -229,14 +243,14 @@ public class ArtistController extends BaseController {
             @QueryParam(ControllerUtils.SIZE_PARAM_NAME) @DefaultValue(ControllerUtils.DEFAULT_SIZE_STRING) Integer size,
             @QueryParam(ControllerUtils.FILTER_PARAM_NAME) @DefaultValue(ControllerUtils.POPULAR_FILTER_STRING) FilterType filter) {
 
-        List<Song> songs = songService.findByArtistId(id, filter, page, size);
-        Long totalCount = songService.countAll();
+        List<ar.edu.itba.paw.views.SongView> songViews = songApplicationService.getViewsByArtistId(id, filter, page, size);
+        Long totalCount = songApplicationService.count();
 
-        if (songs.isEmpty()) {
+        if (songViews.isEmpty()) {
             return Response.noContent().build();
         }
 
-        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songs, uriInfo);
+        List<SongDTO> songDTOs = songDtoMapper.toDTOList(songViews, uriInfo);
 
         Response.ResponseBuilder responseBuilder = Response.ok(
                 new GenericEntity<List<SongDTO>>(songDTOs) {

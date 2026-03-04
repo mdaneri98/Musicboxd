@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
+import ar.edu.itba.paw.infrastructure.jpa.UserJpaEntity;
 import ar.edu.itba.paw.models.reviews.Review;
 import java.time.LocalDateTime;
 
@@ -19,11 +20,11 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recipient_user_id", nullable = false)
-    private User recipientUser;
+    private UserJpaEntity recipientUser;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "trigger_user_id")
-    private User triggerUser;
+    private UserJpaEntity triggerUser;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id")
@@ -50,8 +51,8 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(Long id, NotificationType type, User recipientUser,
-                       User triggerUser, Review review, LocalDateTime createdAt, 
+    public Notification(Long id, NotificationType type, UserJpaEntity recipientUser,
+                       UserJpaEntity triggerUser, Review review, LocalDateTime createdAt,
                        boolean read, String message) {
         this.id = id;
         this.type = type;
@@ -79,19 +80,19 @@ public class Notification {
         this.type = type;
     }
 
-    public User getRecipientUser() {
+    public UserJpaEntity getRecipientUser() {
         return recipientUser;
     }
 
-    public void setRecipientUser(User recipientUser) {
+    public void setRecipientUser(UserJpaEntity recipientUser) {
         this.recipientUser = recipientUser;
     }
 
-    public User getTriggerUser() {
+    public UserJpaEntity getTriggerUser() {
         return triggerUser;
     }
 
-    public void setTriggerUser(User triggerUser) {
+    public void setTriggerUser(UserJpaEntity triggerUser) {
         this.triggerUser = triggerUser;
     }
 

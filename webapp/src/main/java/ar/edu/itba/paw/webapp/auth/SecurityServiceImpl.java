@@ -1,10 +1,10 @@
 package ar.edu.itba.paw.webapp.auth;
 
+import ar.edu.itba.paw.domain.review.Review;
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.reviews.Review;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.NotificationService;
-import ar.edu.itba.paw.services.ReviewService;
+import ar.edu.itba.paw.usecases.review.ReviewApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class SecurityServiceImpl implements SecurityService {
 
     @Autowired
-    private ReviewService reviewService;
+    private ReviewApplicationService reviewApplicationService;
 
     @Autowired
     private CommentService commentService;
@@ -41,8 +41,8 @@ public class SecurityServiceImpl implements SecurityService {
         }
         try {
             Long principalId = Long.parseLong(authentication.getName());
-            Review review = reviewService.findById(reviewId);
-            return review != null && review.getUser().getId().equals(principalId);
+            Review review = reviewApplicationService.getReviewById(reviewId);
+            return review != null && review.getUserId().getValue().equals(principalId);
         } catch (NumberFormatException e) {
             return false;
         }
